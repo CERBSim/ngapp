@@ -36,7 +36,9 @@ class WebappLogin:
         result_dir = path.join(prefix, "results")
         os.makedirs(result_dir, exist_ok=True)
 
-        with open(path.join(result_dir, suffix), "w", encoding="utf-8") as result_file:
+        with open(
+            path.join(result_dir, suffix), "w", encoding="utf-8"
+        ) as result_file:
             json.dump(data, result_file, indent=2, sort_keys=True)
 
         reference_path = path.join(prefix, "reference", suffix)
@@ -63,7 +65,9 @@ def login_fixture(page: Page, request: pytest.FixtureRequest) -> WebappLogin:
     """Login to the webapp and wait until the "Apps" page is loaded"""
     from webapp.auth import create_token
 
-    token = create_token(sub="test", preferred_username="test", user_access={"test": 7})
+    token = create_token(
+        sub="test", preferred_username="test", user_access={"test": 7}
+    )
     page.goto(f"http://localhost:3000/apps#token={token}")
     page.wait_for_selector('button[name="create_DemoApp"]')
     return WebappLogin(request=request, page=page)

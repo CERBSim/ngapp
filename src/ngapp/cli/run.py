@@ -154,8 +154,17 @@ def run_compute_function(
 
         # track maximum RSS memory and elapsed time using /usr/bin/time tool
         if sys.platform == "linux" and os.path.exists("/usr/bin/time"):
-            command = ["/usr/bin/time", "-q", "-f", "%M", "-o", "mem_usage"] + command
-        elif sys.platform == "darwin" and os.path.exists("/opt/homebrew/bin/gtime"):
+            command = [
+                "/usr/bin/time",
+                "-q",
+                "-f",
+                "%M",
+                "-o",
+                "mem_usage",
+            ] + command
+        elif sys.platform == "darwin" and os.path.exists(
+            "/opt/homebrew/bin/gtime"
+        ):
             command = [
                 "/opt/homebrew/bin/gtime",
                 "-q",
@@ -188,7 +197,9 @@ def run_compute_function(
             f"\nSTATUS: Job finished on compute node with exit code {p.returncode}",
         )
         print("return code", p.returncode)
-        api.put(api_url, {"status": "Finished" if p.returncode == 0 else "Failed"})
+        api.put(
+            api_url, {"status": "Finished" if p.returncode == 0 else "Failed"}
+        )
     except Exception as e:
         print("error", e, flush=True)
         print_exception(e)
@@ -201,7 +212,8 @@ def main():
     env.set_backend(data.api_url, data.api_token)
 
     model = loadModel(
-        data.app, {"component": data.load_file_data(), "metadata": data.load_file()}
+        data.app,
+        {"component": data.load_file_data(), "metadata": data.load_file()},
     )
     # add app assets
     try:
@@ -226,10 +238,15 @@ def main():
         func = getattr(model, func_name)
 
     if not func.__is_compute_node_function:
-        raise RuntimeError(f"Function {func} not allowed in backend computation")
+        raise RuntimeError(
+            f"Function {func} not allowed in backend computation"
+        )
 
     compute_env = data.compute_env
-    if compute_env["env_type"] != "local" and compute_env["name"] != func.__compute_env:
+    if (
+        compute_env["env_type"] != "local"
+        and compute_env["name"] != func.__compute_env
+    ):
         raise RuntimeError(
             f"Function {func} not allowed in compute environment {compute_env}"
         )

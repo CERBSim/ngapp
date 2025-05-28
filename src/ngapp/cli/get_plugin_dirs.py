@@ -16,7 +16,9 @@ def main():
     with open(os.devnull, "w", encoding="utf-8") as dummy_out:
         sys.stdout = dummy_out
 
-        entry_points = importlib.metadata.entry_points().get("webapp.plugin") or []
+        entry_points = (
+            importlib.metadata.entry_points().get("webapp.plugin") or []
+        )
         paths = []
         try:
             import webapp

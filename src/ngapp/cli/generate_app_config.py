@@ -32,9 +32,9 @@ def load_app_config(full_class_name, zip_data=True):
         app_config["python_package"] = base64.b64encode(data).decode("utf-8")
 
     app_config["accessConfig"]["levels"] = {}
-    app_config["accessConfig"]["defaultAccessLevel"] = app_config["accessConfig"][
-        "defaultAccessLevel"
-    ].value
+    app_config["accessConfig"]["defaultAccessLevel"] = app_config[
+        "accessConfig"
+    ]["defaultAccessLevel"].value
     app_config["access_config_dict"] = app_config.pop("accessConfig")
 
     app_config["owner"] = None

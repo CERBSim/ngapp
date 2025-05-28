@@ -26,7 +26,7 @@ class QAjaxBar(Component):
         ui_reverse: bool | None = None,
         ui_skip_hijack: bool | None = None,
         ui_hijack_filter: Callable | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QAjaxBar", *children, **kwargs)
         if ui_position is not None:
@@ -155,7 +155,7 @@ class QAvatar(Component):
         ui_square: Any | None = None,
         ui_rounded: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QAvatar", *children, **kwargs)
         if ui_font_size is not None:
@@ -262,7 +262,7 @@ class QBadge(Component):
         ui_align: str | None = None,
         ui_outline: bool | None = None,
         ui_rounded: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QBadge", *children, **kwargs)
         if ui_color is not None:
@@ -384,7 +384,7 @@ class QBanner(Component):
         ui_dense: Any | None = None,
         ui_rounded: Any | None = None,
         ui_dark: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QBanner", *children, **kwargs)
         if ui_inline_actions is not None:
@@ -464,7 +464,7 @@ class QBar(Component):
         *children,
         ui_dense: Any | None = None,
         ui_dark: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QBar", *children, **kwargs)
         if ui_dense is not None:
@@ -512,7 +512,7 @@ class QBreadcrumbs(Component):
         ui_gutter: str | None = None,
         ui_separator_color: Any | None = None,
         ui_align: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QBreadcrumbs", *children, **kwargs)
         if ui_separator is not None:
@@ -615,7 +615,7 @@ class QBreadcrumbsEl(Component):
         ui_href: str | None = None,
         ui_target: str | None = None,
         ui_disable: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QBreadcrumbsEl", *children, **kwargs)
         if ui_label is not None:
@@ -826,7 +826,7 @@ class QBtn(Component):
         ui_loading: bool | None = None,
         ui_disable: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QBtn", *children, **kwargs)
         if ui_round is not None:
@@ -1364,7 +1364,7 @@ class QBtnDropdown(Component):
         ui_transition_show: Any | None = None,
         ui_transition_hide: Any | None = None,
         ui_transition_duration: str | float | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QBtnDropdown", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -2017,7 +2017,7 @@ class QBtnGroup(Component):
         ui_push: bool | None = None,
         ui_stretch: bool | None = None,
         ui_glossy: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QBtnGroup", *children, **kwargs)
         if ui_spread is not None:
@@ -2182,7 +2182,7 @@ class QBtnToggle(Component):
         ui_stretch: bool | None = None,
         ui_clearable: bool | None = None,
         ui_name: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QBtnToggle", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -2503,7 +2503,7 @@ class QCardActions(Component):
         *children,
         ui_align: str | None = None,
         ui_vertical: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QCardActions", *children, **kwargs)
         if ui_align is not None:
@@ -2552,7 +2552,7 @@ class QCard(Component):
         ui_flat: Any | None = None,
         ui_bordered: Any | None = None,
         ui_tag: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QCard", *children, **kwargs)
         if ui_dark is not None:
@@ -2623,7 +2623,7 @@ class QCardSection(Component):
         *children,
         ui_horizontal: bool | None = None,
         ui_tag: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QCardSection", *children, **kwargs)
         if ui_horizontal is not None:
@@ -2719,7 +2719,7 @@ class QCarousel(Component):
         ui_transition_duration: str | float | None = None,
         ui_fullscreen: bool | None = None,
         ui_no_route_fullscreen_exit: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QCarousel", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -2781,7 +2781,9 @@ class QCarousel(Component):
         if ui_fullscreen is not None:
             self._props["fullscreen"] = ui_fullscreen
         if ui_no_route_fullscreen_exit is not None:
-            self._props["no-route-fullscreen-exit"] = ui_no_route_fullscreen_exit
+            self._props["no-route-fullscreen-exit"] = (
+                ui_no_route_fullscreen_exit
+            )
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
@@ -3154,7 +3156,7 @@ class QCarouselSlide(Component):
         ui_name: Any | None = None,
         ui_img_src: str | None = None,
         ui_disable: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QCarouselSlide", *children, **kwargs)
         if ui_name is not None:
@@ -3207,7 +3209,7 @@ class QCarouselControl(Component):
         *children,
         ui_position: str | None = None,
         ui_offset: list | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QCarouselControl", *children, **kwargs)
         if ui_position is not None:
@@ -3272,7 +3274,7 @@ class QChatMessage(Component):
         ui_name_html: Any | None = None,
         ui_text_html: Any | None = None,
         ui_stamp_html: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QChatMessage", *children, **kwargs)
         if ui_sent is not None:
@@ -3508,7 +3510,7 @@ class QCheckbox(Component):
         ui_tabindex: Any | None = None,
         ui_size: str | None = None,
         ui_name: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QCheckbox", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -3796,7 +3798,7 @@ class QChip(Component):
         ui_remove_aria_label: str | None = None,
         ui_tabindex: Any | None = None,
         ui_disable: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QChip", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -4091,7 +4093,7 @@ class QCircularProgress(Component):
         ui_instant_feedback: bool | None = None,
         ui_animation_speed: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QCircularProgress", *children, **kwargs)
         if ui_value is not None:
@@ -4322,7 +4324,7 @@ class QColor(Component):
         ui_readonly: Any | None = None,
         ui_dark: Any | None = None,
         ui_name: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QColor", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -4580,7 +4582,7 @@ class QDate(Component):
         ui_readonly: Any | None = None,
         ui_disable: Any | None = None,
         ui_name: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QDate", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -4606,9 +4608,13 @@ class QDate(Component):
         if ui_options is not None:
             self._props["options"] = ui_options
         if ui_navigation_min_year_month is not None:
-            self._props["navigation-min-year-month"] = ui_navigation_min_year_month
+            self._props["navigation-min-year-month"] = (
+                ui_navigation_min_year_month
+            )
         if ui_navigation_max_year_month is not None:
-            self._props["navigation-max-year-month"] = ui_navigation_max_year_month
+            self._props["navigation-max-year-month"] = (
+                ui_navigation_max_year_month
+            )
         if ui_no_unset is not None:
             self._props["no-unset"] = ui_no_unset
         if ui_first_day_of_week is not None:
@@ -5051,7 +5057,7 @@ class QDialog(Component):
         ui_transition_hide: Any | None = None,
         ui_model_value: bool | None = None,
         ui_transition_duration: str | float | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QDialog", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -5414,7 +5420,7 @@ class QDrawer(Component):
         ui_no_swipe_close: bool | None = None,
         ui_no_swipe_backdrop: bool | None = None,
         ui_model_value: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QDrawer", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -5782,7 +5788,7 @@ class QEditor(Component):
         ui_placeholder: str | None = None,
         ui_fullscreen: bool | None = None,
         ui_no_route_fullscreen_exit: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QEditor", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -5838,7 +5844,9 @@ class QEditor(Component):
         if ui_fullscreen is not None:
             self._props["fullscreen"] = ui_fullscreen
         if ui_no_route_fullscreen_exit is not None:
-            self._props["no-route-fullscreen-exit"] = ui_no_route_fullscreen_exit
+            self._props["no-route-fullscreen-exit"] = (
+                ui_no_route_fullscreen_exit
+            )
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
@@ -6303,7 +6311,7 @@ class QExpansionItem(Component):
         ui_href: str | None = None,
         ui_target: str | None = None,
         ui_disable: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QExpansionItem", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -6809,7 +6817,7 @@ class QFabAction(Component):
         ui_square: bool | None = None,
         ui_disable: Any | None = None,
         ui_tabindex: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QFabAction", *children, **kwargs)
         if ui_icon is not None:
@@ -7146,7 +7154,7 @@ class QFab(Component):
         ui_square: bool | None = None,
         ui_disable: Any | None = None,
         ui_tabindex: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QFab", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -7600,7 +7608,7 @@ class QField(Component):
         ui_rules: list | None = None,
         ui_reactive_rules: bool | None = None,
         ui_lazy_rules: bool | str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QField", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -8300,7 +8308,7 @@ class QFile(Component):
         ui_max_total_size: float | str | None = None,
         ui_max_files: float | str | None = None,
         ui_filter: Callable | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QFile", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -9102,7 +9110,7 @@ class QFooter(Component):
         ui_bordered: Any | None = None,
         ui_elevated: bool | None = None,
         ui_height_hint: float | str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QFooter", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -9223,7 +9231,7 @@ class QForm(Component):
         ui_no_error_focus: bool | None = None,
         ui_no_reset_focus: bool | None = None,
         ui_greedy: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QForm", *children, **kwargs)
         if ui_autofocus is not None:
@@ -9368,7 +9376,7 @@ class QHeader(Component):
         ui_bordered: Any | None = None,
         ui_elevated: bool | None = None,
         ui_height_hint: float | str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QHeader", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -9483,7 +9491,7 @@ class QIcon(Component):
         ui_left: bool | None = None,
         ui_right: bool | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QIcon", *children, **kwargs)
         if ui_tag is not None:
@@ -9616,7 +9624,7 @@ class QImg(Component):
         ui_no_spinner: bool | None = None,
         ui_no_native_menu: bool | None = None,
         ui_no_transition: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QImg", *children, **kwargs)
         if ui_src is not None:
@@ -9965,7 +9973,7 @@ class QInfiniteScroll(Component):
         ui_scroll_target: Any | None = None,
         ui_disable: Any | None = None,
         ui_reverse: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QInfiniteScroll", *children, **kwargs)
         if ui_offset is not None:
@@ -10122,7 +10130,7 @@ class QInnerLoading(Component):
         ui_transition_show: Any | None = None,
         ui_transition_hide: Any | None = None,
         ui_transition_duration: str | float | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QInnerLoading", *children, **kwargs)
         if ui_showing is not None:
@@ -10342,7 +10350,7 @@ class QInput(Component):
         ui_fill_mask: bool | str | None = None,
         ui_reverse_fill_mask: bool | None = None,
         ui_unmasked_value: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QInput", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -11107,7 +11115,7 @@ class QIntersection(Component):
         ui_transition: Any | None = None,
         ui_transition_duration: str | float | None = None,
         ui_disable: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QIntersection", *children, **kwargs)
         if ui_tag is not None:
@@ -11272,7 +11280,7 @@ class QItem(Component):
         ui_href: str | None = None,
         ui_target: str | None = None,
         ui_disable: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QItem", *children, **kwargs)
         if ui_active is not None:
@@ -11498,7 +11506,7 @@ class QItemSection(Component):
         ui_side: bool | None = None,
         ui_top: bool | None = None,
         ui_no_wrap: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QItemSection", *children, **kwargs)
         if ui_avatar is not None:
@@ -11578,7 +11586,7 @@ class QItemLabel(Component):
         ui_caption: bool | None = None,
         ui_header: bool | None = None,
         ui_lines: float | str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QItemLabel", *children, **kwargs)
         if ui_overline is not None:
@@ -11651,7 +11659,7 @@ class QList(Component):
         ui_dark: Any | None = None,
         ui_padding: bool | None = None,
         ui_tag: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QList", *children, **kwargs)
         if ui_bordered is not None:
@@ -11772,7 +11780,7 @@ class QKnob(Component):
         ui_readonly: Any | None = None,
         ui_size: str | None = None,
         ui_name: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QKnob", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -12049,7 +12057,7 @@ class QLayout(Component):
         *children,
         ui_view: str | None = None,
         ui_container: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QLayout", *children, **kwargs)
         if ui_view is not None:
@@ -12138,7 +12146,7 @@ class QLinearProgress(Component):
         ui_instant_feedback: bool | None = None,
         ui_animation_speed: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QLinearProgress", *children, **kwargs)
         if ui_value is not None:
@@ -12308,7 +12316,7 @@ class QMarkupTable(Component):
         ui_square: Any | None = None,
         ui_separator: str | None = None,
         ui_wrap_cells: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QMarkupTable", *children, **kwargs)
         if ui_dense is not None:
@@ -12445,7 +12453,7 @@ class QMenu(Component):
         ui_transition_show: Any | None = None,
         ui_transition_hide: Any | None = None,
         ui_transition_duration: str | float | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QMenu", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -12804,7 +12812,7 @@ class QNoSsr(Component):
         *children,
         ui_tag: Any | None = None,
         ui_placeholder: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QNoSsr", *children, **kwargs)
         if ui_tag is not None:
@@ -12881,7 +12889,7 @@ class QOptionGroup(Component):
         ui_inline: bool | None = None,
         ui_disable: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QOptionGroup", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -13101,7 +13109,7 @@ class QPage(Component):
         *children,
         ui_padding: bool | None = None,
         ui_style_fn: Callable | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QPage", *children, **kwargs)
         if ui_padding is not None:
@@ -13152,7 +13160,7 @@ class QPageScroller(Component):
         ui_offset: list | None = None,
         ui_position: str | None = None,
         ui_expand: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QPageScroller", *children, **kwargs)
         if ui_scroll_offset is not None:
@@ -13249,7 +13257,7 @@ class QPageSticky(Component):
         ui_position: str | None = None,
         ui_offset: list | None = None,
         ui_expand: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QPageSticky", *children, **kwargs)
         if ui_position is not None:
@@ -13367,7 +13375,7 @@ class QPagination(Component):
         ui_input_style: str | list | dict | None = None,
         ui_input_class: str | list | dict | None = None,
         ui_ripple: bool | dict | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QPagination", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -13788,7 +13796,7 @@ class QParallax(Component):
         ui_height: float | None = None,
         ui_speed: float | None = None,
         ui_scroll_target: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QParallax", *children, **kwargs)
         if ui_src is not None:
@@ -13914,7 +13922,7 @@ class QPopupEdit(Component):
         ui_square: bool | None = None,
         ui_max_height: Any | None = None,
         ui_max_width: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QPopupEdit", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -14237,7 +14245,7 @@ class QPopupProxy(Component):
         ui_context_menu: bool | None = None,
         ui_target: bool | str | Any | None = None,
         ui_no_parent_event: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QPopupProxy", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -14375,7 +14383,7 @@ class QPullToRefresh(Component):
         ui_no_mouse: bool | None = None,
         ui_disable: Any | None = None,
         ui_scroll_target: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QPullToRefresh", *children, **kwargs)
         if ui_color is not None:
@@ -14500,7 +14508,7 @@ class QRadio(Component):
         ui_tabindex: Any | None = None,
         ui_size: str | None = None,
         ui_name: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QRadio", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -14772,7 +14780,7 @@ class QRange(Component):
         ui_readonly: Any | None = None,
         ui_tabindex: Any | None = None,
         ui_name: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QRange", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -14846,7 +14854,9 @@ class QRange(Component):
         if ui_marker_labels_class is not None:
             self._props["marker-labels-class"] = ui_marker_labels_class
         if ui_switch_marker_labels_side is not None:
-            self._props["switch-marker-labels-side"] = ui_switch_marker_labels_side
+            self._props["switch-marker-labels-side"] = (
+                ui_switch_marker_labels_side
+            )
         if ui_track_size is not None:
             self._props["track-size"] = ui_track_size
         if ui_thumb_size is not None:
@@ -15352,7 +15362,7 @@ class QRating(Component):
         ui_disable: Any | None = None,
         ui_size: str | None = None,
         ui_name: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QRating", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -15546,7 +15556,9 @@ class QResizeObserver(Component):
     :param ui_debounce: Debounce amount (in milliseconds)
     """
 
-    def __init__(self, *children, ui_debounce: str | float | None = None, **kwargs):
+    def __init__(
+        self, *children, ui_debounce: str | float | None = None, **kwargs
+    ):
         super().__init__("QResizeObserver", *children, **kwargs)
         if ui_debounce is not None:
             self._props["debounce"] = ui_debounce
@@ -15586,7 +15598,9 @@ class QResponsive(Component):
     :param ui_ratio: Aspect ratio for the content; If value is a String, then avoid using a computational statement (like '16/9') and instead specify the String value of the result directly (eg. '1.7777')
     """
 
-    def __init__(self, *children, ui_ratio: str | float | None = None, **kwargs):
+    def __init__(
+        self, *children, ui_ratio: str | float | None = None, **kwargs
+    ):
         super().__init__("QResponsive", *children, **kwargs)
         if ui_ratio is not None:
             self._props["ratio"] = ui_ratio
@@ -15641,7 +15655,7 @@ class QScrollArea(Component):
         ui_visible: bool | None = None,
         ui_delay: float | str | None = None,
         ui_tabindex: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QScrollArea", *children, **kwargs)
         if ui_dark is not None:
@@ -15869,7 +15883,7 @@ class QScrollObserver(Component):
         ui_debounce: str | float | None = None,
         ui_axis: str | None = None,
         ui_scroll_target: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QScrollObserver", *children, **kwargs)
         if ui_debounce is not None:
@@ -16107,7 +16121,7 @@ class QSelect(Component):
         ui_virtual_scroll_sticky_size_start: float | str | None = None,
         ui_virtual_scroll_sticky_size_end: float | str | None = None,
         ui_table_colspan: float | str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSelect", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -16197,7 +16211,9 @@ class QSelect(Component):
         if ui_name is not None:
             self._props["name"] = ui_name
         if ui_virtual_scroll_item_size is not None:
-            self._props["virtual-scroll-item-size"] = ui_virtual_scroll_item_size
+            self._props["virtual-scroll-item-size"] = (
+                ui_virtual_scroll_item_size
+            )
         if ui_label is not None:
             self._props["label"] = ui_label
         if ui_stack_label is not None:
@@ -16274,9 +16290,13 @@ class QSelect(Component):
         if ui_lazy_rules is not None:
             self._props["lazy-rules"] = ui_lazy_rules
         if ui_virtual_scroll_horizontal is not None:
-            self._props["virtual-scroll-horizontal"] = ui_virtual_scroll_horizontal
+            self._props["virtual-scroll-horizontal"] = (
+                ui_virtual_scroll_horizontal
+            )
         if ui_virtual_scroll_slice_size is not None:
-            self._props["virtual-scroll-slice-size"] = ui_virtual_scroll_slice_size
+            self._props["virtual-scroll-slice-size"] = (
+                ui_virtual_scroll_slice_size
+            )
         if ui_virtual_scroll_slice_ratio_before is not None:
             self._props["virtual-scroll-slice-ratio-before"] = (
                 ui_virtual_scroll_slice_ratio_before
@@ -17526,7 +17546,7 @@ class QSeparator(Component):
         ui_vertical: bool | None = None,
         ui_size: Any | None = None,
         ui_color: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSeparator", *children, **kwargs)
         if ui_dark is not None:
@@ -17626,7 +17646,7 @@ class QSkeleton(Component):
         ui_width: str | None = None,
         ui_height: str | None = None,
         ui_tag: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSkeleton", *children, **kwargs)
         if ui_dark is not None:
@@ -17758,7 +17778,7 @@ class QSlideItem(Component):
         ui_top_color: Any | None = None,
         ui_bottom_color: Any | None = None,
         ui_dark: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSlideItem", *children, **kwargs)
         if ui_left_color is not None:
@@ -17921,7 +17941,7 @@ class QSlideTransition(Component):
         *children,
         ui_appear: bool | None = None,
         ui_duration: float | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSlideTransition", *children, **kwargs)
         if ui_appear is not None:
@@ -18048,7 +18068,7 @@ class QSlider(Component):
         ui_readonly: Any | None = None,
         ui_tabindex: Any | None = None,
         ui_name: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSlider", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -18104,7 +18124,9 @@ class QSlider(Component):
         if ui_marker_labels_class is not None:
             self._props["marker-labels-class"] = ui_marker_labels_class
         if ui_switch_marker_labels_side is not None:
-            self._props["switch-marker-labels-side"] = ui_switch_marker_labels_side
+            self._props["switch-marker-labels-side"] = (
+                ui_switch_marker_labels_side
+            )
         if ui_track_size is not None:
             self._props["track-size"] = ui_track_size
         if ui_thumb_size is not None:
@@ -18516,7 +18538,7 @@ class QSpinnerGears(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerGears", *children, **kwargs)
         if ui_color is not None:
@@ -18558,7 +18580,7 @@ class QSpinnerRings(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerRings", *children, **kwargs)
         if ui_color is not None:
@@ -18600,7 +18622,7 @@ class QSpinnerPuff(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerPuff", *children, **kwargs)
         if ui_color is not None:
@@ -18642,7 +18664,7 @@ class QSpinnerPie(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerPie", *children, **kwargs)
         if ui_color is not None:
@@ -18684,7 +18706,7 @@ class QSpinnerClock(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerClock", *children, **kwargs)
         if ui_color is not None:
@@ -18726,7 +18748,7 @@ class QSpinnerTail(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerTail", *children, **kwargs)
         if ui_color is not None:
@@ -18768,7 +18790,7 @@ class QSpinnerBox(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerBox", *children, **kwargs)
         if ui_color is not None:
@@ -18810,7 +18832,7 @@ class QSpinnerIos(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerIos", *children, **kwargs)
         if ui_color is not None:
@@ -18852,7 +18874,7 @@ class QSpinnerAudio(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerAudio", *children, **kwargs)
         if ui_color is not None:
@@ -18894,7 +18916,7 @@ class QSpinnerFacebook(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerFacebook", *children, **kwargs)
         if ui_color is not None:
@@ -18936,7 +18958,7 @@ class QSpinnerRadio(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerRadio", *children, **kwargs)
         if ui_color is not None:
@@ -18978,7 +19000,7 @@ class QSpinnerCube(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerCube", *children, **kwargs)
         if ui_color is not None:
@@ -19020,7 +19042,7 @@ class QSpinnerHearts(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerHearts", *children, **kwargs)
         if ui_color is not None:
@@ -19062,7 +19084,7 @@ class QSpinnerInfinity(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerInfinity", *children, **kwargs)
         if ui_color is not None:
@@ -19104,7 +19126,7 @@ class QSpinnerOval(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerOval", *children, **kwargs)
         if ui_color is not None:
@@ -19146,7 +19168,7 @@ class QSpinnerHourglass(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerHourglass", *children, **kwargs)
         if ui_color is not None:
@@ -19188,7 +19210,7 @@ class QSpinnerBars(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerBars", *children, **kwargs)
         if ui_color is not None:
@@ -19230,7 +19252,7 @@ class QSpinnerOrbit(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerOrbit", *children, **kwargs)
         if ui_color is not None:
@@ -19272,7 +19294,7 @@ class QSpinnerBall(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerBall", *children, **kwargs)
         if ui_color is not None:
@@ -19314,7 +19336,7 @@ class QSpinnerGrid(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerGrid", *children, **kwargs)
         if ui_color is not None:
@@ -19358,7 +19380,7 @@ class QSpinner(Component):
         ui_thickness: float | None = None,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinner", *children, **kwargs)
         if ui_thickness is not None:
@@ -19411,7 +19433,7 @@ class QSpinnerDots(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerDots", *children, **kwargs)
         if ui_color is not None:
@@ -19453,7 +19475,7 @@ class QSpinnerComment(Component):
         *children,
         ui_color: Any | None = None,
         ui_size: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSpinnerComment", *children, **kwargs)
         if ui_color is not None:
@@ -19515,7 +19537,7 @@ class QSplitter(Component):
         ui_separator_class: str | list | dict | None = None,
         ui_separator_style: str | list | dict | None = None,
         ui_dark: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QSplitter", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -19770,7 +19792,7 @@ class QStepper(Component):
         ui_transition_prev: Any | None = None,
         ui_transition_next: Any | None = None,
         ui_transition_duration: str | float | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QStepper", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -20170,7 +20192,7 @@ class QStep(Component):
         ui_error: bool | None = None,
         ui_name: Any | None = None,
         ui_disable: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QStep", *children, **kwargs)
         if ui_icon is not None:
@@ -20377,7 +20399,7 @@ class QTabPanel(Component):
         *children,
         ui_name: Any | None = None,
         ui_disable: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTabPanel", *children, **kwargs)
         if ui_name is not None:
@@ -20444,7 +20466,7 @@ class QTabPanels(Component):
         ui_transition_prev: Any | None = None,
         ui_transition_next: Any | None = None,
         ui_transition_duration: str | float | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTabPanels", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -20653,7 +20675,7 @@ class QTd(Component):
         ui_props: dict | None = None,
         ui_auto_width: bool | None = None,
         ui_no_hover: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTd", *children, **kwargs)
         if ui_props is not None:
@@ -20825,7 +20847,7 @@ class QTable(Component):
         ui_sort_method: Callable | None = None,
         ui_fullscreen: bool | None = None,
         ui_no_route_fullscreen_exit: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTable", *children, **kwargs)
         if ui_rows is not None:
@@ -20837,7 +20859,9 @@ class QTable(Component):
         if ui_virtual_scroll_target is not None:
             self._props["virtual-scroll-target"] = ui_virtual_scroll_target
         if ui_virtual_scroll_slice_size is not None:
-            self._props["virtual-scroll-slice-size"] = ui_virtual_scroll_slice_size
+            self._props["virtual-scroll-slice-size"] = (
+                ui_virtual_scroll_slice_size
+            )
         if ui_virtual_scroll_slice_ratio_before is not None:
             self._props["virtual-scroll-slice-ratio-before"] = (
                 ui_virtual_scroll_slice_ratio_before
@@ -20847,7 +20871,9 @@ class QTable(Component):
                 ui_virtual_scroll_slice_ratio_after
             )
         if ui_virtual_scroll_item_size is not None:
-            self._props["virtual-scroll-item-size"] = ui_virtual_scroll_item_size
+            self._props["virtual-scroll-item-size"] = (
+                ui_virtual_scroll_item_size
+            )
         if ui_virtual_scroll_sticky_size_start is not None:
             self._props["virtual-scroll-sticky-size-start"] = (
                 ui_virtual_scroll_sticky_size_start
@@ -20957,7 +20983,9 @@ class QTable(Component):
         if ui_fullscreen is not None:
             self._props["fullscreen"] = ui_fullscreen
         if ui_no_route_fullscreen_exit is not None:
-            self._props["no-route-fullscreen-exit"] = ui_no_route_fullscreen_exit
+            self._props["no-route-fullscreen-exit"] = (
+                ui_no_route_fullscreen_exit
+            )
 
     @property
     def ui_rows(self):
@@ -21874,7 +21902,7 @@ class QTr(Component):
         *children,
         ui_props: dict | None = None,
         ui_no_hover: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTr", *children, **kwargs)
         if ui_props is not None:
@@ -21917,7 +21945,7 @@ class QTh(Component):
         *children,
         ui_props: dict | None = None,
         ui_auto_width: bool | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTh", *children, **kwargs)
         if ui_props is not None:
@@ -21998,7 +22026,7 @@ class QRouteTab(Component):
         ui_exact_active_class: str | None = None,
         ui_href: str | None = None,
         ui_target: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QRouteTab", *children, **kwargs)
         if ui_icon is not None:
@@ -22234,7 +22262,7 @@ class QTab(Component):
         ui_ripple: Any | None = None,
         ui_tabindex: Any | None = None,
         ui_disable: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTab", *children, **kwargs)
         if ui_icon is not None:
@@ -22413,7 +22441,7 @@ class QTabs(Component):
         ui_inline_label: bool | None = None,
         ui_no_caps: bool | None = None,
         ui_dense: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTabs", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -22706,7 +22734,7 @@ class QTime(Component):
         ui_readonly: Any | None = None,
         ui_disable: Any | None = None,
         ui_name: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTime", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -22982,7 +23010,7 @@ class QTimeline(Component):
         ui_side: str | None = None,
         ui_layout: str | None = None,
         ui_dark: Any | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTimeline", *children, **kwargs)
         if ui_color is not None:
@@ -23059,7 +23087,7 @@ class QTimelineEntry(Component):
         ui_title: str | None = None,
         ui_subtitle: str | None = None,
         ui_body: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTimelineEntry", *children, **kwargs)
         if ui_heading is not None:
@@ -23235,7 +23263,7 @@ class QToggle(Component):
         ui_tabindex: Any | None = None,
         ui_size: str | None = None,
         ui_name: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QToggle", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -23584,7 +23612,7 @@ class QTooltip(Component):
         ui_target: bool | str | Any | None = None,
         ui_no_parent_event: bool | None = None,
         ui_transition_duration: str | float | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTooltip", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
@@ -23871,7 +23899,7 @@ class QTree(Component):
         ui_duration: float | None = None,
         ui_no_nodes_label: str | None = None,
         ui_no_results_label: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QTree", *children, **kwargs)
         if ui_nodes is not None:
@@ -24368,7 +24396,7 @@ class QUploader(Component):
         ui_with_credentials: bool | Callable | None = None,
         ui_send_raw: bool | Callable | None = None,
         ui_batch: bool | Callable | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QUploader", *children, **kwargs)
         if ui_label is not None:
@@ -24865,7 +24893,7 @@ class QVideo(Component):
         ui_loading: str | None = None,
         ui_referrerpolicy: str | None = None,
         ui_ratio: str | float | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QVideo", *children, **kwargs)
         if ui_src is not None:
@@ -24974,7 +25002,7 @@ class QVirtualScroll(Component):
         ui_virtual_scroll_sticky_size_start: float | str | None = None,
         ui_virtual_scroll_sticky_size_end: float | str | None = None,
         ui_table_colspan: float | str | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__("QVirtualScroll", *children, **kwargs)
         if ui_type is not None:
@@ -24988,9 +25016,13 @@ class QVirtualScroll(Component):
         if ui_scroll_target is not None:
             self._props["scroll-target"] = ui_scroll_target
         if ui_virtual_scroll_horizontal is not None:
-            self._props["virtual-scroll-horizontal"] = ui_virtual_scroll_horizontal
+            self._props["virtual-scroll-horizontal"] = (
+                ui_virtual_scroll_horizontal
+            )
         if ui_virtual_scroll_slice_size is not None:
-            self._props["virtual-scroll-slice-size"] = ui_virtual_scroll_slice_size
+            self._props["virtual-scroll-slice-size"] = (
+                ui_virtual_scroll_slice_size
+            )
         if ui_virtual_scroll_slice_ratio_before is not None:
             self._props["virtual-scroll-slice-ratio-before"] = (
                 ui_virtual_scroll_slice_ratio_before
@@ -25000,7 +25032,9 @@ class QVirtualScroll(Component):
                 ui_virtual_scroll_slice_ratio_after
             )
         if ui_virtual_scroll_item_size is not None:
-            self._props["virtual-scroll-item-size"] = ui_virtual_scroll_item_size
+            self._props["virtual-scroll-item-size"] = (
+                ui_virtual_scroll_item_size
+            )
         if ui_virtual_scroll_sticky_size_start is not None:
             self._props["virtual-scroll-sticky-size-start"] = (
                 ui_virtual_scroll_sticky_size_start

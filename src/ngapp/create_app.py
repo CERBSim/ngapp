@@ -15,7 +15,14 @@ def create_app():
 
     # check dirs before
     dirs = os.listdir(".")
-    subprocess.run([py_exe, "-m", "cookiecutter", "https://github.com/CERBSim/ngapp_template"])
+    subprocess.run(
+        [
+            py_exe,
+            "-m",
+            "cookiecutter",
+            "https://github.com/CERBSim/ngapp_template",
+        ]
+    )
     dirs_after = os.listdir(".")
     new_dir = list(set(dirs_after) - set(dirs))[0]
     print("Created new directory:", new_dir)
@@ -31,7 +38,9 @@ def create_app():
     print(OKGREEN, BOLD, f"{py_exe} -m {new_dir}", ENDC)
     print("and for developer mode (auto update on changes):")
     print(OKGREEN, BOLD, f"{py_exe} -m {new_dir} --dev", ENDC)
-    print(f"Then go into the newly created directory {new_dir} and start editing :)")
+    print(
+        f"Then go into the newly created directory {new_dir} and start editing :)"
+    )
 
 
 if __name__ == "__main__":

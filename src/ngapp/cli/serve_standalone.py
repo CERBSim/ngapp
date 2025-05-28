@@ -16,10 +16,11 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
+from watchdog.observers import Observer
+
 from ngapp.app import loadModel
 from ngapp.cli.serve_in_venv import EventHandler
 from ngapp.components.basecomponent import get_component
-from watchdog.observers import Observer
 
 from .. import utils
 
@@ -49,6 +50,9 @@ HTTP_PORT = 8765
 
 
 class _HTTPServer(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, format, *args):
+        pass
+
     def do_GET(self):
         parsed_path = urlparse(self.path)
         if parsed_path.path.startswith("/python_module"):
@@ -63,7 +67,9 @@ class _HTTPServer(http.server.SimpleHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Content-Type", "application/zip")
-        self.send_header("Content-Disposition", f"attachment; filename={filename}")
+        self.send_header(
+            "Content-Disposition", f"attachment; filename={filename}"
+        )
         self.end_headers()
         self.wfile.write(data)
 

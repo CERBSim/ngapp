@@ -105,7 +105,11 @@ async def main():
             ]
             args.local_compute_env = False
             tasks.append(run_process(cmd))
-    elif config.compute_environments and args.local_compute_env and not args.deploy:
+    elif (
+        config.compute_environments
+        and args.local_compute_env
+        and not args.deploy
+    ):
         print("Serve local compute environment")
         tasks.append(run_serve_process("ngapp.cli.serve_compute_env", args))
     await asyncio.gather(*tasks)

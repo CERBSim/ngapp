@@ -65,7 +65,9 @@ class QuantityInput(NumberInput):
         if self._unit_input is not None:
             # Trigger update:model-value of value when unit changes
             self._unit_input.on_update_model_value(
-                lambda args: self._handle("update:model-value", self.ui_model_value)
+                lambda args: self._handle(
+                    "update:model-value", self.ui_model_value
+                )
             )
 
     @property

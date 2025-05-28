@@ -153,7 +153,9 @@ class WebguiComponent(Component):
         """Clear webgui canvas"""
         self._update_frontend(method="Clear")
 
-    def draw(self, *args, data: dict | None = None, redraw=False, **kwargs) -> dict:
+    def draw(
+        self, *args, data: dict | None = None, redraw=False, **kwargs
+    ) -> dict:
         """draw object (arguments compatible with netgen.webgui.Draw)"""
         from netgen.webgui import Draw
 
@@ -265,7 +267,9 @@ class Clipping(Col):
         plane = args["comp"].ui_label
         clip_dir = {"XY": 2, "XZ": 1, "YZ": 0}.get(plane, 2)
         clip = self._webgui._settings["Clipping"]
-        n_current = np.array([clip["x"], clip["y"], clip["z"]], dtype=np.float64)
+        n_current = np.array(
+            [clip["x"], clip["y"], clip["z"]], dtype=np.float64
+        )
         n_new = np.array([0.0, 0.0, 0.0], dtype=np.float64)
         n_new[clip_dir] = 1.0
         if np.dot(n_current, n_new) > 0.5:
@@ -352,7 +356,9 @@ class CameraView(Col):
                     "angle": 90,
                 }
             ]
-        self._webgui.set_camera({"reset": True, "transformations": transformations})
+        self._webgui.set_camera(
+            {"reset": True, "transformations": transformations}
+        )
 
 
 class Colormap(Col):
@@ -381,7 +387,11 @@ class Colormap(Col):
         ui_class = kwargs.pop("ui_class", "")
         ui_class = f"q-ma-sm {ui_class}"
         super().__init__(
-            self.colormap_min, self.colormap_max, ui_class=ui_class, *args, **kwargs
+            self.colormap_min,
+            self.colormap_max,
+            ui_class=ui_class,
+            *args,
+            **kwargs,
         )
         self._webgui.on_draw(self._update_colormap_from_webgui)
         self._webgui.on_mounted(self._update_colormap)
@@ -419,8 +429,12 @@ class Colormap(Col):
 
         if min is None and max is None:
             default_colormap = self._webgui.webgui_data
-            self.colormap_min.ui_model_value = round(default_colormap["funcmin"], 4)
-            self.colormap_max.ui_model_value = round(default_colormap["funcmax"], 4)
+            self.colormap_min.ui_model_value = round(
+                default_colormap["funcmin"], 4
+            )
+            self.colormap_max.ui_model_value = round(
+                default_colormap["funcmax"], 4
+            )
             self._update_colormap()
 
 
@@ -575,7 +589,8 @@ class PlotlyComponent(Component):
             from plotly.io.json import to_json_plotly
 
             self._update_frontend(
-                method="draw", data={"id": self._id, "data": to_json_plotly(self.data)}
+                method="draw",
+                data={"id": self._id, "data": to_json_plotly(self.data)},
             )
 
     def _get_markdown(self) -> str:
@@ -592,7 +607,9 @@ from webgpu import canvas, platform, utils
 class WebgpuComponent(Component):
     def __init__(self, id=""):
         global canvas_counter
-        super().__init__("canvas", id=id or "webgpu_canvas" + str(canvas_counter))
+        super().__init__(
+            "canvas", id=id or "webgpu_canvas" + str(canvas_counter)
+        )
         self.ui_style = "width:800px; height:600px;"
         canvas_counter += 1
         # scene must be set in draw
@@ -641,7 +658,8 @@ class WebgpuComponent(Component):
                     "format": self.canvas.format,
                     "alphaMode": "premultiplied",
                     "sampleCount": self.canvas.multisample.count,
-                    "usage": TextureUsage.RENDER_ATTACHMENT | TextureUsage.COPY_DST,
+                    "usage": TextureUsage.RENDER_ATTACHMENT
+                    | TextureUsage.COPY_DST,
                 }
             )
         )
@@ -743,7 +761,9 @@ async def _make_html_screenshot(html_file, width=800, height=600):
 
     async with async_playwright() as play:
         browser = await play.chromium.launch()
-        page = await browser.new_page(viewport={"width": width, "height": height})
+        page = await browser.new_page(
+            viewport={"width": width, "height": height}
+        )
         await page.goto(f"file://{os.path.abspath(html_file)}")
         # wait a second for the page to load
         await page.wait_for_timeout(1000)
@@ -766,7 +786,9 @@ async def _generate_webgui_screenshot(name, data, width, height):
             return float(obj)
         raise TypeError
 
-    generate_webgui_html(orjson.dumps(data, default=default).decode(), html_file)
+    generate_webgui_html(
+        orjson.dumps(data, default=default).decode(), html_file
+    )
     return await _make_html_screenshot(html_file, width=width, height=height)
 
 

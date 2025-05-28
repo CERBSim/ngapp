@@ -29,7 +29,9 @@ def _request(method, url, data):
         "Authorization": env.backend_api_token,
         "X-Client-Id": env.backend_api_client_id,
     }
-    http = urllib3.PoolManager(cert_reqs="CERT_REQUIRED", ca_certs=certifi.where())
+    http = urllib3.PoolManager(
+        cert_reqs="CERT_REQUIRED", ca_certs=certifi.where()
+    )
     response = http.request(method, url, headers=headers, body=data)
     content_type = response.headers.get("content-type", "")
     data = response.data

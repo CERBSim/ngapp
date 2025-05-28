@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 
 import deepdiff
+
 import ngapp.components.basecomponent
 from ngapp.app import App
 from ngapp.utils import read_json, write_json
@@ -68,7 +69,9 @@ def snapshot(
                     f"Number of temp files: {len(temp_storage_files)}, number of saved files: {len(saved_storage_files)}.\n"
                     f"Temp files {temp_storage_files},\n saved files {saved_storage_files}"
                 )
-            for saved_file, temp_file in zip(saved_storage_files, temp_storage_files):
+            for saved_file, temp_file in zip(
+                saved_storage_files, temp_storage_files
+            ):
                 try:
                     # assume data is json
                     assert (

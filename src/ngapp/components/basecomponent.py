@@ -44,7 +44,9 @@ class AppStatus:
     app_id: int | None = None
     file_id: int | None = None
     app: object = None
-    components_by_id: dict[str, object] = dataclasses.field(default_factory=dict)
+    components_by_id: dict[str, object] = dataclasses.field(
+        default_factory=dict
+    )
 
     def update(self, options):
         if "capture_events" in options:
@@ -121,7 +123,9 @@ class Storage:
         for key, mdata in self._metadata.entries.items():
             local_path = _local_storage_path / mdata.hash
             if local_path.exists():
-                self._data[key] = self._decode(local_path.read_bytes(), mdata.type_)
+                self._data[key] = self._decode(
+                    local_path.read_bytes(), mdata.type_
+                )
 
     def _save_local(self):
         _local_storage_path.mkdir(parents=True, exist_ok=True)
@@ -157,7 +161,8 @@ class Storage:
         for key in self._needs_save:
             mdata = self._metadata.get(key)
             api.post(
-                f"/files/{file_id}/files/{mdata.hash}", self._encode(self._data[key])
+                f"/files/{file_id}/files/{mdata.hash}",
+                self._encode(self._data[key]),
             )
         self._needs_save.clear()
 
@@ -174,7 +179,10 @@ class Storage:
         return value
 
     def set(
-        self, key: str, value: str | dict | list | bytes | object, use_pickle=False
+        self,
+        key: str,
+        value: str | dict | list | bytes | object,
+        use_pickle=False,
     ):
         """Set data in storage"""
         if use_pickle:
@@ -294,7 +302,9 @@ class Component(metaclass=BlockFrontendUpdate):
                 c._parent = self
 
         if isinstance(ui_style, dict):
-            self._props["style"] = ";".join(f"{k}:{v}" for k, v in ui_style.items())
+            self._props["style"] = ";".join(
+                f"{k}:{v}" for k, v in ui_style.items()
+            )
         elif isinstance(ui_style, str):
             self._props["style"] = ui_style
         else:
@@ -370,7 +380,8 @@ class Component(metaclass=BlockFrontendUpdate):
         else:
             if "class" in self._props:
                 self._set_prop(
-                    "class", self._props["class"].replace("invisible", "").strip()
+                    "class",
+                    self._props["class"].replace("invisible", "").strip(),
                 )
 
     def _calc_namespace_id(self):
@@ -436,7 +447,9 @@ class Component(metaclass=BlockFrontendUpdate):
         if self._status.capture_call_stack:
             import traceback
 
-            stack_trace = "".join(traceback.format_list(traceback.extract_stack()[:-2]))
+            stack_trace = "".join(
+                traceback.format_list(traceback.extract_stack()[:-2])
+            )
         return dict(**kwargs) | {
             "timestamp": time_now(),
             "stack_trace": stack_trace,
@@ -470,7 +483,10 @@ class Component(metaclass=BlockFrontendUpdate):
         environment.frontend.update_component(self, data, method)
 
     def download_file(
-        self, data: bytes, filename: str, mime_type: str = "application/octet-stream"
+        self,
+        data: bytes,
+        filename: str,
+        mime_type: str = "application/octet-stream",
     ):
         import base64
 
@@ -516,22 +532,30 @@ class Component(metaclass=BlockFrontendUpdate):
         return self
 
     def on_mounted(
-        self, func: Callable[[dict], None] | Callable[[], None], arg: object = None
+        self,
+        func: Callable[[dict], None] | Callable[[], None],
+        arg: object = None,
     ):
         return self.on("mounted", func, arg)
 
     def on_before_save(
-        self, func: Callable[[dict], None] | Callable[[], None], arg: object = None
+        self,
+        func: Callable[[dict], None] | Callable[[], None],
+        arg: object = None,
     ):
         return self.on("before_save", func, arg)
 
     def on_save(
-        self, func: Callable[[dict], None] | Callable[[], None], arg: object = None
+        self,
+        func: Callable[[dict], None] | Callable[[], None],
+        arg: object = None,
     ):
         return self.on("save", func, arg)
 
     def on_load(
-        self, func: Callable[[dict], None] | Callable[[], None], arg: object = None
+        self,
+        func: Callable[[dict], None] | Callable[[], None],
+        arg: object = None,
     ):
         return self.on("load", func, arg)
 
@@ -653,7 +677,9 @@ class Component(metaclass=BlockFrontendUpdate):
         self._recurse(func, True, set(), data)
         self._block_frontend_update = False
 
-    def _recurse(self, func: Callable, parent_first: bool, visited: set, arg=None):
+    def _recurse(
+        self, func: Callable, parent_first: bool, visited: set, arg=None
+    ):
         """Recursively call function for all components"""
 
         if self in visited:
@@ -735,7 +761,12 @@ class Component(metaclass=BlockFrontendUpdate):
                     ]
 
                 ret[key] = key
-                self.on("create_slot_" + key, handle_create, slot, clear_existing=True)
+                self.on(
+                    "create_slot_" + key,
+                    handle_create,
+                    slot,
+                    clear_existing=True,
+                )
             else:
                 ret[key] = [
                     (

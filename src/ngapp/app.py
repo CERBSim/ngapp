@@ -259,7 +259,8 @@ class App:
     def assets_path(self) -> Path:
         """Get the path to the assets directory in the python package of the app"""
         return (
-            Path(sys.modules[self.__module__.split(".")[0]].__file__).parent / "assets"
+            Path(sys.modules[self.__module__.split(".")[0]].__file__).parent
+            / "assets"
         )
 
     def set_colors(
@@ -281,7 +282,9 @@ class App:
                 if primary is not None:
                     js.document.body.style.setProperty("--q-primary", primary)
                 if secondary is not None:
-                    js.document.body.style.setProperty("--q-secondary", secondary)
+                    js.document.body.style.setProperty(
+                        "--q-secondary", secondary
+                    )
                 if accent is not None:
                     js.document.body.style.setProperty("--q-accent", accent)
                 if dark is not None:
@@ -310,7 +313,10 @@ class App:
         return data
 
     def dump(
-        self, exclude_default_data=False, keep_storage=False, include_storage_data=False
+        self,
+        exclude_default_data=False,
+        keep_storage=False,
+        include_storage_data=False,
     ):
         """Get input data for storage"""
         if self.component is None:
@@ -339,9 +345,13 @@ class App:
                             if data[key] == default_data[key]:
                                 del data[key]
                             else:
-                                remove_default_data(data[key], default_data[key])
+                                remove_default_data(
+                                    data[key], default_data[key]
+                                )
 
-            remove_default_data(component_data["data"], self._default_data["data"])
+            remove_default_data(
+                component_data["data"], self._default_data["data"]
+            )
             remove_default_data(
                 component_data["storage"], self._default_data["storage"]
             )
@@ -360,7 +370,10 @@ class App:
         if file_id is None:
             metadata = api.post(
                 "/create_model",
-                {"app_id": self.metadata["app_id"], "name": self.name or "Untitled"},
+                {
+                    "app_id": self.metadata["app_id"],
+                    "name": self.name or "Untitled",
+                },
             )
             self.metadata |= metadata
             status.file_id = metadata["id"]
@@ -403,7 +416,9 @@ class App:
         data = pickle.loads(pick[0].getFile().arrayBuffer())
         self.load(data)
 
-    def update(self, data: dict, load_local_storage=False, update_frontend=False):
+    def update(
+        self, data: dict, load_local_storage=False, update_frontend=False
+    ):
         """Update app with new data"""
         metadata = data.get("metadata", None)
         component_data = data.get(
@@ -443,7 +458,9 @@ class App:
                 webapp_frontend.to_js(self.component._get_my_wrapper_props())
             )
 
-    def load(self, data, load_local_storage=False, update_frontend=is_pyodide()):
+    def load(
+        self, data, load_local_storage=False, update_frontend=is_pyodide()
+    ):
         """Load app from stored data"""
         self.component._namespace_id = ""
         self.component._parent = self
@@ -579,7 +596,9 @@ def reload_package(package_name):
     return reloaded_modules
 
 
-def loadModel(app_metadata, data, reload_python_modules=[], load_local_storage=False):
+def loadModel(
+    app_metadata, data, reload_python_modules=[], load_local_storage=False
+):
     """Load model from data"""
 
     reloaded_modules = {}

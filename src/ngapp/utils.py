@@ -231,9 +231,16 @@ class Environment:
         self.backend_api_client_id = client_id
 
     def update_component(
-        self, file_id: int, method: str, data: dict, component_id: int | None = None
+        self,
+        file_id: int,
+        method: str,
+        data: dict,
+        component_id: int | None = None,
     ):
-        if self.type not in [EnvironmentType.PYODIDE, EnvironmentType.LOCAL_APP]:
+        if self.type not in [
+            EnvironmentType.PYODIDE,
+            EnvironmentType.LOCAL_APP,
+        ]:
             raise RuntimeError(
                 "update_component is only available in pyodide or local app environment"
             )
@@ -354,7 +361,9 @@ def confirm(title="", message="", on_ok=None, on_cancel=None):
     if on_ok is not None:
         data["onOk"] = pyodide.ffi.create_once_callable(lambda: on_ok())
     if on_cancel is not None:
-        data["onwCancel"] = pyodide.ffi.create_once_callable(lambda: on_cancel())
+        data["onwCancel"] = pyodide.ffi.create_once_callable(
+            lambda: on_cancel()
+        )
 
     webapp_frontend.dialog(data)
 
@@ -381,7 +390,9 @@ def read_file_binary(filename: str | Path) -> bytes:
         return file.read()
 
 
-def write_file(filename: str | Path, data: str | bytes, binary: bool = False) -> int:
+def write_file(
+    filename: str | Path, data: str | bytes, binary: bool = False
+) -> int:
     """Write a file to the filesystem"""
     with open(
         filename, "wb" if binary else "w", encoding=None if binary else "utf-8"
@@ -570,7 +581,9 @@ pdf_compute_env = ComputeEnvironment(
 webgui_compute_env = pdf_compute_env
 
 
-def compute_node(_func=None, *, compute_env: str | ComputeEnvironment = "default"):
+def compute_node(
+    _func=None, *, compute_env: str | ComputeEnvironment = "default"
+):
     from .app import App
     from .components.basecomponent import Component
 
@@ -655,7 +668,9 @@ def compute_node(_func=None, *, compute_env: str | ComputeEnvironment = "default
                     global _job_component
 
                     app = self._status.app
-                    _job_component = app[job_component_id] if job_component_id else None
+                    _job_component = (
+                        app[job_component_id] if job_component_id else None
+                    )
                     if _job_component:
                         _job_component.set_job_from_id(job_id=job_id)
                         _job_component.update_job_status()

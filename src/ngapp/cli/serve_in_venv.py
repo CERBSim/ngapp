@@ -157,7 +157,9 @@ class UpdateAppHandler(EventHandler):
                     or old_packages[pkg.file_name]["hash"] != hash
                 ):
                     # upload only if it's different from the current package in the database
-                    pkg_dump["package"] = base64.b64encode(pkg.package).decode("utf-8")
+                    pkg_dump["package"] = base64.b64encode(pkg.package).decode(
+                        "utf-8"
+                    )
                 packages.append(pkg_dump)
             config_dump["python_packages"] = packages
             config_dump["python_packages_hash"] = config.python_packages_hash
@@ -167,7 +169,9 @@ class UpdateAppHandler(EventHandler):
             data={
                 "app_config": config_dump,
                 "reload_dependencies": (
-                    config.frontend_dependencies if self.spec.reload_config else []
+                    config.frontend_dependencies
+                    if self.spec.reload_config
+                    else []
                 ),
             },
         )

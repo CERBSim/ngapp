@@ -40,7 +40,11 @@ async def main(arg):
             async with websockets.connect(ws_url, ssl=ssl_context) as websocket:
                 await websocket.send(
                     orjson.dumps(
-                        {"token": args.token, "type": "compute_env", "app_id": app_id}
+                        {
+                            "token": args.token,
+                            "type": "compute_env",
+                            "app_id": app_id,
+                        }
                     )
                 )
                 while True:

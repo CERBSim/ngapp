@@ -16,7 +16,11 @@ from ..utils import (
     set_directory,
     temp_dir_with_files,
 )
-from .basecomponent import Component, Event, get_component  # needed from frontend:
+from .basecomponent import (
+    Component,
+    Event,
+    get_component,
+)  # needed from frontend:
 from .qcomponents import (
     QBtn,
     QCard,
@@ -100,8 +104,12 @@ class Heading(Component):
 class NumberInput(QInput):
     """Thin wrapper for QInput with type='number' and model_value returning float"""
 
-    def __init__(self, *children, ui_class=["q-mx-xs"], ui_step="any", **kwargs):
-        super().__init__(*children, ui_type="number", ui_class=ui_class, **kwargs)
+    def __init__(
+        self, *children, ui_class=["q-mx-xs"], ui_step="any", **kwargs
+    ):
+        super().__init__(
+            *children, ui_type="number", ui_class=ui_class, **kwargs
+        )
         self._props["step"] = ui_step
 
     @QInput.ui_model_value.getter
@@ -131,7 +139,9 @@ class FileName(QInput):
         if app is None:
             raise ValueError("App is required")
         self.app = app
-        super().__init__(ui_label=ui_label, ui_borderless=ui_borderless, **kwargs)
+        super().__init__(
+            ui_label=ui_label, ui_borderless=ui_borderless, **kwargs
+        )
         self.on_update_model_value(self._on_update_model_value)
         self.on_load(self._on_load)
         self.on_before_save(self._on_before_save)
@@ -264,7 +274,9 @@ class FileUpload(QFile):
         """Returns a context manager with a temporary file on disk"""
 
         if self.ui_multiple:
-            raise ValueError("Multiple files cannot be saved as temporary file.")
+            raise ValueError(
+                "Multiple files cannot be saved as temporary file."
+            )
 
         return temp_dir_with_files(
             {self.filename: self.storage.get(self.filename)}, return_list=False
@@ -276,7 +288,10 @@ class FileUpload(QFile):
 
         if self.ui_multiple:
             return temp_dir_with_files(
-                {filename: self.storage.get(filename) for filename in self.filename},
+                {
+                    filename: self.storage.get(filename)
+                    for filename in self.filename
+                },
                 extract_zip=extract_zip,
             )
         return temp_dir_with_files(
@@ -337,7 +352,9 @@ class FileDownload(QBtn):
 
 
 class JsonEditor(Component):
-    def __init__(self, data: dict | None = None, options={"mode": "tree"}, **kwargs):
+    def __init__(
+        self, data: dict | None = None, options={"mode": "tree"}, **kwargs
+    ):
         self._data = data or {}
         super().__init__("JsonEditorComponent", **kwargs)
         self._props["options"] = options
@@ -375,11 +392,17 @@ class Table(QTable):
         if ui_header:
             for i in range(len(ui_header)):
                 columns.append(
-                    {"name": f"col{i}", "label": ui_header[i], "field": f"col{i}"}
+                    {
+                        "name": f"col{i}",
+                        "label": ui_header[i],
+                        "field": f"col{i}",
+                    }
                 )
         else:
             for i in range(len(ui_rows[0])):
-                columns.append({"name": f"col{i}", "label": "", "field": f"col{i}"})
+                columns.append(
+                    {"name": f"col{i}", "label": "", "field": f"col{i}"}
+                )
         if ui_align:
             alignments = {"l": "left", "c": "center", "r": "right"}
             for i, a in enumerate(ui_align):
@@ -418,7 +441,9 @@ class Table(QTable):
     def get_markdown(self):
         """Get the table as markdown"""
         rows = self.ui_rows
-        header = "| " + " | ".join([col["label"] for col in self.ui_columns]) + " |"
+        header = (
+            "| " + " | ".join([col["label"] for col in self.ui_columns]) + " |"
+        )
         separator = "|" + "|".join(["---"] * len(self.ui_columns)) + "|"
         body = ""
         for row in rows:
@@ -556,7 +581,11 @@ class NewSimulationButton(QBtn):
         **kwargs,
     ):
         super().__init__(
-            QTooltip(ui_tooltip), ui_icon=ui_icon, ui_flat=ui_flat, *args, **kwargs
+            QTooltip(ui_tooltip),
+            ui_icon=ui_icon,
+            ui_flat=ui_flat,
+            *args,
+            **kwargs,
         )
         self.on("click", new_simulation)
 
@@ -574,7 +603,11 @@ class LoadSimulationButton(QBtn):
         **kwargs,
     ):
         super().__init__(
-            QTooltip(ui_tooltip), ui_icon=ui_icon, ui_flat=ui_flat, *args, **kwargs
+            QTooltip(ui_tooltip),
+            ui_icon=ui_icon,
+            ui_flat=ui_flat,
+            *args,
+            **kwargs,
         )
         self.app = app
         self.load_dialog = LoadDialog(app=self.app)
@@ -595,7 +628,11 @@ class SaveSimulationButton(QBtn):
         **kwargs,
     ):
         super().__init__(
-            QTooltip(ui_tooltip), ui_icon=ui_icon, ui_flat=ui_flat, *args, **kwargs
+            QTooltip(ui_tooltip),
+            ui_icon=ui_icon,
+            ui_flat=ui_flat,
+            *args,
+            **kwargs,
         )
         self.app = app
         self.on("click", self.app.save)
@@ -614,7 +651,11 @@ class CopySimulationButton(QBtn):
         **kwargs,
     ):
         super().__init__(
-            QTooltip(ui_tooltip), ui_icon=ui_icon, ui_flat=ui_flat, *args, **kwargs
+            QTooltip(ui_tooltip),
+            ui_icon=ui_icon,
+            ui_flat=ui_flat,
+            *args,
+            **kwargs,
         )
         self.app = app
         self.on("click", self.__on_click)
@@ -641,7 +682,11 @@ class RunSimulationButton(QBtn):
         **kwargs,
     ):
         super().__init__(
-            QTooltip(ui_tooltip), ui_icon=ui_icon, ui_flat=ui_flat, *args, **kwargs
+            QTooltip(ui_tooltip),
+            ui_icon=ui_icon,
+            ui_flat=ui_flat,
+            *args,
+            **kwargs,
         )
         self.on("click", run_function)
 
@@ -697,16 +742,25 @@ class SimulationTable(QTable):
         modified = datetime.datetime.fromtimestamp(row["modified"]).strftime(
             "%Y-%m-%d %H:%M:%S"
         )
-        load_btn = QBtn(QTooltip("Load"), ui_icon="mdi-folder-open", ui_flat=True)
+        load_btn = QBtn(
+            QTooltip("Load"), ui_icon="mdi-folder-open", ui_flat=True
+        )
         load_btn.on_click(self._load_simulation, arg={"file_id": row["id"]})
         delete_btn = QBtn(
-            QTooltip("Delete"), ui_icon="delete", ui_color="negative", ui_flat=True
+            QTooltip("Delete"),
+            ui_icon="delete",
+            ui_color="negative",
+            ui_flat=True,
         )
         delete_btn.on_click(self._delete_simulation, arg={"file_id": row["id"]})
         status = row["status"]
         name, create, modified = QTd(row["name"]), QTd(created), QTd(modified)
-        row_comp = QTr(name, create, modified, QTd(status), QTd(load_btn, delete_btn))
-        row_comp.on("dblclick", self._load_simulation, arg={"file_id": row["id"]})
+        row_comp = QTr(
+            name, create, modified, QTd(status), QTd(load_btn, delete_btn)
+        )
+        row_comp.on(
+            "dblclick", self._load_simulation, arg={"file_id": row["id"]}
+        )
         return [row_comp]
 
 
@@ -756,7 +810,9 @@ class ToolBar(QToolbar):
         self.app = app
         components = []
         if logo:
-            components.append(QImg(ui_src=logo, ui_style="height:35px; width:35px;"))
+            components.append(
+                QImg(ui_src=logo, ui_style="height:35px; width:35px;")
+            )
             self.logo = components[-1]
         else:
             self.logo = None
@@ -815,9 +871,19 @@ class Rules:
             or f"Value must be at most {limit}"
         )
 
-    positive = lambda value: value is not None and value > 0 or "Value must be positive"
-    negative = lambda value: value is not None and value < 0 or "Value must be negative"
-    required = lambda value: value is not None and value != "" or "Value is required"
+    positive = (
+        lambda value: value is not None
+        and value > 0
+        or "Value must be positive"
+    )
+    negative = (
+        lambda value: value is not None
+        and value < 0
+        or "Value must be negative"
+    )
+    required = (
+        lambda value: value is not None and value != "" or "Value is required"
+    )
 
 
 class Report(QBtn):
@@ -856,7 +922,9 @@ class Report(QBtn):
         if input_file.name.endswith(".md"):
             command.append("--pdf-engine=xelatex")
         subprocess.run(command)
-        self._set_report(filename=output_file.name, file_data=output_file.read_bytes())
+        self._set_report(
+            filename=output_file.name, file_data=output_file.read_bytes()
+        )
 
     def _generate_docx_report(
         self,
@@ -949,9 +1017,13 @@ class Report(QBtn):
         """
         template_path = self._status.app.assets_path / template_path
         if file_type == "md":
-            self._generate_md_report(pdf_file=filename, template_path=template_path)
+            self._generate_md_report(
+                pdf_file=filename, template_path=template_path
+            )
         elif file_type == "docx":
-            self._generate_docx_report(pdf_file=filename, template_path=template_path)
+            self._generate_docx_report(
+                pdf_file=filename, template_path=template_path
+            )
         else:
             raise ValueError(f"Unsupported report type: {file_type}")
 
