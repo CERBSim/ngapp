@@ -16,7 +16,6 @@ dev = ['websockets', 'watchdog', 'wheel', 'setuptools', 'cookiecutter']
 [tool.setuptools_scm]
 version_file = "src/ngapp/_version.py"
 local_scheme = "no-local-version"
-root = "../"
 
 [tool.isort]
 profile = "black"
