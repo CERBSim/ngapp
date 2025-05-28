@@ -1,0 +1,28 @@
+[project]
+description="A Python framework for building engineering and scientific web applications"
+dynamic = ["version"]
+name = "ngapp"
+dependencies = ['certifi', 'orjson', 'pint', 'pydantic == 2.*', 'urllib3', 'webgpu', 'numpy']
+requires-python = ">=3.10"
+
+[build-system]
+requires = ["setuptools>=60", "wheel", "setuptools-scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+dev = ['websockets', 'watchdog', 'wheel', 'setuptools', 'cookiecutter']
+
+[tool.setuptools_scm]
+version_file = "src/ngapp/_version.py"
+local_scheme = "no-local-version"
+root = "../"
+
+[tool.isort]
+profile = "black"
+src_paths = ["src/ngapp", "tests"]
+skip_glob = ["**/_version.py"]
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+include = '\.pyi?$'
