@@ -8,17 +8,14 @@ def create_app():
     try:
         import cookiecutter
     except ImportError:
-        print("cookiecutter not found, installing...")
-        # Install cookiecutter if not already installed
-        subprocess.run(
-            [py_exe, "-m", "pip", "install", "cookiecutter", "watchdog", "websockets"]
+        raise ImportError(
+            "cookiecutter is not installed. Please install ngapp with:\n"
+            f'{py_exe} -m pip install "ngapp[dev]"'
         )
 
     # check dirs before
     dirs = os.listdir(".")
-    subprocess.run(
-        [py_exe, "-m", "cookiecutter", "https://github.com/CERBSim/template_webapp"]
-    )
+    subprocess.run([py_exe, "-m", "cookiecutter", "https://github.com/CERBSim/ngapp_template"])
     dirs_after = os.listdir(".")
     new_dir = list(set(dirs_after) - set(dirs))[0]
     print("Created new directory:", new_dir)
