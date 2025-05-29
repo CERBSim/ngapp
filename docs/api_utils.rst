@@ -2,6 +2,6 @@
 Utils
 =====
 
-.. automodule:: webapp_client.utils
+.. automodule:: ngapp.utils
    :members:
    :show-inheritance:

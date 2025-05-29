@@ -55,10 +55,10 @@ class WebguiComponent(Component):
     def create_screenshot(self, width: int = 1042, height: int = 852) -> None:
         """
         Create a screenshot of the webgui. The image is stored in the storage as a base64 encoded string.
-        Args:
-            width (int): Width of the screenshot. Defaults to 1042.
-            height (int): Height of the screenshot. Defaults to 852.
-            depends_on (list[str] | None): List of job IDs that this job depends on.
+
+        :param width: (int) Width of the screenshot. Defaults to 1042.
+        :param height: (int) Height of the screenshot. Defaults to 852.
+        :param depends_on: (list[str] | None) List of job IDs that this job depends on.
         """
         asyncio.run(self._create_screenshot(width=width, height=height))
 

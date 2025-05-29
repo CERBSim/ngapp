@@ -85,6 +85,4 @@ Name        Description                 Arguments
 ========== =========================== =================
 
 
-API Reference with list of all available components:
-:any:`webapp_client.components`
 

@@ -8,7 +8,6 @@ API Documentation
 .. toctree::
    :maxdepth: 2
 
-   api_basemodel.rst
    api_components.rst
    api_qcomponents.rst
    api_utils.rst

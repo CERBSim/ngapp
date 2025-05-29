@@ -5,6 +5,7 @@ import inspect
 import itertools
 import pickle
 import sys
+import functools
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple, TypeVar
 
@@ -225,6 +226,7 @@ class BlockFrontendUpdate(type):
         init_method = dct.get("__init__")
         if init_method is not None:
 
+            @functools.wraps(init_method)
             def wrapped_init(self, *args, **kwargs):
                 self._block_frontend_update = True
                 init_method(self, *args, **kwargs)
