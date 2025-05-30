@@ -100,11 +100,11 @@ def main():
     with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
         zip_ref.extractall(output_dir)
 
-    # for some reason, some assets are loaded from assets/assets, create a symlink to work around this
-    cwd = os.getcwd()
-    os.chdir(output_dir / "assets")
-    os.symlink(".", "assets")
-    os.chdir(cwd)
+    # # for some reason, some assets are loaded from assets/assets, create a symlink to work around this
+    # cwd = os.getcwd()
+    # os.chdir(output_dir / "assets")
+    # os.symlink(".", "assets")
+    # os.chdir(cwd)
 
     python_module_dir = output_dir / "python_modules"
     python_module_dir.mkdir(parents=True, exist_ok=True)
