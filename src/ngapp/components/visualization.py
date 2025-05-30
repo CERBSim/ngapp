@@ -6,7 +6,6 @@ import os
 from typing import Any, Callable
 
 import numpy as np
-import orjson
 
 from ..utils import read_file, write_file
 from .basecomponent import Component
@@ -601,8 +600,6 @@ class PlotlyComponent(Component):
 
 
 canvas_counter = 0
-from webgpu import canvas, platform, utils
-
 
 class WebgpuComponent(Component):
     def __init__(self, id=""):
@@ -626,6 +623,8 @@ class WebgpuComponent(Component):
         self.canvas.context.unconfigure()
 
     def connect_webgpu(self):
+        from webgpu import canvas, utils
+
         if self.canvas:
             return self._reconfigure_canvas()
 
@@ -703,9 +702,11 @@ class WebgpuComponent(Component):
         pass
 
     def screenshot(self):
+        from webgpu import utils
         return utils.read_texture(self.canvas.target_texture)
 
     def screenshot_as_data_url(self, format="image/png"):
+        from webgpu import platform
         data = self.screenshot()
         canvas = platform.js.document.createElement("canvas")
         canvas.width = self.canvas.width
@@ -780,6 +781,7 @@ async def _generate_webgui_screenshot(name, data, width, height):
     html_file = name + ".html"
     data["on_init"] = "scene.gui.hide()"
     import numpy
+    import orjson
 
     def default(obj):
         if isinstance(obj, numpy.float64):
