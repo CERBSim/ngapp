@@ -2,7 +2,7 @@
 Tutorials
 ==========
 
-.. grid:: 1 1 2 2
+.. grid:: 1 2 2 2
 
    .. grid-item::
 
@@ -12,6 +12,15 @@ Tutorials
          :img-top: /_static/images/beam_solver/final.png
 
          Building a minimal elasticity solver with NGSolve.
+
+   .. grid-item::
+
+      .. card:: Deploy on GitHub
+         :link: tutorials/host_on_github
+         :link-type: doc
+         :img-top: /_static/images/github_mark.png
+
+         Deploy as web-app on GitHub
 
 .. toctree::
    :hidden:

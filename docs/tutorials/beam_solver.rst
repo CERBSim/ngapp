@@ -363,6 +363,5 @@ The final state of the app should look like this:
 Deploy as Web Application
 --------------------------
 
-.. todo::
+For instructions on how to deploy the final app as a web application on github pages see :doc:`host_on_github`.
 
-   Add instructions for deploying the app as a web application using ngapp deployment features.
