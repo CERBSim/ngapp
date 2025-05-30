@@ -3,9 +3,7 @@ name: Release to PyPI
 on:
   push:
     tags:
-      - 'v*'     # Match version tags like v1.0.0
-    branches:
-      - main     # Ensure tag is on main
+      - 'v*'
 
 permissions:
   id-token: write  # Required for OIDC authentication
