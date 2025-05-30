@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.mathjax", "sphinx.ext.todo"]
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.mathjax", "sphinx.ext.todo",
+              "sphinx_design"]
 
 master_doc = "index"
 source_suffix = [".rst", ".md"]

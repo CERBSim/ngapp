@@ -2,6 +2,10 @@
 Components
 ==========
 
+.. todo::
+
+   This is outdated and needs rework.
+
 Components are the main tools to create your web-app. With them you can define everything: inputs, outputs, visualization, etc.
 
 .. toctree::

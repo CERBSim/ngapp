@@ -27,3 +27,22 @@ where ``<module_name>`` is the module name you provided. The ``--dev`` option st
 You should see our "Hello World!" app opening up in a new browser session (if the session does not open up automatically click on the link in the console).
 
 Now open the module directory in your favorite editor and start coding! For example as a first start change some labels or add some print statements to the ``increment_counter`` function in the app and observe live changes and outputs in the console.
+
+The new directory called ``<module_name>`` will have the following structure:
+
+.. code-block:: text
+
+   <module_name>/
+   ├── src/
+   │   ├── <module_name>/
+   │   │   ├── __init__.py
+   │   │   ├── app.py
+   │   │   ├── appconfig.py
+   │   │   └── __main__.py
+   ├── ├── .github
+   │   │   ├── workflows/
+   │   │   │   └── deploy.yml
+   ├── README.md
+   └── pyproject.toml
+
+The ``<module_name>/src/<module_name>/app.py`` contains the main app code. The ``deploy.yml`` a github workflow that automatically deploys your app as a web-version onto GitHub.
