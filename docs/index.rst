@@ -31,8 +31,8 @@ The [dev] extras include tools needed for developing NGApp-based apps. When dist
    :hidden:
 
    getting_started.rst
+   tutorials.rst
    components.rst
    tips_and_tricks.rst
-   troubleshooting.rst
    api_doc.rst
 
