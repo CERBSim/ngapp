@@ -615,6 +615,12 @@ class WebgpuComponent(Component):
         self.canvas = None
         self.on("mounted", self.connect_webgpu)
         self.on("unmount", self._on_unmount)
+        self.on_load(self.__on_load)
+
+    def __on_load(self):
+        scene = self.storage.get("scene")
+        if scene is not None:
+            self.draw(scene)
 
     def _on_unmount(self):
         if self.canvas is None:
