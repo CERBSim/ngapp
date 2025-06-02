@@ -601,6 +601,7 @@ class PlotlyComponent(Component):
 
 canvas_counter = 0
 
+
 class WebgpuComponent(Component):
     def __init__(self, id=""):
         global canvas_counter
@@ -703,10 +704,12 @@ class WebgpuComponent(Component):
 
     def screenshot(self):
         from webgpu import utils
+
         return utils.read_texture(self.canvas.target_texture)
 
     def screenshot_as_data_url(self, format="image/png"):
         from webgpu import platform
+
         data = self.screenshot()
         canvas = platform.js.document.createElement("canvas")
         canvas.width = self.canvas.width

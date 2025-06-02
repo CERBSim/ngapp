@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.mathjax", "sphinx.ext.todo",
-              "sphinx_design"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.todo",
+    "sphinx_design",
+]
 
 master_doc = "index"
 source_suffix = [".rst", ".md"]
@@ -31,6 +35,7 @@ autodoc_inherit_docstrings = False
 
 # Introduce line breaks if the line length is greater than 80 characters.
 python_maximum_signature_line_length = 80
+
 
 def setup(app):
     app.add_css_file("custom.css")

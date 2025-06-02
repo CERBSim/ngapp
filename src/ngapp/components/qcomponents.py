@@ -1,22 +1,32 @@
-
 import re
 from typing import Any, Callable
 from .basecomponent import Component, Event
 from ..utils import print_exception
+
 
 class QAjaxBar(Component):
     """
     Quasar Component: `QAjaxBar <https://v2.quasar.dev/vue-components/ajax-bar>`__
 
     :param ui_position: Position within window of where QAjaxBar should be displayed
-    :param ui_size: 
-    :param ui_color: 
+    :param ui_size:
+    :param ui_color:
     :param ui_reverse: Reverse direction of progress
     :param ui_skip_hijack: Skip Ajax hijacking (not a reactive prop)
     :param ui_hijack_filter: Filter which URL should trigger start() + stop()
     """
 
-    def __init__(self, *children, ui_position:str | None=None,ui_size:Any | None=None,ui_color:Any | None=None,ui_reverse:bool | None=None,ui_skip_hijack:bool | None=None,ui_hijack_filter:Callable | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_position: str | None = None,
+        ui_size: Any | None = None,
+        ui_color: Any | None = None,
+        ui_reverse: bool | None = None,
+        ui_skip_hijack: bool | None = None,
+        ui_hijack_filter: Callable | None = None,
+        **kwargs,
+    ):
         super().__init__("QAjaxBar", *children, **kwargs)
         if ui_position is not None:
             self._props["position"] = ui_position
@@ -82,6 +92,7 @@ class QAjaxBar(Component):
     @ui_hijack_filter.setter
     def ui_hijack_filter(self, value):
         self._set_prop("hijack-filter", value)
+
     def on_start(self, handler: Callable, arg: object = None):
         """
         Emitted when bar is triggered to appear
@@ -105,16 +116,19 @@ class QAjaxBar(Component):
         kwargs = {}
         if ui_amount is not None:
             kwargs["amount"] = ui_amount
-        self._js_call_method('increment', [kwargs])
+        self._js_call_method("increment", [kwargs])
+
     def ui_start(self, ui_speed=None):
         """Notify bar you are waiting for a new process to finish"""
         kwargs = {}
         if ui_speed is not None:
             kwargs["speed"] = ui_speed
-        self._js_call_method('start', [kwargs])
+        self._js_call_method("start", [kwargs])
+
     def ui_stop(self):
         """Notify bar that one process you were waiting has finished"""
-        self._js_call_method('stop')
+        self._js_call_method("stop")
+
     def _get_js_methods(self):
         return ["increment", "start", "stop"]
 
@@ -124,15 +138,26 @@ class QAvatar(Component):
     Quasar Component: `QAvatar <https://v2.quasar.dev/vue-components/avatar>`__
 
     :param ui_font_size: The size in CSS units, including unit name, of the content (icon, text)
-    :param ui_color: 
-    :param ui_text_color: 
-    :param ui_icon: 
-    :param ui_square: 
-    :param ui_rounded: 
+    :param ui_color:
+    :param ui_text_color:
+    :param ui_icon:
+    :param ui_square:
+    :param ui_rounded:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_font_size:str | None=None,ui_color:Any | None=None,ui_text_color:Any | None=None,ui_icon:Any | None=None,ui_square:Any | None=None,ui_rounded:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_font_size: str | None = None,
+        ui_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_icon: Any | None = None,
+        ui_square: Any | None = None,
+        ui_rounded: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QAvatar", *children, **kwargs)
         if ui_font_size is not None:
             self._props["font-size"] = ui_font_size
@@ -206,6 +231,7 @@ class QAvatar(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -214,8 +240,8 @@ class QBadge(Component):
     """
     Quasar Component: `QBadge <https://v2.quasar.dev/vue-components/badge>`__
 
-    :param ui_color: 
-    :param ui_text_color: 
+    :param ui_color:
+    :param ui_text_color:
     :param ui_floating: Tell QBadge if it should float to the top right side of the relative positioned parent element or not
     :param ui_transparent: Applies a 0.8 opacity; Useful especially for floating QBadge
     :param ui_multi_line: Content can wrap to multiple lines
@@ -225,7 +251,20 @@ class QBadge(Component):
     :param ui_rounded: Makes a rounded shaped badge
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_text_color:Any | None=None,ui_floating:bool | None=None,ui_transparent:bool | None=None,ui_multi_line:bool | None=None,ui_label:str | float | None=None,ui_align:str | None=None,ui_outline:bool | None=None,ui_rounded:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_floating: bool | None = None,
+        ui_transparent: bool | None = None,
+        ui_multi_line: bool | None = None,
+        ui_label: str | float | None = None,
+        ui_align: str | None = None,
+        ui_outline: bool | None = None,
+        ui_rounded: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QBadge", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -324,6 +363,7 @@ class QBadge(Component):
     @ui_rounded.setter
     def ui_rounded(self, value):
         self._set_prop("rounded", value)
+
     def _get_js_methods(self):
         return []
 
@@ -333,12 +373,20 @@ class QBanner(Component):
     Quasar Component: `QBanner <https://v2.quasar.dev/vue-components/banner>`__
 
     :param ui_inline_actions: Display actions on same row as content
-    :param ui_dense: 
-    :param ui_rounded: 
-    :param ui_dark: 
+    :param ui_dense:
+    :param ui_rounded:
+    :param ui_dark:
     """
 
-    def __init__(self, *children, ui_inline_actions:bool | None=None,ui_dense:Any | None=None,ui_rounded:Any | None=None,ui_dark:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_inline_actions: bool | None = None,
+        ui_dense: Any | None = None,
+        ui_rounded: Any | None = None,
+        ui_dark: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QBanner", *children, **kwargs)
         if ui_inline_actions is not None:
             self._props["inline-actions"] = ui_inline_actions
@@ -399,6 +447,7 @@ class QBanner(Component):
     @ui_slot_avatar.setter
     def ui_slot_avatar(self, value):
         self._set_slot("avatar", value)
+
     def _get_js_methods(self):
         return []
 
@@ -407,11 +456,17 @@ class QBar(Component):
     """
     Quasar Component: `QBar <https://v2.quasar.dev/vue-components/bar>`__
 
-    :param ui_dense: 
+    :param ui_dense:
     :param ui_dark: The component background color lights up the parent's background (as opposed to default behavior which is to darken it); Works unless you specify a CSS background color for it
     """
 
-    def __init__(self, *children, ui_dense:Any | None=None,ui_dark:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_dense: Any | None = None,
+        ui_dark: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QBar", *children, **kwargs)
         if ui_dense is not None:
             self._props["dense"] = ui_dense
@@ -434,6 +489,7 @@ class QBar(Component):
     @ui_dark.setter
     def ui_dark(self, value):
         self._set_prop("dark", value)
+
     def _get_js_methods(self):
         return []
 
@@ -443,8 +499,8 @@ class QBreadcrumbsEl(Component):
     Quasar Component: `QBreadcrumbsEl <https://v2.quasar.dev/vue-components/breadcrumbs>`__
 
     :param ui_label: The label text for the breadcrumb
-    :param ui_icon: 
-    :param ui_tag: 
+    :param ui_icon:
+    :param ui_tag:
     :param ui_to: Equivalent to Vue Router <router-link> 'to' property; Superseded by 'href' prop if used
     :param ui_exact: Equivalent to Vue Router <router-link> 'exact' property; Superseded by 'href' prop if used
     :param ui_replace: Equivalent to Vue Router <router-link> 'replace' property; Superseded by 'href' prop if used
@@ -452,10 +508,25 @@ class QBreadcrumbsEl(Component):
     :param ui_exact_active_class: Equivalent to Vue Router <router-link> 'active-class' property; Superseded by 'href' prop if used
     :param ui_href: Native <a> link href attribute; Has priority over the 'to'/'exact'/'replace'/'active-class'/'exact-active-class' props
     :param ui_target: Native <a> link target attribute; Use it only along with 'href' prop; Has priority over the 'to'/'exact'/'replace'/'active-class'/'exact-active-class' props
-    :param ui_disable: 
+    :param ui_disable:
     """
 
-    def __init__(self, *children, ui_label:str | None=None,ui_icon:Any | None=None,ui_tag:Any | None=None,ui_to:str | dict | None=None,ui_exact:bool | None=None,ui_replace:bool | None=None,ui_active_class:str | None=None,ui_exact_active_class:str | None=None,ui_href:str | None=None,ui_target:str | None=None,ui_disable:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_label: str | None = None,
+        ui_icon: Any | None = None,
+        ui_tag: Any | None = None,
+        ui_to: str | dict | None = None,
+        ui_exact: bool | None = None,
+        ui_replace: bool | None = None,
+        ui_active_class: str | None = None,
+        ui_exact_active_class: str | None = None,
+        ui_href: str | None = None,
+        ui_target: str | None = None,
+        ui_disable: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QBreadcrumbsEl", *children, **kwargs)
         if ui_label is not None:
             self._props["label"] = ui_label
@@ -575,6 +646,7 @@ class QBreadcrumbsEl(Component):
     @ui_disable.setter
     def ui_disable(self, value):
         self._set_prop("disable", value)
+
     def on_click(self, handler: Callable, arg: object = None):
         """
         Emitted when the component is clicked
@@ -599,7 +671,16 @@ class QBreadcrumbs(Component):
     :param ui_align: Specify how to align the breadcrumbs horizontally
     """
 
-    def __init__(self, *children, ui_separator:str | None=None,ui_active_color:Any | None=None,ui_gutter:str | None=None,ui_separator_color:Any | None=None,ui_align:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_separator: str | None = None,
+        ui_active_color: Any | None = None,
+        ui_gutter: str | None = None,
+        ui_separator_color: Any | None = None,
+        ui_align: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QBreadcrumbs", *children, **kwargs)
         if ui_separator is not None:
             self._props["separator"] = ui_separator
@@ -665,6 +746,7 @@ class QBreadcrumbs(Component):
     @ui_slot_separator.setter
     def ui_slot_separator(self, value):
         self._set_slot("separator", value)
+
     def _get_js_methods(self):
         return []
 
@@ -682,34 +764,72 @@ class QBtn(Component):
     :param ui_href: Native <a> link href attribute; Has priority over the 'to' and 'replace' props
     :param ui_target: Native <a> link target attribute; Use it only with 'to' or 'href' props
     :param ui_label: The text that will be shown on the button
-    :param ui_icon: 
-    :param ui_icon_right: 
+    :param ui_icon:
+    :param ui_icon_right:
     :param ui_outline: Use 'outline' design
     :param ui_flat: Use 'flat' design
     :param ui_unelevated: Remove shadow
     :param ui_rounded: Applies a more prominent border-radius for a squared shape button
     :param ui_push: Use 'push' design
-    :param ui_square: 
+    :param ui_square:
     :param ui_glossy: Applies a glossy effect
     :param ui_fab: Makes button size and shape to fit a Floating Action Button
     :param ui_fab_mini: Makes button size and shape to fit a small Floating Action Button
     :param ui_padding: Apply custom padding (vertical [horizontal]); Size in CSS units, including unit name or standard size name (none|xs|sm|md|lg|xl); Also removes the min width and height when set
-    :param ui_color: 
-    :param ui_text_color: 
+    :param ui_color:
+    :param ui_text_color:
     :param ui_no_caps: Avoid turning label text into caps (which happens by default)
     :param ui_no_wrap: Avoid label text wrapping
-    :param ui_dense: 
-    :param ui_ripple: 
-    :param ui_tabindex: 
+    :param ui_dense:
+    :param ui_ripple:
+    :param ui_tabindex:
     :param ui_align: Label or content alignment
     :param ui_stack: Stack icon and label vertically instead of on same line (like it is by default)
     :param ui_stretch: When used on flexbox parent, button will stretch to parent's height
     :param ui_loading: Put button into loading state (displays a QSpinner -- can be overridden by using a 'loading' slot)
-    :param ui_disable: 
+    :param ui_disable:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_round:bool | None=None,ui_percentage:float | None=None,ui_dark_percentage:bool | None=None,ui_type:str | None=None,ui_to:str | dict | None=None,ui_replace:bool | None=None,ui_href:str | None=None,ui_target:str | None=None,ui_label:str | float | None=None,ui_icon:Any | None=None,ui_icon_right:Any | None=None,ui_outline:bool | None=None,ui_flat:bool | None=None,ui_unelevated:bool | None=None,ui_rounded:bool | None=None,ui_push:bool | None=None,ui_square:Any | None=None,ui_glossy:bool | None=None,ui_fab:bool | None=None,ui_fab_mini:bool | None=None,ui_padding:str | None=None,ui_color:Any | None=None,ui_text_color:Any | None=None,ui_no_caps:bool | None=None,ui_no_wrap:bool | None=None,ui_dense:Any | None=None,ui_ripple:Any | None=None,ui_tabindex:Any | None=None,ui_align:str | None=None,ui_stack:bool | None=None,ui_stretch:bool | None=None,ui_loading:bool | None=None,ui_disable:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_round: bool | None = None,
+        ui_percentage: float | None = None,
+        ui_dark_percentage: bool | None = None,
+        ui_type: str | None = None,
+        ui_to: str | dict | None = None,
+        ui_replace: bool | None = None,
+        ui_href: str | None = None,
+        ui_target: str | None = None,
+        ui_label: str | float | None = None,
+        ui_icon: Any | None = None,
+        ui_icon_right: Any | None = None,
+        ui_outline: bool | None = None,
+        ui_flat: bool | None = None,
+        ui_unelevated: bool | None = None,
+        ui_rounded: bool | None = None,
+        ui_push: bool | None = None,
+        ui_square: Any | None = None,
+        ui_glossy: bool | None = None,
+        ui_fab: bool | None = None,
+        ui_fab_mini: bool | None = None,
+        ui_padding: str | None = None,
+        ui_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_no_caps: bool | None = None,
+        ui_no_wrap: bool | None = None,
+        ui_dense: Any | None = None,
+        ui_ripple: Any | None = None,
+        ui_tabindex: Any | None = None,
+        ui_align: str | None = None,
+        ui_stack: bool | None = None,
+        ui_stretch: bool | None = None,
+        ui_loading: bool | None = None,
+        ui_disable: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QBtn", *children, **kwargs)
         if ui_round is not None:
             self._props["round"] = ui_round
@@ -1085,6 +1205,7 @@ class QBtn(Component):
     @ui_slot_loading.setter
     def ui_slot_loading(self, value):
         self._set_slot("loading", value)
+
     def on_click(self, handler: Callable, arg: object = None):
         """
         Emitted when the component is clicked
@@ -1096,7 +1217,7 @@ class QBtn(Component):
 
     def on_keydown(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -1105,7 +1226,7 @@ class QBtn(Component):
 
     def on_keyup(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -1114,7 +1235,7 @@ class QBtn(Component):
 
     def on_mousedown(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -1123,7 +1244,7 @@ class QBtn(Component):
 
     def on_touchstart(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -1135,7 +1256,8 @@ class QBtn(Component):
         kwargs = {}
         if ui_evt is not None:
             kwargs["evt"] = ui_evt
-        self._js_call_method('click', [kwargs])
+        self._js_call_method("click", [kwargs])
+
     def _get_js_methods(self):
         return ["click"]
 
@@ -1146,7 +1268,7 @@ class QBtnDropdown(Component):
 
     :param ui_model_value: Model of the component defining shown/hidden state; Either use this property (along with a listener for 'update:model-value' event) OR use v-model directive
     :param ui_split: Split dropdown icon into its own button
-    :param ui_dropdown_icon: 
+    :param ui_dropdown_icon:
     :param ui_disable_main_btn: Disable main button (useful along with 'split' prop)
     :param ui_disable_dropdown: Disables dropdown (dropdown button if using along 'split' prop)
     :param ui_no_icon_animation: Disables the rotation of the dropdown icon when state is toggled
@@ -1166,39 +1288,93 @@ class QBtnDropdown(Component):
     :param ui_href: Native <a> link href attribute; Has priority over the 'to' and 'replace' props
     :param ui_target: Native <a> link target attribute; Use it only with 'to' or 'href' props
     :param ui_label: The text that will be shown on the button
-    :param ui_icon: 
-    :param ui_icon_right: 
+    :param ui_icon:
+    :param ui_icon_right:
     :param ui_outline: Use 'outline' design
     :param ui_flat: Use 'flat' design
     :param ui_unelevated: Remove shadow
     :param ui_rounded: Applies a more prominent border-radius for a squared shape button
     :param ui_push: Use 'push' design
-    :param ui_square: 
+    :param ui_square:
     :param ui_glossy: Applies a glossy effect
     :param ui_fab: Makes button size and shape to fit a Floating Action Button
     :param ui_fab_mini: Makes button size and shape to fit a small Floating Action Button
     :param ui_padding: Apply custom padding (vertical [horizontal]); Size in CSS units, including unit name or standard size name (none|xs|sm|md|lg|xl); Also removes the min width and height when set
-    :param ui_color: 
-    :param ui_text_color: 
+    :param ui_color:
+    :param ui_text_color:
     :param ui_no_caps: Avoid turning label text into caps (which happens by default)
     :param ui_no_wrap: Avoid label text wrapping
-    :param ui_dense: 
-    :param ui_ripple: 
-    :param ui_tabindex: 
+    :param ui_dense:
+    :param ui_ripple:
+    :param ui_tabindex:
     :param ui_align: Label or content alignment
     :param ui_stack: Stack icon and label vertically instead of on same line (like it is by default)
     :param ui_stretch: When used on flexbox parent, button will stretch to parent's height
     :param ui_loading: Put button into loading state (displays a QSpinner -- can be overridden by using a 'loading' slot)
-    :param ui_disable: 
+    :param ui_disable:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    :param ui_transition_show: 
-    :param ui_transition_hide: 
+    :param ui_transition_show:
+    :param ui_transition_hide:
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
 
-    def __init__(self, *children, ui_model_value:bool | None=None,ui_split:bool | None=None,ui_dropdown_icon:Any | None=None,ui_disable_main_btn:bool | None=None,ui_disable_dropdown:bool | None=None,ui_no_icon_animation:bool | None=None,ui_content_style:str | list | dict | None=None,ui_content_class:str | list | dict | None=None,ui_cover:bool | None=None,ui_persistent:bool | None=None,ui_no_route_dismiss:bool | None=None,ui_auto_close:bool | None=None,ui_menu_anchor:str | None=None,ui_menu_self:str | None=None,ui_menu_offset:list | None=None,ui_toggle_aria_label:str | None=None,ui_type:str | None=None,ui_to:str | dict | None=None,ui_replace:bool | None=None,ui_href:str | None=None,ui_target:str | None=None,ui_label:str | float | None=None,ui_icon:Any | None=None,ui_icon_right:Any | None=None,ui_outline:bool | None=None,ui_flat:bool | None=None,ui_unelevated:bool | None=None,ui_rounded:bool | None=None,ui_push:bool | None=None,ui_square:Any | None=None,ui_glossy:bool | None=None,ui_fab:bool | None=None,ui_fab_mini:bool | None=None,ui_padding:str | None=None,ui_color:Any | None=None,ui_text_color:Any | None=None,ui_no_caps:bool | None=None,ui_no_wrap:bool | None=None,ui_dense:Any | None=None,ui_ripple:Any | None=None,ui_tabindex:Any | None=None,ui_align:str | None=None,ui_stack:bool | None=None,ui_stretch:bool | None=None,ui_loading:bool | None=None,ui_disable:Any | None=None,ui_size:str | None=None,ui_transition_show:Any | None=None,ui_transition_hide:Any | None=None,ui_transition_duration:str | float | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: bool | None = None,
+        ui_split: bool | None = None,
+        ui_dropdown_icon: Any | None = None,
+        ui_disable_main_btn: bool | None = None,
+        ui_disable_dropdown: bool | None = None,
+        ui_no_icon_animation: bool | None = None,
+        ui_content_style: str | list | dict | None = None,
+        ui_content_class: str | list | dict | None = None,
+        ui_cover: bool | None = None,
+        ui_persistent: bool | None = None,
+        ui_no_route_dismiss: bool | None = None,
+        ui_auto_close: bool | None = None,
+        ui_menu_anchor: str | None = None,
+        ui_menu_self: str | None = None,
+        ui_menu_offset: list | None = None,
+        ui_toggle_aria_label: str | None = None,
+        ui_type: str | None = None,
+        ui_to: str | dict | None = None,
+        ui_replace: bool | None = None,
+        ui_href: str | None = None,
+        ui_target: str | None = None,
+        ui_label: str | float | None = None,
+        ui_icon: Any | None = None,
+        ui_icon_right: Any | None = None,
+        ui_outline: bool | None = None,
+        ui_flat: bool | None = None,
+        ui_unelevated: bool | None = None,
+        ui_rounded: bool | None = None,
+        ui_push: bool | None = None,
+        ui_square: Any | None = None,
+        ui_glossy: bool | None = None,
+        ui_fab: bool | None = None,
+        ui_fab_mini: bool | None = None,
+        ui_padding: str | None = None,
+        ui_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_no_caps: bool | None = None,
+        ui_no_wrap: bool | None = None,
+        ui_dense: Any | None = None,
+        ui_ripple: Any | None = None,
+        ui_tabindex: Any | None = None,
+        ui_align: str | None = None,
+        ui_stack: bool | None = None,
+        ui_stretch: bool | None = None,
+        ui_loading: bool | None = None,
+        ui_disable: Any | None = None,
+        ui_size: str | None = None,
+        ui_transition_show: Any | None = None,
+        ui_transition_hide: Any | None = None,
+        ui_transition_duration: str | float | None = None,
+        **kwargs,
+    ):
         super().__init__("QBtnDropdown", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -1302,8 +1478,7 @@ class QBtnDropdown(Component):
             self._props["transition-duration"] = ui_transition_duration
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -1760,9 +1935,10 @@ class QBtnDropdown(Component):
     @ui_slot_loading.setter
     def ui_slot_loading(self, value):
         self._set_slot("loading", value)
+
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -1771,7 +1947,7 @@ class QBtnDropdown(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -1789,7 +1965,7 @@ class QBtnDropdown(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -1798,7 +1974,7 @@ class QBtnDropdown(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -1815,11 +1991,14 @@ class QBtnDropdown(Component):
         return self.on("update:model-value", handler, arg)
 
     def ui_hide(self):
-        self._js_call_method('hide')
+        self._js_call_method("hide")
+
     def ui_show(self):
-        self._js_call_method('show')
+        self._js_call_method("show")
+
     def ui_toggle(self):
-        self._js_call_method('toggle')
+        self._js_call_method("toggle")
+
     def _get_js_methods(self):
         return ["hide", "show", "toggle"]
 
@@ -1833,13 +2012,26 @@ class QBtnGroup(Component):
     :param ui_flat: Use 'flat' design for buttons
     :param ui_unelevated: Remove shadow on buttons
     :param ui_rounded: Applies a more prominent border-radius for squared shape buttons
-    :param ui_square: 
+    :param ui_square:
     :param ui_push: Use 'push' design for buttons
     :param ui_stretch: When used on flexbox parent, buttons will stretch to parent's height
     :param ui_glossy: Applies a glossy effect
     """
 
-    def __init__(self, *children, ui_spread:bool | None=None,ui_outline:bool | None=None,ui_flat:bool | None=None,ui_unelevated:bool | None=None,ui_rounded:bool | None=None,ui_square:Any | None=None,ui_push:bool | None=None,ui_stretch:bool | None=None,ui_glossy:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_spread: bool | None = None,
+        ui_outline: bool | None = None,
+        ui_flat: bool | None = None,
+        ui_unelevated: bool | None = None,
+        ui_rounded: bool | None = None,
+        ui_square: Any | None = None,
+        ui_push: bool | None = None,
+        ui_stretch: bool | None = None,
+        ui_glossy: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QBtnGroup", *children, **kwargs)
         if ui_spread is not None:
             self._props["spread"] = ui_spread
@@ -1939,6 +2131,7 @@ class QBtnGroup(Component):
     @ui_glossy.setter
     def ui_glossy(self, value):
         self._set_prop("glossy", value)
+
     def _get_js_methods(self):
         return []
 
@@ -1949,10 +2142,10 @@ class QBtnToggle(Component):
 
     :param ui_model_value: Model of the component; Either use this property (along with a listener for 'update:modelValue' event) OR use v-model directive
     :param ui_options: Array of Objects defining each option
-    :param ui_color: 
-    :param ui_text_color: 
-    :param ui_toggle_color: 
-    :param ui_toggle_text_color: 
+    :param ui_color:
+    :param ui_text_color:
+    :param ui_toggle_color:
+    :param ui_toggle_text_color:
     :param ui_spread: Spread horizontally to all available space
     :param ui_outline: Use 'outline' design
     :param ui_flat: Use 'flat' design
@@ -1964,19 +2157,48 @@ class QBtnToggle(Component):
     :param ui_padding: Apply custom padding (vertical [horizontal]); Size in CSS units, including unit name or standard size name (none|xs|sm|md|lg|xl); Also removes the min width and height when set
     :param ui_no_caps: Avoid turning label text into caps (which happens by default)
     :param ui_no_wrap: Avoid label text wrapping
-    :param ui_ripple: 
-    :param ui_dense: 
-    :param ui_readonly: 
-    :param ui_disable: 
+    :param ui_ripple:
+    :param ui_dense:
+    :param ui_readonly:
+    :param ui_disable:
     :param ui_stack: Stack icon and label vertically instead of on same line (like it is by default)
     :param ui_stretch: When used on flexbox parent, button will stretch to parent's height
     :param ui_clearable: Clears model on click of the already selected button
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
-    def __init__(self, *children, ui_model_value:Any | None=None,ui_options:list | None=None,ui_color:Any | None=None,ui_text_color:Any | None=None,ui_toggle_color:Any | None=None,ui_toggle_text_color:Any | None=None,ui_spread:bool | None=None,ui_outline:bool | None=None,ui_flat:bool | None=None,ui_unelevated:bool | None=None,ui_rounded:bool | None=None,ui_push:bool | None=None,ui_glossy:bool | None=None,ui_size:str | None=None,ui_padding:str | None=None,ui_no_caps:bool | None=None,ui_no_wrap:bool | None=None,ui_ripple:Any | None=None,ui_dense:Any | None=None,ui_readonly:Any | None=None,ui_disable:Any | None=None,ui_stack:bool | None=None,ui_stretch:bool | None=None,ui_clearable:bool | None=None,ui_name:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: Any | None = None,
+        ui_options: list | None = None,
+        ui_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_toggle_color: Any | None = None,
+        ui_toggle_text_color: Any | None = None,
+        ui_spread: bool | None = None,
+        ui_outline: bool | None = None,
+        ui_flat: bool | None = None,
+        ui_unelevated: bool | None = None,
+        ui_rounded: bool | None = None,
+        ui_push: bool | None = None,
+        ui_glossy: bool | None = None,
+        ui_size: str | None = None,
+        ui_padding: str | None = None,
+        ui_no_caps: bool | None = None,
+        ui_no_wrap: bool | None = None,
+        ui_ripple: Any | None = None,
+        ui_dense: Any | None = None,
+        ui_readonly: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_stack: bool | None = None,
+        ui_stretch: bool | None = None,
+        ui_clearable: bool | None = None,
+        ui_name: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QBtnToggle", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -2030,8 +2252,7 @@ class QBtnToggle(Component):
             self._props["name"] = ui_name
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -2249,9 +2470,11 @@ class QBtnToggle(Component):
     @ui_name.setter
     def ui_name(self, value):
         self._set_prop("name", value)
+
     def set_dynamic_slot(self, name: str, items: list[Component]):
         """Any other dynamic slots to be used with 'slot' property of the 'options' prop"""
         self._set_slot(name, items)
+
     def on_clear(self, handler: Callable, arg: object = None):
         """
         When using the 'clearable' property, this event is emitted when the already selected button is clicked
@@ -2263,7 +2486,7 @@ class QBtnToggle(Component):
 
     def on_click(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -2272,7 +2495,7 @@ class QBtnToggle(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -2291,7 +2514,13 @@ class QCardActions(Component):
     :param ui_vertical: Display actions one below the other
     """
 
-    def __init__(self, *children, ui_align:str | None=None,ui_vertical:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_align: str | None = None,
+        ui_vertical: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QCardActions", *children, **kwargs)
         if ui_align is not None:
             self._props["align"] = ui_align
@@ -2315,6 +2544,7 @@ class QCardActions(Component):
     @ui_vertical.setter
     def ui_vertical(self, value):
         self._set_prop("vertical", value)
+
     def _get_js_methods(self):
         return []
 
@@ -2323,14 +2553,23 @@ class QCard(Component):
     """
     Quasar Component: `QCard <https://v2.quasar.dev/vue-components/card>`__
 
-    :param ui_dark: 
-    :param ui_square: 
-    :param ui_flat: 
-    :param ui_bordered: 
-    :param ui_tag: 
+    :param ui_dark:
+    :param ui_square:
+    :param ui_flat:
+    :param ui_bordered:
+    :param ui_tag:
     """
 
-    def __init__(self, *children, ui_dark:Any | None=None,ui_square:Any | None=None,ui_flat:Any | None=None,ui_bordered:Any | None=None,ui_tag:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_dark: Any | None = None,
+        ui_square: Any | None = None,
+        ui_flat: Any | None = None,
+        ui_bordered: Any | None = None,
+        ui_tag: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QCard", *children, **kwargs)
         if ui_dark is not None:
             self._props["dark"] = ui_dark
@@ -2382,6 +2621,7 @@ class QCard(Component):
     @ui_tag.setter
     def ui_tag(self, value):
         self._set_prop("tag", value)
+
     def _get_js_methods(self):
         return []
 
@@ -2391,10 +2631,16 @@ class QCardSection(Component):
     Quasar Component: `QCardSection <https://v2.quasar.dev/vue-components/card>`__
 
     :param ui_horizontal: Display a horizontal section (will have no padding and can contain other QCardSection)
-    :param ui_tag: 
+    :param ui_tag:
     """
 
-    def __init__(self, *children, ui_horizontal:bool | None=None,ui_tag:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_horizontal: bool | None = None,
+        ui_tag: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QCardSection", *children, **kwargs)
         if ui_horizontal is not None:
             self._props["horizontal"] = ui_horizontal
@@ -2417,6 +2663,7 @@ class QCardSection(Component):
     @ui_tag.setter
     def ui_tag(self, value):
         self._set_prop("tag", value)
+
     def _get_js_methods(self):
         return []
 
@@ -2425,7 +2672,7 @@ class QCarousel(Component):
     """
     Quasar Component: `QCarousel <https://v2.quasar.dev/vue-components/carousel>`__
 
-    :param ui_dark: 
+    :param ui_dark:
     :param ui_height: Height of Carousel in CSS units, including unit name
     :param ui_padding: Applies a default padding to each slide, according to the usage of 'arrows' and 'navigation' props
     :param ui_control_color: Color name for QCarousel button controls (arrows, navigation) from the Quasar Color Palette
@@ -2433,11 +2680,11 @@ class QCarousel(Component):
     :param ui_control_type: Type of button to use for controls (arrows, navigation)
     :param ui_autoplay: Jump to next slide (if 'true' or val > 0) or previous slide (if val < 0) at fixed time intervals (in milliseconds); 'false' disables autoplay, 'true' enables it for 5000ms intervals
     :param ui_arrows: Show navigation arrow buttons
-    :param ui_prev_icon: 
-    :param ui_next_icon: 
+    :param ui_prev_icon:
+    :param ui_next_icon:
     :param ui_navigation: Show navigation dots
     :param ui_navigation_position: Side to stick navigation to
-    :param ui_navigation_icon: 
+    :param ui_navigation_icon:
     :param ui_navigation_active_icon: Icon name following Quasar convention for the active (current slide) navigation icon; Make sure you have the icon library installed unless you are using 'img:' prefix
     :param ui_thumbnails: Show thumbnails
     :param ui_transition_prev: One of Quasar's embedded transitions (has effect only if 'animated' prop is set)
@@ -2456,9 +2703,42 @@ class QCarousel(Component):
     :param ui_no_route_fullscreen_exit: Changing route app won't exit fullscreen
     """
 
-    def __init__(self, *children, ui_dark:Any | None=None,ui_height:Any | None=None,ui_padding:bool | None=None,ui_control_color:Any | None=None,ui_control_text_color:Any | None=None,ui_control_type:str | None=None,ui_autoplay:float | bool | None=None,ui_arrows:bool | None=None,ui_prev_icon:Any | None=None,ui_next_icon:Any | None=None,ui_navigation:bool | None=None,ui_navigation_position:str | None=None,ui_navigation_icon:Any | None=None,ui_navigation_active_icon:Any | None=None,ui_thumbnails:bool | None=None,ui_transition_prev:Any | None=None,ui_transition_next:Any | None=None,ui_model_value:Any | None=None,ui_keep_alive:bool | None=None,ui_keep_alive_include:str | list | re.Pattern | None=None,ui_keep_alive_exclude:str | list | re.Pattern | None=None,ui_keep_alive_max:float | None=None,ui_animated:bool | None=None,ui_infinite:bool | None=None,ui_swipeable:bool | None=None,ui_vertical:bool | None=None,ui_transition_duration:str | float | None=None,ui_fullscreen:bool | None=None,ui_no_route_fullscreen_exit:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_dark: Any | None = None,
+        ui_height: Any | None = None,
+        ui_padding: bool | None = None,
+        ui_control_color: Any | None = None,
+        ui_control_text_color: Any | None = None,
+        ui_control_type: str | None = None,
+        ui_autoplay: float | bool | None = None,
+        ui_arrows: bool | None = None,
+        ui_prev_icon: Any | None = None,
+        ui_next_icon: Any | None = None,
+        ui_navigation: bool | None = None,
+        ui_navigation_position: str | None = None,
+        ui_navigation_icon: Any | None = None,
+        ui_navigation_active_icon: Any | None = None,
+        ui_thumbnails: bool | None = None,
+        ui_transition_prev: Any | None = None,
+        ui_transition_next: Any | None = None,
+        ui_model_value: Any | None = None,
+        ui_keep_alive: bool | None = None,
+        ui_keep_alive_include: str | list | re.Pattern | None = None,
+        ui_keep_alive_exclude: str | list | re.Pattern | None = None,
+        ui_keep_alive_max: float | None = None,
+        ui_animated: bool | None = None,
+        ui_infinite: bool | None = None,
+        ui_swipeable: bool | None = None,
+        ui_vertical: bool | None = None,
+        ui_transition_duration: str | float | None = None,
+        ui_fullscreen: bool | None = None,
+        ui_no_route_fullscreen_exit: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QCarousel", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_dark is not None:
             self._props["dark"] = ui_dark
@@ -2517,11 +2797,12 @@ class QCarousel(Component):
         if ui_fullscreen is not None:
             self._props["fullscreen"] = ui_fullscreen
         if ui_no_route_fullscreen_exit is not None:
-            self._props["no-route-fullscreen-exit"] = ui_no_route_fullscreen_exit
+            self._props["no-route-fullscreen-exit"] = (
+                ui_no_route_fullscreen_exit
+            )
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_dark(self):
@@ -2797,6 +3078,7 @@ class QCarousel(Component):
     @ui_slot_navigation_icon.setter
     def ui_slot_navigation_icon(self, value):
         self._set_slot("navigation-icon", value)
+
     def on_before_transition(self, handler: Callable, arg: object = None):
         """
         Emitted before transitioning to a new panel
@@ -2844,27 +3126,40 @@ class QCarousel(Component):
 
     def ui_exitFullscreen(self):
         """Leave the fullscreen view"""
-        self._js_call_method('exitFullscreen')
+        self._js_call_method("exitFullscreen")
+
     def ui_goTo(self, ui_panelName):
         """Go to specific panel"""
         kwargs = {}
         if ui_panelName is not None:
             kwargs["panelName"] = ui_panelName
-        self._js_call_method('goTo', [kwargs])
+        self._js_call_method("goTo", [kwargs])
+
     def ui_next(self):
         """Go to next panel"""
-        self._js_call_method('next')
+        self._js_call_method("next")
+
     def ui_previous(self):
         """Go to previous panel"""
-        self._js_call_method('previous')
+        self._js_call_method("previous")
+
     def ui_setFullscreen(self):
         """Enter the fullscreen view"""
-        self._js_call_method('setFullscreen')
+        self._js_call_method("setFullscreen")
+
     def ui_toggleFullscreen(self):
         """Toggle the view to be fullscreen or not fullscreen"""
-        self._js_call_method('toggleFullscreen')
+        self._js_call_method("toggleFullscreen")
+
     def _get_js_methods(self):
-        return ["exitFullscreen", "goTo", "next", "previous", "setFullscreen", "toggleFullscreen"]
+        return [
+            "exitFullscreen",
+            "goTo",
+            "next",
+            "previous",
+            "setFullscreen",
+            "toggleFullscreen",
+        ]
 
 
 class QCarouselSlide(Component):
@@ -2873,10 +3168,17 @@ class QCarouselSlide(Component):
 
     :param ui_name: Panel name
     :param ui_img_src: URL pointing to a slide background image (use public folder)
-    :param ui_disable: 
+    :param ui_disable:
     """
 
-    def __init__(self, *children, ui_name:Any | None=None,ui_img_src:str | None=None,ui_disable:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_name: Any | None = None,
+        ui_img_src: str | None = None,
+        ui_disable: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QCarouselSlide", *children, **kwargs)
         if ui_name is not None:
             self._props["name"] = ui_name
@@ -2910,6 +3212,7 @@ class QCarouselSlide(Component):
     @ui_disable.setter
     def ui_disable(self, value):
         self._set_prop("disable", value)
+
     def _get_js_methods(self):
         return []
 
@@ -2922,7 +3225,13 @@ class QCarouselControl(Component):
     :param ui_offset: An array of two numbers to offset the component horizontally and vertically (in pixels)
     """
 
-    def __init__(self, *children, ui_position:str | None=None,ui_offset:list | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_position: str | None = None,
+        ui_offset: list | None = None,
+        **kwargs,
+    ):
         super().__init__("QCarouselControl", *children, **kwargs)
         if ui_position is not None:
             self._props["position"] = ui_position
@@ -2946,6 +3255,7 @@ class QCarouselControl(Component):
     @ui_offset.setter
     def ui_offset(self, value):
         self._set_prop("offset", value)
+
     def _get_js_methods(self):
         return []
 
@@ -2969,7 +3279,24 @@ class QChatMessage(Component):
     :param ui_stamp_html: Render the stamp as HTML; This can lead to XSS attacks so make sure that you sanitize the message first
     """
 
-    def __init__(self, *children, ui_sent:bool | None=None,ui_label:str | None=None,ui_bg_color:Any | None=None,ui_text_color:Any | None=None,ui_name:str | None=None,ui_avatar:str | None=None,ui_text:list | None=None,ui_stamp:str | None=None,ui_size:str | None=None,ui_label_html:Any | None=None,ui_name_html:Any | None=None,ui_text_html:Any | None=None,ui_stamp_html:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_sent: bool | None = None,
+        ui_label: str | None = None,
+        ui_bg_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_name: str | None = None,
+        ui_avatar: str | None = None,
+        ui_text: list | None = None,
+        ui_stamp: str | None = None,
+        ui_size: str | None = None,
+        ui_label_html: Any | None = None,
+        ui_name_html: Any | None = None,
+        ui_text_html: Any | None = None,
+        ui_stamp_html: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QChatMessage", *children, **kwargs)
         if ui_sent is not None:
             self._props["sent"] = ui_sent
@@ -3150,6 +3477,7 @@ class QChatMessage(Component):
     @ui_slot_stamp.setter
     def ui_slot_stamp(self, value):
         self._set_slot("stamp", value)
+
     def _get_js_methods(self):
         return []
 
@@ -3161,7 +3489,7 @@ class QCheckbox(Component):
     :param ui_checked_icon: The icon to be used when the model is truthy (instead of the default design)
     :param ui_unchecked_icon: The icon to be used when the toggle is falsy (instead of the default design)
     :param ui_indeterminate_icon: The icon to be used when the model is indeterminate (instead of the default design)
-    :param ui_model_value: 
+    :param ui_model_value:
     :param ui_val: Works when model ('value') is Array. It tells the component which value should add/remove when ticked/unticked
     :param ui_true_value: What model value should be considered as checked/ticked/on?
     :param ui_false_value: What model value should be considered as unchecked/unticked/off?
@@ -3170,19 +3498,43 @@ class QCheckbox(Component):
     :param ui_toggle_indeterminate: When user clicks/taps on the component, should we toggle through the indeterminate state too?
     :param ui_label: Label to display along the component (or use the default slot instead of this prop)
     :param ui_left_label: Label (if any specified) should be displayed on the left side of the component
-    :param ui_color: 
+    :param ui_color:
     :param ui_keep_color: Should the color (if specified any) be kept when the component is unticked/ off?
-    :param ui_dark: 
-    :param ui_dense: 
-    :param ui_disable: 
-    :param ui_tabindex: 
+    :param ui_dark:
+    :param ui_dense:
+    :param ui_disable:
+    :param ui_tabindex:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
-    def __init__(self, *children, ui_checked_icon:str | None=None,ui_unchecked_icon:str | None=None,ui_indeterminate_icon:str | None=None,ui_model_value:Any | list | None=None,ui_val:Any | None=None,ui_true_value:Any | None=None,ui_false_value:Any | None=None,ui_indeterminate_value:Any | None=None,ui_toggle_order:str | None=None,ui_toggle_indeterminate:bool | None=None,ui_label:str | None=None,ui_left_label:bool | None=None,ui_color:Any | None=None,ui_keep_color:bool | None=None,ui_dark:Any | None=None,ui_dense:Any | None=None,ui_disable:Any | None=None,ui_tabindex:Any | None=None,ui_size:str | None=None,ui_name:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_checked_icon: str | None = None,
+        ui_unchecked_icon: str | None = None,
+        ui_indeterminate_icon: str | None = None,
+        ui_model_value: Any | list | None = None,
+        ui_val: Any | None = None,
+        ui_true_value: Any | None = None,
+        ui_false_value: Any | None = None,
+        ui_indeterminate_value: Any | None = None,
+        ui_toggle_order: str | None = None,
+        ui_toggle_indeterminate: bool | None = None,
+        ui_label: str | None = None,
+        ui_left_label: bool | None = None,
+        ui_color: Any | None = None,
+        ui_keep_color: bool | None = None,
+        ui_dark: Any | None = None,
+        ui_dense: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_tabindex: Any | None = None,
+        ui_size: str | None = None,
+        ui_name: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QCheckbox", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_checked_icon is not None:
             self._props["checked-icon"] = ui_checked_icon
@@ -3226,8 +3578,7 @@ class QCheckbox(Component):
             self._props["name"] = ui_name
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_checked_icon(self):
@@ -3402,6 +3753,7 @@ class QCheckbox(Component):
     @ui_name.setter
     def ui_name(self, value):
         self._set_prop("name", value)
+
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when the component needs to change the model; Is also used by v-model
@@ -3413,7 +3765,8 @@ class QCheckbox(Component):
 
     def ui_toggle(self):
         """Toggle the state (of the model)"""
-        self._js_call_method('toggle')
+        self._js_call_method("toggle")
+
     def _get_js_methods(self):
         return ["toggle"]
 
@@ -3422,31 +3775,55 @@ class QChip(Component):
     """
     Quasar Component: `QChip <https://v2.quasar.dev/vue-components/chip>`__
 
-    :param ui_dense: 
+    :param ui_dense:
     :param ui_size: QChip size name or a CSS unit including unit name
-    :param ui_dark: 
-    :param ui_icon: 
-    :param ui_icon_right: 
-    :param ui_icon_remove: 
-    :param ui_icon_selected: 
+    :param ui_dark:
+    :param ui_icon:
+    :param ui_icon_right:
+    :param ui_icon_remove:
+    :param ui_icon_selected:
     :param ui_label: Chip's content as string; overrides default slot if specified
-    :param ui_color: 
-    :param ui_text_color: 
+    :param ui_color:
+    :param ui_text_color:
     :param ui_model_value: Model of the component determining if QChip should be rendered or not
     :param ui_selected: Model for QChip if it's selected or not
     :param ui_square: Sets a low value for border-radius instead of the default one, making it close to a square
     :param ui_outline: Display using the 'outline' design
     :param ui_clickable: Is QChip clickable? If it's the case, then it will add hover effects and emit 'click' events
     :param ui_removable: If set, then it displays a 'remove' icon that when clicked the QChip emits 'remove' event
-    :param ui_ripple: 
+    :param ui_ripple:
     :param ui_remove_aria_label: aria-label to be used on the remove icon
-    :param ui_tabindex: 
-    :param ui_disable: 
+    :param ui_tabindex:
+    :param ui_disable:
     """
 
-    def __init__(self, *children, ui_dense:Any | None=None,ui_size:str | None=None,ui_dark:Any | None=None,ui_icon:Any | None=None,ui_icon_right:Any | None=None,ui_icon_remove:Any | None=None,ui_icon_selected:Any | None=None,ui_label:str | float | None=None,ui_color:Any | None=None,ui_text_color:Any | None=None,ui_model_value:bool | None=None,ui_selected:bool | None=None,ui_square:Any | None=None,ui_outline:bool | None=None,ui_clickable:bool | None=None,ui_removable:bool | None=None,ui_ripple:Any | None=None,ui_remove_aria_label:str | None=None,ui_tabindex:Any | None=None,ui_disable:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_dense: Any | None = None,
+        ui_size: str | None = None,
+        ui_dark: Any | None = None,
+        ui_icon: Any | None = None,
+        ui_icon_right: Any | None = None,
+        ui_icon_remove: Any | None = None,
+        ui_icon_selected: Any | None = None,
+        ui_label: str | float | None = None,
+        ui_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_model_value: bool | None = None,
+        ui_selected: bool | None = None,
+        ui_square: Any | None = None,
+        ui_outline: bool | None = None,
+        ui_clickable: bool | None = None,
+        ui_removable: bool | None = None,
+        ui_ripple: Any | None = None,
+        ui_remove_aria_label: str | None = None,
+        ui_tabindex: Any | None = None,
+        ui_disable: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QChip", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_dense is not None:
             self._props["dense"] = ui_dense
@@ -3490,8 +3867,7 @@ class QChip(Component):
             self._props["disable"] = ui_disable
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_dense(self):
@@ -3661,6 +4037,7 @@ class QChip(Component):
     @ui_disable.setter
     def ui_disable(self, value):
         self._set_prop("disable", value)
+
     def on_click(self, handler: Callable, arg: object = None):
         """
         Emitted on QChip click if 'clickable' property is set
@@ -3681,7 +4058,7 @@ class QChip(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -3719,11 +4096,31 @@ class QCircularProgress(Component):
     :param ui_show_value: Enables the default slot and uses it (if available), otherwise it displays the 'value' prop as text; Make sure the text has enough space to be displayed inside the component
     :param ui_reverse: Reverses the direction of progress; Only for determined state
     :param ui_instant_feedback: No animation when model changes
-    :param ui_animation_speed: 
+    :param ui_animation_speed:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_value:float | None=None,ui_min:float | None=None,ui_max:float | None=None,ui_color:Any | None=None,ui_center_color:Any | None=None,ui_track_color:Any | None=None,ui_font_size:str | None=None,ui_rounded:bool | None=None,ui_thickness:float | None=None,ui_angle:float | None=None,ui_indeterminate:bool | None=None,ui_show_value:bool | None=None,ui_reverse:bool | None=None,ui_instant_feedback:bool | None=None,ui_animation_speed:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_value: float | None = None,
+        ui_min: float | None = None,
+        ui_max: float | None = None,
+        ui_color: Any | None = None,
+        ui_center_color: Any | None = None,
+        ui_track_color: Any | None = None,
+        ui_font_size: str | None = None,
+        ui_rounded: bool | None = None,
+        ui_thickness: float | None = None,
+        ui_angle: float | None = None,
+        ui_indeterminate: bool | None = None,
+        ui_show_value: bool | None = None,
+        ui_reverse: bool | None = None,
+        ui_instant_feedback: bool | None = None,
+        ui_animation_speed: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QCircularProgress", *children, **kwargs)
         if ui_value is not None:
             self._props["value"] = ui_value
@@ -3909,6 +4306,7 @@ class QCircularProgress(Component):
     @ui_slot_internal.setter
     def ui_slot_internal(self, value):
         self._set_slot("internal", value)
+
     def _get_js_methods(self):
         return []
 
@@ -3917,26 +4315,45 @@ class QColor(Component):
     """
     Quasar Component: `QColor <https://v2.quasar.dev/vue-components/color-picker>`__
 
-    :param ui_model_value: 
+    :param ui_model_value:
     :param ui_default_value: The default value to show when the model doesn't have one
     :param ui_default_view: The default view of the picker
     :param ui_format_model: Forces a certain model format upon the model
     :param ui_palette: Use a custom palette of colors for the palette tab
-    :param ui_square: 
-    :param ui_flat: 
-    :param ui_bordered: 
+    :param ui_square:
+    :param ui_flat:
+    :param ui_bordered:
     :param ui_no_header: Do not render header
     :param ui_no_header_tabs: Do not render header tabs (only the input)
     :param ui_no_footer: Do not render footer; Useful when you want a specific view ('default-view' prop) and don't want the user to be able to switch it
-    :param ui_disable: 
-    :param ui_readonly: 
-    :param ui_dark: 
+    :param ui_disable:
+    :param ui_readonly:
+    :param ui_dark:
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
-    def __init__(self, *children, ui_model_value:str | None | Any=None,ui_default_value:str | None=None,ui_default_view:str | None=None,ui_format_model:str | None=None,ui_palette:list | None=None,ui_square:Any | None=None,ui_flat:Any | None=None,ui_bordered:Any | None=None,ui_no_header:bool | None=None,ui_no_header_tabs:bool | None=None,ui_no_footer:bool | None=None,ui_disable:Any | None=None,ui_readonly:Any | None=None,ui_dark:Any | None=None,ui_name:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: str | None | Any = None,
+        ui_default_value: str | None = None,
+        ui_default_view: str | None = None,
+        ui_format_model: str | None = None,
+        ui_palette: list | None = None,
+        ui_square: Any | None = None,
+        ui_flat: Any | None = None,
+        ui_bordered: Any | None = None,
+        ui_no_header: bool | None = None,
+        ui_no_header_tabs: bool | None = None,
+        ui_no_footer: bool | None = None,
+        ui_disable: Any | None = None,
+        ui_readonly: Any | None = None,
+        ui_dark: Any | None = None,
+        ui_name: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QColor", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -3970,8 +4387,7 @@ class QColor(Component):
             self._props["name"] = ui_name
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -4100,6 +4516,7 @@ class QColor(Component):
     @ui_name.setter
     def ui_name(self, value):
         self._set_prop("name", value)
+
     def on_change(self, handler: Callable, arg: object = None):
         """
         Emitted on lazy model value change (after user finishes selecting a color)
@@ -4111,7 +4528,7 @@ class QColor(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -4148,20 +4565,55 @@ class QDate(Component):
     :param ui_landscape: Display the component in landscape mode
     :param ui_locale: Locale formatting options
     :param ui_calendar: Specify calendar type
-    :param ui_color: 
-    :param ui_text_color: 
-    :param ui_dark: 
-    :param ui_square: 
-    :param ui_flat: 
-    :param ui_bordered: 
-    :param ui_readonly: 
-    :param ui_disable: 
+    :param ui_color:
+    :param ui_text_color:
+    :param ui_dark:
+    :param ui_square:
+    :param ui_flat:
+    :param ui_bordered:
+    :param ui_readonly:
+    :param ui_disable:
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
-    def __init__(self, *children, ui_model_value:str | list | dict | None | Any=None,ui_title:str | None=None,ui_subtitle:str | None=None,ui_default_year_month:str | None=None,ui_mask:str | None=None,ui_default_view:str | None=None,ui_years_in_month_view:bool | None=None,ui_events:list | Callable | None=None,ui_event_color:str | Callable | None=None,ui_options:list | Callable | None=None,ui_navigation_min_year_month:str | None=None,ui_navigation_max_year_month:str | None=None,ui_no_unset:bool | None=None,ui_first_day_of_week:str | float | None=None,ui_today_btn:bool | None=None,ui_minimal:bool | None=None,ui_multiple:bool | None=None,ui_range:bool | None=None,ui_emit_immediately:bool | None=None,ui_landscape:bool | None=None,ui_locale:dict | None=None,ui_calendar:str | None=None,ui_color:Any | None=None,ui_text_color:Any | None=None,ui_dark:Any | None=None,ui_square:Any | None=None,ui_flat:Any | None=None,ui_bordered:Any | None=None,ui_readonly:Any | None=None,ui_disable:Any | None=None,ui_name:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: str | list | dict | None | Any = None,
+        ui_title: str | None = None,
+        ui_subtitle: str | None = None,
+        ui_default_year_month: str | None = None,
+        ui_mask: str | None = None,
+        ui_default_view: str | None = None,
+        ui_years_in_month_view: bool | None = None,
+        ui_events: list | Callable | None = None,
+        ui_event_color: str | Callable | None = None,
+        ui_options: list | Callable | None = None,
+        ui_navigation_min_year_month: str | None = None,
+        ui_navigation_max_year_month: str | None = None,
+        ui_no_unset: bool | None = None,
+        ui_first_day_of_week: str | float | None = None,
+        ui_today_btn: bool | None = None,
+        ui_minimal: bool | None = None,
+        ui_multiple: bool | None = None,
+        ui_range: bool | None = None,
+        ui_emit_immediately: bool | None = None,
+        ui_landscape: bool | None = None,
+        ui_locale: dict | None = None,
+        ui_calendar: str | None = None,
+        ui_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_dark: Any | None = None,
+        ui_square: Any | None = None,
+        ui_flat: Any | None = None,
+        ui_bordered: Any | None = None,
+        ui_readonly: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_name: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QDate", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -4184,9 +4636,13 @@ class QDate(Component):
         if ui_options is not None:
             self._props["options"] = ui_options
         if ui_navigation_min_year_month is not None:
-            self._props["navigation-min-year-month"] = ui_navigation_min_year_month
+            self._props["navigation-min-year-month"] = (
+                ui_navigation_min_year_month
+            )
         if ui_navigation_max_year_month is not None:
-            self._props["navigation-max-year-month"] = ui_navigation_max_year_month
+            self._props["navigation-max-year-month"] = (
+                ui_navigation_max_year_month
+            )
         if ui_no_unset is not None:
             self._props["no-unset"] = ui_no_unset
         if ui_first_day_of_week is not None:
@@ -4227,8 +4683,7 @@ class QDate(Component):
             self._props["name"] = ui_name
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -4500,6 +4955,7 @@ class QDate(Component):
     @ui_name.setter
     def ui_name(self, value):
         self._set_prop("name", value)
+
     def on_navigation(self, handler: Callable, arg: object = None):
         """
         Emitted when user navigates to a different month or year (and even when the model changes from an outside source)
@@ -4529,7 +4985,7 @@ class QDate(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -4543,7 +4999,8 @@ class QDate(Component):
             kwargs["type"] = ui_type
         if ui_descending is not None:
             kwargs["descending"] = ui_descending
-        self._js_call_method('offsetCalendar', [kwargs])
+        self._js_call_method("offsetCalendar", [kwargs])
+
     def ui_setCalendarTo(self, ui_year=None, ui_month=None):
         """Change current year and month of the Calendar view; It gets corrected if using navigation-min/max-year-month and sets the current view to Calendar"""
         kwargs = {}
@@ -4551,7 +5008,8 @@ class QDate(Component):
             kwargs["year"] = ui_year
         if ui_month is not None:
             kwargs["month"] = ui_month
-        self._js_call_method('setCalendarTo', [kwargs])
+        self._js_call_method("setCalendarTo", [kwargs])
+
     def ui_setEditingRange(self, ui_from=None, ui_to=None):
         """Configure the current editing range"""
         kwargs = {}
@@ -4559,18 +5017,27 @@ class QDate(Component):
             kwargs["from"] = ui_from
         if ui_to is not None:
             kwargs["to"] = ui_to
-        self._js_call_method('setEditingRange', [kwargs])
+        self._js_call_method("setEditingRange", [kwargs])
+
     def ui_setToday(self):
         """Change model to today"""
-        self._js_call_method('setToday')
+        self._js_call_method("setToday")
+
     def ui_setView(self, ui_view):
         """Change current view"""
         kwargs = {}
         if ui_view is not None:
             kwargs["view"] = ui_view
-        self._js_call_method('setView', [kwargs])
+        self._js_call_method("setView", [kwargs])
+
     def _get_js_methods(self):
-        return ["offsetCalendar", "setCalendarTo", "setEditingRange", "setToday", "setView"]
+        return [
+            "offsetCalendar",
+            "setCalendarTo",
+            "setEditingRange",
+            "setToday",
+            "setView",
+        ]
 
 
 class QDialog(Component):
@@ -4593,15 +5060,39 @@ class QDialog(Component):
     :param ui_no_focus: (Accessibility) When Dialog gets shown, do not switch focus on it
     :param ui_no_shake: Do not shake up the Dialog to catch user's attention
     :param ui_allow_focus_outside: Allow elements outside of the Dialog to be focusable; By default, for accessibility reasons, QDialog does not allow outer focus
-    :param ui_transition_show: 
-    :param ui_transition_hide: 
+    :param ui_transition_show:
+    :param ui_transition_hide:
     :param ui_model_value: Model of the component defining shown/hidden state; Either use this property (along with a listener for 'update:model-value' event) OR use v-model directive
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
 
-    def __init__(self, *children, ui_persistent:bool | None=None,ui_no_esc_dismiss:bool | None=None,ui_no_backdrop_dismiss:bool | None=None,ui_no_route_dismiss:bool | None=None,ui_auto_close:bool | None=None,ui_seamless:bool | None=None,ui_backdrop_filter:str | None=None,ui_maximized:bool | None=None,ui_full_width:bool | None=None,ui_full_height:bool | None=None,ui_position:str | None=None,ui_square:bool | None=None,ui_no_refocus:bool | None=None,ui_no_focus:bool | None=None,ui_no_shake:bool | None=None,ui_allow_focus_outside:bool | None=None,ui_transition_show:Any | None=None,ui_transition_hide:Any | None=None,ui_model_value:bool | None=None,ui_transition_duration:str | float | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_persistent: bool | None = None,
+        ui_no_esc_dismiss: bool | None = None,
+        ui_no_backdrop_dismiss: bool | None = None,
+        ui_no_route_dismiss: bool | None = None,
+        ui_auto_close: bool | None = None,
+        ui_seamless: bool | None = None,
+        ui_backdrop_filter: str | None = None,
+        ui_maximized: bool | None = None,
+        ui_full_width: bool | None = None,
+        ui_full_height: bool | None = None,
+        ui_position: str | None = None,
+        ui_square: bool | None = None,
+        ui_no_refocus: bool | None = None,
+        ui_no_focus: bool | None = None,
+        ui_no_shake: bool | None = None,
+        ui_allow_focus_outside: bool | None = None,
+        ui_transition_show: Any | None = None,
+        ui_transition_hide: Any | None = None,
+        ui_model_value: bool | None = None,
+        ui_transition_duration: str | float | None = None,
+        **kwargs,
+    ):
         super().__init__("QDialog", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_persistent is not None:
             self._props["persistent"] = ui_persistent
@@ -4645,8 +5136,7 @@ class QDialog(Component):
             self._props["transition-duration"] = ui_transition_duration
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_persistent(self):
@@ -4825,9 +5315,10 @@ class QDialog(Component):
     @ui_transition_duration.setter
     def ui_transition_duration(self, value):
         self._set_prop("transition-duration", value)
+
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -4836,7 +5327,7 @@ class QDialog(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -4845,7 +5336,7 @@ class QDialog(Component):
 
     def on_click(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -4863,7 +5354,7 @@ class QDialog(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -4881,7 +5372,7 @@ class QDialog(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -4902,19 +5393,24 @@ class QDialog(Component):
         kwargs = {}
         if ui_selector is not None:
             kwargs["selector"] = ui_selector
-        self._js_call_method('focus', [kwargs])
+        self._js_call_method("focus", [kwargs])
+
     def ui_hide(self):
-        self._js_call_method('hide')
+        self._js_call_method("hide")
+
     def ui_shake(self, ui_focusTarget=None):
         """Shakes dialog"""
         kwargs = {}
         if ui_focusTarget is not None:
             kwargs["focusTarget"] = ui_focusTarget
-        self._js_call_method('shake', [kwargs])
+        self._js_call_method("shake", [kwargs])
+
     def ui_show(self):
-        self._js_call_method('show')
+        self._js_call_method("show")
+
     def ui_toggle(self):
-        self._js_call_method('toggle')
+        self._js_call_method("toggle")
+
     def _get_js_methods(self):
         return ["focus", "hide", "shake", "show", "toggle"]
 
@@ -4930,10 +5426,10 @@ class QDrawer(Component):
     :param ui_mini_width: Width of drawer (in pixels) when in mini mode
     :param ui_mini_to_overlay: Mini mode will expand as an overlay
     :param ui_no_mini_animation: Disables animation of the drawer when toggling mini mode
-    :param ui_dark: 
+    :param ui_dark:
     :param ui_breakpoint: Breakpoint (in pixels) of layout width up to which mobile mode is used
     :param ui_behavior: Overrides the default dynamic mode into which the drawer is put on
-    :param ui_bordered: 
+    :param ui_bordered:
     :param ui_elevated: Adds a default shadow to the header
     :param ui_persistent: Prevents drawer from auto-closing when app's route changes; Also, an app route change won't hide it
     :param ui_show_if_above: Forces drawer to be shown on screen on initial render if the layout width is above breakpoint, regardless of v-model; This is the default behavior when SSR is taken over by client on initial render
@@ -4943,9 +5439,31 @@ class QDrawer(Component):
     :param ui_model_value: Model of the component defining shown/hidden state; Either use this property (along with a listener for 'update:model-value' event) OR use v-model directive
     """
 
-    def __init__(self, *children, ui_side:str | None=None,ui_overlay:bool | None=None,ui_width:float | None=None,ui_mini:bool | None=None,ui_mini_width:float | None=None,ui_mini_to_overlay:bool | None=None,ui_no_mini_animation:bool | None=None,ui_dark:Any | None=None,ui_breakpoint:float | None=None,ui_behavior:str | None=None,ui_bordered:Any | None=None,ui_elevated:bool | None=None,ui_persistent:bool | None=None,ui_show_if_above:bool | None=None,ui_no_swipe_open:bool | None=None,ui_no_swipe_close:bool | None=None,ui_no_swipe_backdrop:bool | None=None,ui_model_value:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_side: str | None = None,
+        ui_overlay: bool | None = None,
+        ui_width: float | None = None,
+        ui_mini: bool | None = None,
+        ui_mini_width: float | None = None,
+        ui_mini_to_overlay: bool | None = None,
+        ui_no_mini_animation: bool | None = None,
+        ui_dark: Any | None = None,
+        ui_breakpoint: float | None = None,
+        ui_behavior: str | None = None,
+        ui_bordered: Any | None = None,
+        ui_elevated: bool | None = None,
+        ui_persistent: bool | None = None,
+        ui_show_if_above: bool | None = None,
+        ui_no_swipe_open: bool | None = None,
+        ui_no_swipe_close: bool | None = None,
+        ui_no_swipe_backdrop: bool | None = None,
+        ui_model_value: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QDrawer", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_side is not None:
             self._props["side"] = ui_side
@@ -4985,8 +5503,7 @@ class QDrawer(Component):
             self._props["model-value"] = ui_model_value
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_side(self):
@@ -5156,9 +5673,10 @@ class QDrawer(Component):
     @ui_slot_mini.setter
     def ui_slot_mini(self, value):
         self._set_slot("mini", value)
+
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5167,7 +5685,7 @@ class QDrawer(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5185,7 +5703,7 @@ class QDrawer(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5230,7 +5748,7 @@ class QDrawer(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5247,11 +5765,14 @@ class QDrawer(Component):
         return self.on("update:model-value", handler, arg)
 
     def ui_hide(self):
-        self._js_call_method('hide')
+        self._js_call_method("hide")
+
     def ui_show(self):
-        self._js_call_method('show')
+        self._js_call_method("show")
+
     def ui_toggle(self):
-        self._js_call_method('toggle')
+        self._js_call_method("toggle")
+
     def _get_js_methods(self):
         return ["hide", "show", "toggle"]
 
@@ -5261,12 +5782,12 @@ class QEditor(Component):
     Quasar Component: `QEditor <https://v2.quasar.dev/vue-components/editor>`__
 
     :param ui_model_value: Model of the component; Either use this property (along with a listener for 'update:modelValue' event) OR use v-model directive
-    :param ui_readonly: 
-    :param ui_square: 
+    :param ui_readonly:
+    :param ui_square:
     :param ui_flat: Applies a 'flat' design (no borders)
     :param ui_dense: Dense mode; toolbar buttons are shown on one-line only
-    :param ui_dark: 
-    :param ui_disable: 
+    :param ui_dark:
+    :param ui_disable:
     :param ui_min_height: CSS unit for the minimum height of the editable area
     :param ui_max_height: CSS unit for maximum height of the input area
     :param ui_height: CSS value to set the height of the editable area
@@ -5288,9 +5809,39 @@ class QEditor(Component):
     :param ui_no_route_fullscreen_exit: Changing route app won't exit fullscreen
     """
 
-    def __init__(self, *children, ui_model_value:str | None=None,ui_readonly:Any | None=None,ui_square:Any | None=None,ui_flat:Any | None=None,ui_dense:Any | None=None,ui_dark:Any | None=None,ui_disable:Any | None=None,ui_min_height:str | None=None,ui_max_height:str | None=None,ui_height:str | None=None,ui_definitions:dict | None=None,ui_fonts:dict | None=None,ui_toolbar:list | None=None,ui_toolbar_color:Any | None=None,ui_toolbar_text_color:Any | None=None,ui_toolbar_toggle_color:str | None=None,ui_toolbar_bg:str | None=None,ui_toolbar_outline:bool | None=None,ui_toolbar_push:bool | None=None,ui_toolbar_rounded:bool | None=None,ui_paragraph_tag:str | None=None,ui_content_style:dict | None=None,ui_content_class:str | list | dict | None=None,ui_placeholder:str | None=None,ui_fullscreen:bool | None=None,ui_no_route_fullscreen_exit:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: str | None = None,
+        ui_readonly: Any | None = None,
+        ui_square: Any | None = None,
+        ui_flat: Any | None = None,
+        ui_dense: Any | None = None,
+        ui_dark: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_min_height: str | None = None,
+        ui_max_height: str | None = None,
+        ui_height: str | None = None,
+        ui_definitions: dict | None = None,
+        ui_fonts: dict | None = None,
+        ui_toolbar: list | None = None,
+        ui_toolbar_color: Any | None = None,
+        ui_toolbar_text_color: Any | None = None,
+        ui_toolbar_toggle_color: str | None = None,
+        ui_toolbar_bg: str | None = None,
+        ui_toolbar_outline: bool | None = None,
+        ui_toolbar_push: bool | None = None,
+        ui_toolbar_rounded: bool | None = None,
+        ui_paragraph_tag: str | None = None,
+        ui_content_style: dict | None = None,
+        ui_content_class: str | list | dict | None = None,
+        ui_placeholder: str | None = None,
+        ui_fullscreen: bool | None = None,
+        ui_no_route_fullscreen_exit: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QEditor", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -5343,11 +5894,12 @@ class QEditor(Component):
         if ui_fullscreen is not None:
             self._props["fullscreen"] = ui_fullscreen
         if ui_no_route_fullscreen_exit is not None:
-            self._props["no-route-fullscreen-exit"] = ui_no_route_fullscreen_exit
+            self._props["no-route-fullscreen-exit"] = (
+                ui_no_route_fullscreen_exit
+            )
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -5582,9 +6134,10 @@ class QEditor(Component):
     def ui_slot_command(self, command, value):
         """Content for the given command in the toolbar"""
         self._set_slot("" + command, value)
+
     def on_blur(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5593,7 +6146,7 @@ class QEditor(Component):
 
     def on_click(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5638,7 +6191,7 @@ class QEditor(Component):
 
     def on_focus(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5656,7 +6209,7 @@ class QEditor(Component):
 
     def on_keydown(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5692,7 +6245,7 @@ class QEditor(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5701,16 +6254,20 @@ class QEditor(Component):
 
     def ui_exitFullscreen(self):
         """Leave the fullscreen view"""
-        self._js_call_method('exitFullscreen')
+        self._js_call_method("exitFullscreen")
+
     def ui_focus(self):
         """Focus on the contentEditable at saved cursor position"""
-        self._js_call_method('focus')
+        self._js_call_method("focus")
+
     def ui_getContentEl(self):
         """Retrieve the content of the Editor"""
-        self._js_call_method('getContentEl')
+        self._js_call_method("getContentEl")
+
     def ui_refreshToolbar(self):
         """Hide the link editor if visible and force the instance to re-render"""
-        self._js_call_method('refreshToolbar')
+        self._js_call_method("refreshToolbar")
+
     def ui_runCmd(self, ui_cmd, ui_param=None, ui_update=None):
         """Run contentEditable command at caret position and range"""
         kwargs = {}
@@ -5720,23 +6277,34 @@ class QEditor(Component):
             kwargs["param"] = ui_param
         if ui_update is not None:
             kwargs["update"] = ui_update
-        self._js_call_method('runCmd', [kwargs])
+        self._js_call_method("runCmd", [kwargs])
+
     def ui_setFullscreen(self):
         """Enter the fullscreen view"""
-        self._js_call_method('setFullscreen')
+        self._js_call_method("setFullscreen")
+
     def ui_toggleFullscreen(self):
         """Toggle the view to be fullscreen or not fullscreen"""
-        self._js_call_method('toggleFullscreen')
+        self._js_call_method("toggleFullscreen")
+
     def _get_js_methods(self):
-        return ["exitFullscreen", "focus", "getContentEl", "refreshToolbar", "runCmd", "setFullscreen", "toggleFullscreen"]
+        return [
+            "exitFullscreen",
+            "focus",
+            "getContentEl",
+            "refreshToolbar",
+            "runCmd",
+            "setFullscreen",
+            "toggleFullscreen",
+        ]
 
 
 class QExpansionItem(Component):
     """
     Quasar Component: `QExpansionItem <https://v2.quasar.dev/vue-components/expansion-item>`__
 
-    :param ui_icon: 
-    :param ui_expand_icon: 
+    :param ui_icon:
+    :param ui_expand_icon:
     :param ui_expanded_icon: Expand icon name (following Quasar convention) for when QExpansionItem is expanded; When used, it also disables the rotation animation of the expand icon; Make sure you have the icon library installed unless you are using 'img:' prefix
     :param ui_expand_icon_class: Apply custom class(es) to the expand icon item section
     :param ui_toggle_aria_label: aria-label to be used on the expansion toggle element
@@ -5744,8 +6312,8 @@ class QExpansionItem(Component):
     :param ui_label_lines: Apply ellipsis when there's not enough space to render on the specified number of lines; If more than one line specified, then it will only work on webkit browsers because it uses the '-webkit-line-clamp' CSS property!
     :param ui_caption: Header sub-label (unless using 'header' slot)
     :param ui_caption_lines: Apply ellipsis when there's not enough space to render on the specified number of lines; If more than one line specified, then it will only work on webkit browsers because it uses the '-webkit-line-clamp' CSS property!
-    :param ui_dark: 
-    :param ui_dense: 
+    :param ui_dark:
+    :param ui_dense:
     :param ui_duration: Animation duration (in milliseconds)
     :param ui_header_inset_level: Apply an inset to header (unless using 'header' slot); Useful when header avatar/left side is missing but you want to align content with other items that do have a left side, or when you're building a menu
     :param ui_content_inset_level: Apply an inset to content (changes content padding)
@@ -5767,12 +6335,49 @@ class QExpansionItem(Component):
     :param ui_exact_active_class: Equivalent to Vue Router <router-link> 'active-class' property; Superseded by 'href' prop if used
     :param ui_href: Native <a> link href attribute; Has priority over the 'to'/'exact'/'replace'/'active-class'/'exact-active-class' props
     :param ui_target: Native <a> link target attribute; Use it only along with 'href' prop; Has priority over the 'to'/'exact'/'replace'/'active-class'/'exact-active-class' props
-    :param ui_disable: 
+    :param ui_disable:
     """
 
-    def __init__(self, *children, ui_icon:Any | None=None,ui_expand_icon:Any | None=None,ui_expanded_icon:Any | None=None,ui_expand_icon_class:str | list | dict | None=None,ui_toggle_aria_label:str | None=None,ui_label:str | None=None,ui_label_lines:float | str | None=None,ui_caption:str | None=None,ui_caption_lines:float | str | None=None,ui_dark:Any | None=None,ui_dense:Any | None=None,ui_duration:float | None=None,ui_header_inset_level:float | None=None,ui_content_inset_level:float | None=None,ui_expand_separator:bool | None=None,ui_default_opened:bool | None=None,ui_hide_expand_icon:bool | None=None,ui_expand_icon_toggle:bool | None=None,ui_switch_toggle_side:bool | None=None,ui_dense_toggle:bool | None=None,ui_group:str | None=None,ui_popup:bool | None=None,ui_header_style:str | list | dict | None=None,ui_header_class:str | list | dict | None=None,ui_model_value:bool | None=None,ui_to:str | dict | None=None,ui_exact:bool | None=None,ui_replace:bool | None=None,ui_active_class:str | None=None,ui_exact_active_class:str | None=None,ui_href:str | None=None,ui_target:str | None=None,ui_disable:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_icon: Any | None = None,
+        ui_expand_icon: Any | None = None,
+        ui_expanded_icon: Any | None = None,
+        ui_expand_icon_class: str | list | dict | None = None,
+        ui_toggle_aria_label: str | None = None,
+        ui_label: str | None = None,
+        ui_label_lines: float | str | None = None,
+        ui_caption: str | None = None,
+        ui_caption_lines: float | str | None = None,
+        ui_dark: Any | None = None,
+        ui_dense: Any | None = None,
+        ui_duration: float | None = None,
+        ui_header_inset_level: float | None = None,
+        ui_content_inset_level: float | None = None,
+        ui_expand_separator: bool | None = None,
+        ui_default_opened: bool | None = None,
+        ui_hide_expand_icon: bool | None = None,
+        ui_expand_icon_toggle: bool | None = None,
+        ui_switch_toggle_side: bool | None = None,
+        ui_dense_toggle: bool | None = None,
+        ui_group: str | None = None,
+        ui_popup: bool | None = None,
+        ui_header_style: str | list | dict | None = None,
+        ui_header_class: str | list | dict | None = None,
+        ui_model_value: bool | None = None,
+        ui_to: str | dict | None = None,
+        ui_exact: bool | None = None,
+        ui_replace: bool | None = None,
+        ui_active_class: str | None = None,
+        ui_exact_active_class: str | None = None,
+        ui_href: str | None = None,
+        ui_target: str | None = None,
+        ui_disable: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QExpansionItem", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_icon is not None:
             self._props["icon"] = ui_icon
@@ -5842,8 +6447,7 @@ class QExpansionItem(Component):
             self._props["disable"] = ui_disable
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_icon(self):
@@ -6145,9 +6749,10 @@ class QExpansionItem(Component):
     @ui_slot_header.setter
     def ui_slot_header(self, value):
         self._set_slot("header", value)
+
     def on_after_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6156,7 +6761,7 @@ class QExpansionItem(Component):
 
     def on_after_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6165,7 +6770,7 @@ class QExpansionItem(Component):
 
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6174,7 +6779,7 @@ class QExpansionItem(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6183,7 +6788,7 @@ class QExpansionItem(Component):
 
     def on_click(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6192,7 +6797,7 @@ class QExpansionItem(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6201,7 +6806,7 @@ class QExpansionItem(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6218,11 +6823,14 @@ class QExpansionItem(Component):
         return self.on("update:model-value", handler, arg)
 
     def ui_hide(self):
-        self._js_call_method('hide')
+        self._js_call_method("hide")
+
     def ui_show(self):
-        self._js_call_method('show')
+        self._js_call_method("show")
+
     def ui_toggle(self):
-        self._js_call_method('toggle')
+        self._js_call_method("toggle")
+
     def _get_js_methods(self):
         return ["hide", "show", "toggle"]
 
@@ -6232,8 +6840,8 @@ class QFab(Component):
     Quasar Component: `QFab <https://v2.quasar.dev/vue-components/floating-action-button>`__
 
     :param ui_model_value: Model of the component defining shown/hidden state; Either use this property (along with a listener for 'update:model-value' event) OR use v-model directive
-    :param ui_icon: 
-    :param ui_active_icon: 
+    :param ui_icon:
+    :param ui_active_icon:
     :param ui_hide_label: Hide the label; Useful for animation purposes where you toggle the visibility of the label
     :param ui_hide_icon: Hide the icon (don't use any)
     :param ui_direction: Direction to expand Fab Actions to
@@ -6245,8 +6853,8 @@ class QFab(Component):
     :param ui_flat: Use 'flat' design for Fab button
     :param ui_unelevated: Remove shadow
     :param ui_padding: Apply custom padding (vertical [horizontal]); Size in CSS units, including unit name or standard size name (none|xs|sm|md|lg|xl); Also removes the min width and height when set
-    :param ui_color: 
-    :param ui_text_color: 
+    :param ui_color:
+    :param ui_text_color:
     :param ui_glossy: Apply the glossy effect over the button
     :param ui_external_label: Display label besides the FABs, as external content
     :param ui_label: The label that will be shown when Fab is extended
@@ -6254,13 +6862,42 @@ class QFab(Component):
     :param ui_label_class: Class definitions to be attributed to the label container
     :param ui_label_style: Style definitions to be attributed to the label container
     :param ui_square: Apply a rectangle aspect to the FAB
-    :param ui_disable: 
-    :param ui_tabindex: 
+    :param ui_disable:
+    :param ui_tabindex:
     """
 
-    def __init__(self, *children, ui_model_value:bool | None=None,ui_icon:Any | None=None,ui_active_icon:Any | None=None,ui_hide_label:bool | None=None,ui_hide_icon:bool | None=None,ui_direction:str | None=None,ui_vertical_actions_align:str | None=None,ui_persistent:bool | None=None,ui_type:str | None=None,ui_outline:bool | None=None,ui_push:bool | None=None,ui_flat:bool | None=None,ui_unelevated:bool | None=None,ui_padding:str | None=None,ui_color:Any | None=None,ui_text_color:Any | None=None,ui_glossy:bool | None=None,ui_external_label:bool | None=None,ui_label:str | float | None=None,ui_label_position:str | None=None,ui_label_class:str | list | dict | None=None,ui_label_style:str | list | dict | None=None,ui_square:bool | None=None,ui_disable:Any | None=None,ui_tabindex:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: bool | None = None,
+        ui_icon: Any | None = None,
+        ui_active_icon: Any | None = None,
+        ui_hide_label: bool | None = None,
+        ui_hide_icon: bool | None = None,
+        ui_direction: str | None = None,
+        ui_vertical_actions_align: str | None = None,
+        ui_persistent: bool | None = None,
+        ui_type: str | None = None,
+        ui_outline: bool | None = None,
+        ui_push: bool | None = None,
+        ui_flat: bool | None = None,
+        ui_unelevated: bool | None = None,
+        ui_padding: str | None = None,
+        ui_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_glossy: bool | None = None,
+        ui_external_label: bool | None = None,
+        ui_label: str | float | None = None,
+        ui_label_position: str | None = None,
+        ui_label_class: str | list | dict | None = None,
+        ui_label_style: str | list | dict | None = None,
+        ui_square: bool | None = None,
+        ui_disable: Any | None = None,
+        ui_tabindex: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QFab", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -6314,8 +6951,7 @@ class QFab(Component):
             self._props["tabindex"] = ui_tabindex
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -6571,9 +7207,10 @@ class QFab(Component):
     @ui_slot_tooltip.setter
     def ui_slot_tooltip(self, value):
         self._set_slot("tooltip", value)
+
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6582,7 +7219,7 @@ class QFab(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6591,7 +7228,7 @@ class QFab(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6600,7 +7237,7 @@ class QFab(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6618,12 +7255,15 @@ class QFab(Component):
 
     def ui_hide(self):
         """Collapses fab actions list"""
-        self._js_call_method('hide')
+        self._js_call_method("hide")
+
     def ui_show(self):
         """Expands fab actions list"""
-        self._js_call_method('show')
+        self._js_call_method("show")
+
     def ui_toggle(self):
-        self._js_call_method('toggle')
+        self._js_call_method("toggle")
+
     def _get_js_methods(self):
         return ["hide", "show", "toggle"]
 
@@ -6632,7 +7272,7 @@ class QFabAction(Component):
     """
     Quasar Component: `QFabAction <https://v2.quasar.dev/vue-components/floating-action-button>`__
 
-    :param ui_icon: 
+    :param ui_icon:
     :param ui_anchor: How to align the Fab Action relative to Fab expand side; By default it uses the align specified in QFab
     :param ui_to: Equivalent to Vue Router <router-link> 'to' property
     :param ui_replace: Equivalent to Vue Router <router-link> 'replace' property
@@ -6642,8 +7282,8 @@ class QFabAction(Component):
     :param ui_flat: Use 'flat' design for Fab button
     :param ui_unelevated: Remove shadow
     :param ui_padding: Apply custom padding (vertical [horizontal]); Size in CSS units, including unit name or standard size name (none|xs|sm|md|lg|xl); Also removes the min width and height when set
-    :param ui_color: 
-    :param ui_text_color: 
+    :param ui_color:
+    :param ui_text_color:
     :param ui_glossy: Apply the glossy effect over the button
     :param ui_external_label: Display label besides the FABs, as external content
     :param ui_label: The label that will be shown when Fab is extended
@@ -6652,11 +7292,37 @@ class QFabAction(Component):
     :param ui_label_class: Class definitions to be attributed to the label container
     :param ui_label_style: Style definitions to be attributed to the label container
     :param ui_square: Apply a rectangle aspect to the FAB
-    :param ui_disable: 
-    :param ui_tabindex: 
+    :param ui_disable:
+    :param ui_tabindex:
     """
 
-    def __init__(self, *children, ui_icon:Any | None=None,ui_anchor:str | None=None,ui_to:str | dict | None=None,ui_replace:bool | None=None,ui_type:str | None=None,ui_outline:bool | None=None,ui_push:bool | None=None,ui_flat:bool | None=None,ui_unelevated:bool | None=None,ui_padding:str | None=None,ui_color:Any | None=None,ui_text_color:Any | None=None,ui_glossy:bool | None=None,ui_external_label:bool | None=None,ui_label:str | float | None=None,ui_label_position:str | None=None,ui_hide_label:bool | None=None,ui_label_class:str | list | dict | None=None,ui_label_style:str | list | dict | None=None,ui_square:bool | None=None,ui_disable:Any | None=None,ui_tabindex:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_icon: Any | None = None,
+        ui_anchor: str | None = None,
+        ui_to: str | dict | None = None,
+        ui_replace: bool | None = None,
+        ui_type: str | None = None,
+        ui_outline: bool | None = None,
+        ui_push: bool | None = None,
+        ui_flat: bool | None = None,
+        ui_unelevated: bool | None = None,
+        ui_padding: str | None = None,
+        ui_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_glossy: bool | None = None,
+        ui_external_label: bool | None = None,
+        ui_label: str | float | None = None,
+        ui_label_position: str | None = None,
+        ui_hide_label: bool | None = None,
+        ui_label_class: str | list | dict | None = None,
+        ui_label_style: str | list | dict | None = None,
+        ui_square: bool | None = None,
+        ui_disable: Any | None = None,
+        ui_tabindex: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QFabAction", *children, **kwargs)
         if ui_icon is not None:
             self._props["icon"] = ui_icon
@@ -6913,9 +7579,10 @@ class QFabAction(Component):
     @ui_slot_label.setter
     def ui_slot_label(self, value):
         self._set_slot("label", value)
+
     def on_click(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6927,7 +7594,8 @@ class QFabAction(Component):
         kwargs = {}
         if ui_evt is not None:
             kwargs["evt"] = ui_evt
-        self._js_call_method('click', [kwargs])
+        self._js_call_method("click", [kwargs])
+
     def _get_js_methods(self):
         return ["click"]
 
@@ -6937,7 +7605,7 @@ class QField(Component):
     Quasar Component: `QField <https://v2.quasar.dev/vue-components/field>`__
 
     :param ui_maxlength: Specify a max length of model
-    :param ui_tag: 
+    :param ui_tag:
     :param ui_label: A text label that will “float” up above the input field, once the field gets focus
     :param ui_stack_label: Label will be always shown above the field regardless of field content (if any)
     :param ui_hint: Helper (hint) text which gets placed below your wrapped form component
@@ -6945,9 +7613,9 @@ class QField(Component):
     :param ui_prefix: Prefix
     :param ui_suffix: Suffix
     :param ui_label_color: Color name for the label from the Quasar Color Palette; Overrides the 'color' prop; The difference from 'color' prop is that the label will always have this color, even when field is not focused
-    :param ui_color: 
-    :param ui_bg_color: 
-    :param ui_dark: 
+    :param ui_color:
+    :param ui_bg_color:
+    :param ui_dark:
     :param ui_loading: Signals the user a process is in progress by displaying a spinner; Spinner can be customized by using the 'loading' slot.
     :param ui_clearable: Appends clearable icon when a value (not undefined or null) is set; When clicked, model becomes null
     :param ui_clear_icon: Custom icon to use for the clear button when using along with 'clearable' prop
@@ -6959,12 +7627,12 @@ class QField(Component):
     :param ui_bottom_slots: Enables bottom slots ('error', 'hint', 'counter')
     :param ui_hide_bottom_space: Do not reserve space for hint/error/counter anymore when these are not used; As a result, it also disables the animation for those; It also allows the hint/error area to stretch vertically based on its content
     :param ui_counter: Show an automatic counter on bottom right
-    :param ui_rounded: 
+    :param ui_rounded:
     :param ui_square: Remove border-radius so borders are squared; Overrides 'rounded' prop
-    :param ui_dense: 
+    :param ui_dense:
     :param ui_item_aligned: Match inner content alignment to that of QItem
-    :param ui_disable: 
-    :param ui_readonly: 
+    :param ui_disable:
+    :param ui_readonly:
     :param ui_autofocus: Focus field on initial component render
     :param ui_for: Used to specify the 'id' of the control and also the 'for' attribute of the label that wraps it; If no 'name' prop is specified, then it is used for this attribute as well
     :param ui_model_value: Model of the component; Either use this property (along with a listener for 'update:model-value' event) OR use v-model directive
@@ -6976,9 +7644,51 @@ class QField(Component):
     :param ui_lazy_rules: If set to boolean true then it checks validation status against the 'rules' only after field loses focus for first time; If set to 'ondemand' then it will trigger only when component's validate() method is manually called or when the wrapper QForm submits itself
     """
 
-    def __init__(self, *children, ui_maxlength:str | float | None=None,ui_tag:Any | None=None,ui_label:str | None=None,ui_stack_label:bool | None=None,ui_hint:str | None=None,ui_hide_hint:bool | None=None,ui_prefix:str | None=None,ui_suffix:str | None=None,ui_label_color:Any | None=None,ui_color:Any | None=None,ui_bg_color:Any | None=None,ui_dark:Any | None=None,ui_loading:bool | None=None,ui_clearable:bool | None=None,ui_clear_icon:str | None=None,ui_filled:bool | None=None,ui_outlined:bool | None=None,ui_borderless:bool | None=None,ui_standout:bool | str | None=None,ui_label_slot:bool | None=None,ui_bottom_slots:bool | None=None,ui_hide_bottom_space:bool | None=None,ui_counter:bool | None=None,ui_rounded:Any | None=None,ui_square:bool | None=None,ui_dense:Any | None=None,ui_item_aligned:bool | None=None,ui_disable:Any | None=None,ui_readonly:Any | None=None,ui_autofocus:bool | None=None,ui_for:str | None=None,ui_model_value:Any | None=None,ui_error:bool | None=None,ui_error_message:str | None=None,ui_no_error_icon:bool | None=None,ui_rules:list | None=None,ui_reactive_rules:bool | None=None,ui_lazy_rules:bool | str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_maxlength: str | float | None = None,
+        ui_tag: Any | None = None,
+        ui_label: str | None = None,
+        ui_stack_label: bool | None = None,
+        ui_hint: str | None = None,
+        ui_hide_hint: bool | None = None,
+        ui_prefix: str | None = None,
+        ui_suffix: str | None = None,
+        ui_label_color: Any | None = None,
+        ui_color: Any | None = None,
+        ui_bg_color: Any | None = None,
+        ui_dark: Any | None = None,
+        ui_loading: bool | None = None,
+        ui_clearable: bool | None = None,
+        ui_clear_icon: str | None = None,
+        ui_filled: bool | None = None,
+        ui_outlined: bool | None = None,
+        ui_borderless: bool | None = None,
+        ui_standout: bool | str | None = None,
+        ui_label_slot: bool | None = None,
+        ui_bottom_slots: bool | None = None,
+        ui_hide_bottom_space: bool | None = None,
+        ui_counter: bool | None = None,
+        ui_rounded: Any | None = None,
+        ui_square: bool | None = None,
+        ui_dense: Any | None = None,
+        ui_item_aligned: bool | None = None,
+        ui_disable: Any | None = None,
+        ui_readonly: Any | None = None,
+        ui_autofocus: bool | None = None,
+        ui_for: str | None = None,
+        ui_model_value: Any | None = None,
+        ui_error: bool | None = None,
+        ui_error_message: str | None = None,
+        ui_no_error_icon: bool | None = None,
+        ui_rules: list | None = None,
+        ui_reactive_rules: bool | None = None,
+        ui_lazy_rules: bool | str | None = None,
+        **kwargs,
+    ):
         super().__init__("QField", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_maxlength is not None:
             self._props["maxlength"] = ui_maxlength
@@ -7050,7 +7760,7 @@ class QField(Component):
             self._props["error-message"] = ui_error_message
         if ui_no_error_icon is not None:
             self._props["no-error-icon"] = ui_no_error_icon
-        
+
         self._rules = [] if ui_rules is None else ui_rules
         self._rules_registered = False
         if self._rules:
@@ -7063,8 +7773,7 @@ class QField(Component):
             self._props["lazy-rules"] = ui_lazy_rules
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_maxlength(self):
@@ -7388,7 +8097,7 @@ class QField(Component):
     def _validate_rules(self):
         for rule in self.ui_rules:
             value = rule(self.ui_model_value)
-            if isinstance(value, str) and value != '':
+            if isinstance(value, str) and value != "":
                 self.ui_error_message = value
                 self.ui_error = True
                 return
@@ -7509,6 +8218,7 @@ class QField(Component):
     @ui_slot_rawControl.setter
     def ui_slot_rawControl(self, value):
         self._set_slot("rawControl", value)
+
     def on_blur(self, handler: Callable, arg: object = None):
         """
         Emitted when component loses focus
@@ -7547,19 +8257,23 @@ class QField(Component):
 
     def ui_blur(self):
         """Blur component (lose focus)"""
-        self._js_call_method('blur')
+        self._js_call_method("blur")
+
     def ui_focus(self):
         """Focus component"""
-        self._js_call_method('focus')
+        self._js_call_method("focus")
+
     def ui_resetValidation(self):
         """Reset validation status"""
-        self._js_call_method('resetValidation')
+        self._js_call_method("resetValidation")
+
     def ui_validate(self, ui_value=None):
         """Trigger a validation"""
         kwargs = {}
         if ui_value is not None:
             kwargs["value"] = ui_value
-        self._js_call_method('validate', [kwargs])
+        self._js_call_method("validate", [kwargs])
+
     def _get_js_methods(self):
         return ["blur", "focus", "resetValidation", "validate"]
 
@@ -7573,7 +8287,7 @@ class QFile(Component):
     :param ui_display_value: Override default selection string, if not using 'file' or 'selected' scoped slots and if not using 'use-chips' prop
     :param ui_use_chips: Use QChip to show picked files
     :param ui_counter_label: Label for the counter; The 'counter' prop is necessary to enable this one
-    :param ui_tabindex: 
+    :param ui_tabindex:
     :param ui_input_class: Class definitions to be attributed to the underlying selection container
     :param ui_input_style: Style definitions to be attributed to the underlying selection container
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
@@ -7584,9 +8298,9 @@ class QFile(Component):
     :param ui_prefix: Prefix
     :param ui_suffix: Suffix
     :param ui_label_color: Color name for the label from the Quasar Color Palette; Overrides the 'color' prop; The difference from 'color' prop is that the label will always have this color, even when field is not focused
-    :param ui_color: 
-    :param ui_bg_color: 
-    :param ui_dark: 
+    :param ui_color:
+    :param ui_bg_color:
+    :param ui_dark:
     :param ui_loading: Signals the user a process is in progress by displaying a spinner; Spinner can be customized by using the 'loading' slot.
     :param ui_clearable: Appends clearable icon when a value (not undefined or null) is set; When clicked, model becomes null
     :param ui_clear_icon: Custom icon to use for the clear button when using along with 'clearable' prop
@@ -7598,12 +8312,12 @@ class QFile(Component):
     :param ui_bottom_slots: Enables bottom slots ('error', 'hint', 'counter')
     :param ui_hide_bottom_space: Do not reserve space for hint/error/counter anymore when these are not used; As a result, it also disables the animation for those; It also allows the hint/error area to stretch vertically based on its content
     :param ui_counter: Show an automatic counter on bottom right
-    :param ui_rounded: 
+    :param ui_rounded:
     :param ui_square: Remove border-radius so borders are squared; Overrides 'rounded' prop
-    :param ui_dense: 
+    :param ui_dense:
     :param ui_item_aligned: Match inner content alignment to that of QItem
-    :param ui_disable: 
-    :param ui_readonly: 
+    :param ui_disable:
+    :param ui_readonly:
     :param ui_autofocus: Focus field on initial component render
     :param ui_for: Used to specify the 'id' of the control and also the 'for' attribute of the label that wraps it; If no 'name' prop is specified, then it is used for this attribute as well
     :param ui_error: Does field have validation errors?
@@ -7621,9 +8335,64 @@ class QFile(Component):
     :param ui_filter: Custom filter for added files; Only files that pass this filter will be added to the queue and uploaded; For best performance, reference it from your scope and do not define it inline
     """
 
-    def __init__(self, *children, ui_model_value:Any | None=None,ui_append:bool | None=None,ui_display_value:float | str | None=None,ui_use_chips:bool | None=None,ui_counter_label:Callable | None=None,ui_tabindex:Any | None=None,ui_input_class:str | list | dict | None=None,ui_input_style:str | list | dict | None=None,ui_name:str | None=None,ui_label:str | None=None,ui_stack_label:bool | None=None,ui_hint:str | None=None,ui_hide_hint:bool | None=None,ui_prefix:str | None=None,ui_suffix:str | None=None,ui_label_color:Any | None=None,ui_color:Any | None=None,ui_bg_color:Any | None=None,ui_dark:Any | None=None,ui_loading:bool | None=None,ui_clearable:bool | None=None,ui_clear_icon:str | None=None,ui_filled:bool | None=None,ui_outlined:bool | None=None,ui_borderless:bool | None=None,ui_standout:bool | str | None=None,ui_label_slot:bool | None=None,ui_bottom_slots:bool | None=None,ui_hide_bottom_space:bool | None=None,ui_counter:bool | None=None,ui_rounded:Any | None=None,ui_square:bool | None=None,ui_dense:Any | None=None,ui_item_aligned:bool | None=None,ui_disable:Any | None=None,ui_readonly:Any | None=None,ui_autofocus:bool | None=None,ui_for:str | None=None,ui_error:bool | None=None,ui_error_message:str | None=None,ui_no_error_icon:bool | None=None,ui_rules:list | None=None,ui_reactive_rules:bool | None=None,ui_lazy_rules:bool | str | None=None,ui_multiple:bool | None=None,ui_accept:str | None=None,ui_capture:str | None=None,ui_max_file_size:float | str | None=None,ui_max_total_size:float | str | None=None,ui_max_files:float | str | None=None,ui_filter:Callable | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: Any | None = None,
+        ui_append: bool | None = None,
+        ui_display_value: float | str | None = None,
+        ui_use_chips: bool | None = None,
+        ui_counter_label: Callable | None = None,
+        ui_tabindex: Any | None = None,
+        ui_input_class: str | list | dict | None = None,
+        ui_input_style: str | list | dict | None = None,
+        ui_name: str | None = None,
+        ui_label: str | None = None,
+        ui_stack_label: bool | None = None,
+        ui_hint: str | None = None,
+        ui_hide_hint: bool | None = None,
+        ui_prefix: str | None = None,
+        ui_suffix: str | None = None,
+        ui_label_color: Any | None = None,
+        ui_color: Any | None = None,
+        ui_bg_color: Any | None = None,
+        ui_dark: Any | None = None,
+        ui_loading: bool | None = None,
+        ui_clearable: bool | None = None,
+        ui_clear_icon: str | None = None,
+        ui_filled: bool | None = None,
+        ui_outlined: bool | None = None,
+        ui_borderless: bool | None = None,
+        ui_standout: bool | str | None = None,
+        ui_label_slot: bool | None = None,
+        ui_bottom_slots: bool | None = None,
+        ui_hide_bottom_space: bool | None = None,
+        ui_counter: bool | None = None,
+        ui_rounded: Any | None = None,
+        ui_square: bool | None = None,
+        ui_dense: Any | None = None,
+        ui_item_aligned: bool | None = None,
+        ui_disable: Any | None = None,
+        ui_readonly: Any | None = None,
+        ui_autofocus: bool | None = None,
+        ui_for: str | None = None,
+        ui_error: bool | None = None,
+        ui_error_message: str | None = None,
+        ui_no_error_icon: bool | None = None,
+        ui_rules: list | None = None,
+        ui_reactive_rules: bool | None = None,
+        ui_lazy_rules: bool | str | None = None,
+        ui_multiple: bool | None = None,
+        ui_accept: str | None = None,
+        ui_capture: str | None = None,
+        ui_max_file_size: float | str | None = None,
+        ui_max_total_size: float | str | None = None,
+        ui_max_files: float | str | None = None,
+        ui_filter: Callable | None = None,
+        **kwargs,
+    ):
         super().__init__("QFile", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -7707,7 +8476,7 @@ class QFile(Component):
             self._props["error-message"] = ui_error_message
         if ui_no_error_icon is not None:
             self._props["no-error-icon"] = ui_no_error_icon
-        
+
         self._rules = [] if ui_rules is None else ui_rules
         self._rules_registered = False
         if self._rules:
@@ -7734,8 +8503,7 @@ class QFile(Component):
             self._props["filter"] = ui_filter
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -8113,7 +8881,7 @@ class QFile(Component):
     def _validate_rules(self):
         for rule in self.ui_rules:
             value = rule(self.ui_model_value)
-            if isinstance(value, str) and value != '':
+            if isinstance(value, str) and value != "":
                 self.ui_error_message = value
                 self.ui_error = True
                 return
@@ -8298,6 +9066,7 @@ class QFile(Component):
     @ui_slot_selected.setter
     def ui_slot_selected(self, value):
         self._set_slot("selected", value)
+
     def on_blur(self, handler: Callable, arg: object = None):
         """
         Emitted when component loses focus
@@ -8336,7 +9105,7 @@ class QFile(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -8348,45 +9117,64 @@ class QFile(Component):
         kwargs = {}
         if ui_files is not None:
             kwargs["files"] = ui_files
-        self._js_call_method('addFiles', [kwargs])
+        self._js_call_method("addFiles", [kwargs])
+
     def ui_blur(self):
         """Blur component (lose focus)"""
-        self._js_call_method('blur')
+        self._js_call_method("blur")
+
     def ui_focus(self):
         """Focus component"""
-        self._js_call_method('focus')
+        self._js_call_method("focus")
+
     def ui_getNativeElement(self):
         """DEPRECATED; Access 'nativeEl' directly; Gets the native input DOM Element"""
-        self._js_call_method('getNativeElement')
+        self._js_call_method("getNativeElement")
+
     def ui_pickFiles(self, ui_evt=None):
         """Trigger file pick; Must be called as a direct consequence of user interaction (eg. in a click handler), due to browsers security policy"""
         kwargs = {}
         if ui_evt is not None:
             kwargs["evt"] = ui_evt
-        self._js_call_method('pickFiles', [kwargs])
+        self._js_call_method("pickFiles", [kwargs])
+
     def ui_removeAtIndex(self, ui_index):
         """Remove file located at specific index in the model"""
         kwargs = {}
         if ui_index is not None:
             kwargs["index"] = ui_index
-        self._js_call_method('removeAtIndex', [kwargs])
+        self._js_call_method("removeAtIndex", [kwargs])
+
     def ui_removeFile(self, ui_file):
         """Remove specified file from the model"""
         kwargs = {}
         if ui_file is not None:
             kwargs["file"] = ui_file
-        self._js_call_method('removeFile', [kwargs])
+        self._js_call_method("removeFile", [kwargs])
+
     def ui_resetValidation(self):
         """Reset validation status"""
-        self._js_call_method('resetValidation')
+        self._js_call_method("resetValidation")
+
     def ui_validate(self, ui_value=None):
         """Trigger a validation"""
         kwargs = {}
         if ui_value is not None:
             kwargs["value"] = ui_value
-        self._js_call_method('validate', [kwargs])
+        self._js_call_method("validate", [kwargs])
+
     def _get_js_methods(self):
-        return ["addFiles", "blur", "focus", "getNativeElement", "pickFiles", "removeAtIndex", "removeFile", "resetValidation", "validate"]
+        return [
+            "addFiles",
+            "blur",
+            "focus",
+            "getNativeElement",
+            "pickFiles",
+            "removeAtIndex",
+            "removeFile",
+            "resetValidation",
+            "validate",
+        ]
 
 
 class QFooter(Component):
@@ -8395,14 +9183,23 @@ class QFooter(Component):
 
     :param ui_model_value: Model of the component defining if it is shown or hidden to the user; Either use this property (along with a listener for 'update:modelValue' event) OR use v-model directive
     :param ui_reveal: Enable 'reveal' mode; Takes into account user scroll to temporarily show/hide footer
-    :param ui_bordered: 
+    :param ui_bordered:
     :param ui_elevated: Adds a default shadow to the footer
     :param ui_height_hint: When using SSR, you can optionally hint of the height (in pixels) of the QFooter
     """
 
-    def __init__(self, *children, ui_model_value:bool | None=None,ui_reveal:bool | None=None,ui_bordered:Any | None=None,ui_elevated:bool | None=None,ui_height_hint:float | str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: bool | None = None,
+        ui_reveal: bool | None = None,
+        ui_bordered: Any | None = None,
+        ui_elevated: bool | None = None,
+        ui_height_hint: float | str | None = None,
+        **kwargs,
+    ):
         super().__init__("QFooter", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -8416,8 +9213,7 @@ class QFooter(Component):
             self._props["height-hint"] = ui_height_hint
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -8462,9 +9258,10 @@ class QFooter(Component):
     @ui_height_hint.setter
     def ui_height_hint(self, value):
         self._set_prop("height-hint", value)
+
     def on_focusin(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -8494,7 +9291,15 @@ class QForm(Component):
     :param ui_greedy: Validate all fields in form (by default it stops after finding the first invalid field with synchronous validation)
     """
 
-    def __init__(self, *children, ui_autofocus:bool | None=None,ui_no_error_focus:bool | None=None,ui_no_reset_focus:bool | None=None,ui_greedy:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_autofocus: bool | None = None,
+        ui_no_error_focus: bool | None = None,
+        ui_no_reset_focus: bool | None = None,
+        ui_greedy: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QForm", *children, **kwargs)
         if ui_autofocus is not None:
             self._props["autofocus"] = ui_autofocus
@@ -8540,6 +9345,7 @@ class QForm(Component):
     @ui_greedy.setter
     def ui_greedy(self, value):
         self._set_prop("greedy", value)
+
     def on_reset(self, handler: Callable, arg: object = None):
         """
         Emitted when all validations have been reset when tethered to a reset button; It is recommended to manually reset the wrapped components models in this handler
@@ -8578,33 +9384,46 @@ class QForm(Component):
 
     def ui_focus(self):
         """Focus on first focusable element/component in the form"""
-        self._js_call_method('focus')
+        self._js_call_method("focus")
+
     def ui_getValidationComponents(self):
         """Get an array of children Vue component instances that support Quasar validation API (derived from QField, or using useFormChild()/QFormChildMixin)"""
-        self._js_call_method('getValidationComponents')
+        self._js_call_method("getValidationComponents")
+
     def ui_reset(self, ui_evt=None):
         """Manually trigger form reset"""
         kwargs = {}
         if ui_evt is not None:
             kwargs["evt"] = ui_evt
-        self._js_call_method('reset', [kwargs])
+        self._js_call_method("reset", [kwargs])
+
     def ui_resetValidation(self):
         """Resets the validation on all applicable inner Quasar components"""
-        self._js_call_method('resetValidation')
+        self._js_call_method("resetValidation")
+
     def ui_submit(self, ui_evt=None):
         """Manually trigger form validation and submit"""
         kwargs = {}
         if ui_evt is not None:
             kwargs["evt"] = ui_evt
-        self._js_call_method('submit', [kwargs])
+        self._js_call_method("submit", [kwargs])
+
     def ui_validate(self, ui_shouldFocus=None):
         """Triggers a validation on all applicable inner Quasar components"""
         kwargs = {}
         if ui_shouldFocus is not None:
             kwargs["shouldFocus"] = ui_shouldFocus
-        self._js_call_method('validate', [kwargs])
+        self._js_call_method("validate", [kwargs])
+
     def _get_js_methods(self):
-        return ["focus", "getValidationComponents", "reset", "resetValidation", "submit", "validate"]
+        return [
+            "focus",
+            "getValidationComponents",
+            "reset",
+            "resetValidation",
+            "submit",
+            "validate",
+        ]
 
 
 class QFormChildMixin(Component):
@@ -8613,15 +9432,17 @@ class QFormChildMixin(Component):
 
     """
 
-    def __init__(self, *children,  **kwargs):
+    def __init__(self, *children, **kwargs):
         super().__init__("QFormChildMixin", *children, **kwargs)
-        
+
     def ui_resetValidation(self):
         """Needs to be overwritten when getting extended/mixed in"""
-        self._js_call_method('resetValidation')
+        self._js_call_method("resetValidation")
+
     def ui_validate(self):
         """Needs to be overwritten when getting extended/mixed in"""
-        self._js_call_method('validate')
+        self._js_call_method("validate")
+
     def _get_js_methods(self):
         return ["resetValidation", "validate"]
 
@@ -8633,14 +9454,24 @@ class QHeader(Component):
     :param ui_model_value: Model of the component defining if it is shown or hidden to the user; Either use this property (along with a listener for 'update:modelValue' event) OR use v-model directive
     :param ui_reveal: Enable 'reveal' mode; Takes into account user scroll to temporarily show/hide header
     :param ui_reveal_offset: Amount of scroll (in pixels) that should trigger a 'reveal' state change
-    :param ui_bordered: 
+    :param ui_bordered:
     :param ui_elevated: Adds a default shadow to the header
     :param ui_height_hint: When using SSR, you can optionally hint of the height (in pixels) of the QHeader
     """
 
-    def __init__(self, *children, ui_model_value:bool | None=None,ui_reveal:bool | None=None,ui_reveal_offset:float | None=None,ui_bordered:Any | None=None,ui_elevated:bool | None=None,ui_height_hint:float | str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: bool | None = None,
+        ui_reveal: bool | None = None,
+        ui_reveal_offset: float | None = None,
+        ui_bordered: Any | None = None,
+        ui_elevated: bool | None = None,
+        ui_height_hint: float | str | None = None,
+        **kwargs,
+    ):
         super().__init__("QHeader", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -8656,8 +9487,7 @@ class QHeader(Component):
             self._props["height-hint"] = ui_height_hint
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -8711,9 +9541,10 @@ class QHeader(Component):
     @ui_height_hint.setter
     def ui_height_hint(self, value):
         self._set_prop("height-hint", value)
+
     def on_focusin(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -8738,14 +9569,24 @@ class QIcon(Component):
     Quasar Component: `QIcon <https://v2.quasar.dev/vue-components/icon>`__
 
     :param ui_tag: HTML tag to render, unless no icon is supplied or it's an svg icon
-    :param ui_name: 
-    :param ui_color: 
+    :param ui_name:
+    :param ui_color:
     :param ui_left: Useful if icon is on the left side of something: applies a standard margin on the right side of Icon
     :param ui_right: Useful if icon is on the right side of something: applies a standard margin on the left side of Icon
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_tag:Any | None=None,ui_name:Any | None=None,ui_color:Any | None=None,ui_left:bool | None=None,ui_right:bool | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_tag: Any | None = None,
+        ui_name: Any | None = None,
+        ui_color: Any | None = None,
+        ui_left: bool | None = None,
+        ui_right: bool | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QIcon", *children, **kwargs)
         if ui_tag is not None:
             self._props["tag"] = ui_tag
@@ -8811,6 +9652,7 @@ class QIcon(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -8847,7 +9689,37 @@ class QImg(Component):
     :param ui_no_transition: Disable default transition when switching between old and new image
     """
 
-    def __init__(self, *children, ui_src:str | None=None,ui_srcset:str | None=None,ui_sizes:str | None=None,ui_placeholder_src:str | None=None,ui_error_src:str | None=None,ui_ratio:str | float | None=None,ui_initial_ratio:str | float | None=None,ui_width:str | None=None,ui_height:str | None=None,ui_loading:str | None=None,ui_loading_show_delay:float | str | None=None,ui_crossorigin:str | None=None,ui_decoding:str | None=None,ui_referrerpolicy:str | None=None,ui_fetchpriority:str | None=None,ui_fit:str | None=None,ui_position:str | None=None,ui_alt:str | None=None,ui_draggable:bool | None=None,ui_img_class:str | None=None,ui_img_style:dict | None=None,ui_spinner_color:Any | None=None,ui_spinner_size:Any | None=None,ui_no_spinner:bool | None=None,ui_no_native_menu:bool | None=None,ui_no_transition:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_src: str | None = None,
+        ui_srcset: str | None = None,
+        ui_sizes: str | None = None,
+        ui_placeholder_src: str | None = None,
+        ui_error_src: str | None = None,
+        ui_ratio: str | float | None = None,
+        ui_initial_ratio: str | float | None = None,
+        ui_width: str | None = None,
+        ui_height: str | None = None,
+        ui_loading: str | None = None,
+        ui_loading_show_delay: float | str | None = None,
+        ui_crossorigin: str | None = None,
+        ui_decoding: str | None = None,
+        ui_referrerpolicy: str | None = None,
+        ui_fetchpriority: str | None = None,
+        ui_fit: str | None = None,
+        ui_position: str | None = None,
+        ui_alt: str | None = None,
+        ui_draggable: bool | None = None,
+        ui_img_class: str | None = None,
+        ui_img_style: dict | None = None,
+        ui_spinner_color: Any | None = None,
+        ui_spinner_size: Any | None = None,
+        ui_no_spinner: bool | None = None,
+        ui_no_native_menu: bool | None = None,
+        ui_no_transition: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QImg", *children, **kwargs)
         if ui_src is not None:
             self._props["src"] = ui_src
@@ -9153,6 +10025,7 @@ class QImg(Component):
     @ui_slot_loading.setter
     def ui_slot_loading(self, value):
         self._set_slot("loading", value)
+
     def on_error(self, handler: Callable, arg: object = None):
         """
         Emitted when browser could not load the image
@@ -9182,12 +10055,22 @@ class QInfiniteScroll(Component):
     :param ui_offset: Offset (pixels) to bottom of Infinite Scroll container from which the component should start loading more content in advance
     :param ui_debounce: Debounce amount (in milliseconds)
     :param ui_initial_index: Initialize the pagination index (used for the @load event)
-    :param ui_scroll_target: 
-    :param ui_disable: 
+    :param ui_scroll_target:
+    :param ui_disable:
     :param ui_reverse: Scroll area should behave like a messenger - starting scrolled to bottom and loading when reaching the top
     """
 
-    def __init__(self, *children, ui_offset:float | None=None,ui_debounce:str | float | None=None,ui_initial_index:float | None=None,ui_scroll_target:Any | None=None,ui_disable:Any | None=None,ui_reverse:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_offset: float | None = None,
+        ui_debounce: str | float | None = None,
+        ui_initial_index: float | None = None,
+        ui_scroll_target: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_reverse: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QInfiniteScroll", *children, **kwargs)
         if ui_offset is not None:
             self._props["offset"] = ui_offset
@@ -9262,6 +10145,7 @@ class QInfiniteScroll(Component):
     @ui_slot_loading.setter
     def ui_slot_loading(self, value):
         self._set_slot("loading", value)
+
     def on_load(self, handler: Callable, arg: object = None):
         """
         Emitted when Infinite Scroll needs to load more data
@@ -9273,30 +10157,45 @@ class QInfiniteScroll(Component):
 
     def ui_poll(self):
         """Checks scroll position and loads more content if necessary"""
-        self._js_call_method('poll')
+        self._js_call_method("poll")
+
     def ui_reset(self):
         """Resets calling index to 0"""
-        self._js_call_method('reset')
+        self._js_call_method("reset")
+
     def ui_resume(self):
         """Starts working. Checks scroll position upon call and if trigger is hit, it loads more content"""
-        self._js_call_method('resume')
+        self._js_call_method("resume")
+
     def ui_setIndex(self, ui_newIndex):
         """Overwrite the current pagination index"""
         kwargs = {}
         if ui_newIndex is not None:
             kwargs["newIndex"] = ui_newIndex
-        self._js_call_method('setIndex', [kwargs])
+        self._js_call_method("setIndex", [kwargs])
+
     def ui_stop(self):
         """Stops working, regardless of scroll position"""
-        self._js_call_method('stop')
+        self._js_call_method("stop")
+
     def ui_trigger(self):
         """Tells Infinite Scroll to load more content, regardless of the scroll position"""
-        self._js_call_method('trigger')
+        self._js_call_method("trigger")
+
     def ui_updateScrollTarget(self):
         """Updates the scroll target; Useful when the parent elements change so that the scrolling target also changes"""
-        self._js_call_method('updateScrollTarget')
+        self._js_call_method("updateScrollTarget")
+
     def _get_js_methods(self):
-        return ["poll", "reset", "resume", "setIndex", "stop", "trigger", "updateScrollTarget"]
+        return [
+            "poll",
+            "reset",
+            "resume",
+            "setIndex",
+            "stop",
+            "trigger",
+            "updateScrollTarget",
+        ]
 
 
 class QInnerLoading(Component):
@@ -9309,13 +10208,27 @@ class QInnerLoading(Component):
     :param ui_label: Add a label; Gets overriden when using the default slot
     :param ui_label_class: Add CSS class(es) to the label; Works along the 'label' prop only
     :param ui_label_style: Apply custom style to the label; Works along the 'label' prop only
-    :param ui_dark: 
-    :param ui_transition_show: 
-    :param ui_transition_hide: 
+    :param ui_dark:
+    :param ui_transition_show:
+    :param ui_transition_hide:
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
 
-    def __init__(self, *children, ui_showing:bool | None=None,ui_color:Any | None=None,ui_size:str | None=None,ui_label:str | None=None,ui_label_class:str | None=None,ui_label_style:str | list | dict | None=None,ui_dark:Any | None=None,ui_transition_show:Any | None=None,ui_transition_hide:Any | None=None,ui_transition_duration:str | float | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_showing: bool | None = None,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        ui_label: str | None = None,
+        ui_label_class: str | None = None,
+        ui_label_style: str | list | dict | None = None,
+        ui_dark: Any | None = None,
+        ui_transition_show: Any | None = None,
+        ui_transition_hide: Any | None = None,
+        ui_transition_duration: str | float | None = None,
+        **kwargs,
+    ):
         super().__init__("QInnerLoading", *children, **kwargs)
         if ui_showing is not None:
             self._props["showing"] = ui_showing
@@ -9424,6 +10337,7 @@ class QInnerLoading(Component):
     @ui_transition_duration.setter
     def ui_transition_duration(self, value):
         self._set_prop("transition-duration", value)
+
     def _get_js_methods(self):
         return []
 
@@ -9448,9 +10362,9 @@ class QInput(Component):
     :param ui_prefix: Prefix
     :param ui_suffix: Suffix
     :param ui_label_color: Color name for the label from the Quasar Color Palette; Overrides the 'color' prop; The difference from 'color' prop is that the label will always have this color, even when field is not focused
-    :param ui_color: 
-    :param ui_bg_color: 
-    :param ui_dark: 
+    :param ui_color:
+    :param ui_bg_color:
+    :param ui_dark:
     :param ui_loading: Signals the user a process is in progress by displaying a spinner; Spinner can be customized by using the 'loading' slot.
     :param ui_clearable: Appends clearable icon when a value (not undefined or null) is set; When clicked, model becomes null
     :param ui_clear_icon: Custom icon to use for the clear button when using along with 'clearable' prop
@@ -9462,12 +10376,12 @@ class QInput(Component):
     :param ui_bottom_slots: Enables bottom slots ('error', 'hint', 'counter')
     :param ui_hide_bottom_space: Do not reserve space for hint/error/counter anymore when these are not used; As a result, it also disables the animation for those; It also allows the hint/error area to stretch vertically based on its content
     :param ui_counter: Show an automatic counter on bottom right
-    :param ui_rounded: 
+    :param ui_rounded:
     :param ui_square: Remove border-radius so borders are squared; Overrides 'rounded' prop
-    :param ui_dense: 
+    :param ui_dense:
     :param ui_item_aligned: Match inner content alignment to that of QItem
-    :param ui_disable: 
-    :param ui_readonly: 
+    :param ui_disable:
+    :param ui_readonly:
     :param ui_autofocus: Focus field on initial component render
     :param ui_for: Used to specify the 'id' of the control and also the 'for' attribute of the label that wraps it; If no 'name' prop is specified, then it is used for this attribute as well
     :param ui_error: Does field have validation errors?
@@ -9482,9 +10396,61 @@ class QInput(Component):
     :param ui_unmasked_value: Model will be unmasked (won't contain tokens/separation characters)
     """
 
-    def __init__(self, *children, ui_model_value:Any | None=None,ui_shadow_text:str | None=None,ui_type:str | None=None,ui_debounce:str | float | None=None,ui_maxlength:str | float | None=None,ui_autogrow:bool | None=None,ui_input_class:str | list | dict | None=None,ui_input_style:str | list | dict | None=None,ui_name:str | None=None,ui_label:str | None=None,ui_stack_label:bool | None=None,ui_hint:str | None=None,ui_hide_hint:bool | None=None,ui_prefix:str | None=None,ui_suffix:str | None=None,ui_label_color:Any | None=None,ui_color:Any | None=None,ui_bg_color:Any | None=None,ui_dark:Any | None=None,ui_loading:bool | None=None,ui_clearable:bool | None=None,ui_clear_icon:str | None=None,ui_filled:bool | None=None,ui_outlined:bool | None=None,ui_borderless:bool | None=None,ui_standout:bool | str | None=None,ui_label_slot:bool | None=None,ui_bottom_slots:bool | None=None,ui_hide_bottom_space:bool | None=None,ui_counter:bool | None=None,ui_rounded:Any | None=None,ui_square:bool | None=None,ui_dense:Any | None=None,ui_item_aligned:bool | None=None,ui_disable:Any | None=None,ui_readonly:Any | None=None,ui_autofocus:bool | None=None,ui_for:str | None=None,ui_error:bool | None=None,ui_error_message:str | None=None,ui_no_error_icon:bool | None=None,ui_rules:list | None=None,ui_reactive_rules:bool | None=None,ui_lazy_rules:bool | str | None=None,ui_mask:str | None=None,ui_fill_mask:bool | str | None=None,ui_reverse_fill_mask:bool | None=None,ui_unmasked_value:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: Any | None = None,
+        ui_shadow_text: str | None = None,
+        ui_type: str | None = None,
+        ui_debounce: str | float | None = None,
+        ui_maxlength: str | float | None = None,
+        ui_autogrow: bool | None = None,
+        ui_input_class: str | list | dict | None = None,
+        ui_input_style: str | list | dict | None = None,
+        ui_name: str | None = None,
+        ui_label: str | None = None,
+        ui_stack_label: bool | None = None,
+        ui_hint: str | None = None,
+        ui_hide_hint: bool | None = None,
+        ui_prefix: str | None = None,
+        ui_suffix: str | None = None,
+        ui_label_color: Any | None = None,
+        ui_color: Any | None = None,
+        ui_bg_color: Any | None = None,
+        ui_dark: Any | None = None,
+        ui_loading: bool | None = None,
+        ui_clearable: bool | None = None,
+        ui_clear_icon: str | None = None,
+        ui_filled: bool | None = None,
+        ui_outlined: bool | None = None,
+        ui_borderless: bool | None = None,
+        ui_standout: bool | str | None = None,
+        ui_label_slot: bool | None = None,
+        ui_bottom_slots: bool | None = None,
+        ui_hide_bottom_space: bool | None = None,
+        ui_counter: bool | None = None,
+        ui_rounded: Any | None = None,
+        ui_square: bool | None = None,
+        ui_dense: Any | None = None,
+        ui_item_aligned: bool | None = None,
+        ui_disable: Any | None = None,
+        ui_readonly: Any | None = None,
+        ui_autofocus: bool | None = None,
+        ui_for: str | None = None,
+        ui_error: bool | None = None,
+        ui_error_message: str | None = None,
+        ui_no_error_icon: bool | None = None,
+        ui_rules: list | None = None,
+        ui_reactive_rules: bool | None = None,
+        ui_lazy_rules: bool | str | None = None,
+        ui_mask: str | None = None,
+        ui_fill_mask: bool | str | None = None,
+        ui_reverse_fill_mask: bool | None = None,
+        ui_unmasked_value: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QInput", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -9568,7 +10534,7 @@ class QInput(Component):
             self._props["error-message"] = ui_error_message
         if ui_no_error_icon is not None:
             self._props["no-error-icon"] = ui_no_error_icon
-        
+
         self._rules = [] if ui_rules is None else ui_rules
         self._rules_registered = False
         if self._rules:
@@ -9589,8 +10555,7 @@ class QInput(Component):
             self._props["unmasked-value"] = ui_unmasked_value
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -9969,7 +10934,7 @@ class QInput(Component):
     def _validate_rules(self):
         for rule in self.ui_rules:
             value = rule(self.ui_model_value)
-            if isinstance(value, str) and value != '':
+            if isinstance(value, str) and value != "":
                 self.ui_error_message = value
                 self.ui_error = True
                 return
@@ -10109,9 +11074,10 @@ class QInput(Component):
     @ui_slot_prepend.setter
     def ui_slot_prepend(self, value):
         self._set_slot("prepend", value)
+
     def on_animationend(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -10129,7 +11095,7 @@ class QInput(Component):
 
     def on_change(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -10147,7 +11113,7 @@ class QInput(Component):
 
     def on_click(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -10165,7 +11131,7 @@ class QInput(Component):
 
     def on_keydown(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -10174,7 +11140,7 @@ class QInput(Component):
 
     def on_paste(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -10183,7 +11149,7 @@ class QInput(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -10192,45 +11158,71 @@ class QInput(Component):
 
     def ui_blur(self):
         """Blur component (lose focus)"""
-        self._js_call_method('blur')
+        self._js_call_method("blur")
+
     def ui_focus(self):
         """Focus component"""
-        self._js_call_method('focus')
+        self._js_call_method("focus")
+
     def ui_getNativeElement(self):
         """DEPRECATED; Access 'nativeEl' directly instead; Get the native input/textarea DOM Element"""
-        self._js_call_method('getNativeElement')
+        self._js_call_method("getNativeElement")
+
     def ui_resetValidation(self):
         """Reset validation status"""
-        self._js_call_method('resetValidation')
+        self._js_call_method("resetValidation")
+
     def ui_select(self):
         """Select input text"""
-        self._js_call_method('select')
+        self._js_call_method("select")
+
     def ui_validate(self, ui_value=None):
         """Trigger a validation"""
         kwargs = {}
         if ui_value is not None:
             kwargs["value"] = ui_value
-        self._js_call_method('validate', [kwargs])
+        self._js_call_method("validate", [kwargs])
+
     def _get_js_methods(self):
-        return ["blur", "focus", "getNativeElement", "resetValidation", "select", "validate"]
+        return [
+            "blur",
+            "focus",
+            "getNativeElement",
+            "resetValidation",
+            "select",
+            "validate",
+        ]
 
 
 class QIntersection(Component):
     """
     Quasar Component: `QIntersection <https://v2.quasar.dev/vue-components/intersection>`__
 
-    :param ui_tag: 
+    :param ui_tag:
     :param ui_once: Get triggered only once
     :param ui_ssr_prerender: Pre-render content on server side if using SSR (use it to pre-render above the fold content)
     :param ui_root: [Intersection API root prop] Lets you define an alternative to the viewport as your root (through its DOM element); It is important to keep in mind that root needs to be an ancestor of the observed element
     :param ui_margin: [Intersection API rootMargin prop] Allows you to specify the margins for the root, effectively allowing you to either grow or shrink the area used for intersections
     :param ui_threshold: [Intersection API threshold prop] Threshold(s) at which to trigger, specified as a ratio, or list of ratios, of (visible area / total area) of the observed element
-    :param ui_transition: 
+    :param ui_transition:
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     :param ui_disable: Disable visibility observable (content will remain as it was, visible or hidden)
     """
 
-    def __init__(self, *children, ui_tag:Any | None=None,ui_once:bool | None=None,ui_ssr_prerender:bool | None=None,ui_root:Any | None=None,ui_margin:str | None=None,ui_threshold:list | float | None=None,ui_transition:Any | None=None,ui_transition_duration:str | float | None=None,ui_disable:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_tag: Any | None = None,
+        ui_once: bool | None = None,
+        ui_ssr_prerender: bool | None = None,
+        ui_root: Any | None = None,
+        ui_margin: str | None = None,
+        ui_threshold: list | float | None = None,
+        ui_transition: Any | None = None,
+        ui_transition_duration: str | float | None = None,
+        ui_disable: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QIntersection", *children, **kwargs)
         if ui_tag is not None:
             self._props["tag"] = ui_tag
@@ -10338,6 +11330,7 @@ class QIntersection(Component):
     @ui_slot_hidden.setter
     def ui_slot_hidden(self, value):
         self._set_slot("hidden", value)
+
     def on_visibility(self, handler: Callable, arg: object = None):
         """
         Fires when visibility changes
@@ -10355,15 +11348,25 @@ class QList(Component):
     """
     Quasar Component: `QList <https://v2.quasar.dev/vue-components/list-and-list-items>`__
 
-    :param ui_bordered: 
-    :param ui_dense: 
+    :param ui_bordered:
+    :param ui_dense:
     :param ui_separator: Applies a separator between contained items
-    :param ui_dark: 
+    :param ui_dark:
     :param ui_padding: Applies a material design-like padding on top and bottom
-    :param ui_tag: 
+    :param ui_tag:
     """
 
-    def __init__(self, *children, ui_bordered:Any | None=None,ui_dense:Any | None=None,ui_separator:bool | None=None,ui_dark:Any | None=None,ui_padding:bool | None=None,ui_tag:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_bordered: Any | None = None,
+        ui_dense: Any | None = None,
+        ui_separator: bool | None = None,
+        ui_dark: Any | None = None,
+        ui_padding: bool | None = None,
+        ui_tag: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QList", *children, **kwargs)
         if ui_bordered is not None:
             self._props["bordered"] = ui_bordered
@@ -10427,6 +11430,7 @@ class QList(Component):
     @ui_tag.setter
     def ui_tag(self, value):
         self._set_prop("tag", value)
+
     def _get_js_methods(self):
         return []
 
@@ -10436,11 +11440,11 @@ class QItem(Component):
     Quasar Component: `QItem <https://v2.quasar.dev/vue-components/list-and-list-items>`__
 
     :param ui_active: Put item into 'active' state
-    :param ui_dark: 
+    :param ui_dark:
     :param ui_clickable: Is QItem clickable? If it's the case, then it will add hover effects and emit 'click' events
-    :param ui_dense: 
+    :param ui_dense:
     :param ui_inset_level: Apply an inset; Useful when avatar/left side is missing but you want to align content with other items that do have a left side, or when you're building a menu
-    :param ui_tabindex: 
+    :param ui_tabindex:
     :param ui_tag: HTML tag to render; Suggestion: use 'label' when encapsulating a QCheckbox/QRadio/QToggle so that when user clicks/taps on the whole item it will trigger a model change for the mentioned components
     :param ui_manual_focus: Put item into a manual focus state; Enables 'focused' prop which will determine if item is focused or not, rather than relying on native hover/focus states
     :param ui_focused: Determines focus state, ONLY if 'manual-focus' is enabled / set to true
@@ -10451,10 +11455,31 @@ class QItem(Component):
     :param ui_exact_active_class: Equivalent to Vue Router <router-link> 'active-class' property; Superseded by 'href' prop if used
     :param ui_href: Native <a> link href attribute; Has priority over the 'to'/'exact'/'replace'/'active-class'/'exact-active-class' props
     :param ui_target: Native <a> link target attribute; Use it only along with 'href' prop; Has priority over the 'to'/'exact'/'replace'/'active-class'/'exact-active-class' props
-    :param ui_disable: 
+    :param ui_disable:
     """
 
-    def __init__(self, *children, ui_active:bool | None=None,ui_dark:Any | None=None,ui_clickable:bool | None=None,ui_dense:Any | None=None,ui_inset_level:float | None=None,ui_tabindex:Any | None=None,ui_tag:Any | None=None,ui_manual_focus:bool | None=None,ui_focused:bool | None=None,ui_to:str | dict | None=None,ui_exact:bool | None=None,ui_replace:bool | None=None,ui_active_class:str | None=None,ui_exact_active_class:str | None=None,ui_href:str | None=None,ui_target:str | None=None,ui_disable:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_active: bool | None = None,
+        ui_dark: Any | None = None,
+        ui_clickable: bool | None = None,
+        ui_dense: Any | None = None,
+        ui_inset_level: float | None = None,
+        ui_tabindex: Any | None = None,
+        ui_tag: Any | None = None,
+        ui_manual_focus: bool | None = None,
+        ui_focused: bool | None = None,
+        ui_to: str | dict | None = None,
+        ui_exact: bool | None = None,
+        ui_replace: bool | None = None,
+        ui_active_class: str | None = None,
+        ui_exact_active_class: str | None = None,
+        ui_href: str | None = None,
+        ui_target: str | None = None,
+        ui_disable: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QItem", *children, **kwargs)
         if ui_active is not None:
             self._props["active"] = ui_active
@@ -10639,6 +11664,7 @@ class QItem(Component):
     @ui_disable.setter
     def ui_disable(self, value):
         self._set_prop("disable", value)
+
     def on_click(self, handler: Callable, arg: object = None):
         """
         Emitted when the component is clicked
@@ -10650,7 +11676,7 @@ class QItem(Component):
 
     def on_keyup(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -10672,7 +11698,16 @@ class QItemSection(Component):
     :param ui_no_wrap: Do not wrap text (useful for item's main content)
     """
 
-    def __init__(self, *children, ui_avatar:bool | None=None,ui_thumbnail:bool | None=None,ui_side:bool | None=None,ui_top:bool | None=None,ui_no_wrap:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_avatar: bool | None = None,
+        ui_thumbnail: bool | None = None,
+        ui_side: bool | None = None,
+        ui_top: bool | None = None,
+        ui_no_wrap: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QItemSection", *children, **kwargs)
         if ui_avatar is not None:
             self._props["avatar"] = ui_avatar
@@ -10729,6 +11764,7 @@ class QItemSection(Component):
     @ui_no_wrap.setter
     def ui_no_wrap(self, value):
         self._set_prop("no-wrap", value)
+
     def _get_js_methods(self):
         return []
 
@@ -10743,7 +11779,15 @@ class QItemLabel(Component):
     :param ui_lines: Apply ellipsis when there's not enough space to render on the specified number of lines;
     """
 
-    def __init__(self, *children, ui_overline:bool | None=None,ui_caption:bool | None=None,ui_header:bool | None=None,ui_lines:float | str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_overline: bool | None = None,
+        ui_caption: bool | None = None,
+        ui_header: bool | None = None,
+        ui_lines: float | str | None = None,
+        **kwargs,
+    ):
         super().__init__("QItemLabel", *children, **kwargs)
         if ui_overline is not None:
             self._props["overline"] = ui_overline
@@ -10789,6 +11833,7 @@ class QItemLabel(Component):
     @ui_lines.setter
     def ui_lines(self, value):
         self._set_prop("lines", value)
+
     def _get_js_methods(self):
         return []
 
@@ -10805,7 +11850,7 @@ class QKnob(Component):
     :param ui_step: A number representing steps in the value of the model, while adjusting the knob
     :param ui_reverse: Reverses the direction of progress
     :param ui_instant_feedback: No animation when model changes
-    :param ui_color: 
+    :param ui_color:
     :param ui_center_color: Color name for the center part of the component from the Quasar Color Palette
     :param ui_track_color: Color name for the track of the component from the Quasar Color Palette
     :param ui_font_size: Size of text in CSS units, including unit name. Suggestion: use 'em' units to sync with component size
@@ -10813,16 +11858,41 @@ class QKnob(Component):
     :param ui_thickness: Thickness of progress arc as a ratio (0.0 < x < 1.0) of component size
     :param ui_angle: Angle to rotate progress arc by
     :param ui_show_value: Enables the default slot and uses it (if available), otherwise it displays the 'value' prop as text; Make sure the text has enough space to be displayed inside the component
-    :param ui_tabindex: 
-    :param ui_disable: 
-    :param ui_readonly: 
+    :param ui_tabindex:
+    :param ui_disable:
+    :param ui_readonly:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
-    def __init__(self, *children, ui_model_value:float | None=None,ui_min:float | None=None,ui_max:float | None=None,ui_inner_min:float | None=None,ui_inner_max:float | None=None,ui_step:float | None=None,ui_reverse:bool | None=None,ui_instant_feedback:bool | None=None,ui_color:Any | None=None,ui_center_color:Any | None=None,ui_track_color:Any | None=None,ui_font_size:str | None=None,ui_rounded:bool | None=None,ui_thickness:float | None=None,ui_angle:float | None=None,ui_show_value:bool | None=None,ui_tabindex:Any | None=None,ui_disable:Any | None=None,ui_readonly:Any | None=None,ui_size:str | None=None,ui_name:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: float | None = None,
+        ui_min: float | None = None,
+        ui_max: float | None = None,
+        ui_inner_min: float | None = None,
+        ui_inner_max: float | None = None,
+        ui_step: float | None = None,
+        ui_reverse: bool | None = None,
+        ui_instant_feedback: bool | None = None,
+        ui_color: Any | None = None,
+        ui_center_color: Any | None = None,
+        ui_track_color: Any | None = None,
+        ui_font_size: str | None = None,
+        ui_rounded: bool | None = None,
+        ui_thickness: float | None = None,
+        ui_angle: float | None = None,
+        ui_show_value: bool | None = None,
+        ui_tabindex: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_readonly: Any | None = None,
+        ui_size: str | None = None,
+        ui_name: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QKnob", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -10868,8 +11938,7 @@ class QKnob(Component):
             self._props["name"] = ui_name
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -11055,6 +12124,7 @@ class QKnob(Component):
     @ui_name.setter
     def ui_name(self, value):
         self._set_prop("name", value)
+
     def on_change(self, handler: Callable, arg: object = None):
         """
         Fires at the end of a knob's adjustment and offers the value of the model
@@ -11075,7 +12145,7 @@ class QKnob(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -11094,7 +12164,13 @@ class QLayout(Component):
     :param ui_container: Containerize the layout which means it changes the default behavior of expanding to the whole window; Useful (but not limited to) for when using on a QDialog
     """
 
-    def __init__(self, *children, ui_view:str | None=None,ui_container:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_view: str | None = None,
+        ui_container: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QLayout", *children, **kwargs)
         if ui_view is not None:
             self._props["view"] = ui_view
@@ -11118,6 +12194,7 @@ class QLayout(Component):
     @ui_container.setter
     def ui_container(self, value):
         self._set_prop("container", value)
+
     def on_resize(self, handler: Callable, arg: object = None):
         """
         Emitted when layout size (height, width) changes
@@ -11155,20 +12232,37 @@ class QLinearProgress(Component):
 
     :param ui_value: Progress value (0.0 < x < 1.0)
     :param ui_buffer: Optional buffer value (0.0 < x < 1.0)
-    :param ui_color: 
+    :param ui_color:
     :param ui_track_color: Color name for component's track from the Quasar Color Palette
-    :param ui_dark: 
+    :param ui_dark:
     :param ui_reverse: Reverse direction of progress
     :param ui_stripe: Draw stripes; For determinate state only (for performance reasons)
     :param ui_indeterminate: Put component into indeterminate mode
     :param ui_query: Put component into query mode
-    :param ui_rounded: 
+    :param ui_rounded:
     :param ui_instant_feedback: No transition when model changes
-    :param ui_animation_speed: 
+    :param ui_animation_speed:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_value:float | None=None,ui_buffer:float | None=None,ui_color:Any | None=None,ui_track_color:Any | None=None,ui_dark:Any | None=None,ui_reverse:bool | None=None,ui_stripe:bool | None=None,ui_indeterminate:bool | None=None,ui_query:bool | None=None,ui_rounded:Any | None=None,ui_instant_feedback:bool | None=None,ui_animation_speed:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_value: float | None = None,
+        ui_buffer: float | None = None,
+        ui_color: Any | None = None,
+        ui_track_color: Any | None = None,
+        ui_dark: Any | None = None,
+        ui_reverse: bool | None = None,
+        ui_stripe: bool | None = None,
+        ui_indeterminate: bool | None = None,
+        ui_query: bool | None = None,
+        ui_rounded: Any | None = None,
+        ui_instant_feedback: bool | None = None,
+        ui_animation_speed: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QLinearProgress", *children, **kwargs)
         if ui_value is not None:
             self._props["value"] = ui_value
@@ -11309,6 +12403,7 @@ class QLinearProgress(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -11317,16 +12412,27 @@ class QMarkupTable(Component):
     """
     Quasar Component: `QMarkupTable <https://v2.quasar.dev/vue-components/markup-table>`__
 
-    :param ui_dense: 
-    :param ui_dark: 
-    :param ui_flat: 
-    :param ui_bordered: 
-    :param ui_square: 
+    :param ui_dense:
+    :param ui_dark:
+    :param ui_flat:
+    :param ui_bordered:
+    :param ui_square:
     :param ui_separator: Use a separator/border between rows, columns or all cells
     :param ui_wrap_cells: Wrap text within table cells
     """
 
-    def __init__(self, *children, ui_dense:Any | None=None,ui_dark:Any | None=None,ui_flat:Any | None=None,ui_bordered:Any | None=None,ui_square:Any | None=None,ui_separator:str | None=None,ui_wrap_cells:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_dense: Any | None = None,
+        ui_dark: Any | None = None,
+        ui_flat: Any | None = None,
+        ui_bordered: Any | None = None,
+        ui_square: Any | None = None,
+        ui_separator: str | None = None,
+        ui_wrap_cells: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QMarkupTable", *children, **kwargs)
         if ui_dense is not None:
             self._props["dense"] = ui_dense
@@ -11400,6 +12506,7 @@ class QMarkupTable(Component):
     @ui_wrap_cells.setter
     def ui_wrap_cells(self, value):
         self._set_prop("wrap-cells", value)
+
     def _get_js_methods(self):
         return []
 
@@ -11408,13 +12515,13 @@ class QMenu(Component):
     """
     Quasar Component: `QMenu <https://v2.quasar.dev/vue-components/menu>`__
 
-    :param ui_dark: 
+    :param ui_dark:
     :param ui_fit: Allows the menu to match at least the full width of its target
     :param ui_cover: Allows the menu to cover its target. When used, the 'self' and 'fit' props are no longer effective
     :param ui_anchor: Two values setting the starting position or anchor point of the menu relative to its target
     :param ui_self: Two values setting the menu's own position relative to its target
     :param ui_offset: An array of two numbers to offset the menu horizontally and vertically in pixels
-    :param ui_scroll_target: 
+    :param ui_scroll_target:
     :param ui_touch_position: Allows for the target position to be set by the mouse position, when the target of the menu is either clicked or touched
     :param ui_persistent: Allows the menu to not be dismissed by a click/tap outside of the menu or by hitting the ESC key; Also, an app route change won't dismiss it
     :param ui_no_route_dismiss: Changing route app won't dismiss the popup; No need to set it if 'persistent' prop is also set
@@ -11429,14 +12536,42 @@ class QMenu(Component):
     :param ui_context_menu: Allows the component to behave like a context menu, which opens with a right mouse click (or long tap on mobile)
     :param ui_target: Configure a target element to trigger component toggle; 'true' means it enables the parent DOM element, 'false' means it disables attaching events to any DOM elements; By using a String (CSS selector) or a DOM element it attaches the events to the specified DOM element (if it exists)
     :param ui_no_parent_event: Skips attaching events to the target DOM element (that trigger the element to get shown)
-    :param ui_transition_show: 
-    :param ui_transition_hide: 
+    :param ui_transition_show:
+    :param ui_transition_hide:
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
 
-    def __init__(self, *children, ui_dark:Any | None=None,ui_fit:bool | None=None,ui_cover:bool | None=None,ui_anchor:str | None=None,ui_self:str | None=None,ui_offset:list | None=None,ui_scroll_target:Any | None=None,ui_touch_position:bool | None=None,ui_persistent:bool | None=None,ui_no_route_dismiss:bool | None=None,ui_auto_close:bool | None=None,ui_separate_close_popup:bool | None=None,ui_square:bool | None=None,ui_no_refocus:bool | None=None,ui_no_focus:bool | None=None,ui_max_height:str | None=None,ui_max_width:str | None=None,ui_model_value:bool | None=None,ui_context_menu:bool | None=None,ui_target:bool | str | Any | None=None,ui_no_parent_event:bool | None=None,ui_transition_show:Any | None=None,ui_transition_hide:Any | None=None,ui_transition_duration:str | float | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_dark: Any | None = None,
+        ui_fit: bool | None = None,
+        ui_cover: bool | None = None,
+        ui_anchor: str | None = None,
+        ui_self: str | None = None,
+        ui_offset: list | None = None,
+        ui_scroll_target: Any | None = None,
+        ui_touch_position: bool | None = None,
+        ui_persistent: bool | None = None,
+        ui_no_route_dismiss: bool | None = None,
+        ui_auto_close: bool | None = None,
+        ui_separate_close_popup: bool | None = None,
+        ui_square: bool | None = None,
+        ui_no_refocus: bool | None = None,
+        ui_no_focus: bool | None = None,
+        ui_max_height: str | None = None,
+        ui_max_width: str | None = None,
+        ui_model_value: bool | None = None,
+        ui_context_menu: bool | None = None,
+        ui_target: bool | str | Any | None = None,
+        ui_no_parent_event: bool | None = None,
+        ui_transition_show: Any | None = None,
+        ui_transition_hide: Any | None = None,
+        ui_transition_duration: str | float | None = None,
+        **kwargs,
+    ):
         super().__init__("QMenu", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_dark is not None:
             self._props["dark"] = ui_dark
@@ -11488,8 +12623,7 @@ class QMenu(Component):
             self._props["transition-duration"] = ui_transition_duration
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_dark(self):
@@ -11702,9 +12836,10 @@ class QMenu(Component):
     @ui_transition_duration.setter
     def ui_transition_duration(self, value):
         self._set_prop("transition-duration", value)
+
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -11713,7 +12848,7 @@ class QMenu(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -11722,7 +12857,7 @@ class QMenu(Component):
 
     def on_click(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -11740,7 +12875,7 @@ class QMenu(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -11749,7 +12884,7 @@ class QMenu(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -11767,16 +12902,21 @@ class QMenu(Component):
 
     def ui_focus(self):
         """Focus menu; if you have content with autofocus attribute, it will directly focus it"""
-        self._js_call_method('focus')
+        self._js_call_method("focus")
+
     def ui_hide(self):
-        self._js_call_method('hide')
+        self._js_call_method("hide")
+
     def ui_show(self):
-        self._js_call_method('show')
+        self._js_call_method("show")
+
     def ui_toggle(self):
-        self._js_call_method('toggle')
+        self._js_call_method("toggle")
+
     def ui_updatePosition(self):
         """There are some custom scenarios for which Quasar cannot automatically reposition the menu without significant performance drawbacks so the optimal solution is for you to call this method when you need it"""
-        self._js_call_method('updatePosition')
+        self._js_call_method("updatePosition")
+
     def _get_js_methods(self):
         return ["focus", "hide", "show", "toggle", "updatePosition"]
 
@@ -11785,11 +12925,17 @@ class QNoSsr(Component):
     """
     Quasar Component: `QNoSsr <https://v2.quasar.dev/vue-components/no-ssr>`__
 
-    :param ui_tag: 
+    :param ui_tag:
     :param ui_placeholder: Text to display on server-side render (unless using 'placeholder' slot)
     """
 
-    def __init__(self, *children, ui_tag:Any | None=None,ui_placeholder:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_tag: Any | None = None,
+        ui_placeholder: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QNoSsr", *children, **kwargs)
         if ui_tag is not None:
             self._props["tag"] = ui_tag
@@ -11821,6 +12967,7 @@ class QNoSsr(Component):
     @ui_slot_placeholder.setter
     def ui_slot_placeholder(self, value):
         self._set_slot("placeholder", value)
+
     def _get_js_methods(self):
         return []
 
@@ -11829,26 +12976,45 @@ class QOptionGroup(Component):
     """
     Quasar Component: `QOptionGroup <https://v2.quasar.dev/vue-components/option-group>`__
 
-    :param ui_model_value: 
+    :param ui_model_value:
     :param ui_options: Array of objects that the binary components will be created from. For best performance reference a variable in your scope. Canonical form of each object is with 'label' (String), 'value' (Any) and optional 'disable' (Boolean) props (can be customized with options-value/option-label/option-disable props) along with any other props from QToggle, QCheckbox, or QRadio.
     :param ui_option_value: Property of option which holds the 'value'; If using a function then for best performance, reference it from your scope and do not define it inline
     :param ui_option_label: Property of option which holds the 'label'; If using a function then for best performance, reference it from your scope and do not define it inline
     :param ui_option_disable: Property of option which tells it's disabled; The value of the property must be a Boolean; If using a function then for best performance, reference it from your scope and do not define it inline
     :param ui_name: Used to specify the name of the controls; Useful if dealing with forms submitted directly to a URL
     :param ui_type: The type of input component to be used
-    :param ui_color: 
+    :param ui_color:
     :param ui_keep_color: Should the color (if specified any) be kept when input components are unticked?
-    :param ui_dark: 
-    :param ui_dense: 
+    :param ui_dark:
+    :param ui_dense:
     :param ui_left_label: Label (if any specified) should be displayed on the left side of the input components
     :param ui_inline: Show input components as inline-block rather than each having their own row
-    :param ui_disable: 
+    :param ui_disable:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_model_value:Any | None=None,ui_options:list | None=None,ui_option_value:Callable | str | None=None,ui_option_label:Callable | str | None=None,ui_option_disable:Callable | str | None=None,ui_name:str | None=None,ui_type:str | None=None,ui_color:Any | None=None,ui_keep_color:bool | None=None,ui_dark:Any | None=None,ui_dense:Any | None=None,ui_left_label:bool | None=None,ui_inline:bool | None=None,ui_disable:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: Any | None = None,
+        ui_options: list | None = None,
+        ui_option_value: Callable | str | None = None,
+        ui_option_label: Callable | str | None = None,
+        ui_option_disable: Callable | str | None = None,
+        ui_name: str | None = None,
+        ui_type: str | None = None,
+        ui_color: Any | None = None,
+        ui_keep_color: bool | None = None,
+        ui_dark: Any | None = None,
+        ui_dense: Any | None = None,
+        ui_left_label: bool | None = None,
+        ui_inline: bool | None = None,
+        ui_disable: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QOptionGroup", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -11882,8 +13048,7 @@ class QOptionGroup(Component):
             self._props["size"] = ui_size
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -12027,9 +13192,10 @@ class QOptionGroup(Component):
     def ui_slot_label_name(self, name, value):
         """Slot to define the specific label for the option at '[name]' where name is a 0-based index; Overrides the generic 'label' slot if used"""
         self._set_slot("label-" + name, value)
+
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -12046,9 +13212,9 @@ class QPageContainer(Component):
 
     """
 
-    def __init__(self, *children,  **kwargs):
+    def __init__(self, *children, **kwargs):
         super().__init__("QPageContainer", *children, **kwargs)
-        
+
     def _get_js_methods(self):
         return []
 
@@ -12061,7 +13227,13 @@ class QPage(Component):
     :param ui_style_fn: Override default CSS style applied to the component (sets minHeight); Function(offset: Number) => CSS props/value: Object; For best performance, reference it from your scope and do not define it inline
     """
 
-    def __init__(self, *children, ui_padding:bool | None=None,ui_style_fn:Callable | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_padding: bool | None = None,
+        ui_style_fn: Callable | None = None,
+        **kwargs,
+    ):
         super().__init__("QPage", *children, **kwargs)
         if ui_padding is not None:
             self._props["padding"] = ui_padding
@@ -12085,6 +13257,7 @@ class QPage(Component):
     @ui_style_fn.setter
     def ui_style_fn(self, value):
         self._set_prop("style-fn", value)
+
     def _get_js_methods(self):
         return []
 
@@ -12101,7 +13274,17 @@ class QPageScroller(Component):
     :param ui_expand: By default the component shrinks to content's size; By using this prop you make the component fully expand horizontally or vertically, based on 'position' prop
     """
 
-    def __init__(self, *children, ui_scroll_offset:float | None=None,ui_reverse:bool | None=None,ui_duration:float | None=None,ui_offset:list | None=None,ui_position:str | None=None,ui_expand:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_scroll_offset: float | None = None,
+        ui_reverse: bool | None = None,
+        ui_duration: float | None = None,
+        ui_offset: list | None = None,
+        ui_position: str | None = None,
+        ui_expand: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QPageScroller", *children, **kwargs)
         if ui_scroll_offset is not None:
             self._props["scroll-offset"] = ui_scroll_offset
@@ -12169,9 +13352,10 @@ class QPageScroller(Component):
     @ui_expand.setter
     def ui_expand(self, value):
         self._set_prop("expand", value)
+
     def on_click(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -12191,7 +13375,14 @@ class QPageSticky(Component):
     :param ui_expand: By default the component shrinks to content's size; By using this prop you make the component fully expand horizontally or vertically, based on 'position' prop
     """
 
-    def __init__(self, *children, ui_position:str | None=None,ui_offset:list | None=None,ui_expand:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_position: str | None = None,
+        ui_offset: list | None = None,
+        ui_expand: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QPageSticky", *children, **kwargs)
         if ui_position is not None:
             self._props["position"] = ui_position
@@ -12226,6 +13417,7 @@ class QPageSticky(Component):
     @ui_expand.setter
     def ui_expand(self, value):
         self._set_prop("expand", value)
+
     def _get_js_methods(self):
         return []
 
@@ -12239,12 +13431,12 @@ class QPagination(Component):
     :param ui_max: Number of last page (must be higher than 'min')
     :param ui_dark: Notify the component that the background is a dark color (useful when you are using it along with the 'input' prop)
     :param ui_size: Button size in CSS units, including unit name
-    :param ui_disable: 
+    :param ui_disable:
     :param ui_input: Use an input instead of buttons
-    :param ui_icon_prev: 
-    :param ui_icon_next: 
-    :param ui_icon_first: 
-    :param ui_icon_last: 
+    :param ui_icon_prev:
+    :param ui_icon_next:
+    :param ui_icon_first:
+    :param ui_icon_last:
     :param ui_to_fn: Generate link for page buttons; For best performance, reference it from your scope and do not define it inline
     :param ui_boundary_links: Show boundary button links
     :param ui_boundary_numbers: Always show first and last page buttons (if not using 'input')
@@ -12270,9 +13462,47 @@ class QPagination(Component):
     :param ui_ripple: Configure buttons material ripple (disable it by setting it to 'false' or supply a config object); Does not applies to boundary and ellipsis buttons
     """
 
-    def __init__(self, *children, ui_model_value:float | None=None,ui_min:float | str | None=None,ui_max:float | str | None=None,ui_dark:Any | None=None,ui_size:str | None=None,ui_disable:Any | None=None,ui_input:bool | None=None,ui_icon_prev:Any | None=None,ui_icon_next:Any | None=None,ui_icon_first:Any | None=None,ui_icon_last:Any | None=None,ui_to_fn:Callable | None=None,ui_boundary_links:bool | None=None,ui_boundary_numbers:bool | None=None,ui_direction_links:bool | None=None,ui_ellipses:bool | None=None,ui_max_pages:float | str | None=None,ui_flat:bool | None=None,ui_outline:bool | None=None,ui_unelevated:bool | None=None,ui_push:bool | None=None,ui_color:Any | None=None,ui_text_color:Any | None=None,ui_active_design:str | None=None,ui_active_color:Any | None=None,ui_active_text_color:Any | None=None,ui_round:bool | None=None,ui_rounded:bool | None=None,ui_glossy:bool | None=None,ui_gutter:str | None=None,ui_padding:str | None=None,ui_input_style:str | list | dict | None=None,ui_input_class:str | list | dict | None=None,ui_ripple:bool | dict | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: float | None = None,
+        ui_min: float | str | None = None,
+        ui_max: float | str | None = None,
+        ui_dark: Any | None = None,
+        ui_size: str | None = None,
+        ui_disable: Any | None = None,
+        ui_input: bool | None = None,
+        ui_icon_prev: Any | None = None,
+        ui_icon_next: Any | None = None,
+        ui_icon_first: Any | None = None,
+        ui_icon_last: Any | None = None,
+        ui_to_fn: Callable | None = None,
+        ui_boundary_links: bool | None = None,
+        ui_boundary_numbers: bool | None = None,
+        ui_direction_links: bool | None = None,
+        ui_ellipses: bool | None = None,
+        ui_max_pages: float | str | None = None,
+        ui_flat: bool | None = None,
+        ui_outline: bool | None = None,
+        ui_unelevated: bool | None = None,
+        ui_push: bool | None = None,
+        ui_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_active_design: str | None = None,
+        ui_active_color: Any | None = None,
+        ui_active_text_color: Any | None = None,
+        ui_round: bool | None = None,
+        ui_rounded: bool | None = None,
+        ui_glossy: bool | None = None,
+        ui_gutter: str | None = None,
+        ui_padding: str | None = None,
+        ui_input_style: str | list | dict | None = None,
+        ui_input_class: str | list | dict | None = None,
+        ui_ripple: bool | dict | None = None,
+        **kwargs,
+    ):
         super().__init__("QPagination", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -12344,8 +13574,7 @@ class QPagination(Component):
             self._props["ripple"] = ui_ripple
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -12647,9 +13876,10 @@ class QPagination(Component):
     @ui_ripple.setter
     def ui_ripple(self, value):
         self._set_prop("ripple", value)
+
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -12661,13 +13891,15 @@ class QPagination(Component):
         kwargs = {}
         if ui_pageNumber is not None:
             kwargs["pageNumber"] = ui_pageNumber
-        self._js_call_method('set', [kwargs])
+        self._js_call_method("set", [kwargs])
+
     def ui_setByOffset(self, ui_offset=None):
         """Increment/Decrement current page by offset"""
         kwargs = {}
         if ui_offset is not None:
             kwargs["offset"] = ui_offset
-        self._js_call_method('setByOffset', [kwargs])
+        self._js_call_method("setByOffset", [kwargs])
+
     def _get_js_methods(self):
         return ["set", "setByOffset"]
 
@@ -12679,10 +13911,18 @@ class QParallax(Component):
     :param ui_src: Path to image (unless a 'media' slot is used)
     :param ui_height: Height of component (in pixels)
     :param ui_speed: Speed of parallax effect (0.0 < x < 1.0)
-    :param ui_scroll_target: 
+    :param ui_scroll_target:
     """
 
-    def __init__(self, *children, ui_src:str | None=None,ui_height:float | None=None,ui_speed:float | None=None,ui_scroll_target:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_src: str | None = None,
+        ui_height: float | None = None,
+        ui_speed: float | None = None,
+        ui_scroll_target: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QParallax", *children, **kwargs)
         if ui_src is not None:
             self._props["src"] = ui_src
@@ -12745,6 +13985,7 @@ class QParallax(Component):
     @ui_slot_media.setter
     def ui_slot_media(self, value):
         self._set_slot("media", value)
+
     def on_scroll(self, handler: Callable, arg: object = None):
         """
         Emitted when scrolling occurs
@@ -12762,15 +14003,15 @@ class QPopupEdit(Component):
     """
     Quasar Component: `QPopupEdit <https://v2.quasar.dev/vue-components/popup-edit>`__
 
-    :param ui_model_value: 
+    :param ui_model_value:
     :param ui_title: Optional title (unless 'title' slot is used)
     :param ui_buttons: Show Set and Cancel buttons
     :param ui_label_set: Override Set button label
     :param ui_label_cancel: Override Cancel button label
     :param ui_auto_save: Automatically save the model (if changed) when user clicks/taps outside of the popup; It does not apply to ESC key
-    :param ui_color: 
+    :param ui_color:
     :param ui_validate: Validates model then triggers 'save' and closes Popup; Returns a Boolean ('true' means valid, 'false' means abort); Syntax: validate(value); For best performance, reference it from your scope and do not define it inline
-    :param ui_disable: 
+    :param ui_disable:
     :param ui_fit: Allows the menu to match at least the full width of its target
     :param ui_cover: Allows the menu to cover its target. When used, the 'self' and 'fit' props are no longer effective
     :param ui_anchor: Two values setting the starting position or anchor point of the menu relative to its target
@@ -12784,9 +14025,33 @@ class QPopupEdit(Component):
     :param ui_max_width: The maximum width of the menu; Size in CSS units, including unit name
     """
 
-    def __init__(self, *children, ui_model_value:Any | None=None,ui_title:str | None=None,ui_buttons:bool | None=None,ui_label_set:str | None=None,ui_label_cancel:str | None=None,ui_auto_save:bool | None=None,ui_color:Any | None=None,ui_validate:Callable | None=None,ui_disable:Any | None=None,ui_fit:bool | None=None,ui_cover:bool | None=None,ui_anchor:str | None=None,ui_self:str | None=None,ui_offset:list | None=None,ui_touch_position:bool | None=None,ui_persistent:bool | None=None,ui_separate_close_popup:bool | None=None,ui_square:bool | None=None,ui_max_height:Any | None=None,ui_max_width:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: Any | None = None,
+        ui_title: str | None = None,
+        ui_buttons: bool | None = None,
+        ui_label_set: str | None = None,
+        ui_label_cancel: str | None = None,
+        ui_auto_save: bool | None = None,
+        ui_color: Any | None = None,
+        ui_validate: Callable | None = None,
+        ui_disable: Any | None = None,
+        ui_fit: bool | None = None,
+        ui_cover: bool | None = None,
+        ui_anchor: str | None = None,
+        ui_self: str | None = None,
+        ui_offset: list | None = None,
+        ui_touch_position: bool | None = None,
+        ui_persistent: bool | None = None,
+        ui_separate_close_popup: bool | None = None,
+        ui_square: bool | None = None,
+        ui_max_height: Any | None = None,
+        ui_max_width: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QPopupEdit", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -12830,8 +14095,7 @@ class QPopupEdit(Component):
             self._props["max-width"] = ui_max_width
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -13009,6 +14273,7 @@ class QPopupEdit(Component):
     @ui_max_width.setter
     def ui_max_width(self, value):
         self._set_prop("max-width", value)
+
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
         Emitted right before Popup gets dismissed
@@ -13074,17 +14339,22 @@ class QPopupEdit(Component):
 
     def ui_cancel(self):
         """Triggers a model reset to its initial value ('cancel' event is emitted) then closes Popup"""
-        self._js_call_method('cancel')
+        self._js_call_method("cancel")
+
     def ui_hide(self):
-        self._js_call_method('hide')
+        self._js_call_method("hide")
+
     def ui_set(self):
         """Trigger a model update; Validates model (and emits 'save' event if it's the case) then closes Popup"""
-        self._js_call_method('set')
+        self._js_call_method("set")
+
     def ui_show(self):
-        self._js_call_method('show')
+        self._js_call_method("show")
+
     def ui_updatePosition(self):
         """There are some custom scenarios for which Quasar cannot automatically reposition the component without significant performance drawbacks so the optimal solution is for you to call this method when you need it"""
-        self._js_call_method('updatePosition')
+        self._js_call_method("updatePosition")
+
     def _get_js_methods(self):
         return ["cancel", "hide", "set", "show", "updatePosition"]
 
@@ -13100,9 +14370,18 @@ class QPopupProxy(Component):
     :param ui_no_parent_event: Skips attaching events to the target DOM element (that trigger the element to get shown)
     """
 
-    def __init__(self, *children, ui_model_value:bool | None=None,ui_breakpoint:float | str | None=None,ui_context_menu:bool | None=None,ui_target:bool | str | Any | None=None,ui_no_parent_event:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: bool | None = None,
+        ui_breakpoint: float | str | None = None,
+        ui_context_menu: bool | None = None,
+        ui_target: bool | str | Any | None = None,
+        ui_no_parent_event: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QPopupProxy", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -13116,8 +14395,7 @@ class QPopupProxy(Component):
             self._props["no-parent-event"] = ui_no_parent_event
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -13163,9 +14441,10 @@ class QPopupProxy(Component):
     @ui_no_parent_event.setter
     def ui_no_parent_event(self, value):
         self._set_prop("no-parent-event", value)
+
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -13174,7 +14453,7 @@ class QPopupProxy(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -13183,7 +14462,7 @@ class QPopupProxy(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -13192,7 +14471,7 @@ class QPopupProxy(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -13201,7 +14480,7 @@ class QPopupProxy(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -13209,11 +14488,14 @@ class QPopupProxy(Component):
         return self.on("update:model-value", handler, arg)
 
     def ui_hide(self):
-        self._js_call_method('hide')
+        self._js_call_method("hide")
+
     def ui_show(self):
-        self._js_call_method('show')
+        self._js_call_method("show")
+
     def ui_toggle(self):
-        self._js_call_method('toggle')
+        self._js_call_method("toggle")
+
     def _get_js_methods(self):
         return ["hide", "show", "toggle"]
 
@@ -13226,11 +14508,21 @@ class QPullToRefresh(Component):
     :param ui_bg_color: Color name for background of the icon container from the Quasar Color Palette
     :param ui_icon: Icon to display when refreshing the content
     :param ui_no_mouse: Don't listen for mouse events
-    :param ui_disable: 
-    :param ui_scroll_target: 
+    :param ui_disable:
+    :param ui_scroll_target:
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_bg_color:Any | None=None,ui_icon:Any | None=None,ui_no_mouse:bool | None=None,ui_disable:Any | None=None,ui_scroll_target:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_bg_color: Any | None = None,
+        ui_icon: Any | None = None,
+        ui_no_mouse: bool | None = None,
+        ui_disable: Any | None = None,
+        ui_scroll_target: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QPullToRefresh", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -13296,6 +14588,7 @@ class QPullToRefresh(Component):
     @ui_scroll_target.setter
     def ui_scroll_target(self, value):
         self._set_prop("scroll-target", value)
+
     def on_refresh(self, handler: Callable, arg: object = None):
         """
         Called whenever a refresh is triggered; at this time, your function should load more data
@@ -13307,10 +14600,12 @@ class QPullToRefresh(Component):
 
     def ui_trigger(self):
         """Triggers a refresh"""
-        self._js_call_method('trigger')
+        self._js_call_method("trigger")
+
     def ui_updateScrollTarget(self):
         """Updates the scroll target; Useful when the parent elements change so that the scrolling target also changes"""
-        self._js_call_method('updateScrollTarget')
+        self._js_call_method("updateScrollTarget")
+
     def _get_js_methods(self):
         return ["trigger", "updateScrollTarget"]
 
@@ -13319,25 +14614,43 @@ class QRadio(Component):
     """
     Quasar Component: `QRadio <https://v2.quasar.dev/vue-components/radio>`__
 
-    :param ui_model_value: 
+    :param ui_model_value:
     :param ui_val: The actual value of the option with which model value is changed
     :param ui_label: Label to display along the radio control (or use the default slot instead of this prop)
     :param ui_left_label: Label (if any specified) should be displayed on the left side of the checkbox
     :param ui_checked_icon: The icon to be used when selected (instead of the default design)
     :param ui_unchecked_icon: The icon to be used when un-selected (instead of the default design)
-    :param ui_color: 
+    :param ui_color:
     :param ui_keep_color: Should the color (if specified any) be kept when checkbox is unticked?
-    :param ui_dark: 
-    :param ui_dense: 
-    :param ui_disable: 
-    :param ui_tabindex: 
+    :param ui_dark:
+    :param ui_dense:
+    :param ui_disable:
+    :param ui_tabindex:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
-    def __init__(self, *children, ui_model_value:Any | None=None,ui_val:Any | None=None,ui_label:str | None=None,ui_left_label:bool | None=None,ui_checked_icon:str | None=None,ui_unchecked_icon:str | None=None,ui_color:Any | None=None,ui_keep_color:bool | None=None,ui_dark:Any | None=None,ui_dense:Any | None=None,ui_disable:Any | None=None,ui_tabindex:Any | None=None,ui_size:str | None=None,ui_name:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: Any | None = None,
+        ui_val: Any | None = None,
+        ui_label: str | None = None,
+        ui_left_label: bool | None = None,
+        ui_checked_icon: str | None = None,
+        ui_unchecked_icon: str | None = None,
+        ui_color: Any | None = None,
+        ui_keep_color: bool | None = None,
+        ui_dark: Any | None = None,
+        ui_dense: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_tabindex: Any | None = None,
+        ui_size: str | None = None,
+        ui_name: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QRadio", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -13369,8 +14682,7 @@ class QRadio(Component):
             self._props["name"] = ui_name
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -13491,6 +14803,7 @@ class QRadio(Component):
     @ui_name.setter
     def ui_name(self, value):
         self._set_prop("name", value)
+
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when the component needs to change the model; Is also used by v-model
@@ -13502,7 +14815,8 @@ class QRadio(Component):
 
     def ui_set(self):
         """Sets the Radio's v-model to equal the val"""
-        self._js_call_method('set')
+        self._js_call_method("set")
+
     def _get_js_methods(self):
         return ["set"]
 
@@ -13530,7 +14844,7 @@ class QRange(Component):
     :param ui_snap: Snap on valid values, rather than sliding freely; Suggestion: use with 'step' prop
     :param ui_reverse: Work in reverse (changes direction)
     :param ui_vertical: Display in vertical direction
-    :param ui_color: 
+    :param ui_color:
     :param ui_track_color: Color name for the track (can be 'transparent' too) from the Quasar Color Palette
     :param ui_track_img: Apply a pattern image on the track
     :param ui_inner_track_color: Color name for the inner track (can be 'transparent' too) from the Quasar Color Palette
@@ -13538,8 +14852,8 @@ class QRange(Component):
     :param ui_selection_color: Color name for the selection bar (can be 'transparent' too) from the Quasar Color Palette
     :param ui_selection_img: Apply a pattern image on the selection bar
     :param ui_label: Popup a label when user clicks/taps on the slider thumb and moves it
-    :param ui_label_color: 
-    :param ui_label_text_color: 
+    :param ui_label_color:
+    :param ui_label_text_color:
     :param ui_switch_label_side: Switch the position of the label (top <-> bottom or left <-> right)
     :param ui_label_always: Always display the label
     :param ui_markers: Display markers on the track, one for each possible value for the model or using a custom step (when specifying a Number)
@@ -13548,19 +14862,68 @@ class QRange(Component):
     :param ui_switch_marker_labels_side: Switch the position of the marker labels (top <-> bottom or left <-> right)
     :param ui_track_size: Track size (including CSS unit)
     :param ui_thumb_size: Thumb size (including CSS unit)
-    :param ui_thumb_color: 
+    :param ui_thumb_color:
     :param ui_thumb_path: Set custom thumb svg path
-    :param ui_dark: 
-    :param ui_dense: 
-    :param ui_disable: 
-    :param ui_readonly: 
-    :param ui_tabindex: 
+    :param ui_dark:
+    :param ui_dense:
+    :param ui_disable:
+    :param ui_readonly:
+    :param ui_tabindex:
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
-    def __init__(self, *children, ui_model_value:dict | None | Any=None,ui_drag_range:bool | None=None,ui_drag_only_range:bool | None=None,ui_left_label_color:Any | None=None,ui_left_label_text_color:Any | None=None,ui_right_label_color:Any | None=None,ui_right_label_text_color:Any | None=None,ui_left_label_value:str | float | None=None,ui_right_label_value:str | float | None=None,ui_left_thumb_color:Any | None=None,ui_right_thumb_color:Any | None=None,ui_min:float | None=None,ui_max:float | None=None,ui_inner_min:float | None=None,ui_inner_max:float | None=None,ui_step:float | None=None,ui_snap:bool | None=None,ui_reverse:bool | None=None,ui_vertical:bool | None=None,ui_color:Any | None=None,ui_track_color:Any | None=None,ui_track_img:str | None=None,ui_inner_track_color:Any | None=None,ui_inner_track_img:str | None=None,ui_selection_color:Any | None=None,ui_selection_img:str | None=None,ui_label:bool | None=None,ui_label_color:Any | None=None,ui_label_text_color:Any | None=None,ui_switch_label_side:bool | None=None,ui_label_always:bool | None=None,ui_markers:bool | float | None=None,ui_marker_labels:bool | list | dict | Callable | None=None,ui_marker_labels_class:str | None=None,ui_switch_marker_labels_side:bool | None=None,ui_track_size:str | None=None,ui_thumb_size:str | None=None,ui_thumb_color:Any | None=None,ui_thumb_path:str | None=None,ui_dark:Any | None=None,ui_dense:Any | None=None,ui_disable:Any | None=None,ui_readonly:Any | None=None,ui_tabindex:Any | None=None,ui_name:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: dict | None | Any = None,
+        ui_drag_range: bool | None = None,
+        ui_drag_only_range: bool | None = None,
+        ui_left_label_color: Any | None = None,
+        ui_left_label_text_color: Any | None = None,
+        ui_right_label_color: Any | None = None,
+        ui_right_label_text_color: Any | None = None,
+        ui_left_label_value: str | float | None = None,
+        ui_right_label_value: str | float | None = None,
+        ui_left_thumb_color: Any | None = None,
+        ui_right_thumb_color: Any | None = None,
+        ui_min: float | None = None,
+        ui_max: float | None = None,
+        ui_inner_min: float | None = None,
+        ui_inner_max: float | None = None,
+        ui_step: float | None = None,
+        ui_snap: bool | None = None,
+        ui_reverse: bool | None = None,
+        ui_vertical: bool | None = None,
+        ui_color: Any | None = None,
+        ui_track_color: Any | None = None,
+        ui_track_img: str | None = None,
+        ui_inner_track_color: Any | None = None,
+        ui_inner_track_img: str | None = None,
+        ui_selection_color: Any | None = None,
+        ui_selection_img: str | None = None,
+        ui_label: bool | None = None,
+        ui_label_color: Any | None = None,
+        ui_label_text_color: Any | None = None,
+        ui_switch_label_side: bool | None = None,
+        ui_label_always: bool | None = None,
+        ui_markers: bool | float | None = None,
+        ui_marker_labels: bool | list | dict | Callable | None = None,
+        ui_marker_labels_class: str | None = None,
+        ui_switch_marker_labels_side: bool | None = None,
+        ui_track_size: str | None = None,
+        ui_thumb_size: str | None = None,
+        ui_thumb_color: Any | None = None,
+        ui_thumb_path: str | None = None,
+        ui_dark: Any | None = None,
+        ui_dense: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_readonly: Any | None = None,
+        ui_tabindex: Any | None = None,
+        ui_name: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QRange", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -13631,7 +14994,9 @@ class QRange(Component):
         if ui_marker_labels_class is not None:
             self._props["marker-labels-class"] = ui_marker_labels_class
         if ui_switch_marker_labels_side is not None:
-            self._props["switch-marker-labels-side"] = ui_switch_marker_labels_side
+            self._props["switch-marker-labels-side"] = (
+                ui_switch_marker_labels_side
+            )
         if ui_track_size is not None:
             self._props["track-size"] = ui_track_size
         if ui_thumb_size is not None:
@@ -13654,8 +15019,7 @@ class QRange(Component):
             self._props["name"] = ui_name
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -14070,6 +15434,7 @@ class QRange(Component):
     @ui_slot_marker_label_group.setter
     def ui_slot_marker_label_group(self, value):
         self._set_slot("marker-label-group", value)
+
     def on_change(self, handler: Callable, arg: object = None):
         """
         Emitted on lazy model value change (after user slides then releases the thumb)
@@ -14090,7 +15455,7 @@ class QRange(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -14105,7 +15470,7 @@ class QRating(Component):
     """
     Quasar Component: `QRating <https://v2.quasar.dev/vue-components/rating>`__
 
-    :param ui_model_value: 
+    :param ui_model_value:
     :param ui_max: Number of icons to display
     :param ui_icon: Icon name following Quasar convention; make sure you have the icon library installed unless you are using 'img:' prefix; If an array is provided each rating value will use the corresponding icon in the array (0 based)
     :param ui_icon_selected: Icon name following Quasar convention to be used when selected (optional); make sure you have the icon library installed unless you are using 'img:' prefix; If an array is provided each rating value will use the corresponding icon in the array (0 based)
@@ -14116,15 +15481,34 @@ class QRating(Component):
     :param ui_color_half: Color name from the Quasar Palette for half selected icons
     :param ui_no_dimming: Does not lower opacity for unselected icons
     :param ui_no_reset: When used, disables default behavior of clicking/tapping on icon which represents current model value to reset model to 0
-    :param ui_readonly: 
-    :param ui_disable: 
+    :param ui_readonly:
+    :param ui_disable:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
-    def __init__(self, *children, ui_model_value:float | None=None,ui_max:float | str | None=None,ui_icon:str | list | None=None,ui_icon_selected:str | list | None=None,ui_icon_half:str | list | None=None,ui_icon_aria_label:str | list | None=None,ui_color:str | list | None=None,ui_color_selected:str | list | None=None,ui_color_half:str | list | None=None,ui_no_dimming:bool | None=None,ui_no_reset:bool | None=None,ui_readonly:Any | None=None,ui_disable:Any | None=None,ui_size:str | None=None,ui_name:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: float | None = None,
+        ui_max: float | str | None = None,
+        ui_icon: str | list | None = None,
+        ui_icon_selected: str | list | None = None,
+        ui_icon_half: str | list | None = None,
+        ui_icon_aria_label: str | list | None = None,
+        ui_color: str | list | None = None,
+        ui_color_selected: str | list | None = None,
+        ui_color_half: str | list | None = None,
+        ui_no_dimming: bool | None = None,
+        ui_no_reset: bool | None = None,
+        ui_readonly: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_size: str | None = None,
+        ui_name: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QRating", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -14158,8 +15542,7 @@ class QRating(Component):
             self._props["name"] = ui_name
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -14296,9 +15679,10 @@ class QRating(Component):
     def ui_slot_tip_name(self, name, value):
         """Slot to define the tooltip of icon at '[name]' where name is a 1-based index; Suggestion: QTooltip"""
         self._set_slot("tip-" + name, value)
+
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -14316,7 +15700,9 @@ class QResizeObserver(Component):
     :param ui_debounce: Debounce amount (in milliseconds)
     """
 
-    def __init__(self, *children, ui_debounce:str | float | None=None, **kwargs):
+    def __init__(
+        self, *children, ui_debounce: str | float | None = None, **kwargs
+    ):
         super().__init__("QResizeObserver", *children, **kwargs)
         if ui_debounce is not None:
             self._props["debounce"] = ui_debounce
@@ -14329,6 +15715,7 @@ class QResizeObserver(Component):
     @ui_debounce.setter
     def ui_debounce(self, value):
         self._set_prop("debounce", value)
+
     def on_resize(self, handler: Callable, arg: object = None):
         """
         Parent element has resized (width or height changed)
@@ -14343,7 +15730,8 @@ class QResizeObserver(Component):
         kwargs = {}
         if ui_immediately is not None:
             kwargs["immediately"] = ui_immediately
-        self._js_call_method('trigger', [kwargs])
+        self._js_call_method("trigger", [kwargs])
+
     def _get_js_methods(self):
         return ["trigger"]
 
@@ -14355,7 +15743,9 @@ class QResponsive(Component):
     :param ui_ratio: Aspect ratio for the content; If value is a String, then avoid using a computational statement (like '16/9') and instead specify the String value of the result directly (eg. '1.7777')
     """
 
-    def __init__(self, *children, ui_ratio:str | float | None=None, **kwargs):
+    def __init__(
+        self, *children, ui_ratio: str | float | None = None, **kwargs
+    ):
         super().__init__("QResponsive", *children, **kwargs)
         if ui_ratio is not None:
             self._props["ratio"] = ui_ratio
@@ -14368,6 +15758,7 @@ class QResponsive(Component):
     @ui_ratio.setter
     def ui_ratio(self, value):
         self._set_prop("ratio", value)
+
     def _get_js_methods(self):
         return []
 
@@ -14376,7 +15767,7 @@ class QScrollArea(Component):
     """
     Quasar Component: `QScrollArea <https://v2.quasar.dev/vue-components/scroll-area>`__
 
-    :param ui_dark: 
+    :param ui_dark:
     :param ui_vertical_offset: Adds [top, bottom] offset to vertical thumb
     :param ui_horizontal_offset: Adds [left, right] offset to horizontal thumb
     :param ui_bar_style: Object with CSS properties and values for custom styling the scrollbars (both vertical and horizontal)
@@ -14389,10 +15780,28 @@ class QScrollArea(Component):
     :param ui_content_active_style: Object with CSS properties and values for styling the container of QScrollArea when scroll area becomes active (is mouse hovered)
     :param ui_visible: Manually control the visibility of the scrollbar; Overrides default mouse over/leave behavior
     :param ui_delay: When content changes, the scrollbar appears; this delay defines the amount of time (in milliseconds) before scrollbars disappear again (if component is not hovered)
-    :param ui_tabindex: 
+    :param ui_tabindex:
     """
 
-    def __init__(self, *children, ui_dark:Any | None=None,ui_vertical_offset:list | None=None,ui_horizontal_offset:list | None=None,ui_bar_style:str | list | dict | None=None,ui_vertical_bar_style:str | list | dict | None=None,ui_horizontal_bar_style:str | list | dict | None=None,ui_thumb_style:dict | None=None,ui_vertical_thumb_style:dict | None=None,ui_horizontal_thumb_style:dict | None=None,ui_content_style:str | list | dict | None=None,ui_content_active_style:str | list | dict | None=None,ui_visible:bool | None=None,ui_delay:float | str | None=None,ui_tabindex:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_dark: Any | None = None,
+        ui_vertical_offset: list | None = None,
+        ui_horizontal_offset: list | None = None,
+        ui_bar_style: str | list | dict | None = None,
+        ui_vertical_bar_style: str | list | dict | None = None,
+        ui_horizontal_bar_style: str | list | dict | None = None,
+        ui_thumb_style: dict | None = None,
+        ui_vertical_thumb_style: dict | None = None,
+        ui_horizontal_thumb_style: dict | None = None,
+        ui_content_style: str | list | dict | None = None,
+        ui_content_active_style: str | list | dict | None = None,
+        ui_visible: bool | None = None,
+        ui_delay: float | str | None = None,
+        ui_tabindex: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QScrollArea", *children, **kwargs)
         if ui_dark is not None:
             self._props["dark"] = ui_dark
@@ -14546,6 +15955,7 @@ class QScrollArea(Component):
     @ui_tabindex.setter
     def ui_tabindex(self, value):
         self._set_prop("tabindex", value)
+
     def on_scroll(self, handler: Callable, arg: object = None):
         """
         Emitted when scroll information changes (and listener is configured)
@@ -14557,16 +15967,20 @@ class QScrollArea(Component):
 
     def ui_getScroll(self):
         """Get the current scroll information"""
-        self._js_call_method('getScroll')
+        self._js_call_method("getScroll")
+
     def ui_getScrollPercentage(self):
         """Get current scroll position in percentage (0.0 <= x <= 1.0)"""
-        self._js_call_method('getScrollPercentage')
+        self._js_call_method("getScrollPercentage")
+
     def ui_getScrollPosition(self):
         """Get current scroll position"""
-        self._js_call_method('getScrollPosition')
+        self._js_call_method("getScrollPosition")
+
     def ui_getScrollTarget(self):
         """Get the scrolling DOM element target"""
-        self._js_call_method('getScrollTarget')
+        self._js_call_method("getScrollTarget")
+
     def ui_setScrollPercentage(self, ui_axis, ui_offset, ui_duration=None):
         """Set scroll position to a percentage (0.0 <= x <= 1.0) of the total scrolling size; If a duration (in milliseconds) is specified then the scroll is animated"""
         kwargs = {}
@@ -14576,7 +15990,8 @@ class QScrollArea(Component):
             kwargs["offset"] = ui_offset
         if ui_duration is not None:
             kwargs["duration"] = ui_duration
-        self._js_call_method('setScrollPercentage', [kwargs])
+        self._js_call_method("setScrollPercentage", [kwargs])
+
     def ui_setScrollPosition(self, ui_axis, ui_offset, ui_duration=None):
         """Set scroll position to an offset; If a duration (in milliseconds) is specified then the scroll is animated"""
         kwargs = {}
@@ -14586,9 +16001,17 @@ class QScrollArea(Component):
             kwargs["offset"] = ui_offset
         if ui_duration is not None:
             kwargs["duration"] = ui_duration
-        self._js_call_method('setScrollPosition', [kwargs])
+        self._js_call_method("setScrollPosition", [kwargs])
+
     def _get_js_methods(self):
-        return ["getScroll", "getScrollPercentage", "getScrollPosition", "getScrollTarget", "setScrollPercentage", "setScrollPosition"]
+        return [
+            "getScroll",
+            "getScrollPercentage",
+            "getScrollPosition",
+            "getScrollTarget",
+            "setScrollPercentage",
+            "setScrollPosition",
+        ]
 
 
 class QScrollObserver(Component):
@@ -14597,10 +16020,17 @@ class QScrollObserver(Component):
 
     :param ui_debounce: Debounce amount (in milliseconds)
     :param ui_axis: Axis on which to detect changes
-    :param ui_scroll_target: 
+    :param ui_scroll_target:
     """
 
-    def __init__(self, *children, ui_debounce:str | float | None=None,ui_axis:str | None=None,ui_scroll_target:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_debounce: str | float | None = None,
+        ui_axis: str | None = None,
+        ui_scroll_target: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QScrollObserver", *children, **kwargs)
         if ui_debounce is not None:
             self._props["debounce"] = ui_debounce
@@ -14634,6 +16064,7 @@ class QScrollObserver(Component):
     @ui_scroll_target.setter
     def ui_scroll_target(self, value):
         self._set_prop("scroll-target", value)
+
     def on_scroll(self, handler: Callable, arg: object = None):
         """
         Emitted when scroll position changes
@@ -14645,13 +16076,15 @@ class QScrollObserver(Component):
 
     def ui_getPosition(self):
         """Get current scroll details under the form of an Object: { position, direction, directionChanged, inflectionPoint }"""
-        self._js_call_method('getPosition')
+        self._js_call_method("getPosition")
+
     def ui_trigger(self, ui_immediately=None):
         """Emit a 'scroll' event"""
         kwargs = {}
         if ui_immediately is not None:
             kwargs["immediately"] = ui_immediately
-        self._js_call_method('trigger', [kwargs])
+        self._js_call_method("trigger", [kwargs])
+
     def _get_js_methods(self):
         return ["getPosition", "trigger"]
 
@@ -14670,7 +16103,7 @@ class QSelect(Component):
     :param ui_option_disable: Property of option which tells it's disabled; The value of the property must be a Boolean; If using a function then for best performance, reference it from your scope and do not define it inline
     :param ui_hide_selected: Hides selection; Use the underlying input tag to hold the label (instead of showing it to the right of the input) of the selected option; Only works for non 'multiple' Selects
     :param ui_hide_dropdown_icon: Hides dropdown icon
-    :param ui_dropdown_icon: 
+    :param ui_dropdown_icon:
     :param ui_max_values: Allow a maximum number of selections that the user can do
     :param ui_options_dense: Dense mode for options list; occupies less space
     :param ui_options_dark: Options menu will be colored with a dark color
@@ -14695,7 +16128,7 @@ class QSelect(Component):
     :param ui_input_debounce: Debounce the input model update with an amount of milliseconds (also affects the 'filter' event, if used)
     :param ui_input_class: Class definitions to be attributed to the underlying input tag
     :param ui_input_style: Style definitions to be attributed to the underlying input tag
-    :param ui_tabindex: 
+    :param ui_tabindex:
     :param ui_autocomplete: Autocomplete attribute for field
     :param ui_transition_show: Transition when showing the menu/dialog; One of Quasar's embedded transitions
     :param ui_transition_hide: Transition when hiding the menu/dialog; One of Quasar's embedded transitions
@@ -14710,9 +16143,9 @@ class QSelect(Component):
     :param ui_prefix: Prefix
     :param ui_suffix: Suffix
     :param ui_label_color: Color name for the label from the Quasar Color Palette; Overrides the 'color' prop; The difference from 'color' prop is that the label will always have this color, even when field is not focused
-    :param ui_color: 
-    :param ui_bg_color: 
-    :param ui_dark: 
+    :param ui_color:
+    :param ui_bg_color:
+    :param ui_dark:
     :param ui_loading: Signals the user a process is in progress by displaying a spinner; Spinner can be customized by using the 'loading' slot.
     :param ui_clearable: Appends clearable icon when a value (not undefined or null) is set; When clicked, model becomes null
     :param ui_clear_icon: Custom icon to use for the clear button when using along with 'clearable' prop
@@ -14724,12 +16157,12 @@ class QSelect(Component):
     :param ui_bottom_slots: Enables bottom slots ('error', 'hint', 'counter')
     :param ui_hide_bottom_space: Do not reserve space for hint/error/counter anymore when these are not used; As a result, it also disables the animation for those; It also allows the hint/error area to stretch vertically based on its content
     :param ui_counter: Show an automatic counter on bottom right
-    :param ui_rounded: 
+    :param ui_rounded:
     :param ui_square: Remove border-radius so borders are squared; Overrides 'rounded' prop
-    :param ui_dense: 
+    :param ui_dense:
     :param ui_item_aligned: Match inner content alignment to that of QItem
-    :param ui_disable: 
-    :param ui_readonly: 
+    :param ui_disable:
+    :param ui_readonly:
     :param ui_autofocus: Focus field on initial component render
     :param ui_for: Used to specify the 'id' of the control and also the 'for' attribute of the label that wraps it; If no 'name' prop is specified, then it is used for this attribute as well
     :param ui_error: Does field have validation errors?
@@ -14747,9 +16180,98 @@ class QSelect(Component):
     :param ui_table_colspan: The number of columns in the table (you need this if you use table-layout: fixed)
     """
 
-    def __init__(self, *children, ui_model_value:Any | None=None,ui_multiple:bool | None=None,ui_display_value:float | str | None=None,ui_display_value_html:Any | None=None,ui_options:list | None=None,ui_option_value:Callable | str | None=None,ui_option_label:Callable | str | None=None,ui_option_disable:Callable | str | None=None,ui_hide_selected:bool | None=None,ui_hide_dropdown_icon:bool | None=None,ui_dropdown_icon:Any | None=None,ui_max_values:float | str | None=None,ui_options_dense:Any | None=None,ui_options_dark:bool | None=None,ui_options_selected_class:str | None=None,ui_options_html:Any | None=None,ui_options_cover:bool | None=None,ui_menu_shrink:bool | None=None,ui_menu_anchor:str | None=None,ui_menu_self:str | None=None,ui_menu_offset:list | None=None,ui_popup_content_class:str | None=None,ui_popup_content_style:str | list | dict | None=None,ui_popup_no_route_dismiss:bool | None=None,ui_use_chips:bool | None=None,ui_use_input:bool | None=None,ui_maxlength:str | float | None=None,ui_fill_input:bool | None=None,ui_new_value_mode:str | None=None,ui_map_options:bool | None=None,ui_disable_tab_selection:bool | None=None,ui_emit_value:bool | None=None,ui_input_debounce:float | str | None=None,ui_input_class:str | list | dict | None=None,ui_input_style:str | list | dict | None=None,ui_tabindex:Any | None=None,ui_autocomplete:str | None=None,ui_transition_show:Any | None=None,ui_transition_hide:Any | None=None,ui_transition_duration:str | float | None=None,ui_behavior:str | None=None,ui_name:str | None=None,ui_virtual_scroll_item_size:float | str | None=None,ui_label:str | None=None,ui_stack_label:bool | None=None,ui_hint:str | None=None,ui_hide_hint:bool | None=None,ui_prefix:str | None=None,ui_suffix:str | None=None,ui_label_color:Any | None=None,ui_color:Any | None=None,ui_bg_color:Any | None=None,ui_dark:Any | None=None,ui_loading:bool | None=None,ui_clearable:bool | None=None,ui_clear_icon:str | None=None,ui_filled:bool | None=None,ui_outlined:bool | None=None,ui_borderless:bool | None=None,ui_standout:bool | str | None=None,ui_label_slot:bool | None=None,ui_bottom_slots:bool | None=None,ui_hide_bottom_space:bool | None=None,ui_counter:bool | None=None,ui_rounded:Any | None=None,ui_square:bool | None=None,ui_dense:Any | None=None,ui_item_aligned:bool | None=None,ui_disable:Any | None=None,ui_readonly:Any | None=None,ui_autofocus:bool | None=None,ui_for:str | None=None,ui_error:bool | None=None,ui_error_message:str | None=None,ui_no_error_icon:bool | None=None,ui_rules:list | None=None,ui_reactive_rules:bool | None=None,ui_lazy_rules:bool | str | None=None,ui_virtual_scroll_horizontal:bool | None=None,ui_virtual_scroll_slice_size:float | str | None=None,ui_virtual_scroll_slice_ratio_before:float | str | None=None,ui_virtual_scroll_slice_ratio_after:float | str | None=None,ui_virtual_scroll_sticky_size_start:float | str | None=None,ui_virtual_scroll_sticky_size_end:float | str | None=None,ui_table_colspan:float | str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: Any | None = None,
+        ui_multiple: bool | None = None,
+        ui_display_value: float | str | None = None,
+        ui_display_value_html: Any | None = None,
+        ui_options: list | None = None,
+        ui_option_value: Callable | str | None = None,
+        ui_option_label: Callable | str | None = None,
+        ui_option_disable: Callable | str | None = None,
+        ui_hide_selected: bool | None = None,
+        ui_hide_dropdown_icon: bool | None = None,
+        ui_dropdown_icon: Any | None = None,
+        ui_max_values: float | str | None = None,
+        ui_options_dense: Any | None = None,
+        ui_options_dark: bool | None = None,
+        ui_options_selected_class: str | None = None,
+        ui_options_html: Any | None = None,
+        ui_options_cover: bool | None = None,
+        ui_menu_shrink: bool | None = None,
+        ui_menu_anchor: str | None = None,
+        ui_menu_self: str | None = None,
+        ui_menu_offset: list | None = None,
+        ui_popup_content_class: str | None = None,
+        ui_popup_content_style: str | list | dict | None = None,
+        ui_popup_no_route_dismiss: bool | None = None,
+        ui_use_chips: bool | None = None,
+        ui_use_input: bool | None = None,
+        ui_maxlength: str | float | None = None,
+        ui_fill_input: bool | None = None,
+        ui_new_value_mode: str | None = None,
+        ui_map_options: bool | None = None,
+        ui_disable_tab_selection: bool | None = None,
+        ui_emit_value: bool | None = None,
+        ui_input_debounce: float | str | None = None,
+        ui_input_class: str | list | dict | None = None,
+        ui_input_style: str | list | dict | None = None,
+        ui_tabindex: Any | None = None,
+        ui_autocomplete: str | None = None,
+        ui_transition_show: Any | None = None,
+        ui_transition_hide: Any | None = None,
+        ui_transition_duration: str | float | None = None,
+        ui_behavior: str | None = None,
+        ui_name: str | None = None,
+        ui_virtual_scroll_item_size: float | str | None = None,
+        ui_label: str | None = None,
+        ui_stack_label: bool | None = None,
+        ui_hint: str | None = None,
+        ui_hide_hint: bool | None = None,
+        ui_prefix: str | None = None,
+        ui_suffix: str | None = None,
+        ui_label_color: Any | None = None,
+        ui_color: Any | None = None,
+        ui_bg_color: Any | None = None,
+        ui_dark: Any | None = None,
+        ui_loading: bool | None = None,
+        ui_clearable: bool | None = None,
+        ui_clear_icon: str | None = None,
+        ui_filled: bool | None = None,
+        ui_outlined: bool | None = None,
+        ui_borderless: bool | None = None,
+        ui_standout: bool | str | None = None,
+        ui_label_slot: bool | None = None,
+        ui_bottom_slots: bool | None = None,
+        ui_hide_bottom_space: bool | None = None,
+        ui_counter: bool | None = None,
+        ui_rounded: Any | None = None,
+        ui_square: bool | None = None,
+        ui_dense: Any | None = None,
+        ui_item_aligned: bool | None = None,
+        ui_disable: Any | None = None,
+        ui_readonly: Any | None = None,
+        ui_autofocus: bool | None = None,
+        ui_for: str | None = None,
+        ui_error: bool | None = None,
+        ui_error_message: str | None = None,
+        ui_no_error_icon: bool | None = None,
+        ui_rules: list | None = None,
+        ui_reactive_rules: bool | None = None,
+        ui_lazy_rules: bool | str | None = None,
+        ui_virtual_scroll_horizontal: bool | None = None,
+        ui_virtual_scroll_slice_size: float | str | None = None,
+        ui_virtual_scroll_slice_ratio_before: float | str | None = None,
+        ui_virtual_scroll_slice_ratio_after: float | str | None = None,
+        ui_virtual_scroll_sticky_size_start: float | str | None = None,
+        ui_virtual_scroll_sticky_size_end: float | str | None = None,
+        ui_table_colspan: float | str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSelect", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -14836,7 +16358,9 @@ class QSelect(Component):
         if ui_name is not None:
             self._props["name"] = ui_name
         if ui_virtual_scroll_item_size is not None:
-            self._props["virtual-scroll-item-size"] = ui_virtual_scroll_item_size
+            self._props["virtual-scroll-item-size"] = (
+                ui_virtual_scroll_item_size
+            )
         if ui_label is not None:
             self._props["label"] = ui_label
         if ui_stack_label is not None:
@@ -14901,7 +16425,7 @@ class QSelect(Component):
             self._props["error-message"] = ui_error_message
         if ui_no_error_icon is not None:
             self._props["no-error-icon"] = ui_no_error_icon
-        
+
         self._rules = [] if ui_rules is None else ui_rules
         self._rules_registered = False
         if self._rules:
@@ -14913,23 +16437,34 @@ class QSelect(Component):
         if ui_lazy_rules is not None:
             self._props["lazy-rules"] = ui_lazy_rules
         if ui_virtual_scroll_horizontal is not None:
-            self._props["virtual-scroll-horizontal"] = ui_virtual_scroll_horizontal
+            self._props["virtual-scroll-horizontal"] = (
+                ui_virtual_scroll_horizontal
+            )
         if ui_virtual_scroll_slice_size is not None:
-            self._props["virtual-scroll-slice-size"] = ui_virtual_scroll_slice_size
+            self._props["virtual-scroll-slice-size"] = (
+                ui_virtual_scroll_slice_size
+            )
         if ui_virtual_scroll_slice_ratio_before is not None:
-            self._props["virtual-scroll-slice-ratio-before"] = ui_virtual_scroll_slice_ratio_before
+            self._props["virtual-scroll-slice-ratio-before"] = (
+                ui_virtual_scroll_slice_ratio_before
+            )
         if ui_virtual_scroll_slice_ratio_after is not None:
-            self._props["virtual-scroll-slice-ratio-after"] = ui_virtual_scroll_slice_ratio_after
+            self._props["virtual-scroll-slice-ratio-after"] = (
+                ui_virtual_scroll_slice_ratio_after
+            )
         if ui_virtual_scroll_sticky_size_start is not None:
-            self._props["virtual-scroll-sticky-size-start"] = ui_virtual_scroll_sticky_size_start
+            self._props["virtual-scroll-sticky-size-start"] = (
+                ui_virtual_scroll_sticky_size_start
+            )
         if ui_virtual_scroll_sticky_size_end is not None:
-            self._props["virtual-scroll-sticky-size-end"] = ui_virtual_scroll_sticky_size_end
+            self._props["virtual-scroll-sticky-size-end"] = (
+                ui_virtual_scroll_sticky_size_end
+            )
         if ui_table_colspan is not None:
             self._props["table-colspan"] = ui_table_colspan
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -15612,7 +17147,7 @@ class QSelect(Component):
     def _validate_rules(self):
         for rule in self.ui_rules:
             value = rule(self.ui_model_value)
-            if isinstance(value, str) and value != '':
+            if isinstance(value, str) and value != "":
                 self.ui_error_message = value
                 self.ui_error = True
                 return
@@ -15833,6 +17368,7 @@ class QSelect(Component):
     @ui_slot_selected_item.setter
     def ui_slot_selected_item(self, value):
         self._set_slot("selected-item", value)
+
     def on_add(self, handler: Callable, arg: object = None):
         """
         Emitted when an option is added to the selection
@@ -15898,7 +17434,7 @@ class QSelect(Component):
 
     def on_keydown(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -15907,7 +17443,7 @@ class QSelect(Component):
 
     def on_keypress(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -15916,7 +17452,7 @@ class QSelect(Component):
 
     def on_keyup(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -15961,7 +17497,7 @@ class QSelect(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -15984,55 +17520,66 @@ class QSelect(Component):
             kwargs["opt"] = ui_opt
         if ui_unique is not None:
             kwargs["unique"] = ui_unique
-        self._js_call_method('add', [kwargs])
+        self._js_call_method("add", [kwargs])
+
     def ui_blur(self):
         """Blur component (lose focus)"""
-        self._js_call_method('blur')
+        self._js_call_method("blur")
+
     def ui_filter(self, ui_value):
         """Filter options"""
         kwargs = {}
         if ui_value is not None:
             kwargs["value"] = ui_value
-        self._js_call_method('filter', [kwargs])
+        self._js_call_method("filter", [kwargs])
+
     def ui_focus(self):
         """Focus component"""
-        self._js_call_method('focus')
+        self._js_call_method("focus")
+
     def ui_getEmittingOptionValue(self, ui_opt):
         """Get the model value that would be emitted by QSelect when selecting a said option; Also takes into consideration if 'emit-value' is set"""
         kwargs = {}
         if ui_opt is not None:
             kwargs["opt"] = ui_opt
-        self._js_call_method('getEmittingOptionValue', [kwargs])
+        self._js_call_method("getEmittingOptionValue", [kwargs])
+
     def ui_getOptionIndex(self):
         """Gets current focused option index from menu; It's -1 if no option is focused"""
-        self._js_call_method('getOptionIndex')
+        self._js_call_method("getOptionIndex")
+
     def ui_getOptionLabel(self, ui_opt):
         """Get the label of an option; Takes into consideration the 'option-label' prop (if used)"""
         kwargs = {}
         if ui_opt is not None:
             kwargs["opt"] = ui_opt
-        self._js_call_method('getOptionLabel', [kwargs])
+        self._js_call_method("getOptionLabel", [kwargs])
+
     def ui_getOptionValue(self, ui_opt):
         """Get the model value of an option; Takes into consideration 'option-value' (if used), but does not looks for 'emit-value', like getEmittingOptionValue() does"""
         kwargs = {}
         if ui_opt is not None:
             kwargs["opt"] = ui_opt
-        self._js_call_method('getOptionValue', [kwargs])
+        self._js_call_method("getOptionValue", [kwargs])
+
     def ui_hidePopup(self):
         """Hide popup"""
-        self._js_call_method('hidePopup')
+        self._js_call_method("hidePopup")
+
     def ui_isOptionDisabled(self, ui_opt):
         """Tells if an option is disabled; Takes into consideration 'option-disable' prop (if used)"""
         kwargs = {}
         if ui_opt is not None:
             kwargs["opt"] = ui_opt
-        self._js_call_method('isOptionDisabled', [kwargs])
+        self._js_call_method("isOptionDisabled", [kwargs])
+
     def ui_isOptionSelected(self, ui_opt):
         """Tells if an option is selected"""
         kwargs = {}
         if ui_opt is not None:
             kwargs["opt"] = ui_opt
-        self._js_call_method('isOptionSelected', [kwargs])
+        self._js_call_method("isOptionSelected", [kwargs])
+
     def ui_moveOptionSelection(self, ui_offset=None, ui_skipInputValue=None):
         """Move selected option from menu by index offset"""
         kwargs = {}
@@ -16040,25 +17587,30 @@ class QSelect(Component):
             kwargs["offset"] = ui_offset
         if ui_skipInputValue is not None:
             kwargs["skipInputValue"] = ui_skipInputValue
-        self._js_call_method('moveOptionSelection', [kwargs])
+        self._js_call_method("moveOptionSelection", [kwargs])
+
     def ui_refresh(self, ui_index=None):
         """Refreshes the virtual scroll list; Use it after appending items"""
         kwargs = {}
         if ui_index is not None:
             kwargs["index"] = ui_index
-        self._js_call_method('refresh', [kwargs])
+        self._js_call_method("refresh", [kwargs])
+
     def ui_removeAtIndex(self, ui_index):
         """Remove selected option located at specific index"""
         kwargs = {}
         if ui_index is not None:
             kwargs["index"] = ui_index
-        self._js_call_method('removeAtIndex', [kwargs])
+        self._js_call_method("removeAtIndex", [kwargs])
+
     def ui_reset(self):
         """Resets the virtual scroll computations; Needed for custom edge-cases"""
-        self._js_call_method('reset')
+        self._js_call_method("reset")
+
     def ui_resetValidation(self):
         """Reset validation status"""
-        self._js_call_method('resetValidation')
+        self._js_call_method("resetValidation")
+
     def ui_scrollTo(self, ui_index, ui_edge=None):
         """Scroll the virtual scroll list to the item with the specified index (0 based)"""
         kwargs = {}
@@ -16066,16 +17618,19 @@ class QSelect(Component):
             kwargs["index"] = ui_index
         if ui_edge is not None:
             kwargs["edge"] = ui_edge
-        self._js_call_method('scrollTo', [kwargs])
+        self._js_call_method("scrollTo", [kwargs])
+
     def ui_setOptionIndex(self, ui_index):
         """Sets option from menu as 'focused'; -1 to focus none"""
         kwargs = {}
         if ui_index is not None:
             kwargs["index"] = ui_index
-        self._js_call_method('setOptionIndex', [kwargs])
+        self._js_call_method("setOptionIndex", [kwargs])
+
     def ui_showPopup(self):
         """Focus and open popup"""
-        self._js_call_method('showPopup')
+        self._js_call_method("showPopup")
+
     def ui_toggleOption(self, ui_opt, ui_keepOpen=None):
         """Add/remove option from model"""
         kwargs = {}
@@ -16083,7 +17638,8 @@ class QSelect(Component):
             kwargs["opt"] = ui_opt
         if ui_keepOpen is not None:
             kwargs["keepOpen"] = ui_keepOpen
-        self._js_call_method('toggleOption', [kwargs])
+        self._js_call_method("toggleOption", [kwargs])
+
     def ui_updateInputValue(self, ui_value, ui_noFilter=None):
         """If 'use-input' is specified, this updates the value that it holds"""
         kwargs = {}
@@ -16091,33 +17647,70 @@ class QSelect(Component):
             kwargs["value"] = ui_value
         if ui_noFilter is not None:
             kwargs["noFilter"] = ui_noFilter
-        self._js_call_method('updateInputValue', [kwargs])
+        self._js_call_method("updateInputValue", [kwargs])
+
     def ui_updateMenuPosition(self):
         """Recomputes menu position"""
-        self._js_call_method('updateMenuPosition')
+        self._js_call_method("updateMenuPosition")
+
     def ui_validate(self, ui_value=None):
         """Trigger a validation"""
         kwargs = {}
         if ui_value is not None:
             kwargs["value"] = ui_value
-        self._js_call_method('validate', [kwargs])
+        self._js_call_method("validate", [kwargs])
+
     def _get_js_methods(self):
-        return ["add", "blur", "filter", "focus", "getEmittingOptionValue", "getOptionIndex", "getOptionLabel", "getOptionValue", "hidePopup", "isOptionDisabled", "isOptionSelected", "moveOptionSelection", "refresh", "removeAtIndex", "reset", "resetValidation", "scrollTo", "setOptionIndex", "showPopup", "toggleOption", "updateInputValue", "updateMenuPosition", "validate"]
+        return [
+            "add",
+            "blur",
+            "filter",
+            "focus",
+            "getEmittingOptionValue",
+            "getOptionIndex",
+            "getOptionLabel",
+            "getOptionValue",
+            "hidePopup",
+            "isOptionDisabled",
+            "isOptionSelected",
+            "moveOptionSelection",
+            "refresh",
+            "removeAtIndex",
+            "reset",
+            "resetValidation",
+            "scrollTo",
+            "setOptionIndex",
+            "showPopup",
+            "toggleOption",
+            "updateInputValue",
+            "updateMenuPosition",
+            "validate",
+        ]
 
 
 class QSeparator(Component):
     """
     Quasar Component: `QSeparator <https://v2.quasar.dev/vue-components/separator>`__
 
-    :param ui_dark: 
+    :param ui_dark:
     :param ui_spaced: If set to true, the corresponding direction margins will be set to 8px; It can also be set to a size in CSS units, including unit name, or one of the xs|sm|md|lg|xl predefined sizes
     :param ui_inset: If set to Boolean true, the left and right margins will be set to 16px. If set to 'item' then it will match a QItem's design. If set to 'item-thumbnail' then it will match the design of a QItem with a thumbnail on the left side
     :param ui_vertical: If set to true, the separator will be vertical.
-    :param ui_size: 
-    :param ui_color: 
+    :param ui_size:
+    :param ui_color:
     """
 
-    def __init__(self, *children, ui_dark:Any | None=None,ui_spaced:bool | str | None=None,ui_inset:bool | str | None=None,ui_vertical:bool | None=None,ui_size:Any | None=None,ui_color:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_dark: Any | None = None,
+        ui_spaced: bool | str | None = None,
+        ui_inset: bool | str | None = None,
+        ui_vertical: bool | None = None,
+        ui_size: Any | None = None,
+        ui_color: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QSeparator", *children, **kwargs)
         if ui_dark is not None:
             self._props["dark"] = ui_dark
@@ -16182,6 +17775,7 @@ class QSeparator(Component):
     @ui_color.setter
     def ui_color(self, value):
         self._set_prop("color", value)
+
     def _get_js_methods(self):
         return []
 
@@ -16190,19 +17784,33 @@ class QSkeleton(Component):
     """
     Quasar Component: `QSkeleton <https://v2.quasar.dev/vue-components/skeleton>`__
 
-    :param ui_dark: 
+    :param ui_dark:
     :param ui_type: Type of skeleton placeholder
     :param ui_animation: The animation effect of the skeleton placeholder
-    :param ui_animation_speed: 
-    :param ui_square: 
-    :param ui_bordered: 
+    :param ui_animation_speed:
+    :param ui_square:
+    :param ui_bordered:
     :param ui_size: Size in CSS units, including unit name; Overrides 'height' and 'width' props and applies the value to both height and width
     :param ui_width: Width in CSS units, including unit name; Apply custom width; Use this prop or through CSS; Overridden by 'size' prop if used
     :param ui_height: Height in CSS units, including unit name; Apply custom height; Use this prop or through CSS; Overridden by 'size' prop if used
-    :param ui_tag: 
+    :param ui_tag:
     """
 
-    def __init__(self, *children, ui_dark:Any | None=None,ui_type:str | None=None,ui_animation:str | None=None,ui_animation_speed:Any | None=None,ui_square:Any | None=None,ui_bordered:Any | None=None,ui_size:str | None=None,ui_width:str | None=None,ui_height:str | None=None,ui_tag:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_dark: Any | None = None,
+        ui_type: str | None = None,
+        ui_animation: str | None = None,
+        ui_animation_speed: Any | None = None,
+        ui_square: Any | None = None,
+        ui_bordered: Any | None = None,
+        ui_size: str | None = None,
+        ui_width: str | None = None,
+        ui_height: str | None = None,
+        ui_tag: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QSkeleton", *children, **kwargs)
         if ui_dark is not None:
             self._props["dark"] = ui_dark
@@ -16309,6 +17917,7 @@ class QSkeleton(Component):
     @ui_tag.setter
     def ui_tag(self, value):
         self._set_prop("tag", value)
+
     def _get_js_methods(self):
         return []
 
@@ -16321,10 +17930,19 @@ class QSlideItem(Component):
     :param ui_right_color: Color name for right-side background from the Quasar Color Palette
     :param ui_top_color: Color name for top-side background from the Quasar Color Palette
     :param ui_bottom_color: Color name for bottom-side background from the Quasar Color Palette
-    :param ui_dark: 
+    :param ui_dark:
     """
 
-    def __init__(self, *children, ui_left_color:Any | None=None,ui_right_color:Any | None=None,ui_top_color:Any | None=None,ui_bottom_color:Any | None=None,ui_dark:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_left_color: Any | None = None,
+        ui_right_color: Any | None = None,
+        ui_top_color: Any | None = None,
+        ui_bottom_color: Any | None = None,
+        ui_dark: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QSlideItem", *children, **kwargs)
         if ui_left_color is not None:
             self._props["left-color"] = ui_left_color
@@ -16416,6 +18034,7 @@ class QSlideItem(Component):
     @ui_slot_top.setter
     def ui_slot_top(self, value):
         self._set_slot("top", value)
+
     def on_action(self, handler: Callable, arg: object = None):
         """
         Emitted when user finished sliding the item to either sides
@@ -16472,7 +18091,8 @@ class QSlideItem(Component):
 
     def ui_reset(self):
         """Reset to initial state (not swiped to any side)"""
-        self._js_call_method('reset')
+        self._js_call_method("reset")
+
     def _get_js_methods(self):
         return ["reset"]
 
@@ -16485,7 +18105,13 @@ class QSlideTransition(Component):
     :param ui_duration: Duration (in milliseconds) enabling animated scroll.
     """
 
-    def __init__(self, *children, ui_appear:bool | None=None,ui_duration:float | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_appear: bool | None = None,
+        ui_duration: float | None = None,
+        **kwargs,
+    ):
         super().__init__("QSlideTransition", *children, **kwargs)
         if ui_appear is not None:
             self._props["appear"] = ui_appear
@@ -16509,9 +18135,10 @@ class QSlideTransition(Component):
     @ui_duration.setter
     def ui_duration(self, value):
         self._set_prop("duration", value)
+
     def on_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -16520,7 +18147,7 @@ class QSlideTransition(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -16545,7 +18172,7 @@ class QSlider(Component):
     :param ui_snap: Snap on valid values, rather than sliding freely; Suggestion: use with 'step' prop
     :param ui_reverse: Work in reverse (changes direction)
     :param ui_vertical: Display in vertical direction
-    :param ui_color: 
+    :param ui_color:
     :param ui_track_color: Color name for the track (can be 'transparent' too) from the Quasar Color Palette
     :param ui_track_img: Apply a pattern image on the track
     :param ui_inner_track_color: Color name for the inner track (can be 'transparent' too) from the Quasar Color Palette
@@ -16553,8 +18180,8 @@ class QSlider(Component):
     :param ui_selection_color: Color name for the selection bar (can be 'transparent' too) from the Quasar Color Palette
     :param ui_selection_img: Apply a pattern image on the selection bar
     :param ui_label: Popup a label when user clicks/taps on the slider thumb and moves it
-    :param ui_label_color: 
-    :param ui_label_text_color: 
+    :param ui_label_color:
+    :param ui_label_text_color:
     :param ui_switch_label_side: Switch the position of the label (top <-> bottom or left <-> right)
     :param ui_label_always: Always display the label
     :param ui_markers: Display markers on the track, one for each possible value for the model or using a custom step (when specifying a Number)
@@ -16563,19 +18190,59 @@ class QSlider(Component):
     :param ui_switch_marker_labels_side: Switch the position of the marker labels (top <-> bottom or left <-> right)
     :param ui_track_size: Track size (including CSS unit)
     :param ui_thumb_size: Thumb size (including CSS unit)
-    :param ui_thumb_color: 
+    :param ui_thumb_color:
     :param ui_thumb_path: Set custom thumb svg path
-    :param ui_dark: 
-    :param ui_dense: 
-    :param ui_disable: 
-    :param ui_readonly: 
-    :param ui_tabindex: 
+    :param ui_dark:
+    :param ui_dense:
+    :param ui_disable:
+    :param ui_readonly:
+    :param ui_tabindex:
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
-    def __init__(self, *children, ui_model_value:float | None | Any=None,ui_label_value:str | float | None=None,ui_min:float | None=None,ui_max:float | None=None,ui_inner_min:float | None=None,ui_inner_max:float | None=None,ui_step:float | None=None,ui_snap:bool | None=None,ui_reverse:bool | None=None,ui_vertical:bool | None=None,ui_color:Any | None=None,ui_track_color:Any | None=None,ui_track_img:str | None=None,ui_inner_track_color:Any | None=None,ui_inner_track_img:str | None=None,ui_selection_color:Any | None=None,ui_selection_img:str | None=None,ui_label:bool | None=None,ui_label_color:Any | None=None,ui_label_text_color:Any | None=None,ui_switch_label_side:bool | None=None,ui_label_always:bool | None=None,ui_markers:bool | float | None=None,ui_marker_labels:bool | list | dict | Callable | None=None,ui_marker_labels_class:str | None=None,ui_switch_marker_labels_side:bool | None=None,ui_track_size:str | None=None,ui_thumb_size:str | None=None,ui_thumb_color:Any | None=None,ui_thumb_path:str | None=None,ui_dark:Any | None=None,ui_dense:Any | None=None,ui_disable:Any | None=None,ui_readonly:Any | None=None,ui_tabindex:Any | None=None,ui_name:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: float | None | Any = None,
+        ui_label_value: str | float | None = None,
+        ui_min: float | None = None,
+        ui_max: float | None = None,
+        ui_inner_min: float | None = None,
+        ui_inner_max: float | None = None,
+        ui_step: float | None = None,
+        ui_snap: bool | None = None,
+        ui_reverse: bool | None = None,
+        ui_vertical: bool | None = None,
+        ui_color: Any | None = None,
+        ui_track_color: Any | None = None,
+        ui_track_img: str | None = None,
+        ui_inner_track_color: Any | None = None,
+        ui_inner_track_img: str | None = None,
+        ui_selection_color: Any | None = None,
+        ui_selection_img: str | None = None,
+        ui_label: bool | None = None,
+        ui_label_color: Any | None = None,
+        ui_label_text_color: Any | None = None,
+        ui_switch_label_side: bool | None = None,
+        ui_label_always: bool | None = None,
+        ui_markers: bool | float | None = None,
+        ui_marker_labels: bool | list | dict | Callable | None = None,
+        ui_marker_labels_class: str | None = None,
+        ui_switch_marker_labels_side: bool | None = None,
+        ui_track_size: str | None = None,
+        ui_thumb_size: str | None = None,
+        ui_thumb_color: Any | None = None,
+        ui_thumb_path: str | None = None,
+        ui_dark: Any | None = None,
+        ui_dense: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_readonly: Any | None = None,
+        ui_tabindex: Any | None = None,
+        ui_name: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSlider", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -16628,7 +18295,9 @@ class QSlider(Component):
         if ui_marker_labels_class is not None:
             self._props["marker-labels-class"] = ui_marker_labels_class
         if ui_switch_marker_labels_side is not None:
-            self._props["switch-marker-labels-side"] = ui_switch_marker_labels_side
+            self._props["switch-marker-labels-side"] = (
+                ui_switch_marker_labels_side
+            )
         if ui_track_size is not None:
             self._props["track-size"] = ui_track_size
         if ui_thumb_size is not None:
@@ -16651,8 +18320,7 @@ class QSlider(Component):
             self._props["name"] = ui_name
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -16986,6 +18654,7 @@ class QSlider(Component):
     @ui_slot_marker_label_group.setter
     def ui_slot_marker_label_group(self, value):
         self._set_slot("marker-label-group", value)
+
     def on_change(self, handler: Callable, arg: object = None):
         """
         Emitted on lazy model value change (after user slides then releases the thumb)
@@ -17006,7 +18675,7 @@ class QSlider(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -17023,9 +18692,9 @@ class QSpace(Component):
 
     """
 
-    def __init__(self, *children,  **kwargs):
+    def __init__(self, *children, **kwargs):
         super().__init__("QSpace", *children, **kwargs)
-        
+
     def _get_js_methods(self):
         return []
 
@@ -17034,11 +18703,17 @@ class QSpinnerHourglass(Component):
     """
     Quasar Component: `QSpinnerHourglass <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerHourglass", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17061,6 +18736,7 @@ class QSpinnerHourglass(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17069,11 +18745,17 @@ class QSpinnerClock(Component):
     """
     Quasar Component: `QSpinnerClock <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerClock", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17096,6 +18778,7 @@ class QSpinnerClock(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17104,11 +18787,17 @@ class QSpinnerAudio(Component):
     """
     Quasar Component: `QSpinnerAudio <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerAudio", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17131,6 +18820,7 @@ class QSpinnerAudio(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17139,11 +18829,17 @@ class QSpinnerRadio(Component):
     """
     Quasar Component: `QSpinnerRadio <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerRadio", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17166,6 +18862,7 @@ class QSpinnerRadio(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17174,11 +18871,17 @@ class QSpinnerIos(Component):
     """
     Quasar Component: `QSpinnerIos <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerIos", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17201,6 +18904,7 @@ class QSpinnerIos(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17209,11 +18913,17 @@ class QSpinnerBars(Component):
     """
     Quasar Component: `QSpinnerBars <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerBars", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17236,6 +18946,7 @@ class QSpinnerBars(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17244,11 +18955,17 @@ class QSpinnerDots(Component):
     """
     Quasar Component: `QSpinnerDots <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerDots", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17271,6 +18988,7 @@ class QSpinnerDots(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17279,11 +18997,17 @@ class QSpinnerCube(Component):
     """
     Quasar Component: `QSpinnerCube <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerCube", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17306,6 +19030,7 @@ class QSpinnerCube(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17314,11 +19039,17 @@ class QSpinnerBox(Component):
     """
     Quasar Component: `QSpinnerBox <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerBox", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17341,6 +19072,7 @@ class QSpinnerBox(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17349,11 +19081,17 @@ class QSpinnerBall(Component):
     """
     Quasar Component: `QSpinnerBall <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerBall", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17376,6 +19114,7 @@ class QSpinnerBall(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17384,11 +19123,17 @@ class QSpinnerOrbit(Component):
     """
     Quasar Component: `QSpinnerOrbit <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerOrbit", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17411,6 +19156,7 @@ class QSpinnerOrbit(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17419,11 +19165,17 @@ class QSpinnerComment(Component):
     """
     Quasar Component: `QSpinnerComment <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerComment", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17446,6 +19198,7 @@ class QSpinnerComment(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17454,11 +19207,17 @@ class QSpinnerRings(Component):
     """
     Quasar Component: `QSpinnerRings <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerRings", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17481,6 +19240,7 @@ class QSpinnerRings(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17490,11 +19250,18 @@ class QSpinner(Component):
     Quasar Component: `QSpinner <https://v2.quasar.dev/vue-components/spinners>`__
 
     :param ui_thickness: Override value to use for stroke-width
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_thickness:float | None=None,ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_thickness: float | None = None,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinner", *children, **kwargs)
         if ui_thickness is not None:
             self._props["thickness"] = ui_thickness
@@ -17528,6 +19295,7 @@ class QSpinner(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17536,11 +19304,17 @@ class QSpinnerInfinity(Component):
     """
     Quasar Component: `QSpinnerInfinity <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerInfinity", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17563,6 +19337,7 @@ class QSpinnerInfinity(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17571,11 +19346,17 @@ class QSpinnerGears(Component):
     """
     Quasar Component: `QSpinnerGears <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerGears", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17598,6 +19379,7 @@ class QSpinnerGears(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17606,11 +19388,17 @@ class QSpinnerHearts(Component):
     """
     Quasar Component: `QSpinnerHearts <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerHearts", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17633,6 +19421,7 @@ class QSpinnerHearts(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17641,11 +19430,17 @@ class QSpinnerPuff(Component):
     """
     Quasar Component: `QSpinnerPuff <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerPuff", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17668,6 +19463,7 @@ class QSpinnerPuff(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17676,11 +19472,17 @@ class QSpinnerTail(Component):
     """
     Quasar Component: `QSpinnerTail <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerTail", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17703,6 +19505,7 @@ class QSpinnerTail(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17711,11 +19514,17 @@ class QSpinnerOval(Component):
     """
     Quasar Component: `QSpinnerOval <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerOval", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17738,6 +19547,7 @@ class QSpinnerOval(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17746,11 +19556,17 @@ class QSpinnerPie(Component):
     """
     Quasar Component: `QSpinnerPie <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerPie", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17773,6 +19589,7 @@ class QSpinnerPie(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17781,11 +19598,17 @@ class QSpinnerGrid(Component):
     """
     Quasar Component: `QSpinnerGrid <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerGrid", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17808,6 +19631,7 @@ class QSpinnerGrid(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17816,11 +19640,17 @@ class QSpinnerFacebook(Component):
     """
     Quasar Component: `QSpinnerFacebook <https://v2.quasar.dev/vue-components/spinners>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_size:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QSpinnerFacebook", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -17843,6 +19673,7 @@ class QSpinnerFacebook(Component):
     @ui_size.setter
     def ui_size(self, value):
         self._set_prop("size", value)
+
     def _get_js_methods(self):
         return []
 
@@ -17857,7 +19688,7 @@ class QSplitter(Component):
     :param ui_emit_immediately: Emit model while user is panning on the separator
     :param ui_horizontal: Allows the splitter to split its two panels horizontally, instead of vertically
     :param ui_limits: An array of two values representing the minimum and maximum split size of the two panels; When 'px' unit is set then you can use Infinity as the second value to make it unbound on the other side; Default value: for '%' unit it is [10, 90], while for 'px' unit it is [50, Infinity]
-    :param ui_disable: 
+    :param ui_disable:
     :param ui_before_class: Class definitions to be attributed to the 'before' panel
     :param ui_after_class: Class definitions to be attributed to the 'after' panel
     :param ui_separator_class: Class definitions to be attributed to the splitter separator
@@ -17865,9 +19696,25 @@ class QSplitter(Component):
     :param ui_dark: Applies a default lighter color on the separator; To be used when background is darker; Avoid using when you are overriding through separator-class or separator-style props
     """
 
-    def __init__(self, *children, ui_model_value:float | None=None,ui_reverse:bool | None=None,ui_unit:str | None=None,ui_emit_immediately:bool | None=None,ui_horizontal:bool | None=None,ui_limits:list | None=None,ui_disable:Any | None=None,ui_before_class:str | list | dict | None=None,ui_after_class:str | list | dict | None=None,ui_separator_class:str | list | dict | None=None,ui_separator_style:str | list | dict | None=None,ui_dark:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: float | None = None,
+        ui_reverse: bool | None = None,
+        ui_unit: str | None = None,
+        ui_emit_immediately: bool | None = None,
+        ui_horizontal: bool | None = None,
+        ui_limits: list | None = None,
+        ui_disable: Any | None = None,
+        ui_before_class: str | list | dict | None = None,
+        ui_after_class: str | list | dict | None = None,
+        ui_separator_class: str | list | dict | None = None,
+        ui_separator_style: str | list | dict | None = None,
+        ui_dark: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QSplitter", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -17895,8 +19742,7 @@ class QSplitter(Component):
             self._props["dark"] = ui_dark
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -18031,6 +19877,7 @@ class QSplitter(Component):
     @ui_slot_separator.setter
     def ui_slot_separator(self, value):
         self._set_slot("separator", value)
+
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when component's model value changes; Is also used by v-model
@@ -18048,25 +19895,45 @@ class QStep(Component):
     """
     Quasar Component: `QStep <https://v2.quasar.dev/vue-components/stepper>`__
 
-    :param ui_icon: 
-    :param ui_color: 
+    :param ui_icon:
+    :param ui_color:
     :param ui_title: Step title
     :param ui_caption: Step’s additional information that appears beneath the title
     :param ui_prefix: Step's prefix (max 2 characters) which replaces the icon if step does not has error, is being edited or is marked as done
     :param ui_done_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
-    :param ui_done_color: 
+    :param ui_done_color:
     :param ui_active_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
-    :param ui_active_color: 
+    :param ui_active_color:
     :param ui_error_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
-    :param ui_error_color: 
+    :param ui_error_color:
     :param ui_header_nav: Allow navigation through the header
     :param ui_done: Mark the step as 'done'
     :param ui_error: Mark the step as having an error
     :param ui_name: Panel name
-    :param ui_disable: 
+    :param ui_disable:
     """
 
-    def __init__(self, *children, ui_icon:Any | None=None,ui_color:Any | None=None,ui_title:str | None=None,ui_caption:str | None=None,ui_prefix:str | float | None=None,ui_done_icon:Any | None=None,ui_done_color:Any | None=None,ui_active_icon:Any | None=None,ui_active_color:Any | None=None,ui_error_icon:Any | None=None,ui_error_color:Any | None=None,ui_header_nav:bool | None=None,ui_done:bool | None=None,ui_error:bool | None=None,ui_name:Any | None=None,ui_disable:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_icon: Any | None = None,
+        ui_color: Any | None = None,
+        ui_title: str | None = None,
+        ui_caption: str | None = None,
+        ui_prefix: str | float | None = None,
+        ui_done_icon: Any | None = None,
+        ui_done_color: Any | None = None,
+        ui_active_icon: Any | None = None,
+        ui_active_color: Any | None = None,
+        ui_error_icon: Any | None = None,
+        ui_error_color: Any | None = None,
+        ui_header_nav: bool | None = None,
+        ui_done: bool | None = None,
+        ui_error: bool | None = None,
+        ui_name: Any | None = None,
+        ui_disable: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QStep", *children, **kwargs)
         if ui_icon is not None:
             self._props["icon"] = ui_icon
@@ -18238,9 +20105,10 @@ class QStep(Component):
     @ui_disable.setter
     def ui_disable(self, value):
         self._set_prop("disable", value)
+
     def on_scroll(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -18249,8 +20117,14 @@ class QStep(Component):
 
     def _get_js_methods(self):
         return []
+
     def _get_my_wrapper_props(self):
-        return super()._get_my_wrapper_props() | { 'name': self.ui_name,'title': self.ui_title,'error': self.ui_error,'done': self.ui_done }
+        return super()._get_my_wrapper_props() | {
+            "name": self.ui_name,
+            "title": self.ui_title,
+            "error": self.ui_error,
+            "done": self.ui_done,
+        }
 
 
 class QStepperNavigation(Component):
@@ -18259,9 +20133,9 @@ class QStepperNavigation(Component):
 
     """
 
-    def __init__(self, *children,  **kwargs):
+    def __init__(self, *children, **kwargs):
         super().__init__("QStepperNavigation", *children, **kwargs)
-        
+
     def _get_js_methods(self):
         return []
 
@@ -18270,21 +20144,21 @@ class QStepper(Component):
     """
     Quasar Component: `QStepper <https://v2.quasar.dev/vue-components/stepper>`__
 
-    :param ui_dark: 
-    :param ui_flat: 
-    :param ui_bordered: 
+    :param ui_dark:
+    :param ui_flat:
+    :param ui_bordered:
     :param ui_vertical: Default transitions and swipe actions will be on the vertical axis
     :param ui_alternative_labels: Use alternative labels - stacks the icon on top of the label (applies only to horizontal stepper)
     :param ui_header_nav: Allow navigation through the header
     :param ui_contracted: Hide header labels on narrow windows
-    :param ui_inactive_icon: 
-    :param ui_inactive_color: 
+    :param ui_inactive_icon:
+    :param ui_inactive_color:
     :param ui_done_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
-    :param ui_done_color: 
+    :param ui_done_color:
     :param ui_active_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
-    :param ui_active_color: 
+    :param ui_active_color:
     :param ui_error_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
-    :param ui_error_color: 
+    :param ui_error_color:
     :param ui_header_class: Class definitions to be attributed to the header
     :param ui_model_value: Model of the component defining the current panel's name; If a Number is used, it does not define the panel's index, but rather the panel's name which can also be an Integer; Either use this property (along with a listener for 'update:model-value' event) OR use the v-model directive.
     :param ui_keep_alive: Equivalent to using Vue's native <keep-alive> component on the content
@@ -18299,9 +20173,40 @@ class QStepper(Component):
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
 
-    def __init__(self, *children, ui_dark:Any | None=None,ui_flat:Any | None=None,ui_bordered:Any | None=None,ui_vertical:bool | None=None,ui_alternative_labels:bool | None=None,ui_header_nav:bool | None=None,ui_contracted:bool | None=None,ui_inactive_icon:Any | None=None,ui_inactive_color:Any | None=None,ui_done_icon:Any | None=None,ui_done_color:Any | None=None,ui_active_icon:Any | None=None,ui_active_color:Any | None=None,ui_error_icon:Any | None=None,ui_error_color:Any | None=None,ui_header_class:str | None=None,ui_model_value:Any | None=None,ui_keep_alive:bool | None=None,ui_keep_alive_include:str | list | re.Pattern | None=None,ui_keep_alive_exclude:str | list | re.Pattern | None=None,ui_keep_alive_max:float | None=None,ui_animated:bool | None=None,ui_infinite:bool | None=None,ui_swipeable:bool | None=None,ui_transition_prev:Any | None=None,ui_transition_next:Any | None=None,ui_transition_duration:str | float | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_dark: Any | None = None,
+        ui_flat: Any | None = None,
+        ui_bordered: Any | None = None,
+        ui_vertical: bool | None = None,
+        ui_alternative_labels: bool | None = None,
+        ui_header_nav: bool | None = None,
+        ui_contracted: bool | None = None,
+        ui_inactive_icon: Any | None = None,
+        ui_inactive_color: Any | None = None,
+        ui_done_icon: Any | None = None,
+        ui_done_color: Any | None = None,
+        ui_active_icon: Any | None = None,
+        ui_active_color: Any | None = None,
+        ui_error_icon: Any | None = None,
+        ui_error_color: Any | None = None,
+        ui_header_class: str | None = None,
+        ui_model_value: Any | None = None,
+        ui_keep_alive: bool | None = None,
+        ui_keep_alive_include: str | list | re.Pattern | None = None,
+        ui_keep_alive_exclude: str | list | re.Pattern | None = None,
+        ui_keep_alive_max: float | None = None,
+        ui_animated: bool | None = None,
+        ui_infinite: bool | None = None,
+        ui_swipeable: bool | None = None,
+        ui_transition_prev: Any | None = None,
+        ui_transition_next: Any | None = None,
+        ui_transition_duration: str | float | None = None,
+        **kwargs,
+    ):
         super().__init__("QStepper", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_dark is not None:
             self._props["dark"] = ui_dark
@@ -18359,8 +20264,7 @@ class QStepper(Component):
             self._props["transition-duration"] = ui_transition_duration
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_dark(self):
@@ -18614,6 +20518,7 @@ class QStepper(Component):
     @ui_slot_navigation.setter
     def ui_slot_navigation(self, value):
         self._set_slot("navigation", value)
+
     def on_before_transition(self, handler: Callable, arg: object = None):
         """
         Emitted before transitioning to a new panel
@@ -18646,13 +20551,16 @@ class QStepper(Component):
         kwargs = {}
         if ui_panelName is not None:
             kwargs["panelName"] = ui_panelName
-        self._js_call_method('goTo', [kwargs])
+        self._js_call_method("goTo", [kwargs])
+
     def ui_next(self):
         """Go to next panel"""
-        self._js_call_method('next')
+        self._js_call_method("next")
+
     def ui_previous(self):
         """Go to previous panel"""
-        self._js_call_method('previous')
+        self._js_call_method("previous")
+
     def _get_js_methods(self):
         return ["goTo", "next", "previous"]
 
@@ -18662,10 +20570,16 @@ class QTabPanel(Component):
     Quasar Component: `QTabPanel <https://v2.quasar.dev/vue-components/tab-panels>`__
 
     :param ui_name: Panel name
-    :param ui_disable: 
+    :param ui_disable:
     """
 
-    def __init__(self, *children, ui_name:Any | None=None,ui_disable:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_name: Any | None = None,
+        ui_disable: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QTabPanel", *children, **kwargs)
         if ui_name is not None:
             self._props["name"] = ui_name
@@ -18688,17 +20602,19 @@ class QTabPanel(Component):
     @ui_disable.setter
     def ui_disable(self, value):
         self._set_prop("disable", value)
+
     def _get_js_methods(self):
         return []
+
     def _get_my_wrapper_props(self):
-        return super()._get_my_wrapper_props() | { 'name': self.ui_name }
+        return super()._get_my_wrapper_props() | {"name": self.ui_name}
 
 
 class QTabPanels(Component):
     """
     Quasar Component: `QTabPanels <https://v2.quasar.dev/vue-components/tab-panels>`__
 
-    :param ui_dark: 
+    :param ui_dark:
     :param ui_model_value: Model of the component defining the current panel's name; If a Number is used, it does not define the panel's index, but rather the panel's name which can also be an Integer; Either use this property (along with a listener for 'update:model-value' event) OR use the v-model directive.
     :param ui_keep_alive: Equivalent to using Vue's native <keep-alive> component on the content
     :param ui_keep_alive_include: Equivalent to using Vue's native include prop for <keep-alive>; Values must be valid Vue component names
@@ -18713,9 +20629,26 @@ class QTabPanels(Component):
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
 
-    def __init__(self, *children, ui_dark:Any | None=None,ui_model_value:Any | None=None,ui_keep_alive:bool | None=None,ui_keep_alive_include:str | list | re.Pattern | None=None,ui_keep_alive_exclude:str | list | re.Pattern | None=None,ui_keep_alive_max:float | None=None,ui_animated:bool | None=None,ui_infinite:bool | None=None,ui_swipeable:bool | None=None,ui_vertical:bool | None=None,ui_transition_prev:Any | None=None,ui_transition_next:Any | None=None,ui_transition_duration:str | float | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_dark: Any | None = None,
+        ui_model_value: Any | None = None,
+        ui_keep_alive: bool | None = None,
+        ui_keep_alive_include: str | list | re.Pattern | None = None,
+        ui_keep_alive_exclude: str | list | re.Pattern | None = None,
+        ui_keep_alive_max: float | None = None,
+        ui_animated: bool | None = None,
+        ui_infinite: bool | None = None,
+        ui_swipeable: bool | None = None,
+        ui_vertical: bool | None = None,
+        ui_transition_prev: Any | None = None,
+        ui_transition_next: Any | None = None,
+        ui_transition_duration: str | float | None = None,
+        **kwargs,
+    ):
         super().__init__("QTabPanels", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_dark is not None:
             self._props["dark"] = ui_dark
@@ -18745,8 +20678,7 @@ class QTabPanels(Component):
             self._props["transition-duration"] = ui_transition_duration
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_dark(self):
@@ -18863,6 +20795,7 @@ class QTabPanels(Component):
     @ui_transition_duration.setter
     def ui_transition_duration(self, value):
         self._set_prop("transition-duration", value)
+
     def on_before_transition(self, handler: Callable, arg: object = None):
         """
         Emitted before transitioning to a new panel
@@ -18895,13 +20828,16 @@ class QTabPanels(Component):
         kwargs = {}
         if ui_panelName is not None:
             kwargs["panelName"] = ui_panelName
-        self._js_call_method('goTo', [kwargs])
+        self._js_call_method("goTo", [kwargs])
+
     def ui_next(self):
         """Go to next panel"""
-        self._js_call_method('next')
+        self._js_call_method("next")
+
     def ui_previous(self):
         """Go to previous panel"""
-        self._js_call_method('previous')
+        self._js_call_method("previous")
+
     def _get_js_methods(self):
         return ["goTo", "next", "previous"]
 
@@ -18914,7 +20850,13 @@ class QTh(Component):
     :param ui_auto_width: Tries to shrink header column width size; Useful for columns with a checkbox/radio/toggle
     """
 
-    def __init__(self, *children, ui_props:dict | None=None,ui_auto_width:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_props: dict | None = None,
+        ui_auto_width: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QTh", *children, **kwargs)
         if ui_props is not None:
             self._props["props"] = ui_props
@@ -18938,9 +20880,10 @@ class QTh(Component):
     @ui_auto_width.setter
     def ui_auto_width(self, value):
         self._set_prop("auto-width", value)
+
     def on_click(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -18960,7 +20903,14 @@ class QTd(Component):
     :param ui_no_hover: Disable hover effect
     """
 
-    def __init__(self, *children, ui_props:dict | None=None,ui_auto_width:bool | None=None,ui_no_hover:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_props: dict | None = None,
+        ui_auto_width: bool | None = None,
+        ui_no_hover: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QTd", *children, **kwargs)
         if ui_props is not None:
             self._props["props"] = ui_props
@@ -18995,6 +20945,7 @@ class QTd(Component):
     @ui_no_hover.setter
     def ui_no_hover(self, value):
         self._set_prop("no-hover", value)
+
     def _get_js_methods(self):
         return []
 
@@ -19006,7 +20957,7 @@ class QTable(Component):
     :param ui_rows: Rows of data to display
     :param ui_row_key: Property of each row that defines the unique key of each row (the result must be a primitive, not Object, Array, etc); The value of property must be string or a function taking a row and returning the desired (nested) key in the row; If supplying a function then for best performance, reference it from your scope and do not define it inline
     :param ui_virtual_scroll: Display data using QVirtualScroll (for non-grid mode only)
-    :param ui_virtual_scroll_target: 
+    :param ui_virtual_scroll_target:
     :param ui_virtual_scroll_slice_size: Minimum number of rows to render in the virtual list
     :param ui_virtual_scroll_slice_ratio_before: Ratio of number of rows in visible zone to render before it
     :param ui_virtual_scroll_slice_ratio_after: Ratio of number of rows in visible zone to render after it
@@ -19014,7 +20965,7 @@ class QTable(Component):
     :param ui_virtual_scroll_sticky_size_start: Size in pixels of the sticky header (if using one); A correct value will improve scroll precision; Will be also used for non-virtual-scroll tables for fixing top alignment when using scrollTo method
     :param ui_virtual_scroll_sticky_size_end: Size in pixels of the sticky footer part (if using one); A correct value will improve scroll precision
     :param ui_table_colspan: The number of columns in the table (you need this if you use table-layout: fixed)
-    :param ui_color: 
+    :param ui_color:
     :param ui_icon_first_page: Icon name following Quasar convention for stepping to first page; Make sure you have the icon library installed unless you are using 'img:' prefix
     :param ui_icon_prev_page: Icon name following Quasar convention for stepping to previous page; Make sure you have the icon library installed unless you are using 'img:' prefix
     :param ui_icon_next_page: Icon name following Quasar convention for stepping to next page; Make sure you have the icon library installed unless you are using 'img:' prefix
@@ -19031,10 +20982,10 @@ class QTable(Component):
     :param ui_hide_selected_banner: Hide the selected rows banner (if any)
     :param ui_hide_no_data: Hide the default no data bottom layer
     :param ui_hide_pagination: Hide the pagination controls at the bottom
-    :param ui_dark: 
-    :param ui_flat: 
-    :param ui_bordered: 
-    :param ui_square: 
+    :param ui_dark:
+    :param ui_flat:
+    :param ui_bordered:
+    :param ui_square:
     :param ui_separator: Use a separator/border between rows, columns or all cells
     :param ui_wrap_cells: Wrap text within table cells
     :param ui_binary_state_sort: Skip the third state (unsorted) when user toggles column sort direction
@@ -19066,7 +21017,72 @@ class QTable(Component):
     :param ui_no_route_fullscreen_exit: Changing route app won't exit fullscreen
     """
 
-    def __init__(self, *children, ui_rows:list | None=None,ui_row_key:str | Callable | None=None,ui_virtual_scroll:bool | None=None,ui_virtual_scroll_target:Any | None=None,ui_virtual_scroll_slice_size:float | str | None=None,ui_virtual_scroll_slice_ratio_before:float | str | None=None,ui_virtual_scroll_slice_ratio_after:float | str | None=None,ui_virtual_scroll_item_size:float | str | None=None,ui_virtual_scroll_sticky_size_start:float | str | None=None,ui_virtual_scroll_sticky_size_end:float | str | None=None,ui_table_colspan:float | str | None=None,ui_color:Any | None=None,ui_icon_first_page:Any | None=None,ui_icon_prev_page:Any | None=None,ui_icon_next_page:Any | None=None,ui_icon_last_page:Any | None=None,ui_grid:bool | None=None,ui_grid_header:bool | None=None,ui_dense:Any | None=None,ui_columns:list | None=None,ui_visible_columns:list | None=None,ui_loading:bool | None=None,ui_title:str | None=None,ui_hide_header:bool | None=None,ui_hide_bottom:bool | None=None,ui_hide_selected_banner:bool | None=None,ui_hide_no_data:bool | None=None,ui_hide_pagination:bool | None=None,ui_dark:Any | None=None,ui_flat:Any | None=None,ui_bordered:Any | None=None,ui_square:Any | None=None,ui_separator:str | None=None,ui_wrap_cells:bool | None=None,ui_binary_state_sort:bool | None=None,ui_column_sort_order:str | None=None,ui_no_data_label:str | None=None,ui_no_results_label:str | None=None,ui_loading_label:str | None=None,ui_selected_rows_label:Callable | None=None,ui_rows_per_page_label:str | None=None,ui_pagination_label:Callable | None=None,ui_table_style:str | list | dict | None=None,ui_table_class:str | list | dict | None=None,ui_table_header_style:str | list | dict | None=None,ui_table_header_class:str | list | dict | None=None,ui_card_container_style:str | list | dict | None=None,ui_card_container_class:str | list | dict | None=None,ui_card_style:str | list | dict | None=None,ui_card_class:str | list | dict | None=None,ui_title_class:str | list | dict | None=None,ui_filter:str | dict | None=None,ui_filter_method:Callable | None=None,ui_pagination:dict | None=None,ui_rows_per_page_options:list | None=None,ui_selection:str | None=None,ui_selected:list | None=None,ui_expanded:list | None=None,ui_sort_method:Callable | None=None,ui_fullscreen:bool | None=None,ui_no_route_fullscreen_exit:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_rows: list | None = None,
+        ui_row_key: str | Callable | None = None,
+        ui_virtual_scroll: bool | None = None,
+        ui_virtual_scroll_target: Any | None = None,
+        ui_virtual_scroll_slice_size: float | str | None = None,
+        ui_virtual_scroll_slice_ratio_before: float | str | None = None,
+        ui_virtual_scroll_slice_ratio_after: float | str | None = None,
+        ui_virtual_scroll_item_size: float | str | None = None,
+        ui_virtual_scroll_sticky_size_start: float | str | None = None,
+        ui_virtual_scroll_sticky_size_end: float | str | None = None,
+        ui_table_colspan: float | str | None = None,
+        ui_color: Any | None = None,
+        ui_icon_first_page: Any | None = None,
+        ui_icon_prev_page: Any | None = None,
+        ui_icon_next_page: Any | None = None,
+        ui_icon_last_page: Any | None = None,
+        ui_grid: bool | None = None,
+        ui_grid_header: bool | None = None,
+        ui_dense: Any | None = None,
+        ui_columns: list | None = None,
+        ui_visible_columns: list | None = None,
+        ui_loading: bool | None = None,
+        ui_title: str | None = None,
+        ui_hide_header: bool | None = None,
+        ui_hide_bottom: bool | None = None,
+        ui_hide_selected_banner: bool | None = None,
+        ui_hide_no_data: bool | None = None,
+        ui_hide_pagination: bool | None = None,
+        ui_dark: Any | None = None,
+        ui_flat: Any | None = None,
+        ui_bordered: Any | None = None,
+        ui_square: Any | None = None,
+        ui_separator: str | None = None,
+        ui_wrap_cells: bool | None = None,
+        ui_binary_state_sort: bool | None = None,
+        ui_column_sort_order: str | None = None,
+        ui_no_data_label: str | None = None,
+        ui_no_results_label: str | None = None,
+        ui_loading_label: str | None = None,
+        ui_selected_rows_label: Callable | None = None,
+        ui_rows_per_page_label: str | None = None,
+        ui_pagination_label: Callable | None = None,
+        ui_table_style: str | list | dict | None = None,
+        ui_table_class: str | list | dict | None = None,
+        ui_table_header_style: str | list | dict | None = None,
+        ui_table_header_class: str | list | dict | None = None,
+        ui_card_container_style: str | list | dict | None = None,
+        ui_card_container_class: str | list | dict | None = None,
+        ui_card_style: str | list | dict | None = None,
+        ui_card_class: str | list | dict | None = None,
+        ui_title_class: str | list | dict | None = None,
+        ui_filter: str | dict | None = None,
+        ui_filter_method: Callable | None = None,
+        ui_pagination: dict | None = None,
+        ui_rows_per_page_options: list | None = None,
+        ui_selection: str | None = None,
+        ui_selected: list | None = None,
+        ui_expanded: list | None = None,
+        ui_sort_method: Callable | None = None,
+        ui_fullscreen: bool | None = None,
+        ui_no_route_fullscreen_exit: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QTable", *children, **kwargs)
         if ui_rows is not None:
             self._props["rows"] = ui_rows
@@ -19077,17 +21093,29 @@ class QTable(Component):
         if ui_virtual_scroll_target is not None:
             self._props["virtual-scroll-target"] = ui_virtual_scroll_target
         if ui_virtual_scroll_slice_size is not None:
-            self._props["virtual-scroll-slice-size"] = ui_virtual_scroll_slice_size
+            self._props["virtual-scroll-slice-size"] = (
+                ui_virtual_scroll_slice_size
+            )
         if ui_virtual_scroll_slice_ratio_before is not None:
-            self._props["virtual-scroll-slice-ratio-before"] = ui_virtual_scroll_slice_ratio_before
+            self._props["virtual-scroll-slice-ratio-before"] = (
+                ui_virtual_scroll_slice_ratio_before
+            )
         if ui_virtual_scroll_slice_ratio_after is not None:
-            self._props["virtual-scroll-slice-ratio-after"] = ui_virtual_scroll_slice_ratio_after
+            self._props["virtual-scroll-slice-ratio-after"] = (
+                ui_virtual_scroll_slice_ratio_after
+            )
         if ui_virtual_scroll_item_size is not None:
-            self._props["virtual-scroll-item-size"] = ui_virtual_scroll_item_size
+            self._props["virtual-scroll-item-size"] = (
+                ui_virtual_scroll_item_size
+            )
         if ui_virtual_scroll_sticky_size_start is not None:
-            self._props["virtual-scroll-sticky-size-start"] = ui_virtual_scroll_sticky_size_start
+            self._props["virtual-scroll-sticky-size-start"] = (
+                ui_virtual_scroll_sticky_size_start
+            )
         if ui_virtual_scroll_sticky_size_end is not None:
-            self._props["virtual-scroll-sticky-size-end"] = ui_virtual_scroll_sticky_size_end
+            self._props["virtual-scroll-sticky-size-end"] = (
+                ui_virtual_scroll_sticky_size_end
+            )
         if ui_table_colspan is not None:
             self._props["table-colspan"] = ui_table_colspan
         if ui_color is not None:
@@ -19189,7 +21217,9 @@ class QTable(Component):
         if ui_fullscreen is not None:
             self._props["fullscreen"] = ui_fullscreen
         if ui_no_route_fullscreen_exit is not None:
-            self._props["no-route-fullscreen-exit"] = ui_no_route_fullscreen_exit
+            self._props["no-route-fullscreen-exit"] = (
+                ui_no_route_fullscreen_exit
+            )
 
     @property
     def ui_rows(self):
@@ -19894,6 +21924,7 @@ class QTable(Component):
     @ui_slot_top_selection.setter
     def ui_slot_top_selection(self, value):
         self._set_slot("top-selection", value)
+
     def on_fullscreen(self, handler: Callable, arg: object = None):
         """
         Emitted when fullscreen state changes
@@ -19995,43 +22026,53 @@ class QTable(Component):
 
     def ui_clearSelection(self):
         """Clears user selection (emits 'update:selected' with empty array)"""
-        self._js_call_method('clearSelection')
+        self._js_call_method("clearSelection")
+
     def ui_exitFullscreen(self):
         """Leave the fullscreen view"""
-        self._js_call_method('exitFullscreen')
+        self._js_call_method("exitFullscreen")
+
     def ui_firstPage(self):
         """Navigates to first page"""
-        self._js_call_method('firstPage')
+        self._js_call_method("firstPage")
+
     def ui_isRowExpanded(self, ui_key):
         """Determine if a row is expanded or not"""
         kwargs = {}
         if ui_key is not None:
             kwargs["key"] = ui_key
-        self._js_call_method('isRowExpanded', [kwargs])
+        self._js_call_method("isRowExpanded", [kwargs])
+
     def ui_isRowSelected(self, ui_key):
         """Determine if a row has been selected by user"""
         kwargs = {}
         if ui_key is not None:
             kwargs["key"] = ui_key
-        self._js_call_method('isRowSelected', [kwargs])
+        self._js_call_method("isRowSelected", [kwargs])
+
     def ui_lastPage(self):
         """Navigates to last page"""
-        self._js_call_method('lastPage')
+        self._js_call_method("lastPage")
+
     def ui_nextPage(self):
         """Navigates to next page, if available"""
-        self._js_call_method('nextPage')
+        self._js_call_method("nextPage")
+
     def ui_prevPage(self):
         """Navigates to previous page, if available"""
-        self._js_call_method('prevPage')
+        self._js_call_method("prevPage")
+
     def ui_requestServerInteraction(self, ui_props=None):
         """Trigger a server request (emits 'request' event)"""
         kwargs = {}
         if ui_props is not None:
             kwargs["props"] = ui_props
-        self._js_call_method('requestServerInteraction', [kwargs])
+        self._js_call_method("requestServerInteraction", [kwargs])
+
     def ui_resetVirtualScroll(self):
         """Resets the virtual scroll (if using it) computations; Needed for custom edge-cases"""
-        self._js_call_method('resetVirtualScroll')
+        self._js_call_method("resetVirtualScroll")
+
     def ui_scrollTo(self, ui_index, ui_edge=None):
         """Scroll the table to the row with the specified index in page (0 based)"""
         kwargs = {}
@@ -20039,16 +22080,19 @@ class QTable(Component):
             kwargs["index"] = ui_index
         if ui_edge is not None:
             kwargs["edge"] = ui_edge
-        self._js_call_method('scrollTo', [kwargs])
+        self._js_call_method("scrollTo", [kwargs])
+
     def ui_setExpanded(self, ui_expanded):
         """Sets the expanded rows keys array; Especially useful if not using an external 'expanded' state otherwise just emits 'update:expanded' with the value"""
         kwargs = {}
         if ui_expanded is not None:
             kwargs["expanded"] = ui_expanded
-        self._js_call_method('setExpanded', [kwargs])
+        self._js_call_method("setExpanded", [kwargs])
+
     def ui_setFullscreen(self):
         """Enter the fullscreen view"""
-        self._js_call_method('setFullscreen')
+        self._js_call_method("setFullscreen")
+
     def ui_setPagination(self, ui_pagination, ui_forceServerRequest=None):
         """Unless using an external pagination Object (through 'v-model:pagination' prop), you can use this method and force the internal pagination to change"""
         kwargs = {}
@@ -20056,18 +22100,38 @@ class QTable(Component):
             kwargs["pagination"] = ui_pagination
         if ui_forceServerRequest is not None:
             kwargs["forceServerRequest"] = ui_forceServerRequest
-        self._js_call_method('setPagination', [kwargs])
+        self._js_call_method("setPagination", [kwargs])
+
     def ui_sort(self, ui_col):
         """Trigger a table sort"""
         kwargs = {}
         if ui_col is not None:
             kwargs["col"] = ui_col
-        self._js_call_method('sort', [kwargs])
+        self._js_call_method("sort", [kwargs])
+
     def ui_toggleFullscreen(self):
         """Toggle the view to be fullscreen or not fullscreen"""
-        self._js_call_method('toggleFullscreen')
+        self._js_call_method("toggleFullscreen")
+
     def _get_js_methods(self):
-        return ["clearSelection", "exitFullscreen", "firstPage", "isRowExpanded", "isRowSelected", "lastPage", "nextPage", "prevPage", "requestServerInteraction", "resetVirtualScroll", "scrollTo", "setExpanded", "setFullscreen", "setPagination", "sort", "toggleFullscreen"]
+        return [
+            "clearSelection",
+            "exitFullscreen",
+            "firstPage",
+            "isRowExpanded",
+            "isRowSelected",
+            "lastPage",
+            "nextPage",
+            "prevPage",
+            "requestServerInteraction",
+            "resetVirtualScroll",
+            "scrollTo",
+            "setExpanded",
+            "setFullscreen",
+            "setPagination",
+            "sort",
+            "toggleFullscreen",
+        ]
 
 
 class QTr(Component):
@@ -20078,7 +22142,13 @@ class QTr(Component):
     :param ui_no_hover: Disable hover effect
     """
 
-    def __init__(self, *children, ui_props:dict | None=None,ui_no_hover:bool | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_props: dict | None = None,
+        ui_no_hover: bool | None = None,
+        **kwargs,
+    ):
         super().__init__("QTr", *children, **kwargs)
         if ui_props is not None:
             self._props["props"] = ui_props
@@ -20102,6 +22172,7 @@ class QTr(Component):
     @ui_no_hover.setter
     def ui_no_hover(self, value):
         self._set_prop("no-hover", value)
+
     def _get_js_methods(self):
         return []
 
@@ -20110,19 +22181,33 @@ class QTab(Component):
     """
     Quasar Component: `QTab <https://v2.quasar.dev/vue-components/tabs>`__
 
-    :param ui_icon: 
+    :param ui_icon:
     :param ui_label: A number or string to label the tab
     :param ui_alert: Adds an alert symbol to the tab, notifying the user there are some updates; If its value is not a Boolean, then you can specify a color
     :param ui_alert_icon: Adds a floating icon to the tab, notifying the user there are some updates; It's displayed only if 'alert' is set; Can use the color specified by 'alert' prop
     :param ui_name: Panel name
     :param ui_no_caps: Turns off capitalizing all letters within the tab (which is the default)
     :param ui_content_class: Class definitions to be attributed to the content wrapper
-    :param ui_ripple: 
-    :param ui_tabindex: 
-    :param ui_disable: 
+    :param ui_ripple:
+    :param ui_tabindex:
+    :param ui_disable:
     """
 
-    def __init__(self, *children, ui_icon:Any | None=None,ui_label:float | str | None=None,ui_alert:bool | str | None=None,ui_alert_icon:str | None=None,ui_name:float | str | None=None,ui_no_caps:bool | None=None,ui_content_class:str | None=None,ui_ripple:Any | None=None,ui_tabindex:Any | None=None,ui_disable:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_icon: Any | None = None,
+        ui_label: float | str | None = None,
+        ui_alert: bool | str | None = None,
+        ui_alert_icon: str | None = None,
+        ui_name: float | str | None = None,
+        ui_no_caps: bool | None = None,
+        ui_content_class: str | None = None,
+        ui_ripple: Any | None = None,
+        ui_tabindex: Any | None = None,
+        ui_disable: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QTab", *children, **kwargs)
         if ui_icon is not None:
             self._props["icon"] = ui_icon
@@ -20230,9 +22315,10 @@ class QTab(Component):
     @ui_disable.setter
     def ui_disable(self, value):
         self._set_prop("disable", value)
+
     def on_click(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -20241,7 +22327,7 @@ class QTab(Component):
 
     def on_keydown(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -20256,16 +22342,16 @@ class QRouteTab(Component):
     """
     Quasar Component: `QRouteTab <https://v2.quasar.dev/vue-components/tabs>`__
 
-    :param ui_icon: 
+    :param ui_icon:
     :param ui_label: A number or string to label the tab
     :param ui_alert: Adds an alert symbol to the tab, notifying the user there are some updates; If its value is not a Boolean, then you can specify a color
     :param ui_alert_icon: Adds a floating icon to the tab, notifying the user there are some updates; It's displayed only if 'alert' is set; Can use the color specified by 'alert' prop
     :param ui_name: Panel name
     :param ui_no_caps: Turns off capitalizing all letters within the tab (which is the default)
     :param ui_content_class: Class definitions to be attributed to the content wrapper
-    :param ui_ripple: 
-    :param ui_tabindex: 
-    :param ui_disable: 
+    :param ui_ripple:
+    :param ui_tabindex:
+    :param ui_disable:
     :param ui_to: Equivalent to Vue Router <router-link> 'to' property; Superseded by 'href' prop if used
     :param ui_exact: Equivalent to Vue Router <router-link> 'exact' property; Superseded by 'href' prop if used
     :param ui_replace: Equivalent to Vue Router <router-link> 'replace' property; Superseded by 'href' prop if used
@@ -20275,7 +22361,28 @@ class QRouteTab(Component):
     :param ui_target: Native <a> link target attribute; Use it only along with 'href' prop; Has priority over the 'to'/'exact'/'replace'/'active-class'/'exact-active-class' props
     """
 
-    def __init__(self, *children, ui_icon:Any | None=None,ui_label:float | str | None=None,ui_alert:bool | str | None=None,ui_alert_icon:str | None=None,ui_name:float | str | None=None,ui_no_caps:bool | None=None,ui_content_class:str | None=None,ui_ripple:Any | None=None,ui_tabindex:Any | None=None,ui_disable:Any | None=None,ui_to:str | dict | None=None,ui_exact:bool | None=None,ui_replace:bool | None=None,ui_active_class:str | None=None,ui_exact_active_class:str | None=None,ui_href:str | None=None,ui_target:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_icon: Any | None = None,
+        ui_label: float | str | None = None,
+        ui_alert: bool | str | None = None,
+        ui_alert_icon: str | None = None,
+        ui_name: float | str | None = None,
+        ui_no_caps: bool | None = None,
+        ui_content_class: str | None = None,
+        ui_ripple: Any | None = None,
+        ui_tabindex: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_to: str | dict | None = None,
+        ui_exact: bool | None = None,
+        ui_replace: bool | None = None,
+        ui_active_class: str | None = None,
+        ui_exact_active_class: str | None = None,
+        ui_href: str | None = None,
+        ui_target: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QRouteTab", *children, **kwargs)
         if ui_icon is not None:
             self._props["icon"] = ui_icon
@@ -20460,6 +22567,7 @@ class QRouteTab(Component):
     @ui_target.setter
     def ui_target(self, value):
         self._set_prop("target", value)
+
     def on_click(self, handler: Callable, arg: object = None):
         """
         Emitted when the component is clicked
@@ -20471,7 +22579,7 @@ class QRouteTab(Component):
 
     def on_keydown(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -20505,12 +22613,36 @@ class QTabs(Component):
     :param ui_narrow_indicator: Allows the indicator to be the same width as the tab's content (text or icon), instead of the whole width of the tab
     :param ui_inline_label: Allows the text to be inline with the icon, should one be used
     :param ui_no_caps: Turns off capitalizing all letters within the tab (which is the default)
-    :param ui_dense: 
+    :param ui_dense:
     """
 
-    def __init__(self, *children, ui_model_value:float | str | None | Any=None,ui_vertical:bool | None=None,ui_outside_arrows:bool | None=None,ui_mobile_arrows:bool | None=None,ui_align:str | None=None,ui_breakpoint:float | str | None=None,ui_active_color:Any | None=None,ui_active_bg_color:Any | None=None,ui_indicator_color:Any | None=None,ui_content_class:str | None=None,ui_active_class:str | None=None,ui_left_icon:str | None=None,ui_right_icon:str | None=None,ui_stretch:bool | None=None,ui_shrink:bool | None=None,ui_switch_indicator:bool | None=None,ui_narrow_indicator:bool | None=None,ui_inline_label:bool | None=None,ui_no_caps:bool | None=None,ui_dense:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: float | str | None | Any = None,
+        ui_vertical: bool | None = None,
+        ui_outside_arrows: bool | None = None,
+        ui_mobile_arrows: bool | None = None,
+        ui_align: str | None = None,
+        ui_breakpoint: float | str | None = None,
+        ui_active_color: Any | None = None,
+        ui_active_bg_color: Any | None = None,
+        ui_indicator_color: Any | None = None,
+        ui_content_class: str | None = None,
+        ui_active_class: str | None = None,
+        ui_left_icon: str | None = None,
+        ui_right_icon: str | None = None,
+        ui_stretch: bool | None = None,
+        ui_shrink: bool | None = None,
+        ui_switch_indicator: bool | None = None,
+        ui_narrow_indicator: bool | None = None,
+        ui_inline_label: bool | None = None,
+        ui_no_caps: bool | None = None,
+        ui_dense: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QTabs", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -20554,8 +22686,7 @@ class QTabs(Component):
             self._props["dense"] = ui_dense
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -20735,9 +22866,10 @@ class QTabs(Component):
     @ui_dense.setter
     def ui_dense(self, value):
         self._set_prop("dense", value)
+
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -20765,20 +22897,46 @@ class QTime(Component):
     :param ui_landscape: Display the component in landscape mode
     :param ui_locale: Locale formatting options
     :param ui_calendar: Specify calendar type
-    :param ui_color: 
-    :param ui_text_color: 
-    :param ui_dark: 
-    :param ui_square: 
-    :param ui_flat: 
-    :param ui_bordered: 
-    :param ui_readonly: 
-    :param ui_disable: 
+    :param ui_color:
+    :param ui_text_color:
+    :param ui_dark:
+    :param ui_square:
+    :param ui_flat:
+    :param ui_bordered:
+    :param ui_readonly:
+    :param ui_disable:
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
-    def __init__(self, *children, ui_model_value:str | None | Any=None,ui_format24h:bool | None=None,ui_default_date:str | None=None,ui_mask:str | None=None,ui_options:Callable | None=None,ui_hour_options:list | None=None,ui_minute_options:list | None=None,ui_second_options:list | None=None,ui_with_seconds:bool | None=None,ui_now_btn:bool | None=None,ui_landscape:bool | None=None,ui_locale:dict | None=None,ui_calendar:str | None=None,ui_color:Any | None=None,ui_text_color:Any | None=None,ui_dark:Any | None=None,ui_square:Any | None=None,ui_flat:Any | None=None,ui_bordered:Any | None=None,ui_readonly:Any | None=None,ui_disable:Any | None=None,ui_name:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_model_value: str | None | Any = None,
+        ui_format24h: bool | None = None,
+        ui_default_date: str | None = None,
+        ui_mask: str | None = None,
+        ui_options: Callable | None = None,
+        ui_hour_options: list | None = None,
+        ui_minute_options: list | None = None,
+        ui_second_options: list | None = None,
+        ui_with_seconds: bool | None = None,
+        ui_now_btn: bool | None = None,
+        ui_landscape: bool | None = None,
+        ui_locale: dict | None = None,
+        ui_calendar: str | None = None,
+        ui_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_dark: Any | None = None,
+        ui_square: Any | None = None,
+        ui_flat: Any | None = None,
+        ui_bordered: Any | None = None,
+        ui_readonly: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_name: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QTime", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
             self._props["model-value"] = ui_model_value
@@ -20826,8 +22984,7 @@ class QTime(Component):
             self._props["name"] = ui_name
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -21018,9 +23175,10 @@ class QTime(Component):
     @ui_name.setter
     def ui_name(self, value):
         self._set_prop("name", value)
+
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -21029,7 +23187,8 @@ class QTime(Component):
 
     def ui_setNow(self):
         """Change model to current moment"""
-        self._js_call_method('setNow')
+        self._js_call_method("setNow")
+
     def _get_js_methods(self):
         return ["setNow"]
 
@@ -21038,13 +23197,21 @@ class QTimeline(Component):
     """
     Quasar Component: `QTimeline <https://v2.quasar.dev/vue-components/timeline>`__
 
-    :param ui_color: 
+    :param ui_color:
     :param ui_side: Side to place the timeline entries in dense and comfortable layout; For loose layout it gets overridden by QTimelineEntry side prop
     :param ui_layout: Layout of the timeline. Dense keeps content and labels on one side. Comfortable keeps content on one side and labels on the opposite side. Loose puts content on both sides.
-    :param ui_dark: 
+    :param ui_dark:
     """
 
-    def __init__(self, *children, ui_color:Any | None=None,ui_side:str | None=None,ui_layout:str | None=None,ui_dark:Any | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_side: str | None = None,
+        ui_layout: str | None = None,
+        ui_dark: Any | None = None,
+        **kwargs,
+    ):
         super().__init__("QTimeline", *children, **kwargs)
         if ui_color is not None:
             self._props["color"] = ui_color
@@ -21088,6 +23255,7 @@ class QTimeline(Component):
     @ui_dark.setter
     def ui_dark(self, value):
         self._set_prop("dark", value)
+
     def _get_js_methods(self):
         return []
 
@@ -21099,15 +23267,28 @@ class QTimelineEntry(Component):
     :param ui_heading: Defines a heading timeline item
     :param ui_tag: Tag to use, if of type 'heading' only
     :param ui_side: Side to place the timeline entry; Works only if QTimeline layout is loose.
-    :param ui_icon: 
+    :param ui_icon:
     :param ui_avatar: URL to the avatar image; Icon takes precedence if used, so it replaces avatar
-    :param ui_color: 
+    :param ui_color:
     :param ui_title: Title of timeline entry; Is overridden if using 'title' slot
     :param ui_subtitle: Subtitle of timeline entry; Is overridden if using 'subtitle' slot
     :param ui_body: Body content of timeline entry; Use this prop or the default slot
     """
 
-    def __init__(self, *children, ui_heading:bool | None=None,ui_tag:Any | None=None,ui_side:str | None=None,ui_icon:Any | None=None,ui_avatar:str | None=None,ui_color:Any | None=None,ui_title:str | None=None,ui_subtitle:str | None=None,ui_body:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_heading: bool | None = None,
+        ui_tag: Any | None = None,
+        ui_side: str | None = None,
+        ui_icon: Any | None = None,
+        ui_avatar: str | None = None,
+        ui_color: Any | None = None,
+        ui_title: str | None = None,
+        ui_subtitle: str | None = None,
+        ui_body: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QTimelineEntry", *children, **kwargs)
         if ui_heading is not None:
             self._props["heading"] = ui_heading
@@ -21224,6 +23405,7 @@ class QTimelineEntry(Component):
     @ui_slot_title.setter
     def ui_slot_title(self, value):
         self._set_slot("title", value)
+
     def _get_js_methods(self):
         return []
 
@@ -21232,12 +23414,12 @@ class QToggle(Component):
     """
     Quasar Component: `QToggle <https://v2.quasar.dev/vue-components/toggle>`__
 
-    :param ui_icon: 
+    :param ui_icon:
     :param ui_checked_icon: The icon to be used when the toggle is on
     :param ui_unchecked_icon: The icon to be used when the toggle is off
     :param ui_indeterminate_icon: The icon to be used when the model is indeterminate
     :param ui_icon_color: Override default icon color (for truthy state only); Color name for component from the Quasar Color Palette
-    :param ui_model_value: 
+    :param ui_model_value:
     :param ui_val: Works when model ('value') is Array. It tells the component which value should add/remove when ticked/unticked
     :param ui_true_value: What model value should be considered as checked/ticked/on?
     :param ui_false_value: What model value should be considered as unchecked/unticked/off?
@@ -21246,19 +23428,45 @@ class QToggle(Component):
     :param ui_toggle_indeterminate: When user clicks/taps on the component, should we toggle through the indeterminate state too?
     :param ui_label: Label to display along the component (or use the default slot instead of this prop)
     :param ui_left_label: Label (if any specified) should be displayed on the left side of the component
-    :param ui_color: 
+    :param ui_color:
     :param ui_keep_color: Should the color (if specified any) be kept when the component is unticked/ off?
-    :param ui_dark: 
-    :param ui_dense: 
-    :param ui_disable: 
-    :param ui_tabindex: 
+    :param ui_dark:
+    :param ui_dense:
+    :param ui_disable:
+    :param ui_tabindex:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
-    def __init__(self, *children, ui_icon:Any | None=None,ui_checked_icon:str | None=None,ui_unchecked_icon:str | None=None,ui_indeterminate_icon:str | None=None,ui_icon_color:Any | None=None,ui_model_value:Any | list | None=None,ui_val:Any | None=None,ui_true_value:Any | None=None,ui_false_value:Any | None=None,ui_indeterminate_value:Any | None=None,ui_toggle_order:str | None=None,ui_toggle_indeterminate:bool | None=None,ui_label:str | None=None,ui_left_label:bool | None=None,ui_color:Any | None=None,ui_keep_color:bool | None=None,ui_dark:Any | None=None,ui_dense:Any | None=None,ui_disable:Any | None=None,ui_tabindex:Any | None=None,ui_size:str | None=None,ui_name:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_icon: Any | None = None,
+        ui_checked_icon: str | None = None,
+        ui_unchecked_icon: str | None = None,
+        ui_indeterminate_icon: str | None = None,
+        ui_icon_color: Any | None = None,
+        ui_model_value: Any | list | None = None,
+        ui_val: Any | None = None,
+        ui_true_value: Any | None = None,
+        ui_false_value: Any | None = None,
+        ui_indeterminate_value: Any | None = None,
+        ui_toggle_order: str | None = None,
+        ui_toggle_indeterminate: bool | None = None,
+        ui_label: str | None = None,
+        ui_left_label: bool | None = None,
+        ui_color: Any | None = None,
+        ui_keep_color: bool | None = None,
+        ui_dark: Any | None = None,
+        ui_dense: Any | None = None,
+        ui_disable: Any | None = None,
+        ui_tabindex: Any | None = None,
+        ui_size: str | None = None,
+        ui_name: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QToggle", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_icon is not None:
             self._props["icon"] = ui_icon
@@ -21306,8 +23514,7 @@ class QToggle(Component):
             self._props["name"] = ui_name
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_icon(self):
@@ -21499,6 +23706,7 @@ class QToggle(Component):
     @ui_name.setter
     def ui_name(self, value):
         self._set_prop("name", value)
+
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when the component needs to change the model; Is also used by v-model
@@ -21510,7 +23718,8 @@ class QToggle(Component):
 
     def ui_toggle(self):
         """Toggle the state (of the model)"""
-        self._js_call_method('toggle')
+        self._js_call_method("toggle")
+
     def _get_js_methods(self):
         return ["toggle"]
 
@@ -21522,7 +23731,7 @@ class QToolbarTitle(Component):
     :param ui_shrink: By default, QToolbarTitle is set to grow to the available space. However, you can reverse that with this prop
     """
 
-    def __init__(self, *children, ui_shrink:bool | None=None, **kwargs):
+    def __init__(self, *children, ui_shrink: bool | None = None, **kwargs):
         super().__init__("QToolbarTitle", *children, **kwargs)
         if ui_shrink is not None:
             self._props["shrink"] = ui_shrink
@@ -21535,6 +23744,7 @@ class QToolbarTitle(Component):
     @ui_shrink.setter
     def ui_shrink(self, value):
         self._set_prop("shrink", value)
+
     def _get_js_methods(self):
         return []
 
@@ -21546,7 +23756,7 @@ class QToolbar(Component):
     :param ui_inset: Apply an inset to content (useful for subsequent toolbars)
     """
 
-    def __init__(self, *children, ui_inset:bool | None=None, **kwargs):
+    def __init__(self, *children, ui_inset: bool | None = None, **kwargs):
         super().__init__("QToolbar", *children, **kwargs)
         if ui_inset is not None:
             self._props["inset"] = ui_inset
@@ -21559,6 +23769,7 @@ class QToolbar(Component):
     @ui_inset.setter
     def ui_inset(self, value):
         self._set_prop("inset", value)
+
     def _get_js_methods(self):
         return []
 
@@ -21569,12 +23780,12 @@ class QTooltip(Component):
 
     :param ui_max_height: The maximum height of the Tooltip; Size in CSS units, including unit name
     :param ui_max_width: The maximum width of the Tooltip; Size in CSS units, including unit name
-    :param ui_transition_show: 
-    :param ui_transition_hide: 
+    :param ui_transition_show:
+    :param ui_transition_hide:
     :param ui_anchor: Two values setting the starting position or anchor point of the Tooltip relative to its target
     :param ui_self: Two values setting the Tooltip's own position relative to its target
     :param ui_offset: An array of two numbers to offset the Tooltip horizontally and vertically in pixels
-    :param ui_scroll_target: 
+    :param ui_scroll_target:
     :param ui_delay: Configure Tooltip to appear with delay
     :param ui_hide_delay: Configure Tooltip to disappear with delay
     :param ui_persistent: Prevents Tooltip from auto-closing when app's route changes
@@ -21584,9 +23795,28 @@ class QTooltip(Component):
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
 
-    def __init__(self, *children, ui_max_height:str | None=None,ui_max_width:str | None=None,ui_transition_show:Any | None=None,ui_transition_hide:Any | None=None,ui_anchor:str | None=None,ui_self:str | None=None,ui_offset:list | None=None,ui_scroll_target:Any | None=None,ui_delay:float | None=None,ui_hide_delay:float | None=None,ui_persistent:bool | None=None,ui_model_value:bool | None=None,ui_target:bool | str | Any | None=None,ui_no_parent_event:bool | None=None,ui_transition_duration:str | float | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_max_height: str | None = None,
+        ui_max_width: str | None = None,
+        ui_transition_show: Any | None = None,
+        ui_transition_hide: Any | None = None,
+        ui_anchor: str | None = None,
+        ui_self: str | None = None,
+        ui_offset: list | None = None,
+        ui_scroll_target: Any | None = None,
+        ui_delay: float | None = None,
+        ui_hide_delay: float | None = None,
+        ui_persistent: bool | None = None,
+        ui_model_value: bool | None = None,
+        ui_target: bool | str | Any | None = None,
+        ui_no_parent_event: bool | None = None,
+        ui_transition_duration: str | float | None = None,
+        **kwargs,
+    ):
         super().__init__("QTooltip", *children, **kwargs)
-        self.on('update:model-value', self.__update_model_value)
+        self.on("update:model-value", self.__update_model_value)
 
         if ui_max_height is not None:
             self._props["max-height"] = ui_max_height
@@ -21620,8 +23850,7 @@ class QTooltip(Component):
             self._props["transition-duration"] = ui_transition_duration
 
     def __update_model_value(self, event: Event):
-        self._set_prop('model-value', event.value)
-
+        self._set_prop("model-value", event.value)
 
     @property
     def ui_max_height(self):
@@ -21754,9 +23983,10 @@ class QTooltip(Component):
     @ui_transition_duration.setter
     def ui_transition_duration(self, value):
         self._set_prop("transition-duration", value)
+
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -21765,7 +23995,7 @@ class QTooltip(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -21774,7 +24004,7 @@ class QTooltip(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -21783,7 +24013,7 @@ class QTooltip(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -21800,14 +24030,18 @@ class QTooltip(Component):
         return self.on("update:model-value", handler, arg)
 
     def ui_hide(self):
-        self._js_call_method('hide')
+        self._js_call_method("hide")
+
     def ui_show(self):
-        self._js_call_method('show')
+        self._js_call_method("show")
+
     def ui_toggle(self):
-        self._js_call_method('toggle')
+        self._js_call_method("toggle")
+
     def ui_updatePosition(self):
         """There are some custom scenarios for which Quasar cannot automatically reposition the tooltip without significant performance drawbacks so the optimal solution is for you to call this method when you need it"""
-        self._js_call_method('updatePosition')
+        self._js_call_method("updatePosition")
+
     def _get_js_methods(self):
         return ["hide", "show", "toggle", "updatePosition"]
 
@@ -21821,13 +24055,13 @@ class QTree(Component):
     :param ui_label_key: The property name of each node object that holds the label of the node
     :param ui_children_key: The property name of each node object that holds the list of children of the node
     :param ui_no_connectors: Do not display the connector lines between nodes
-    :param ui_color: 
+    :param ui_color:
     :param ui_control_color: Color name for controls (like checkboxes) from the Quasar Color Palette
-    :param ui_text_color: 
+    :param ui_text_color:
     :param ui_selected_color: Color name for selected nodes (from the Quasar Color Palette)
-    :param ui_dense: 
-    :param ui_dark: 
-    :param ui_icon: 
+    :param ui_dense:
+    :param ui_dark:
+    :param ui_icon:
     :param ui_tick_strategy: The type of strategy to use for the selection of the nodes
     :param ui_ticked: Keys of nodes that are ticked
     :param ui_expanded: Keys of nodes that are expanded
@@ -21843,7 +24077,36 @@ class QTree(Component):
     :param ui_no_results_label: Override default such label for when no nodes are available due to filtering
     """
 
-    def __init__(self, *children, ui_nodes:list | None=None,ui_node_key:str | None=None,ui_label_key:str | None=None,ui_children_key:str | None=None,ui_no_connectors:bool | None=None,ui_color:Any | None=None,ui_control_color:Any | None=None,ui_text_color:Any | None=None,ui_selected_color:Any | None=None,ui_dense:Any | None=None,ui_dark:Any | None=None,ui_icon:Any | None=None,ui_tick_strategy:str | None=None,ui_ticked:list | None=None,ui_expanded:list | None=None,ui_selected:Any | None=None,ui_no_selection_unset:bool | None=None,ui_default_expand_all:bool | None=None,ui_accordion:bool | None=None,ui_no_transition:bool | None=None,ui_filter:str | None=None,ui_filter_method:Callable | None=None,ui_duration:float | None=None,ui_no_nodes_label:str | None=None,ui_no_results_label:str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_nodes: list | None = None,
+        ui_node_key: str | None = None,
+        ui_label_key: str | None = None,
+        ui_children_key: str | None = None,
+        ui_no_connectors: bool | None = None,
+        ui_color: Any | None = None,
+        ui_control_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_selected_color: Any | None = None,
+        ui_dense: Any | None = None,
+        ui_dark: Any | None = None,
+        ui_icon: Any | None = None,
+        ui_tick_strategy: str | None = None,
+        ui_ticked: list | None = None,
+        ui_expanded: list | None = None,
+        ui_selected: Any | None = None,
+        ui_no_selection_unset: bool | None = None,
+        ui_default_expand_all: bool | None = None,
+        ui_accordion: bool | None = None,
+        ui_no_transition: bool | None = None,
+        ui_filter: str | None = None,
+        ui_filter_method: Callable | None = None,
+        ui_duration: float | None = None,
+        ui_no_nodes_label: str | None = None,
+        ui_no_results_label: str | None = None,
+        **kwargs,
+    ):
         super().__init__("QTree", *children, **kwargs)
         if ui_nodes is not None:
             self._props["nodes"] = ui_nodes
@@ -22141,9 +24404,10 @@ class QTree(Component):
     def ui_slot_header_name(self, name, value):
         """Header template slot for describing node header; Used by nodes which have their 'header' prop set to '[name]', where '[name]' can be any string"""
         self._set_slot("header-" + name, value)
+
     def on_after_hide(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -22152,7 +24416,7 @@ class QTree(Component):
 
     def on_after_show(self, handler: Callable, arg: object = None):
         """
-        
+
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -22197,34 +24461,41 @@ class QTree(Component):
 
     def ui_collapseAll(self):
         """Use to collapse all branches of the tree"""
-        self._js_call_method('collapseAll')
+        self._js_call_method("collapseAll")
+
     def ui_expandAll(self):
         """Use to expand all branches of the tree"""
-        self._js_call_method('expandAll')
+        self._js_call_method("expandAll")
+
     def ui_getExpandedNodes(self):
         """Get array of nodes that are expanded"""
-        self._js_call_method('getExpandedNodes')
+        self._js_call_method("getExpandedNodes")
+
     def ui_getNodeByKey(self, ui_key):
         """Get the node with the given key"""
         kwargs = {}
         if ui_key is not None:
             kwargs["key"] = ui_key
-        self._js_call_method('getNodeByKey', [kwargs])
+        self._js_call_method("getNodeByKey", [kwargs])
+
     def ui_getTickedNodes(self):
         """Get array of nodes that are ticked"""
-        self._js_call_method('getTickedNodes')
+        self._js_call_method("getTickedNodes")
+
     def ui_isExpanded(self, ui_key):
         """Determine if a node is expanded"""
         kwargs = {}
         if ui_key is not None:
             kwargs["key"] = ui_key
-        self._js_call_method('isExpanded', [kwargs])
+        self._js_call_method("isExpanded", [kwargs])
+
     def ui_isTicked(self, ui_key):
         """Method to check if a node's checkbox is selected or not"""
         kwargs = {}
         if ui_key is not None:
             kwargs["key"] = ui_key
-        self._js_call_method('isTicked', [kwargs])
+        self._js_call_method("isTicked", [kwargs])
+
     def ui_setExpanded(self, ui_key, ui_state):
         """Expands the tree at the point of the node with the key given"""
         kwargs = {}
@@ -22232,7 +24503,8 @@ class QTree(Component):
             kwargs["key"] = ui_key
         if ui_state is not None:
             kwargs["state"] = ui_state
-        self._js_call_method('setExpanded', [kwargs])
+        self._js_call_method("setExpanded", [kwargs])
+
     def ui_setTicked(self, ui_keys, ui_state):
         """Method to set a node's checkbox programmatically"""
         kwargs = {}
@@ -22240,9 +24512,20 @@ class QTree(Component):
             kwargs["keys"] = ui_keys
         if ui_state is not None:
             kwargs["state"] = ui_state
-        self._js_call_method('setTicked', [kwargs])
+        self._js_call_method("setTicked", [kwargs])
+
     def _get_js_methods(self):
-        return ["collapseAll", "expandAll", "getExpandedNodes", "getNodeByKey", "getTickedNodes", "isExpanded", "isTicked", "setExpanded", "setTicked"]
+        return [
+            "collapseAll",
+            "expandAll",
+            "getExpandedNodes",
+            "getNodeByKey",
+            "getTickedNodes",
+            "isExpanded",
+            "isTicked",
+            "setExpanded",
+            "setTicked",
+        ]
 
 
 class QUploader(Component):
@@ -22250,18 +24533,18 @@ class QUploader(Component):
     Quasar Component: `QUploader <https://v2.quasar.dev/vue-components/uploader>`__
 
     :param ui_label: Label for the uploader
-    :param ui_color: 
-    :param ui_text_color: 
-    :param ui_dark: 
-    :param ui_square: 
-    :param ui_flat: 
-    :param ui_bordered: 
+    :param ui_color:
+    :param ui_text_color:
+    :param ui_dark:
+    :param ui_square:
+    :param ui_flat:
+    :param ui_bordered:
     :param ui_no_thumbnails: Don't display thumbnails for image files
     :param ui_auto_upload: Upload files immediately when added
     :param ui_hide_upload_btn: Don't show the upload button
     :param ui_thumbnail_fit: How the thumbnail image will fit into the container; Equivalent of the background-size prop
-    :param ui_disable: 
-    :param ui_readonly: 
+    :param ui_disable:
+    :param ui_readonly:
     :param ui_multiple: Allow multiple file uploads
     :param ui_accept: Comma separated list of unique file type specifiers. Maps to 'accept' attribute of native input type=file element
     :param ui_capture: Optionally, specify that a new file should be captured, and which device should be used to capture that new media of a type defined by the 'accept' prop. Maps to 'capture' attribute of native input type=file element
@@ -22280,7 +24563,40 @@ class QUploader(Component):
     :param ui_batch: Upload files in batch (in one XHR request); Takes boolean or factory function for Boolean; Function is called right before upload; If using a function then for best performance, reference it from your scope and do not define it inline
     """
 
-    def __init__(self, *children, ui_label:str | None=None,ui_color:Any | None=None,ui_text_color:Any | None=None,ui_dark:Any | None=None,ui_square:Any | None=None,ui_flat:Any | None=None,ui_bordered:Any | None=None,ui_no_thumbnails:bool | None=None,ui_auto_upload:bool | None=None,ui_hide_upload_btn:bool | None=None,ui_thumbnail_fit:str | None=None,ui_disable:Any | None=None,ui_readonly:Any | None=None,ui_multiple:bool | None=None,ui_accept:str | None=None,ui_capture:str | None=None,ui_max_file_size:float | str | None=None,ui_max_total_size:float | str | None=None,ui_max_files:float | str | None=None,ui_filter:Callable | None=None,ui_factory:Callable | None=None,ui_url:str | Callable | None=None,ui_method:str | Callable | None=None,ui_field_name:str | Callable | None=None,ui_headers:list | Callable | None=None,ui_form_fields:list | Callable | None=None,ui_with_credentials:bool | Callable | None=None,ui_send_raw:bool | Callable | None=None,ui_batch:bool | Callable | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_label: str | None = None,
+        ui_color: Any | None = None,
+        ui_text_color: Any | None = None,
+        ui_dark: Any | None = None,
+        ui_square: Any | None = None,
+        ui_flat: Any | None = None,
+        ui_bordered: Any | None = None,
+        ui_no_thumbnails: bool | None = None,
+        ui_auto_upload: bool | None = None,
+        ui_hide_upload_btn: bool | None = None,
+        ui_thumbnail_fit: str | None = None,
+        ui_disable: Any | None = None,
+        ui_readonly: Any | None = None,
+        ui_multiple: bool | None = None,
+        ui_accept: str | None = None,
+        ui_capture: str | None = None,
+        ui_max_file_size: float | str | None = None,
+        ui_max_total_size: float | str | None = None,
+        ui_max_files: float | str | None = None,
+        ui_filter: Callable | None = None,
+        ui_factory: Callable | None = None,
+        ui_url: str | Callable | None = None,
+        ui_method: str | Callable | None = None,
+        ui_field_name: str | Callable | None = None,
+        ui_headers: list | Callable | None = None,
+        ui_form_fields: list | Callable | None = None,
+        ui_with_credentials: bool | Callable | None = None,
+        ui_send_raw: bool | Callable | None = None,
+        ui_batch: bool | Callable | None = None,
+        **kwargs,
+    ):
         super().__init__("QUploader", *children, **kwargs)
         if ui_label is not None:
             self._props["label"] = ui_label
@@ -22611,6 +24927,7 @@ class QUploader(Component):
     @ui_slot_list.setter
     def ui_slot_list(self, value):
         self._set_slot("list", value)
+
     def on_added(self, handler: Callable, arg: object = None):
         """
         Emitted when files are added into the list
@@ -22694,37 +25011,45 @@ class QUploader(Component):
 
     def ui_abort(self):
         """Abort upload of all files (same as clicking the abort button)"""
-        self._js_call_method('abort')
+        self._js_call_method("abort")
+
     def ui_addFiles(self, ui_files):
         """Add files programmatically"""
         kwargs = {}
         if ui_files is not None:
             kwargs["files"] = ui_files
-        self._js_call_method('addFiles', [kwargs])
+        self._js_call_method("addFiles", [kwargs])
+
     def ui_isAlive(self):
         """Is the component alive (activated but not unmounted); Useful to determine if you still need to compute anything going further"""
-        self._js_call_method('isAlive')
+        self._js_call_method("isAlive")
+
     def ui_pickFiles(self, ui_evt):
         """Trigger file pick; Must be called as a direct consequence of user interaction (eg. in a click handler), due to browsers security policy"""
         kwargs = {}
         if ui_evt is not None:
             kwargs["evt"] = ui_evt
-        self._js_call_method('pickFiles', [kwargs])
+        self._js_call_method("pickFiles", [kwargs])
+
     def ui_removeFile(self, ui_file):
         """Remove specified file from the queue"""
         kwargs = {}
         if ui_file is not None:
             kwargs["file"] = ui_file
-        self._js_call_method('removeFile', [kwargs])
+        self._js_call_method("removeFile", [kwargs])
+
     def ui_removeQueuedFiles(self):
         """Remove files that are waiting for upload to start (same as clicking the left clear button)"""
-        self._js_call_method('removeQueuedFiles')
+        self._js_call_method("removeQueuedFiles")
+
     def ui_removeUploadedFiles(self):
         """Removes already uploaded files from the list"""
-        self._js_call_method('removeUploadedFiles')
+        self._js_call_method("removeUploadedFiles")
+
     def ui_reset(self):
         """Resets uploader to default; Empties queue, aborts current uploads"""
-        self._js_call_method('reset')
+        self._js_call_method("reset")
+
     def ui_updateFileStatus(self, ui_file, ui_status, ui_uploadedSize):
         """Update the status of a file"""
         kwargs = {}
@@ -22734,12 +25059,25 @@ class QUploader(Component):
             kwargs["status"] = ui_status
         if ui_uploadedSize is not None:
             kwargs["uploadedSize"] = ui_uploadedSize
-        self._js_call_method('updateFileStatus', [kwargs])
+        self._js_call_method("updateFileStatus", [kwargs])
+
     def ui_upload(self):
         """Start uploading (same as clicking the upload button)"""
-        self._js_call_method('upload')
+        self._js_call_method("upload")
+
     def _get_js_methods(self):
-        return ["abort", "addFiles", "isAlive", "pickFiles", "removeFile", "removeQueuedFiles", "removeUploadedFiles", "reset", "updateFileStatus", "upload"]
+        return [
+            "abort",
+            "addFiles",
+            "isAlive",
+            "pickFiles",
+            "removeFile",
+            "removeQueuedFiles",
+            "removeUploadedFiles",
+            "reset",
+            "updateFileStatus",
+            "upload",
+        ]
 
 
 class QUploaderAddTrigger(Component):
@@ -22748,9 +25086,9 @@ class QUploaderAddTrigger(Component):
 
     """
 
-    def __init__(self, *children,  **kwargs):
+    def __init__(self, *children, **kwargs):
         super().__init__("QUploaderAddTrigger", *children, **kwargs)
-        
+
     def _get_js_methods(self):
         return []
 
@@ -22767,7 +25105,17 @@ class QVideo(Component):
     :param ui_ratio: Aspect ratio for the content; If value is a String, then avoid using a computational statement (like '16/9') and instead specify the String value of the result directly (eg. '1.7777')
     """
 
-    def __init__(self, *children, ui_src:str | None=None,ui_title:str | None=None,ui_fetchpriority:str | None=None,ui_loading:str | None=None,ui_referrerpolicy:str | None=None,ui_ratio:str | float | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_src: str | None = None,
+        ui_title: str | None = None,
+        ui_fetchpriority: str | None = None,
+        ui_loading: str | None = None,
+        ui_referrerpolicy: str | None = None,
+        ui_ratio: str | float | None = None,
+        **kwargs,
+    ):
         super().__init__("QVideo", *children, **kwargs)
         if ui_src is not None:
             self._props["src"] = ui_src
@@ -22835,6 +25183,7 @@ class QVideo(Component):
     @ui_ratio.setter
     def ui_ratio(self, value):
         self._set_prop("ratio", value)
+
     def _get_js_methods(self):
         return []
 
@@ -22847,7 +25196,7 @@ class QVirtualScroll(Component):
     :param ui_items: Available list items that will be passed to the scoped slot; For best performance freeze the list of items; Required if 'itemsFn' is not supplied
     :param ui_items_size: Number of available items in the list; Required and used only if 'itemsFn' is provided
     :param ui_items_fn: Function to return the scope for the items to be displayed; Should return an array for items starting from 'from' index for size length; For best performance, reference it from your scope and do not define it inline
-    :param ui_scroll_target: 
+    :param ui_scroll_target:
     :param ui_virtual_scroll_horizontal: Make virtual list work in horizontal mode
     :param ui_virtual_scroll_slice_size: Minimum number of items to render in the virtual list
     :param ui_virtual_scroll_slice_ratio_before: Ratio of number of items in visible zone to render before it
@@ -22858,7 +25207,24 @@ class QVirtualScroll(Component):
     :param ui_table_colspan: The number of columns in the table (you need this if you use table-layout: fixed)
     """
 
-    def __init__(self, *children, ui_type:str | None=None,ui_items:list | None=None,ui_items_size:float | None=None,ui_items_fn:Callable | None=None,ui_scroll_target:Any | None=None,ui_virtual_scroll_horizontal:bool | None=None,ui_virtual_scroll_slice_size:float | str | None=None,ui_virtual_scroll_slice_ratio_before:float | str | None=None,ui_virtual_scroll_slice_ratio_after:float | str | None=None,ui_virtual_scroll_item_size:float | str | None=None,ui_virtual_scroll_sticky_size_start:float | str | None=None,ui_virtual_scroll_sticky_size_end:float | str | None=None,ui_table_colspan:float | str | None=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        ui_type: str | None = None,
+        ui_items: list | None = None,
+        ui_items_size: float | None = None,
+        ui_items_fn: Callable | None = None,
+        ui_scroll_target: Any | None = None,
+        ui_virtual_scroll_horizontal: bool | None = None,
+        ui_virtual_scroll_slice_size: float | str | None = None,
+        ui_virtual_scroll_slice_ratio_before: float | str | None = None,
+        ui_virtual_scroll_slice_ratio_after: float | str | None = None,
+        ui_virtual_scroll_item_size: float | str | None = None,
+        ui_virtual_scroll_sticky_size_start: float | str | None = None,
+        ui_virtual_scroll_sticky_size_end: float | str | None = None,
+        ui_table_colspan: float | str | None = None,
+        **kwargs,
+    ):
         super().__init__("QVirtualScroll", *children, **kwargs)
         if ui_type is not None:
             self._props["type"] = ui_type
@@ -22871,19 +25237,33 @@ class QVirtualScroll(Component):
         if ui_scroll_target is not None:
             self._props["scroll-target"] = ui_scroll_target
         if ui_virtual_scroll_horizontal is not None:
-            self._props["virtual-scroll-horizontal"] = ui_virtual_scroll_horizontal
+            self._props["virtual-scroll-horizontal"] = (
+                ui_virtual_scroll_horizontal
+            )
         if ui_virtual_scroll_slice_size is not None:
-            self._props["virtual-scroll-slice-size"] = ui_virtual_scroll_slice_size
+            self._props["virtual-scroll-slice-size"] = (
+                ui_virtual_scroll_slice_size
+            )
         if ui_virtual_scroll_slice_ratio_before is not None:
-            self._props["virtual-scroll-slice-ratio-before"] = ui_virtual_scroll_slice_ratio_before
+            self._props["virtual-scroll-slice-ratio-before"] = (
+                ui_virtual_scroll_slice_ratio_before
+            )
         if ui_virtual_scroll_slice_ratio_after is not None:
-            self._props["virtual-scroll-slice-ratio-after"] = ui_virtual_scroll_slice_ratio_after
+            self._props["virtual-scroll-slice-ratio-after"] = (
+                ui_virtual_scroll_slice_ratio_after
+            )
         if ui_virtual_scroll_item_size is not None:
-            self._props["virtual-scroll-item-size"] = ui_virtual_scroll_item_size
+            self._props["virtual-scroll-item-size"] = (
+                ui_virtual_scroll_item_size
+            )
         if ui_virtual_scroll_sticky_size_start is not None:
-            self._props["virtual-scroll-sticky-size-start"] = ui_virtual_scroll_sticky_size_start
+            self._props["virtual-scroll-sticky-size-start"] = (
+                ui_virtual_scroll_sticky_size_start
+            )
         if ui_virtual_scroll_sticky_size_end is not None:
-            self._props["virtual-scroll-sticky-size-end"] = ui_virtual_scroll_sticky_size_end
+            self._props["virtual-scroll-sticky-size-end"] = (
+                ui_virtual_scroll_sticky_size_end
+            )
         if ui_table_colspan is not None:
             self._props["table-colspan"] = ui_table_colspan
 
@@ -23020,6 +25400,7 @@ class QVirtualScroll(Component):
     @ui_slot_before.setter
     def ui_slot_before(self, value):
         self._set_slot("before", value)
+
     def on_virtual_scroll(self, handler: Callable, arg: object = None):
         """
         Emitted when the virtual scroll occurs
@@ -23034,10 +25415,12 @@ class QVirtualScroll(Component):
         kwargs = {}
         if ui_index is not None:
             kwargs["index"] = ui_index
-        self._js_call_method('refresh', [kwargs])
+        self._js_call_method("refresh", [kwargs])
+
     def ui_reset(self):
         """Resets the virtual scroll computations; Needed for custom edge-cases"""
-        self._js_call_method('reset')
+        self._js_call_method("reset")
+
     def ui_scrollTo(self, ui_index, ui_edge=None):
         """Scroll the virtual scroll list to the item with the specified index (0 based)"""
         kwargs = {}
@@ -23045,7 +25428,7 @@ class QVirtualScroll(Component):
             kwargs["index"] = ui_index
         if ui_edge is not None:
             kwargs["edge"] = ui_edge
-        self._js_call_method('scrollTo', [kwargs])
+        self._js_call_method("scrollTo", [kwargs])
+
     def _get_js_methods(self):
         return ["refresh", "reset", "scrollTo"]
-
