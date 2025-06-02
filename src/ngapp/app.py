@@ -459,13 +459,22 @@ class App:
             )
 
     def load(
-        self, data, load_local_storage=False, update_frontend=is_pyodide()
+        self,
+        data,
+        load_local_storage=False,
+        update_frontend=None,
     ):
         """Load app from stored data"""
         self.component._namespace_id = ""
         self.component._parent = self
         self.component._status = self._status
         self._namespace_id = ""
+
+        if update_frontend is None:
+            update_frontend = get_environment().type in [
+                EnvironmentType.PYODIDE,
+                EnvironmentType.LOCAL_APP,
+            ]
 
         self.component._recurse(Component._calc_namespace_id, True, set())
 
