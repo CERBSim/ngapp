@@ -22,6 +22,8 @@ Steps
 
 #. `Create a new repository on github <https://github.com/new>`_, fill out only the repository name, **don't** add gitignore, license or a README file
 
+#. On the Github Repository website, go to **Settings** (at the top bar )-> **Pages** (left side pane) and change **Build and deployment**/Source from "Deploy from a branch" to **GitHub Actions**.
+
 #. Tell your local git repository about the github repo you just created. Instructions are shown by github after creating the repository, they should look like this
 
    .. code-block:: bash
@@ -29,9 +31,7 @@ Steps
      git remote add origin git@github.com/{github_user}/{github_repo}
      git push origin main
 
-#. On the Gighub Repository website, go to **Settings** (at the top bar )-> **Pages** (left side pane) and change **Build and deployment**/Source from "Deploy from a branch" to **GitHub Actions**.
-
-Now, your app is hosted on *https://{github_user}.github.io/{github_repo}* and automatically updated when you do ``git push`` **🎉**
+Now, your app is hosted on *https://{github_user}.github.io/{github_repo}* and automatically updated when you do ``git push`` 🎉
 
 
 .. _pyodide packages:
