@@ -698,6 +698,7 @@ class WebgpuComponent(Component):
             elif isinstance(scene, list):
                 scene = draw.Scene(scene)
             self.scene = scene
+        return self.scene
 
     def mousedown(self, event):
         pass
