@@ -623,11 +623,10 @@ class WebgpuComponent(Component):
             self.draw(scene)
 
     def _on_unmount(self):
-        if self.canvas is None:
-            return
-
-        self.canvas.input_handler.unregister_callbacks()
-        self.canvas.context.unconfigure()
+        if self.scene is not None:
+            self.scene.input_handler.unregister_callbacks()
+        if self.canvas is not None:
+            self.canvas.context.unconfigure()
 
     def connect_webgpu(self):
         from webgpu import canvas, utils
@@ -638,9 +637,6 @@ class WebgpuComponent(Component):
         html_canvas = self._js_component
         utils.init_device_sync()
         self.canvas = canvas.Canvas(utils.get_device(), html_canvas)
-        self.canvas.input_handler.on_mousedown(self.mousedown)
-        self.canvas.input_handler.on_mouseup(self.mouseup)
-        self.canvas.input_handler.on_mouseout(self.mouseout)
 
         scene = self.storage.get("scene")
         if self.scene is not None:
@@ -651,10 +647,9 @@ class WebgpuComponent(Component):
     def _reconfigure_canvas(self):
         """Reconfigure the canvas with the current HTML canvas element. This is necessary when the HTML canvas element changes, disappears (e.g. when switching a tab) and appears again."""
         html_canvas = self._js_component
-        from webgpu.input_handler import InputHandler
         from webgpu.webgpu_api import TextureUsage, toJS
-
-        self.canvas.input_handler.unregister_callbacks()
+        if self.scene is not None:
+            self.scene.input_handler.unregister_callbacks()
         self.canvas.canvas = html_canvas
         self.canvas.context = html_canvas.getContext("webgpu")
         self.canvas.context.configure(
@@ -669,15 +664,8 @@ class WebgpuComponent(Component):
                 }
             )
         )
-        self.canvas.input_handler = InputHandler(html_canvas)
-        self.canvas.input_handler.on_mousedown(self.mousedown)
-        self.canvas.input_handler.on_mouseup(self.mouseup)
-        self.canvas.input_handler.on_mouseout(self.mouseout)
         if self.scene is not None:
             self.scene.init(self.canvas)
-            self.scene.options.camera.register_callbacks(
-                self.canvas.input_handler, self.scene.render
-            )
         self.canvas.width = 0  # force resize
         self.canvas.resize()
 
@@ -690,8 +678,10 @@ class WebgpuComponent(Component):
         if self.canvas is not None:
             if self.scene is not None:
                 self.scene.cleanup()
-
             self.scene = draw.Draw(scene, self.canvas, lilgui=False)
+            self.scene.input_handler.on_mousedown(self.mousedown)
+            self.scene.input_handler.on_mouseup(self.mouseup)
+            self.scene.input_handler.on_mouseout(self.mouseout)
         else:
             if isinstance(scene, draw.BaseRenderer):
                 scene = draw.Scene([scene])
