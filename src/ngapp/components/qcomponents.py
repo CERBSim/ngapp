@@ -1,7 +1,8 @@
 import re
 from typing import Any, Callable
-from .basecomponent import Component, Event
+
 from ..utils import print_exception
+from .basecomponent import Component, Event
 
 
 class QAjaxBar(Component):

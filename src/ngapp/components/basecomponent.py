@@ -1,11 +1,11 @@
 # pylint: disable=protected-access
 import copy
 import dataclasses
+import functools
 import inspect
 import itertools
 import pickle
 import sys
-import functools
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple, TypeVar
 
