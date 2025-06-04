@@ -32,12 +32,10 @@ def create_app():
     print("")
     print("App created successfully!")
     print("You can run it now with the command:")
-    OKGREEN = "\033[92m"
-    BOLD = "\033[1m"
-    ENDC = "\033[0m"
-    print(OKGREEN, BOLD, f"{py_exe} -m {new_dir}", ENDC)
+    from colorama import Fore, Style
+    print(Fore.GREEN, f"{py_exe} -m {new_dir}", Style.RESET_ALL)
     print("and for developer mode (auto update on changes):")
-    print(OKGREEN, BOLD, f"{py_exe} -m {new_dir} --dev", ENDC)
+    print(Fore.GREEN, f"{py_exe} -m {new_dir} --dev", Style.RESET_ALL)
     print(
         f"Then go into the newly created directory {new_dir} and start editing :)"
     )
