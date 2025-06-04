@@ -2,8 +2,8 @@ import argparse
 import importlib
 import io
 import json
-import zipfile
 import os
+import zipfile
 from pathlib import Path
 
 import requests

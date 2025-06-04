@@ -1,9 +1,11 @@
 import argparse
+import hashlib
 import http.server
 import importlib
 import importlib.util
 import json
 import os
+import shutil
 import socketserver
 import sys
 import tempfile
@@ -15,6 +17,7 @@ from io import BytesIO
 from pathlib import Path
 from urllib.parse import urlparse
 
+import platformdirs
 import requests
 from watchdog.observers import Observer
 
@@ -35,13 +38,34 @@ def dump(data):
 
 
 def download_and_extract_frontend():
-    temp_dir = tempfile.mkdtemp()
+    user_data_dir = Path(platformdirs.user_data_dir("ngapp"))
+    if not os.path.exists(user_data_dir):
+        os.makedirs(user_data_dir)
 
-    response = requests.get("https://ngsolve.org/files/webapp/spa.zip")
+    response = requests.get("https://ngsolve.org/ngapp/ngapp-dev.zip.md5")
     response.raise_for_status()
+    latest_md5 = response.text.strip().split()[0]
 
-    with zipfile.ZipFile(BytesIO(response.content), "r") as zip_ref:
+    zip_data = None
+    cache_file = user_data_dir / "ngapp-dev.zip"
+    if os.path.exists(cache_file):
+        cache_data = cache_file.read_bytes()
+        cache_md5 = hashlib.md5(cache_data).hexdigest()
+        if cache_md5 == latest_md5:
+            zip_data = cache_data
+
+    if not zip_data:
+        response = requests.get("https://ngsolve.org/ngapp/ngapp-dev.zip")
+        response.raise_for_status()
+        zip_data = response.content
+        cache_file.write_bytes(zip_data)
+
+    temp_dir = Path(tempfile.mkdtemp())
+
+    with zipfile.ZipFile(BytesIO(zip_data), "r") as zip_ref:
         zip_ref.extractall(temp_dir)
+
+    shutil.copytree(temp_dir / "assets", temp_dir / "assets" / "assets")
 
     return temp_dir
 
@@ -50,6 +74,11 @@ HTTP_PORT = 8765
 
 
 class _HTTPServer(http.server.SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header("Cross-Origin-Opener-Policy", "same-origin")
+        self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
+        super().end_headers()
+
     def log_message(self, format, *args):
         pass
 
@@ -77,7 +106,7 @@ class _HTTPServer(http.server.SimpleHTTPRequestHandler):
 def run_http_server():
     STATIC_DIR = download_and_extract_frontend()
 
-    os.chdir(STATIC_DIR + "/spa")
+    os.chdir(STATIC_DIR)
 
     socketserver.ThreadingTCPServer.allow_reuse_address = True
     running = False
