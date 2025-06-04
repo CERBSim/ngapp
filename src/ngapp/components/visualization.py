@@ -682,6 +682,7 @@ class WebgpuComponent(Component):
             self.scene.input_handler.on_mousedown(self.mousedown)
             self.scene.input_handler.on_mouseup(self.mouseup)
             self.scene.input_handler.on_mouseout(self.mouseout)
+            self.scene.input_handler.on_click(self.click)
         else:
             if isinstance(scene, draw.BaseRenderer):
                 scene = draw.Scene([scene])
@@ -689,6 +690,9 @@ class WebgpuComponent(Component):
                 scene = draw.Scene(scene)
             self.scene = scene
         return self.scene
+
+    def click(self, event):
+        pass
 
     def mousedown(self, event):
         pass
