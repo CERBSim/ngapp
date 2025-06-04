@@ -605,16 +605,13 @@ canvas_counter = 0
 class WebgpuComponent(Component):
     def __init__(self, id=""):
         global canvas_counter
-        super().__init__(
-            "canvas", id=id or "webgpu_canvas" + str(canvas_counter)
-        )
+        super().__init__("canvas", id)
         self.ui_style = "width:800px; height:600px;"
         canvas_counter += 1
         # scene must be set in draw
         self.scene = None
         self.canvas = None
         self.on("mounted", self.connect_webgpu)
-        self.on("unmount", self._on_unmount)
         self.on_load(self.__on_load)
 
     def __on_load(self):
@@ -622,19 +619,14 @@ class WebgpuComponent(Component):
         if scene is not None:
             self.draw(scene)
 
-    def _on_unmount(self):
-        if self.scene is not None:
-            self.scene.input_handler.unregister_callbacks()
-        if self.canvas is not None:
-            self.canvas.context.unconfigure()
-
     def connect_webgpu(self):
         from webgpu import canvas, utils
 
-        if self.canvas:
-            return self._reconfigure_canvas()
-
         html_canvas = self._js_component
+
+        if self.canvas:
+            return self.canvas.update_html_canvas(html_canvas)
+
         utils.init_device_sync()
         self.canvas = canvas.Canvas(utils.get_device(), html_canvas)
 
@@ -644,39 +636,14 @@ class WebgpuComponent(Component):
         elif scene is not None:
             self.draw(scene)
 
-    def _reconfigure_canvas(self):
-        """Reconfigure the canvas with the current HTML canvas element. This is necessary when the HTML canvas element changes, disappears (e.g. when switching a tab) and appears again."""
-        html_canvas = self._js_component
-        from webgpu.webgpu_api import TextureUsage, toJS
-        if self.scene is not None:
-            self.scene.input_handler.unregister_callbacks()
-        self.canvas.canvas = html_canvas
-        self.canvas.context = html_canvas.getContext("webgpu")
-        self.canvas.context.configure(
-            toJS(
-                {
-                    "device": self.canvas.device.handle,
-                    "format": self.canvas.format,
-                    "alphaMode": "premultiplied",
-                    "sampleCount": self.canvas.multisample.count,
-                    "usage": TextureUsage.RENDER_ATTACHMENT
-                    | TextureUsage.COPY_DST,
-                }
-            )
-        )
-        if self.scene is not None:
-            self.scene.init(self.canvas)
-        self.canvas.width = 0  # force resize
-        self.canvas.resize()
-
     def draw(self, scene, store=False):
         from webgpu import draw
 
         if store:
             self.storage.set("scene", scene, use_pickle=True)
 
-        if self.canvas is not None:
-            if self.scene is not None:
+        if self.canvas:
+            if self.scene not in [None, scene]:
                 self.scene.cleanup()
             self.scene = draw.Draw(scene, self.canvas, lilgui=False)
             self.scene.input_handler.on_mousedown(self.mousedown)
