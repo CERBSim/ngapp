@@ -603,9 +603,9 @@ canvas_counter = 0
 
 
 class WebgpuComponent(Component):
-    def __init__(self, id=""):
+    def __init__(self, **kwargs):
         global canvas_counter
-        super().__init__("canvas", id)
+        super().__init__("canvas", **kwargs)
         self.ui_style = "width:800px; height:600px;"
         canvas_counter += 1
         # scene must be set in draw
