@@ -582,7 +582,7 @@ class Component(metaclass=BlockFrontendUpdate):
 
             value = comp.dump()
             if not value:
-                return arg
+                return (data, exclude)
             if exclude is not None and comp._id in exclude:
                 for key in list(value.keys()):
                     if (
@@ -591,16 +591,16 @@ class Component(metaclass=BlockFrontendUpdate):
                     ):
                         del value[key]
             if not value:
-                return arg
+                return (data, exclude)
 
             if not comp._id:
                 raise RuntimeError(f"Component {type(self)} with input data {value} must have id")
-
+            print("data = ", data)
             if comp._id in data:
                 raise RuntimeError("Duplicate keys in components", comp._id)
 
             data[comp._id] = value
-            return arg
+            return (data, exclude)
 
         data = {}
         self._recurse(func, True, set(), (data, exclude_default))
