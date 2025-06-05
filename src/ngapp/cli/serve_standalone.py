@@ -176,7 +176,8 @@ def reload_app(app_module, reload_modules):
 
 
 def host_local_app(
-    app_module, start_browser=True, watch_code=False, dev_frontend=False
+        app_module, start_browser=True, watch_code=False, dev_frontend=False,
+        app_args={}
 ):
     global app
     env = utils.set_environment(utils.Environment.LOCAL_APP, False)
@@ -189,7 +190,7 @@ def host_local_app(
         "frontend_pip_dependencies": app_config.frontend_pip_dependencies,
     }
 
-    app = loadModel(app_data, {})
+    app = loadModel(app_data, {}, app_args=app_args)
 
     from webgpu import platform
 

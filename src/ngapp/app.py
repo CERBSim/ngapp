@@ -585,7 +585,8 @@ def reload_package(package_name):
 
 
 def loadModel(
-    app_metadata, data, reload_python_modules=[], load_local_storage=False
+        app_metadata, data, reload_python_modules=[], load_local_storage=False,
+        app_args={}
 ):
     """Load model from data"""
 
@@ -605,7 +606,7 @@ def loadModel(
         module = importlib.import_module(module_name)
     cls = getattr(module, class_name)
     reset_components()
-    app = cls()
+    app = cls(**app_args)
     app._default_data = copy.deepcopy(app.dump()["component"])
     if not "metadata" in data:
         data["metadata"] = {
