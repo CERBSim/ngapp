@@ -594,7 +594,7 @@ class Component(metaclass=BlockFrontendUpdate):
                 return arg
 
             if not comp._id:
-                raise RuntimeError("Component with input data must have id")
+                raise RuntimeError(f"Component {type(self)} with input data {value} must have id")
 
             if comp._id in data:
                 raise RuntimeError("Duplicate keys in components", comp._id)
