@@ -328,14 +328,33 @@ Each component that should be saved in a the app save procedure needs to be give
                             ui_label="Width (m)",
                             ui_style="width: 200px;")
 
-we do not want to save the deformation slider value so we do not give it an id.
+The QInputs (and other quasar wrapped classes automatically store its data if given an id, for the deformation slider, we do not want it to be saved so we  not give it an id.
 
-The ``draw`` command of the :py:class:`~ngapp.components.visualization.WebgpuComponent` needs to be called with the additional ``store`` parameter so that render data is stored in the app state:
+The visualization webgpu component additionally needs to implement how to be stored and retrieved on load.
+
+So first on each draw command we store the draw arguments in our component storage:
 
 .. code-block:: python
 
-        self.webgpu.draw([wireframe, renderer, colorbar],
-                         store=True)
+    def draw(self, mesh, deformation, vonMises):
+        self.storage.set("solution", (mesh, deformation, vonMises), use_pickle=True)
+
+and we add an additional method that we call on component load:
+
+.. code-block:: python
+
+   class MyVisComp(Div):
+    def __init__(self):
+        ...
+        super().__init__(...)
+        self.on_load(self.__on_load)
+
+    def __on_load(self):
+        sol = self.storage.get("solution")
+        if sol:
+            self.draw(*sol)
+
+This, after loading, looks if some solution is saved in the component storage and retrieves it. `self.storage.get("solution")` returns `None` if no solution is set.
 
 And we add two new buttons to the toolbar for saving and loading the app state:
 
