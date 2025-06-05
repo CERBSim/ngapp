@@ -572,15 +572,26 @@ class Component(metaclass=BlockFrontendUpdate):
         if data is not None:
             self._props = data
 
-    def _dump_recursive(self):
-        def func(comp, data):
+    def _dump_recursive(self, exclude_default):
+        def func(comp, arg):
+            data, exclude = arg
             if comp._namespace:
                 data[comp._id] = {}
                 data = data[comp._id]
+                exclude = exclude[comp._id] if exclude else None
 
             value = comp.dump()
             if not value:
-                return data
+                return arg
+            if exclude is not None and comp._id in exclude:
+                for key in list(value.keys()):
+                    if (
+                        key in exclude[comp._id]
+                        and exclude[comp._id][key] == value[key]
+                    ):
+                        del value[key]
+            if not value:
+                return arg
 
             if not comp._id:
                 raise RuntimeError("Component with input data must have id")
@@ -589,10 +600,10 @@ class Component(metaclass=BlockFrontendUpdate):
                 raise RuntimeError("Duplicate keys in components", comp._id)
 
             data[comp._id] = value
-            return data
+            return arg
 
         data = {}
-        self._recurse(func, True, set(), data)
+        self._recurse(func, True, set(), (data, exclude_default))
         return data
 
     def _dump_storage(self, include_data=False):

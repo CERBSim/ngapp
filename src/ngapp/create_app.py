@@ -33,6 +33,7 @@ def create_app():
     print("App created successfully!")
     print("You can run it now with the command:")
     from colorama import Fore, Style
+
     print(Fore.GREEN, f"{py_exe} -m {new_dir}", Style.RESET_ALL)
     print("and for developer mode (auto update on changes):")
     print(Fore.GREEN, f"{py_exe} -m {new_dir} --dev", Style.RESET_ALL)

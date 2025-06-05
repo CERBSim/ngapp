@@ -327,34 +327,13 @@ class App:
             and not get_environment().have_backend
         ):
             self._save_storage_local()
+        exclude_default = (
+            self._default_data["data"] if exclude_default_data else None
+        )
         component_data = {
-            "data": self.component._dump_recursive(),
+            "data": self.component._dump_recursive(exclude_default),
             "storage": self.component._dump_storage(include_storage_data),
         }
-
-        if exclude_default_data:
-
-            def remove_default_data(data, default_data):
-                if isinstance(data, dict):
-                    for key in list(data.keys()):
-                        if key not in default_data:
-                            return
-                        if isinstance(data[key], dict) and isinstance(
-                            default_data[key], dict
-                        ):
-                            if data[key] == default_data[key]:
-                                del data[key]
-                            else:
-                                remove_default_data(
-                                    data[key], default_data[key]
-                                )
-
-            remove_default_data(
-                component_data["data"], self._default_data["data"]
-            )
-            remove_default_data(
-                component_data["storage"], self._default_data["storage"]
-            )
 
         return {"component": component_data, "metadata": self.metadata}
 
@@ -627,7 +606,7 @@ def loadModel(
     cls = getattr(module, class_name)
     reset_components()
     app = cls()
-    app._default_data = app.dump()["component"]
+    app._default_data = copy.deepcopy(app.dump()["component"])
     if not "metadata" in data:
         data["metadata"] = {
             "app_id": app_metadata["id"],
