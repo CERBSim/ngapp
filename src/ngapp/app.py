@@ -374,7 +374,7 @@ class App:
 
     def save_local(self):
         from webgpu import platform
-
+        self.component._emit_recursive("before_save")
         dump = self.dump(include_storage_data=True)
         name = self.name + ".sav" if self.name is not None else "untitled.sav"
         options = {"suggestedName": name}

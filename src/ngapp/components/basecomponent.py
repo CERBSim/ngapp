@@ -174,7 +174,7 @@ class Storage:
 
         value = self._data.get(key, None)
 
-        if value is not None and self._metadata.get(key).type_ == "pickle":
+        if value is not None and self._metadata.get(key) and self._metadata.get(key).type_ == "pickle":
             value = pickle.loads(value)
 
         return value
