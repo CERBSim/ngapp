@@ -114,6 +114,8 @@ class QuantityInput(NumberInput):
         return q.m_as(unit)
 
     def dump(self):
+        if not self._id:
+            return None
         data = super().dump()
         if self.quantity is not None:
             if data is None:
