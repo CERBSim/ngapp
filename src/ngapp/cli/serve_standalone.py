@@ -242,6 +242,7 @@ def host_local_app(
         watch_modules,
         lambda modules: reload_app(app_module, modules),
     )
+    platform.js.close()
     platform.websocket_server.stop()
 
 
