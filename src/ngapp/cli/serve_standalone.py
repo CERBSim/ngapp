@@ -221,6 +221,12 @@ def host_local_app(
         print("Url to run the app:\n", url, "\n")
 
     platform.init(before_wait_for_connection)
+    from webgpu import platform
+    def stop_app(event):
+        os._exit(0)
+    platform.js.addEventListener(
+        "beforeunload",
+        platform.create_proxy(stop_app, ignore_return_value=True))
     print("Client connected")
     env.frontend.reset_app(app)
 

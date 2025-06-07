@@ -571,7 +571,7 @@ def reload_package(package_name):
             print(f"Reloaded module {module.__name__} in {1000*t:.0f} ms")
 
         var_values = vars(module).values()
-        for var in var_values:
+        for var in list(var_values):
             if isinstance(var, types.ModuleType):
                 file_name = getattr(var, "__file__", None)
                 if file_name is not None and file_name.startswith(package_dir):
