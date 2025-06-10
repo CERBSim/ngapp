@@ -42,12 +42,22 @@ def download_and_extract_frontend():
     if not os.path.exists(user_data_dir):
         os.makedirs(user_data_dir)
 
-    response = requests.get("https://ngsolve.org/ngapp/ngapp-dev.zip.md5")
-    response.raise_for_status()
-    latest_md5 = response.text.strip().split()[0]
+    cache_file = user_data_dir / "ngapp-dev.zip"
+
+    try:
+        response = requests.get(
+            "https://ngsolve.org/ngapp/ngapp-dev.zip.md5", timeout=1000
+        )
+        response.raise_for_status()
+        latest_md5 = response.text.strip().split()[0]
+    except Exception as e:
+        if cache_file.exists():
+            cache_data = cache_file.read_bytes()
+            print("Error downloading latest frontend, using cached version")
+            latest_md5 = hashlib.md5(cache_data).hexdigest()
+        raise e
 
     zip_data = None
-    cache_file = user_data_dir / "ngapp-dev.zip"
     if os.path.exists(cache_file):
         cache_data = cache_file.read_bytes()
         cache_md5 = hashlib.md5(cache_data).hexdigest()
@@ -176,8 +186,11 @@ def reload_app(app_module, reload_modules):
 
 
 def host_local_app(
-        app_module, start_browser=True, watch_code=False, dev_frontend=False,
-        app_args={}
+    app_module,
+    start_browser=True,
+    watch_code=False,
+    dev_frontend=False,
+    app_args={},
 ):
     global app
     env = utils.set_environment(utils.Environment.LOCAL_APP, False)
@@ -222,12 +235,14 @@ def host_local_app(
 
     platform.init(before_wait_for_connection)
     from webgpu import platform
+
     def stop_app(event):
         os._exit(0)
+
     platform.js.addEventListener(
         "beforeunload",
         platform.create_proxy(stop_app, ignore_return_value=True),
-        { "passive" : True }
+        {"passive": True},
     )
     print("Client connected")
     env.frontend.reset_app(app)

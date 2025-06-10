@@ -174,7 +174,11 @@ class Storage:
 
         value = self._data.get(key, None)
 
-        if value is not None and self._metadata.get(key) and self._metadata.get(key).type_ == "pickle":
+        if (
+            value is not None
+            and self._metadata.get(key)
+            and self._metadata.get(key).type_ == "pickle"
+        ):
             value = pickle.loads(value)
 
         return value
@@ -322,19 +326,28 @@ class Component(metaclass=BlockFrontendUpdate):
     def add_keybinding(self, key: str, callback: Callable):
         """Add key binding to component"""
         import webgpu.platform as pl
+
         if not self._keybindings:
+
             def set_keybindings_proxy(event):
-                self._handle_keybindings_proxy = \
-                    pl.create_proxy(self._handle_keybindings)
-                pl.js.addEventListener(
-                    "keydown",
-                    self._handle_keybindings_proxy,
-                    { "passive" : True }
+                self._handle_keybindings_proxy = pl.create_proxy(
+                    self._handle_keybindings
                 )
+                pl.js.addEventListener(
+                    "keydown", self._handle_keybindings_proxy, {"passive": True}
+                )
+
             self.on_mounted(set_keybindings_proxy)
-            self.on("before_unmount", lambda: pl.js.removeEventListener(
-                "keydown",
-                self._handle_keybindings_proxy) if self._handle_keybindings_proxy else None)
+            self.on(
+                "before_unmount",
+                lambda: (
+                    pl.js.removeEventListener(
+                        "keydown", self._handle_keybindings_proxy
+                    )
+                    if self._handle_keybindings_proxy
+                    else None
+                ),
+            )
         if key not in self._keybindings:
             self._keybindings[key] = []
         self._keybindings[key].append(callback)
@@ -622,7 +635,9 @@ class Component(metaclass=BlockFrontendUpdate):
                 return (data, exclude)
 
             if not comp._id:
-                raise RuntimeError(f"Component {type(self)} with input data {value} must have id")
+                raise RuntimeError(
+                    f"Component {type(self)} with input data {value} must have id"
+                )
             if comp._id in data:
                 raise RuntimeError("Duplicate keys in components", comp._id)
 

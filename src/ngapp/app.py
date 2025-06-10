@@ -374,6 +374,7 @@ class App:
 
     def save_local(self):
         from webgpu import platform
+
         self.component._emit_recursive("before_save")
         dump = self.dump(include_storage_data=True)
         name = self.name + ".sav" if self.name is not None else "untitled.sav"
@@ -387,6 +388,7 @@ class App:
 
     def quit(self):
         from webgpu import platform as pl
+
         pl.js.close()
 
     def load_local(self):
@@ -589,8 +591,11 @@ def reload_package(package_name):
 
 
 def loadModel(
-        app_metadata, data, reload_python_modules=[], load_local_storage=False,
-        app_args={}
+    app_metadata,
+    data,
+    reload_python_modules=[],
+    load_local_storage=False,
+    app_args={},
 ):
     """Load model from data"""
 
