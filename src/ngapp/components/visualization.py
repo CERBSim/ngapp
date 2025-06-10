@@ -636,12 +636,16 @@ class WebgpuComponent(Component):
         elif scene is not None:
             self.draw(scene)
 
-    def draw(self, scene, store=False):
+    def draw(self, scene, store=False, camera=None, light=None):
         from webgpu import draw
 
         if store:
             self.storage.set("scene", scene, use_pickle=True)
 
+        if isinstance(scene, draw.BaseRenderer):
+            scene = draw.Scene([scene], camera=camera, light=light)
+        elif isinstance(scene, list):
+            scene = draw.Scene(scene, camera=camera, light=light)
         if self.canvas:
             if self.scene not in [None, scene]:
                 self.scene.cleanup()
@@ -651,10 +655,6 @@ class WebgpuComponent(Component):
             self.scene.input_handler.on_mouseout(self.mouseout)
             self.scene.input_handler.on_click(self.click)
         else:
-            if isinstance(scene, draw.BaseRenderer):
-                scene = draw.Scene([scene])
-            elif isinstance(scene, list):
-                scene = draw.Scene(scene)
             self.scene = scene
         return self.scene
 

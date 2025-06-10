@@ -278,6 +278,7 @@ class Component(metaclass=BlockFrontendUpdate):
         ui_class: str | list[str] | None = None,
         id: str = "",
     ):
+        self._keybindings = {}
         self._index = next(_component_counter)
         _components[self._index] = self
 
@@ -316,6 +317,27 @@ class Component(metaclass=BlockFrontendUpdate):
             self._props["class"] = (
                 ui_class if isinstance(ui_class, str) else " ".join(ui_class)
             )
+
+    def add_keybinding(self, key: str, callback: Callable):
+        """Add key binding to component"""
+        import webgpu.platform as pl
+        if not self._keybindings:
+            handle_keybindings_proxy = \
+                pl.create_proxy(self._handle_keybindings)
+            self.on_mounted(lambda : pl.js.addEventListener(
+                "keydown",
+                handle_keybindings_proxy
+            ))
+            self.on("before_unmount", lambda: pl.js.removeEventListener(
+                "keydown",
+                handle_keybindings_proxy))
+
+    def _handle_keybindings(self, event):
+        """Handle key bindings"""
+        print("handle keybindings", event)
+        if hasattr("key", event) and event.key in self._keybindings:
+            for callback in self._keybindings[event.key]:
+                callback(event)
 
     @property
     def ui_children(self):
