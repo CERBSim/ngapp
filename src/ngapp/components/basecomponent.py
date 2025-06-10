@@ -174,7 +174,11 @@ class Storage:
 
         value = self._data.get(key, None)
 
-        if value is not None and self._metadata.get(key) and self._metadata.get(key).type_ == "pickle":
+        if (
+            value is not None
+            and self._metadata.get(key)
+            and self._metadata.get(key).type_ == "pickle"
+        ):
             value = pickle.loads(value)
 
         return value
@@ -321,16 +325,20 @@ class Component(metaclass=BlockFrontendUpdate):
     def add_keybinding(self, key: str, callback: Callable):
         """Add key binding to component"""
         import webgpu.platform as pl
+
         if not self._keybindings:
-            handle_keybindings_proxy = \
-                pl.create_proxy(self._handle_keybindings)
-            self.on_mounted(lambda : pl.js.addEventListener(
-                "keydown",
-                handle_keybindings_proxy
-            ))
-            self.on("before_unmount", lambda: pl.js.removeEventListener(
-                "keydown",
-                handle_keybindings_proxy))
+            handle_keybindings_proxy = pl.create_proxy(self._handle_keybindings)
+            self.on_mounted(
+                lambda: pl.js.addEventListener(
+                    "keydown", handle_keybindings_proxy
+                )
+            )
+            self.on(
+                "before_unmount",
+                lambda: pl.js.removeEventListener(
+                    "keydown", handle_keybindings_proxy
+                ),
+            )
 
     def _handle_keybindings(self, event):
         """Handle key bindings"""
@@ -616,7 +624,9 @@ class Component(metaclass=BlockFrontendUpdate):
                 return (data, exclude)
 
             if not comp._id:
-                raise RuntimeError(f"Component {type(self)} with input data {value} must have id")
+                raise RuntimeError(
+                    f"Component {type(self)} with input data {value} must have id"
+                )
             if comp._id in data:
                 raise RuntimeError("Duplicate keys in components", comp._id)
 

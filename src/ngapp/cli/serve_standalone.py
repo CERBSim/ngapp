@@ -186,8 +186,11 @@ def reload_app(app_module, reload_modules):
 
 
 def host_local_app(
-        app_module, start_browser=True, watch_code=False, dev_frontend=False,
-        app_args={}
+    app_module,
+    start_browser=True,
+    watch_code=False,
+    dev_frontend=False,
+    app_args={},
 ):
     global app
     env = utils.set_environment(utils.Environment.LOCAL_APP, False)
@@ -232,11 +235,14 @@ def host_local_app(
 
     platform.init(before_wait_for_connection)
     from webgpu import platform
+
     def stop_app(event):
         os._exit(0)
+
     platform.js.addEventListener(
         "beforeunload",
-        platform.create_proxy(stop_app, ignore_return_value=True))
+        platform.create_proxy(stop_app, ignore_return_value=True),
+    )
     print("Client connected")
     env.frontend.reset_app(app)
 
