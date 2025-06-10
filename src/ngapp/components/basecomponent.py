@@ -294,6 +294,7 @@ class Component(metaclass=BlockFrontendUpdate):
         self.ui_slots = ui_slots or {}
         self._namespace = namespace
         self._id = id
+        self._handle_keybindings_proxy = None
 
         self.storage = Storage(self)
         self.on_save(self.storage.save)
@@ -322,22 +323,27 @@ class Component(metaclass=BlockFrontendUpdate):
         """Add key binding to component"""
         import webgpu.platform as pl
         if not self._keybindings:
-            handle_keybindings_proxy = \
-                pl.create_proxy(self._handle_keybindings)
-            self.on_mounted(lambda : pl.js.addEventListener(
-                "keydown",
-                handle_keybindings_proxy
-            ))
+            def set_keybindings_proxy(event):
+                self._handle_keybindings_proxy = \
+                    pl.create_proxy(self._handle_keybindings)
+                pl.js.addEventListener(
+                    "keydown",
+                    self._handle_keybindings_proxy,
+                    { "passive" : True }
+                )
+            self.on_mounted(set_keybindings_proxy)
             self.on("before_unmount", lambda: pl.js.removeEventListener(
                 "keydown",
-                handle_keybindings_proxy))
+                self._handle_keybindings_proxy) if self._handle_keybindings_proxy else None)
+        if key not in self._keybindings:
+            self._keybindings[key] = []
+        self._keybindings[key].append(callback)
 
     def _handle_keybindings(self, event):
         """Handle key bindings"""
-        print("handle keybindings", event)
-        if hasattr("key", event) and event.key in self._keybindings:
-            for callback in self._keybindings[event.key]:
-                callback(event)
+        if "key" in event and event["key"] in self._keybindings:
+            for callback in self._keybindings[event["key"]]:
+                callback()
 
     @property
     def ui_children(self):
