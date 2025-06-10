@@ -217,7 +217,6 @@ def host_local_app(
 
         if start_http_server:
             http_port = run_http_server()
-            print("running on port", http_port)
         else:
             http_port = 3000
 
@@ -244,7 +243,6 @@ def host_local_app(
         platform.create_proxy(stop_app, ignore_return_value=True),
         {"passive": True},
     )
-    print("Client connected")
     env.frontend.reset_app(app)
 
     if watch_code:
