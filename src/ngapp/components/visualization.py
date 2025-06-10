@@ -612,12 +612,17 @@ class WebgpuComponent(Component):
         self.scene = None
         self.canvas = None
         self.on("mounted", self.connect_webgpu)
+        self.on("unmount", self.__on_unmount)
         self.on_load(self.__on_load)
 
     def __on_load(self):
         scene = self.storage.get("scene")
         if scene is not None:
             self.draw(scene)
+
+    def __on_unmount(self):
+        if self.scene is not None:
+            self.scene.input_handler.unregister_callbacks()
 
     def connect_webgpu(self):
         from webgpu import canvas, utils
