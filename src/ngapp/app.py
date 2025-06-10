@@ -385,6 +385,10 @@ class App:
         stream.write(pickle.dumps(dump))
         stream.close()
 
+    def quit(self):
+        from webgpu import platform as pl
+        pl.js.close()
+
     def load_local(self):
         from webgpu import platform
 
