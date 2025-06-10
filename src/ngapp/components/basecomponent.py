@@ -327,6 +327,10 @@ class Component(metaclass=BlockFrontendUpdate):
         """Add key binding to component"""
         import webgpu.platform as pl
 
+        split = key.split("+")
+        key = split[-1]
+        modifiers = split[:-1]
+        modifiers = [m.lower() + "Key" for m in modifiers]
         if not self._keybindings:
 
             def set_keybindings_proxy(event):
@@ -350,13 +354,18 @@ class Component(metaclass=BlockFrontendUpdate):
             )
         if key not in self._keybindings:
             self._keybindings[key] = []
-        self._keybindings[key].append(callback)
+        self._keybindings[key].append((callback, modifiers))
 
     def _handle_keybindings(self, event):
         """Handle key bindings"""
         if "key" in event and event["key"] in self._keybindings:
-            for callback in self._keybindings[event["key"]]:
-                callback()
+            for callback, modifiers in self._keybindings[event["key"]]:
+                modifier_check = True
+                for modifier in modifiers:
+                    if modifier in event and event[modifier] is False:
+                        modifier_check = False
+                if modifier_check:
+                    callback()
 
     @property
     def ui_children(self):
