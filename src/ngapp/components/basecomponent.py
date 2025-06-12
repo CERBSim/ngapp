@@ -338,7 +338,7 @@ class Component(metaclass=BlockFrontendUpdate):
                     self._handle_keybindings
                 )
                 pl.js.addEventListener(
-                    "keydown", self._handle_keybindings_proxy, {"passive": True}
+                    "keydown", self._handle_keybindings_proxy
                 )
 
             self.on_mounted(set_keybindings_proxy)
