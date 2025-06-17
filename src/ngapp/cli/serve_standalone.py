@@ -55,7 +55,8 @@ def download_and_extract_frontend():
             cache_data = cache_file.read_bytes()
             print("Error downloading latest frontend, using cached version")
             latest_md5 = hashlib.md5(cache_data).hexdigest()
-        raise e
+        else:
+            raise e
 
     zip_data = None
     if os.path.exists(cache_file):
