@@ -77,7 +77,7 @@ class BrowserFrontend(BaseFrontend):
         from webgpu.platform import link
 
         link.call_method_ignore_return(
-            "resetApp", [app.component._get_my_wrapper_props()]
+            id="resetApp", args=[app.component._get_my_wrapper_props()]
         )
         self.app = app
 
