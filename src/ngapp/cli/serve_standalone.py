@@ -237,6 +237,11 @@ def host_local_app(
     from webgpu import platform
 
     def stop_app(event):
+        for on_exit_handler in app._on_exit_handlers:
+            try:
+                on_exit_handler()
+            except Exception as e:
+                print("Error in on_exit handler:", e)
         os._exit(0)
 
     platform.js.addEventListener(

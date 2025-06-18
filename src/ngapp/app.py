@@ -244,6 +244,7 @@ class App:
         self._default_data = None
         self._status = AppStatus()
         self._status.app = self
+        self._on_exit_handlers = []
 
         if component is not None:
             self.component = component
@@ -254,6 +255,13 @@ class App:
 
     def __getitem__(self, key: str) -> Component:
         return self._status.components_by_id[key]
+
+    def on_exit(self, handler):
+        """
+        Register a handler to be called when the app is exited.
+        This is useful for cleanup tasks or saving state.
+        """
+        self._on_exit_handlers.append(handler)
 
     @property
     def assets_path(self) -> Path:
