@@ -30,6 +30,7 @@ from .utils import (
     read_file,
     read_file_binary,
     read_json,
+    save_file_local,
 )
 
 
@@ -381,18 +382,13 @@ class App:
         return app
 
     def save_local(self):
-        from webgpu import platform
+        import pickle
 
         self.component._emit_recursive("before_save")
         dump = self.dump(include_storage_data=True)
         name = self.name + ".sav" if self.name is not None else "untitled.sav"
-        options = {"suggestedName": name}
-        import pickle
-
-        pick = platform.js.showSaveFilePicker(options)
-        stream = pick.createWritable()
-        stream.write(pickle.dumps(dump))
-        stream.close()
+        data = pickle.dumps(dump)
+        save_file_local(data, name)
 
     def quit(self):
         from webgpu import platform as pl

@@ -738,3 +738,18 @@ def _get_app_assets(app_name: str):
     for file in app_path.rglob("assets/*"):
         with open(file, "rb") as f:
             yield file.name, f.read()
+
+
+def save_file_local(
+    data: bytes | str, filename: str, options: dict | None = None
+) -> None:
+    from webgpu import platform
+
+    options = options or {}
+    if "suggestedName" not in options:
+        options["suggestedName"] = filename
+
+    pick = platform.js.showSaveFilePicker(options)
+    stream = pick.createWritable()
+    stream.write(data)
+    stream.close()
