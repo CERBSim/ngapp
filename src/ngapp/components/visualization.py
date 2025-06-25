@@ -693,8 +693,9 @@ class WebgpuComponent(Component):
             u8, self.canvas.width, self.canvas.height
         )
         ctx.putImageData(image_data, 0, 0)
+        url = canvas.toDataURL(format)
         canvas.remove()
-        return canvas.toDataURL(format)
+        return url
 
 
 def _encode_b64(data=None, file=None):
