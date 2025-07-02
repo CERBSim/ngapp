@@ -245,8 +245,8 @@ def host_local_app(
         os._exit(0)
 
     platform.js.addEventListener(
-        "beforeunload",
-        platform.create_proxy(stop_app, ignore_return_value=True)
+        "unload",
+        platform.create_event_handler(stop_app, prevent_default=False),
     )
     env.frontend.reset_app(app)
 
