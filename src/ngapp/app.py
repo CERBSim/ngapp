@@ -473,13 +473,14 @@ class App:
             # we are hot-reloading the app, this means we skipped the default data when dumping before
             # so we need to update the data with the default data
             def update_props(data, default_data):
-                for key, value in default_data.items():
+                for key, default_value in default_data.items():
                     if not key in data:
-                        data[key] = copy.deepcopy(value)
+                        data[key] = copy.deepcopy(default_value)
                         continue
-                    if isinstance(value, dict):
-                        update_props(value, default_data[key])
-                    data[key] = copy.deepcopy(value)
+                    if isinstance(default_value, dict):
+                        update_props(data[key], default_value)
+
+            update_props(component_data["data"], self._default_data["data"])
 
         self.update(
             data,
