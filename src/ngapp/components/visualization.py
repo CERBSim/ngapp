@@ -737,6 +737,59 @@ class WebgpuComponent(Component):
         return url
 
 
+_vtk_script = None
+
+
+class BaseVtkComponent(Div):
+    def __init__(self, id, width="600px", height="400px"):
+        self.width = width
+        self.height = height
+        super().__init__(
+            id=id, ui_style=f"min-width: {width}; min-height: {height};"
+        )
+        self.on_mounted(self.setup_vtk)
+
+    def setup_vtk(self):
+        import webgpu.platform as pl
+
+        global _vtk_script
+        if _vtk_script is None:
+            _vtk_script = pl.js.document.createElement("script")
+            _vtk_script.src = "https://unpkg.com/vtk.js"
+            _vtk_script.onload = pl.create_proxy(self.init_vtk)
+            pl.js.document.head.appendChild(_vtk_script)
+
+    def create_event_handler(self, function):
+        import webgpu.platform as pl
+
+        return pl.create_event_handler(function, prevent_default=False)
+
+    def init_vtk(self, event):
+        import webgpu.platform as pl
+
+        self.vtk = pl.js.window.vtk
+        while self._js_component.firstChild:
+            self._js_component.removeChild(self._js_component.firstChild)
+        vtkFullScreenRenderWindow = (
+            self.vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance(
+                {
+                    "rootContainer": self._js_component,
+                    "containerStyle": {
+                        "height": f"{self.height}",
+                        "width": f"{self.width}",
+                        "position": "relative",
+                    },
+                }
+            )
+        )
+        self.renderer = renderer = vtkFullScreenRenderWindow.getRenderer()
+        self.renderWindow = vtkFullScreenRenderWindow.getRenderWindow()
+        self.draw()
+
+    def draw(self):
+        raise NotImplementedError("Subclasses must implement the draw method.")
+
+
 def _encode_b64(data=None, file=None):
     """Encodes the given data or file as base64 for webgui."""
     if data is None:
