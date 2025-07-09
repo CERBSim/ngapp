@@ -19,11 +19,12 @@ html_static_path = ["_static"]
 html_logo = "_static/logo.svg"
 
 html_theme_options = {
+    "header_links_before_dropdown": 6,
     "logo": {
         "text": "NGApp Docs",
         "image_dark": "_static/logo_dark.png",
         "image_light": "_static/logo.svg",
-    }
+    },
 }
 
 todo_include_todos = True

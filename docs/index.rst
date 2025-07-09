@@ -26,13 +26,13 @@ To get started with NGApp, install it using pip:
 The [dev] extras include tools needed for developing NGApp-based apps. When distributing your own app, you can simply depend on ngapp — users do not need the [dev] extras.
 
 .. toctree::
-   :titlesonly:
-   :maxdepth: 1
+   :maxdepth: 4
    :hidden:
 
    getting_started.rst
    tutorials.rst
    components.rst
+   visualization.rst
    tips_and_tricks.rst
    api_doc.rst
 

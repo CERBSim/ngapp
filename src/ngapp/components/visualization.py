@@ -603,6 +603,23 @@ canvas_counter = 0
 
 
 class WebgpuComponent(Component):
+    """
+    GPU-accelerated 3D canvas for interactive scientific visualization using WebGPU.
+    This uses the webgpu Python package (https://github.com/CERBSim/webgpu) to render 3D scenes directly in the browser.
+
+    This component provides a high-performance rendering surface for custom 3D scenes, supporting real-time updates and user interaction. Scenes can be drawn using the webgpu Python package and updated dynamically from Python.
+
+    Key features:
+    - Integrates with the webgpu Python ecosystem for advanced graphics.
+    - Supports storing and restoring scenes, camera, and lighting state.
+    - Handles mounting, unmounting, and frontend synchronization automatically.
+    - Allows custom event handling for mouse and interaction events.
+
+    Usage:
+        webgpu = WebgpuComponent()
+        webgpu.draw(scene)
+    """
+
     def __init__(self, **kwargs):
         global canvas_counter
         super().__init__("canvas", **kwargs)
@@ -642,11 +659,18 @@ class WebgpuComponent(Component):
         elif scene is not None:
             self.draw(scene)
 
-    def draw(self, scene, store=False, camera=None, light=None):
-        from webgpu import draw
+    def draw(self, scene, camera=None, light=None):
+        """
+        Render a 3D scene on the webgpu canvas. Go to the webgpu documentation for more details on how to create scenes.
 
-        if store:
-            self.storage.set("scene", scene, use_pickle=True)
+        Args:
+            scene: A webgpu.scene.Scene, BaseRenderer, or list of renderers.
+            camera: Optional camera settings.
+            light: Optional lighting settings.
+        Returns:
+            The active scene object.
+        """
+        from webgpu import draw
 
         if isinstance(scene, draw.BaseRenderer):
             scene = draw.Scene([scene], camera=camera, light=light)
@@ -677,11 +701,25 @@ class WebgpuComponent(Component):
         pass
 
     def screenshot(self):
+        """
+        Capture the current canvas as a GPU texture (raw image data).
+
+        Returns:
+            The image data as a numpy array or backend-specific object.
+        """
         from webgpu import utils
 
         return utils.read_texture(self.canvas.target_texture)
 
     def screenshot_as_data_url(self, format="image/png"):
+        """
+        Get a screenshot of the canvas as a data URL (e.g., for embedding in HTML).
+
+        Args:
+            format: Image format, e.g., "image/png".
+        Returns:
+            Data URL string containing the image.
+        """
         from webgpu import platform
 
         data = self.screenshot()
