@@ -620,11 +620,15 @@ class WebgpuComponent(Component):
         webgpu.draw(scene)
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, width="800px", height="600px", **kwargs):
         global canvas_counter
         super().__init__("canvas", **kwargs)
         if "ui_style" not in kwargs:
-            self.ui_style = "width:800px; height:600px;"
+            self.ui_style = f"width:{width}; height:{height};"
+        if "width" not in self.ui_style:
+            self.ui_style = f"width:{width};" + kwargs["ui_style"]
+        if "height" not in self.ui_style:
+            self.ui_style = f"height:{height};" + kwargs["ui_style"]
         canvas_counter += 1
         # scene must be set in draw
         self.scene = None
