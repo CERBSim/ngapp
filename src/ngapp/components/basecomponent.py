@@ -626,6 +626,8 @@ class Component(metaclass=BlockFrontendUpdate):
         def func(comp, arg):
             data, exclude = arg
             if comp._namespace:
+                if comp._id in data:
+                    raise RuntimeError("Duplicate id in components", comp._id)
                 data[comp._id] = {}
                 data = data[comp._id]
                 exclude = exclude[comp._id] if exclude else None
@@ -648,7 +650,7 @@ class Component(metaclass=BlockFrontendUpdate):
                     f"Component {type(self)} with input data {value} must have id"
                 )
             if comp._id in data:
-                raise RuntimeError("Duplicate keys in components", comp._id)
+                raise RuntimeError("Duplicate id in components", comp._id)
 
             data[comp._id] = value
             return (data, exclude)
