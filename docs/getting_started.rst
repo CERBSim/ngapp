@@ -8,13 +8,13 @@ After installing ngapp and required development dependencies with
 
    pip install ngapp[dev]
 
-you can create your first app by opening a console in a desired project location and executing
+You can create your first app by opening a console in a desired project location and executing
 
 .. code-block:: bash
 
    python -m ngapp.create_app
 
-this script will ask you for your python module name for the project, the app name and the name of the app class. The module name and the app class name need to be valid Python identifiers.
+This script will ask you for your python module name for the project, the app name and the name of the app class. The module name and the app class name need to be valid Python identifiers. In case you want to create an app with additional backend ressources, pass `--with_backend` to the command above.
 
 If successful the script will prompt you with the message to start your new app with
 

@@ -1,9 +1,10 @@
+import argparse
 import os
 import subprocess
 import sys
 
 
-def create_app():
+def create_app(with_backend: bool = False):
     py_exe = sys.executable
     try:
         import cookiecutter
@@ -15,14 +16,15 @@ def create_app():
 
     # check dirs before
     dirs = os.listdir(".")
-    subprocess.run(
-        [
-            py_exe,
-            "-m",
-            "cookiecutter",
-            "https://github.com/CERBSim/ngapp_template",
-        ]
-    )
+    cmd = [
+        py_exe,
+        "-m",
+        "cookiecutter",
+        "https://github.com/CERBSim/ngapp_template",
+    ]
+    if with_backend:
+        cmd += ["-c", "with_backend"]
+    subprocess.run(cmd)
     dirs_after = os.listdir(".")
     new_dir = list(set(dirs_after) - set(dirs))[0]
     print("Created new directory:", new_dir)
@@ -43,4 +45,14 @@ def create_app():
 
 
 if __name__ == "__main__":
-    create_app()
+    parser = argparse.ArgumentParser(
+        description="Create a new ngapp application from the template."
+    )
+    parser.add_argument(
+        "--with-backend",
+        action="store_true",
+        help="Create an app with a backend (default is without backend).",
+    )
+    args = parser.parse_args()
+
+    create_app(with_backend=args.with_backend)
