@@ -352,6 +352,7 @@ class App:
         if not env.have_backend:
             return
 
+        env.frontend.app = self
         self.component._emit_recursive("before_save")
         status = self._status
         file_id = status.file_id
