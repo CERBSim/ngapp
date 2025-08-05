@@ -272,6 +272,32 @@ class App:
             / "assets"
         )
 
+    @property
+    def js(self):
+        # app.js.do_something_in_js()
+        import webgpu.platform as pl
+
+        if pl.js is None:
+            raise RuntimeError(
+                "JavaScript environment is not initialized. ._js is only available outside of the __init__ method of the app."
+            )
+        return pl.js
+
+    def call_js(self, func, *args, **kwargs):
+        # def do_something_in_js(js):
+        #    js.console.log("Doing something in JS")
+        # app.call_js(do_something_in_js)
+        # safe to be called in __init__ method of the app
+        import webgpu.platform as pl
+
+        if pl.js is None:
+            if args or kwargs:
+                pl.execute_when_init(lambda js: func(js, *args, **kwargs))
+            else:
+                pl.execute_when_init(func)
+        else:
+            func(pl.js, *args, **kwargs)
+
     def set_colors(
         self,
         primary: str | None = None,
