@@ -21,7 +21,12 @@ import pydantic
 import urllib3
 
 from . import api, utils
-from .components.basecomponent import AppStatus, Component, reset_components
+from .components.basecomponent import (
+    AppStatus,
+    Component,
+    reset_components,
+    _QProxy,
+)
 from .utils import (
     ComputeEnvironment,
     EnvironmentType,
@@ -298,15 +303,9 @@ class App:
         else:
             func(pl.js, *args, **kwargs)
 
-    class QProxy:
-        def __init__(self, js):
-            self.js = js
-        def __getattr__(self, name):
-            return self.js.document.get_quasar_obj(name)
-
     @property
     def quasar(self):
-        return self.QProxy(self.js)
+        return _QProxy(self.js)
 
     def set_colors(
         self,
@@ -491,11 +490,15 @@ class App:
         update_frontend=None,
     ):
         """Load app from stored data"""
+
         def initialize_quasar_proxy():
-            self.js.eval("""
+            self.js.eval(
+                """
 document.get_quasar_obj = (name) =>
             { return document.querySelector('#q-app').__vue_app__.config.globalProperties.$q[name] }
-""")
+"""
+            )
+
         self.component.on_mounted(initialize_quasar_proxy)
         self.component._namespace_id = ""
         self.component._parent = self
