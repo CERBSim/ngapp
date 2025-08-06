@@ -344,28 +344,22 @@ def error(*args) -> None:
 
 
 def confirm(title="", message="", on_ok=None, on_cancel=None):
-    """Show a confirmation dialog"""
-    if not is_pyodide():
-        raise Exception("confirm() is only available in pyodide")
+    raise RuntimeError(
+        "confirm is deprecated, use component.quasar.dialog instead"
+    )
 
-    import pyodide.ffi
-    import webapp_frontend
 
-    data = {
-        "title": title,
-        "message": message,
-        "ok": True,
-        "cancel": True,
-    }
+def call_js(func, *args, **kwargs):
+    """Call a javascript function in the frontend"""
+    import webgpu.platform as pl
 
-    if on_ok is not None:
-        data["onOk"] = pyodide.ffi.create_once_callable(lambda: on_ok())
-    if on_cancel is not None:
-        data["onwCancel"] = pyodide.ffi.create_once_callable(
-            lambda: on_cancel()
-        )
-
-    webapp_frontend.dialog(data)
+    if pl.js is None:
+        if args or kwargs:
+            pl.execute_when_init(lambda js: func(js, *args, **kwargs))
+        else:
+            pl.execute_when_init(func)
+    else:
+        func(pl.js, *args, **kwargs)
 
 
 def read_json(filename: str | Path) -> dict:

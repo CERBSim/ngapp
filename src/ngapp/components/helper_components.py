@@ -8,7 +8,6 @@ from typing import Callable, Literal
 from .. import api
 from ..utils import (
     Job,
-    confirm,
     copy_simulation,
     is_pyodide,
     load_simulation,
@@ -491,11 +490,12 @@ class JobComponent(QBtn):
         if not self.job_status.get("status") in ["started", "queued"]:
             self._start_job()
         else:
-            confirm(
-                "Abort Calculation",
-                "Are you sure you want to abort the calculation?",
-                on_ok=self._stop_job,
-            )
+            self.quasar.dialog(
+                {
+                    "title": "Abort Calculation",
+                    "message": "Are you sure you want to abort the calculation?",
+                }
+            ).onOk(lambda *args: self._stop_job())
 
     def _start_job(self):
         self.progress = 0.0
