@@ -16,6 +16,7 @@ from .. import api
 from ..utils import (
     Environment,
     calc_hash,
+    call_js,
     get_environment,
     is_pyodide,
     print_exception,
@@ -377,32 +378,66 @@ class Component(metaclass=BlockFrontendUpdate):
 
     @property
     def js(self):
-        # app.js.do_something_in_js()
+        """
+        Direct access to the JavaScript environment for immediate execution.
+
+        This property provides direct access to the JavaScript runtime environment,
+        allowing you to run any JavaScript function or access any JavaScript object
+        immediately.
+
+        Note:
+            - Cannot be used in __init__ methods - use call_js() instead for deferred execution
+            - Only available after the JavaScript environment is fully loaded
+
+        Example:
+            self.js.console.log("Hello from Python!")
+        """
         import webgpu.platform as pl
 
         if pl.js is None:
             raise RuntimeError(
-                "JavaScript environment is not initialized. ._js is only available outside of the __init__ method of the app."
+                "JavaScript environment is not initialized. .js is only available outside of the __init__ method of the app."
             )
         return pl.js
 
-    def call_js(self, func, *args, **kwargs):
-        # def do_something_in_js(js):
-        #    js.console.log("Doing something in JS")
-        # app.call_js(do_something_in_js)
-        # safe to be called in __init__ method of the app
-        import webgpu.platform as pl
+    def call_js(self, func: Callable, *args, **kwargs):
+        """
+        Call a JavaScript function from this component with deferred execution support.
 
-        if pl.js is None:
-            if args or kwargs:
-                pl.execute_when_init(lambda js: func(js, *args, **kwargs))
-            else:
-                pl.execute_when_init(func)
-        else:
-            func(pl.js, *args, **kwargs)
+        This method provides component-scoped JavaScript execution that safely handles
+        cases where JavaScript is not yet available.
+
+        Args:
+            func (callable): A Python function
+            *args: Positional arguments to pass to the JavaScript function.
+            **kwargs: Keyword arguments to pass to the JavaScript function.
+
+        Note:
+            - Safe to call in component __init__ methods
+            - Execution is deferred if JavaScript environment is not ready
+        """
+        call_js(func, *args, **kwargs)
 
     @property
     def quasar(self):
+        """
+        Access to the Quasar framework's $q object and utilities.
+
+        Provides access to all Quasar framework functionality through a Python interface.
+        The returned proxy object allows calling any method available on Quasar's $q object
+        as documented at: https://quasar.dev/options/the-q-object
+
+        Note:
+            - Cannot be used in __init__ methods
+
+        Example:
+            # Show a notification
+            self.quasar.notify({
+                'message': 'Operation completed successfully!',
+                'color': 'positive',
+            })
+
+        """
         return _QProxy(self.js)
 
     @property

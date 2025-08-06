@@ -30,6 +30,7 @@ from .components.basecomponent import (
 from .utils import (
     ComputeEnvironment,
     EnvironmentType,
+    call_js,
     get_environment,
     is_pyodide,
     read_file,
@@ -279,33 +280,17 @@ class App:
 
     @property
     def js(self):
-        # app.js.do_something_in_js()
-        import webgpu.platform as pl
-
-        if pl.js is None:
-            raise RuntimeError(
-                "JavaScript environment is not initialized. ._js is only available outside of the __init__ method of the app."
-            )
-        return pl.js
+        """See Component.js for full documentation."""
+        return self.component.js
 
     def call_js(self, func, *args, **kwargs):
-        # def do_something_in_js(js):
-        #    js.console.log("Doing something in JS")
-        # app.call_js(do_something_in_js)
-        # safe to be called in __init__ method of the app
-        import webgpu.platform as pl
-
-        if pl.js is None:
-            if args or kwargs:
-                pl.execute_when_init(lambda js: func(js, *args, **kwargs))
-            else:
-                pl.execute_when_init(func)
-        else:
-            func(pl.js, *args, **kwargs)
+        """See Component.call_js for full documentation."""
+        call_js(func, *args, **kwargs)
 
     @property
     def quasar(self):
-        return _QProxy(self.js)
+        """See Component.quasar for full documentation."""
+        return self.component.quasar
 
     def set_colors(
         self,
