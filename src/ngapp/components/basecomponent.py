@@ -402,10 +402,9 @@ class Component(metaclass=BlockFrontendUpdate):
 
     def call_js(self, func: Callable, *args, **kwargs):
         """
-        Call a JavaScript function from this component with deferred execution support.
-
-        This method provides component-scoped JavaScript execution that safely handles
-        cases where JavaScript is not yet available.
+        This method ensures safe JavaScript execution by automatically deferring the
+        function call until the JavaScript environment is ready. If JavaScript is
+        already available, the function executes immediately.
 
         Args:
             func (callable): A Python function
@@ -414,7 +413,6 @@ class Component(metaclass=BlockFrontendUpdate):
 
         Note:
             - Safe to call in component __init__ methods
-            - Execution is deferred if JavaScript environment is not ready
         """
         call_js(func, *args, **kwargs)
 
