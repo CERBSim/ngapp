@@ -408,11 +408,18 @@ class Component(metaclass=BlockFrontendUpdate):
 
         Args:
             func (callable): A Python function
-            *args: Positional arguments to pass to the JavaScript function.
-            **kwargs: Keyword arguments to pass to the JavaScript function.
+            *args: Positional arguments to pass to the function when called.
+            **kwargs: Keyword arguments to pass to the function when called.
 
         Note:
-            - Safe to call in component __init__ methods
+            - Safe to call in app __init__ method (when .js is not yet available)
+
+        Example:
+        ```
+        def my_method(js)
+            return js.console.log("Hi from JS when app is initialized")
+        self.call_js(my_method)
+        ```
         """
         call_js(func, *args, **kwargs)
 
