@@ -345,7 +345,17 @@ def error(*args) -> None:
 
 def confirm(title="", message="", on_ok=None, on_cancel=None):
     """Show a confirmation dialog"""
-    if not is_pyodide():
+
+    env = get_environment()
+    if env.type == Environment.LOCAL_APP:
+        import webgpu.platform as pl
+
+        pl.js.document.get_quasar_obj("dialog")(
+            {"title": title, "message": message}
+        ).onOk(lambda *args: on_ok()).onCancel(lambda *args: on_cancel())
+        return
+
+    if env.type != Environment.PYODIDE:
         raise Exception("confirm() is only available in pyodide")
 
     import pyodide.ffi
