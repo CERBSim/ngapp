@@ -724,15 +724,13 @@ class WebgpuComponent(Component):
         Returns:
             Data URL string containing the image.
         """
-        from webgpu import platform
-
         data = self.screenshot()
-        canvas = platform.js.document.createElement("canvas")
+        canvas = self.js.document.createElement("canvas")
         canvas.width = self.canvas.width
         canvas.height = self.canvas.height
         ctx = canvas.getContext("2d")
-        u8 = platform.js.Uint8ClampedArray._new(data.tobytes())
-        image_data = platform.js.ImageData._new(
+        u8 = self.js.Uint8ClampedArray._new(data.tobytes())
+        image_data = self.js.ImageData._new(
             u8, self.canvas.width, self.canvas.height
         )
         ctx.putImageData(image_data, 0, 0)
@@ -754,24 +752,17 @@ class BaseVtkComponent(Div):
         self.on_mounted(self.setup_vtk)
 
     def setup_vtk(self):
-        import webgpu.platform as pl
-
         global _vtk_script
         if _vtk_script is None:
-            _vtk_script = pl.js.document.createElement("script")
+            _vtk_script = self.js.document.createElement("script")
             _vtk_script.src = "https://unpkg.com/vtk.js"
-            _vtk_script.onload = pl.create_proxy(self.init_vtk)
-            pl.js.document.head.appendChild(_vtk_script)
+            _vtk_script.onload = self.init_vtk
+            self.js.document.head.appendChild(_vtk_script)
+        else:
+            self.init_vtk()
 
-    def create_event_handler(self, function):
-        import webgpu.platform as pl
-
-        return pl.create_event_handler(function, prevent_default=False)
-
-    def init_vtk(self, event):
-        import webgpu.platform as pl
-
-        self.vtk = pl.js.window.vtk
+    def init_vtk(self, *_):
+        self.vtk = self.js.window.vtk
         while self._js_component.firstChild:
             self._js_component.removeChild(self._js_component.firstChild)
         vtkFullScreenRenderWindow = (
@@ -786,7 +777,7 @@ class BaseVtkComponent(Div):
                 }
             )
         )
-        self.renderer = renderer = vtkFullScreenRenderWindow.getRenderer()
+        self.renderer = vtkFullScreenRenderWindow.getRenderer()
         self.renderWindow = vtkFullScreenRenderWindow.getRenderWindow()
         self.draw()
 

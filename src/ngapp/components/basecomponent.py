@@ -332,6 +332,34 @@ class Component(metaclass=BlockFrontendUpdate):
                 ui_class if isinstance(ui_class, str) else " ".join(ui_class)
             )
 
+    def create_event_handler(
+        self,
+        function,
+        prevent_default: bool = True,
+        stop_propagation: bool = False,
+        stop_immediate_propagation: bool = False,
+        return_value: Optional[object] = None,
+    ):
+        """
+        Create an event handler for the component.
+
+        Args:
+            function (Callable): The function to call when the event is triggered.
+            prevent_default (bool): Whether to prevent the default action of the event.
+            stop_propagation (bool): Whether to stop the propagation of the event.
+            stop_immediate_propagation (bool): Whether to stop immediate propagation of the event.
+            return_value (object, optional): The value to return from the event handler.
+        """
+        import webgpu.platform as pl
+
+        return pl.create_event_handler(
+            function,
+            prevent_default=prevent_default,
+            stop_propagation=stop_propagation,
+            stop_immediate_propagation=stop_immediate_propagation,
+            return_value=return_value,
+        )
+
     def add_keybinding(self, key: str, callback: Callable):
         """Add key binding to component"""
         import webgpu.platform as pl
