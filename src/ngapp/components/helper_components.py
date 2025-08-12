@@ -47,20 +47,21 @@ class Col(Component):
     For more details on Quasar's column grid system, see:
     https://quasar.dev/layout/grid/column
 
-    Args:
-        *children: Variable number of child components or strings to be arranged in the column.
-        weights: Optional list of integers or strings specifying row weights/classes.
-        **kwargs: Additional keyword arguments passed to the parent Component.
+    :param children: Variable number of child components or strings to be arranged in the column
+    :param weights: Optional list of integers or strings specifying row weights/classes
+    :param kwargs: Additional keyword arguments passed to the parent Component
 
     Raises:
         ValueError: If the length of weights doesn't match the number of children.
 
     Examples:
-        # Equal height rows (each takes available space)
-        Col(Div("Row 1"), Div("Row 2"))
+        Equal height rows (each takes available space)
 
-        # Specific row heights with weights
-        Col(Div("Small"), Div("Large"), weights=[3, 9])
+        >>> Col(Div("Row 1"), Div("Row 2"))
+
+        Specific row heights with weights
+
+        >>> Col(Div("Small"), Div("Large"), weights=[3, 9])
     """
 
     def __init__(
@@ -93,17 +94,17 @@ class Row(Component):
     For more details on Quasar's row grid system, see:
     https://quasar.dev/layout/grid/row
 
-     Args:
-         *children: Variable number of child components or strings to be arranged in the row.
-         weights: Optional list of integers or strings specifying column weights/classes.
-         **kwargs: Additional keyword arguments passed to the parent Component.
+    :param children: Variable number of child components or strings to be arranged in the row
+    :param weights: Optional list of integers or strings specifying column weights/classes
+    :param kwargs: Additional keyword arguments passed to the parent Component
 
-     Raises:
-         ValueError: If the length of weights doesn't match the number of children.
+    Raises:
+        ValueError: If the length of weights doesn't match the number of children.
 
-     Example:
-         Row(Div("Column 1"), Div("Column 2"), weights=[6, 6])  # Equal columns
-         Row("Auto width", "Flexible", weights=["col-md-8", "col-md-4"])
+    Example:
+        >>> Row(Div("Column 1"), Div("Column 2"), weights=[6, 6])  # Equal columns
+
+        >>> Row("Auto width", "Flexible", weights=["col-md-8", "col-md-4"])
     """
 
     def __init__(

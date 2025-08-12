@@ -436,18 +436,16 @@ class Component(metaclass=BlockFrontendUpdate):
 
         Args:
             func (callable): A Python function
-            *args: Positional arguments to pass to the function when called.
-            **kwargs: Keyword arguments to pass to the function when called.
+            \*args: Positional arguments to pass to the function when called.
+            \*\*kwargs: Keyword arguments to pass to the function when called.
 
         Note:
             - Safe to call in app __init__ method (when .js is not yet available)
 
         Example:
-        ```
-        def my_method(js)
-            return js.console.log("Hi from JS when app is initialized")
-        self.call_js(my_method)
-        ```
+            >>> def my_method(js):
+            ...     return js.console.log("Hi from JS when app is initialized")
+            >>> self.call_js(my_method)
         """
         call_js(func, *args, **kwargs)
 
@@ -464,11 +462,11 @@ class Component(metaclass=BlockFrontendUpdate):
             - Cannot be used in __init__ methods
 
         Example:
-            # Show a notification
-            self.quasar.notify({
-                'message': 'Operation completed successfully!',
-                'color': 'positive',
-            })
+            >>> # Show a notification
+            >>> self.quasar.notify({
+            ...     'message': 'Operation completed successfully!',
+            ...     'color': 'positive',
+            ... })
 
         """
         return _QProxy(self.js)
