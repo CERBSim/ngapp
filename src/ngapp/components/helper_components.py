@@ -42,16 +42,91 @@ from .qcomponents import (
 
 
 class Col(Component):
-    def __init__(self, *children: Component | str, **kwargs):
+    """A container component that creates a vertical layout.
+
+    For more details on Quasar's column grid system, see:
+    https://quasar.dev/layout/grid/column
+
+    Args:
+        *children: Variable number of child components or strings to be arranged in the column.
+        weights: Optional list of integers or strings specifying row weights/classes.
+        **kwargs: Additional keyword arguments passed to the parent Component.
+
+    Raises:
+        ValueError: If the length of weights doesn't match the number of children.
+
+    Examples:
+        # Equal height rows (each takes available space)
+        Col(Div("Row 1"), Div("Row 2"))
+
+        # Specific row heights with weights
+        Col(Div("Small"), Div("Large"), weights=[3, 9])
+    """
+
+    def __init__(
+        self,
+        *children: Component | str,
+        weights: list[int] | list[str] | None = None,
+        **kwargs,
+    ):
         ui_class = kwargs.pop("ui_class", "")
-        ui_class = f"col {ui_class}"
+        ui_class = f"column {ui_class}"
+        if weights:
+            if len(weights) != len(children):
+                raise ValueError(
+                    "Weights must match the number of children in Row"
+                )
+            children = [
+                (
+                    Div(child, ui_class=f"col-{weight}")
+                    if isinstance(weight, int)
+                    else Div(child, ui_class=weight)
+                )
+                for child, weight in zip(children, weights)
+            ]  # type: ignore
         super().__init__("div", *children, ui_class=ui_class, **kwargs)
 
 
 class Row(Component):
-    def __init__(self, *children: Component | str, **kwargs):
+    """A container component that arranges its children in a horizontal row layout.
+
+    For more details on Quasar's row grid system, see:
+    https://quasar.dev/layout/grid/row
+
+     Args:
+         *children: Variable number of child components or strings to be arranged in the row.
+         weights: Optional list of integers or strings specifying column weights/classes.
+         **kwargs: Additional keyword arguments passed to the parent Component.
+
+     Raises:
+         ValueError: If the length of weights doesn't match the number of children.
+
+     Example:
+         Row(Div("Column 1"), Div("Column 2"), weights=[6, 6])  # Equal columns
+         Row("Auto width", "Flexible", weights=["col-md-8", "col-md-4"])
+    """
+
+    def __init__(
+        self,
+        *children: Component | str,
+        weights: list[int] | list[str] | None = None,
+        **kwargs,
+    ):
         ui_class = kwargs.pop("ui_class", "")
         ui_class = f"row {ui_class}"
+        if weights:
+            if len(weights) != len(children):
+                raise ValueError(
+                    "Weights must match the number of children in Row"
+                )
+            children = [
+                (
+                    Div(child, ui_class=f"col-{weight}")
+                    if isinstance(weight, int)
+                    else Div(child, ui_class=weight)
+                )
+                for child, weight in zip(children, weights)
+            ]  # type: ignore
         super().__init__("div", *children, ui_class=ui_class, **kwargs)
 
 
