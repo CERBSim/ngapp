@@ -31,6 +31,7 @@ Component Overview
 NGApp provides:
 
 - **Quasar-based UI components** (QBtn, QInput, QTable, etc.) for forms, layouts, and controls
+- **Helper components** (Row, Col, Div, FileName, etc.) for layout, utilities, and common patterns
 - **Visualization components** for plots and custom graphics
 - **Material and scientific widgets** for domain-specific input
 - **BaseComponent** for building your own custom components
@@ -93,6 +94,117 @@ Group related content in a card with sections and actions. See :class:`~ngapp.co
    )
 
 :class:`~ngapp.components.qcomponents.QAvatar`, :class:`~ngapp.components.qcomponents.QBadge`, :class:`~ngapp.components.qcomponents.QChip`, :class:`~ngapp.components.qcomponents.QBanner`, :class:`~ngapp.components.qcomponents.QSlider`, :class:`~ngapp.components.qcomponents.QToggle`, :class:`~ngapp.components.qcomponents.QDialog`, :class:`~ngapp.components.qcomponents.QIcon`, :class:`~ngapp.components.qcomponents.QImg`, :class:`~ngapp.components.qcomponents.QToolbar`, :class:`~ngapp.components.qcomponents.QTooltip` and many more are also available. See the API docs for each for details.
+
+
+Helper Components
+==================
+
+NGApp includes a set of helper components that simplify common layout patterns, provide useful utilities, and offer convenient wrappers for frequent use cases. These components help you build interfaces faster without needing to create custom components from scratch.
+
+
+:class:`~ngapp.components.helper_components.Row` — Horizontal Layout
+--------------------------------------------------------------------
+
+Arrange components side by side in a horizontal row layout. See :class:`~ngapp.components.helper_components.Row` for all options.
+
+.. code-block:: python
+
+   from ngapp.components import Row, QBtn
+   row = Row(
+       QBtn(ui_label="Left"),
+       QBtn(ui_label="Center"), 
+       QBtn(ui_label="Right"),
+       weights=[4, 4, 4]  # Equal width columns
+   )
+
+
+:class:`~ngapp.components.helper_components.Col` — Vertical Layout
+------------------------------------------------------------------
+
+Stack components vertically in a column layout. See :class:`~ngapp.components.helper_components.Col` for all options.
+
+.. code-block:: python
+
+   from ngapp.components import Col, QInput
+   col = Col(
+       QInput(ui_label="First"),
+       QInput(ui_label="Second"),
+       QInput(ui_label="Third"),
+       weights=[2, 6, 4]  # Different heights
+   )
+
+
+:class:`~ngapp.components.helper_components.Div` — Generic Container
+--------------------------------------------------------------------
+
+Create a generic div container for grouping content. See :class:`~ngapp.components.helper_components.Div` for all options.
+
+.. code-block:: python
+
+   from ngapp.components import Div, QBtn
+   container = Div(
+       "Some text",
+       QBtn(ui_label="Button"),
+       ui_class="q-pa-md"
+   )
+
+
+:class:`~ngapp.components.helper_components.FileName` — File Name Input
+------------------------------------------------------------------------
+
+A specialized input for setting file names with automatic app integration. See :class:`~ngapp.components.helper_components.FileName` for all options.
+
+.. code-block:: python
+
+   from ngapp.components import FileName
+   filename_input = FileName(app=my_app, ui_label="Simulation Name")
+
+
+:class:`~ngapp.components.helper_components.Heading` — Text Heading
+--------------------------------------------------------------------
+
+Create headings with different levels (h1, h2, etc.). See :class:`~ngapp.components.helper_components.Heading` for all options.
+
+.. code-block:: python
+
+   from ngapp.components import Heading
+   heading = Heading("Section Title", level=2)
+
+
+:class:`~ngapp.components.helper_components.FileUpload` — File Upload Widget
+------------------------------------------------------------------------------
+
+Upload files with drag-and-drop support and error handling. See :class:`~ngapp.components.helper_components.FileUpload` for all options.
+
+.. code-block:: python
+
+   from ngapp.components import FileUpload
+   upload = FileUpload(
+       ui_error_title="Upload Error",
+       ui_error_message="Please select a valid file"
+   )
+   # Access uploaded file
+   with upload.as_temporary_file as temp_file:
+       # Process the uploaded file
+       pass
+
+
+:class:`~ngapp.components.helper_components.SaveSimulationButton` — Save Simulation Button
+-------------------------------------------------------------------------------------------
+
+A button that saves the current simulation state. See :class:`~ngapp.components.helper_components.SaveSimulationButton` for all options.
+
+.. code-block:: python
+
+   from ngapp.components import SaveSimulationButton
+   save_btn = SaveSimulationButton(
+       app=my_app,
+       ui_tooltip="Save Simulation",
+       ui_icon="mdi-content-save"
+   )
+
+
+Additional helper components like :class:`~ngapp.components.helper_components.Br`, :class:`~ngapp.components.helper_components.FileDownload`, :class:`~ngapp.components.helper_components.Table`, :class:`~ngapp.components.helper_components.UserWarning`, :class:`~ngapp.components.helper_components.JsonEditor` and more are also available for specialized use cases. See the API docs for each for details.
 
 
 Component Arguments and Customization
