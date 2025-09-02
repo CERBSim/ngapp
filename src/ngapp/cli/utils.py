@@ -11,7 +11,7 @@ from .._version import version
 
 def get_version_name() -> str:
     if ".dev" in version:
-        return "dev"
+        return "main"
     return version
 
 
@@ -46,7 +46,7 @@ def download_frontend(output_dir: Path | str | None = None) -> Path:
     if not hash_file.parent.exists():
         hash_file.parent.mkdir(parents=True, exist_ok=True)
 
-    if version == "dev":
+    if version == "main":
         try:
             # use local version if no internet connection is available
             response = requests.get(hash_url, timeout=1000)
