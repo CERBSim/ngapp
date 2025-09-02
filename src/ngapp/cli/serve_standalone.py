@@ -224,11 +224,14 @@ def host_local_app(
         url = f"http://localhost:{http_port}?backendPort={http_port}&websocketPort={ws_port}"
 
         if start_browser:
-            chrome_path = Path("/usr/bin/google-chrome-unstable")
-            if sys.platform.startswith("linux") and chrome_path.exists():
-                webbrowser.get(f"/usr/bin/google-chrome-unstable %s &").open(
-                    "--app=" + url
-                )
+            default_browser_path = (
+                "usr/bin/google-chrome-unstable"
+                if sys.platform == "linux"
+                else None
+            )
+            browser_path = os.environ.get("NGAPP_BROWSER", default_browser_path)
+            if browser_path and Path(browser_path).exists():
+                webbrowser.get(f"{browser_path} %s &").open("--app=" + url)
             else:
                 webbrowser.open("--app=" + url)
         print("Url to run the app:\n", url, "\n")
