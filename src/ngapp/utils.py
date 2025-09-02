@@ -70,8 +70,8 @@ class BrowserFrontend(BaseFrontend):
                 method=method,
                 **data,
             )
-        for func in comp._js_callbacks[method]:
-            func(data)
+
+        comp._js_callbacks[method](data)
 
     def reset_app(self, app):
         from webgpu.platform import link

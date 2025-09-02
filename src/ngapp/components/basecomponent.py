@@ -279,6 +279,7 @@ class Component(metaclass=BlockFrontendUpdate):
     _status: AppStatus = None
     _namespace: bool
     _js_component = None
+    _keybindings: List[Tuple[str, Callable, dict]]
     storage: Storage
 
     def __init__(
@@ -291,9 +292,9 @@ class Component(metaclass=BlockFrontendUpdate):
         ui_class: str | list[str] | None = None,
         id: str = "",
     ):
-        self._keybindings = {}
         self._index = next(_component_counter)
         _components[self._index] = self
+        self._keybindings = []
 
         if "." in id:
             raise ValueError("Component id cannot contain '.'")
@@ -307,7 +308,6 @@ class Component(metaclass=BlockFrontendUpdate):
         self.ui_slots = ui_slots or {}
         self._namespace = namespace
         self._id = id
-        self._handle_keybindings_proxy = None
 
         self.storage = Storage(self)
         self.on_save(self.storage.save)
@@ -360,49 +360,45 @@ class Component(metaclass=BlockFrontendUpdate):
             return_value=return_value,
         )
 
-    def add_keybinding(self, key: str, callback: Callable):
+    def add_keybinding(
+        self,
+        key: str,
+        callback: Callable,
+        local: bool = False,
+        keyup: bool = False,
+        keydown: bool = True,
+        split_key: str = "+",
+        capture: bool = False,
+        single: bool = False,
+    ):
         """Add key binding to component"""
+
         import webgpu.platform as pl
 
-        split = key.split("+")
-        key = split[-1]
-        modifiers = split[:-1]
-        modifiers = [m.lower() + "Key" for m in modifiers]
+        options = {
+            "local": local,
+            "keyup": keyup,
+            "keydown": keydown,
+            "split_key": split_key,
+            "capture": capture,
+            "single": single,
+        }
+
+        if f := self._js_callbacks.get("add_keybinding", None):
+            f(key, pl.create_proxy(callback), options, _ignore_result=True)
+            return
+
+        # store keybindings until component is mounted
         if not self._keybindings:
+            self._keybindings.append((key, callback, options))
 
-            def set_keybindings_proxy(event):
-                self._handle_keybindings_proxy = pl.create_proxy(
-                    self._handle_keybindings
-                )
-                pl.js.addEventListener(
-                    "keydown", self._handle_keybindings_proxy
-                )
+            def add_keybinding_later():
+                bindings = self._keybindings
+                self._keybindings = []
+                for key, func, options in bindings:
+                    self.add_keybinding(key, func, **options)
 
-            self.on_mounted(set_keybindings_proxy)
-            self.on(
-                "before_unmount",
-                lambda: (
-                    pl.js.removeEventListener(
-                        "keydown", self._handle_keybindings_proxy
-                    )
-                    if self._handle_keybindings_proxy
-                    else None
-                ),
-            )
-        if key not in self._keybindings:
-            self._keybindings[key] = []
-        self._keybindings[key].append((callback, modifiers))
-
-    def _handle_keybindings(self, event):
-        """Handle key bindings"""
-        if "key" in event and event["key"] in self._keybindings:
-            for callback, modifiers in self._keybindings[event["key"]]:
-                modifier_check = True
-                for modifier in modifiers:
-                    if modifier in event and event[modifier] is False:
-                        modifier_check = False
-                if modifier_check:
-                    callback()
+            self.on_mounted(add_keybinding_later)
 
     @property
     def js(self):
@@ -646,7 +642,7 @@ class Component(metaclass=BlockFrontendUpdate):
     ):
         import base64
 
-        for callback in self._js_callbacks.get("download", []):
+        if callback := self._js_callbacks.get("download", None):
             callback(
                 dict(
                     encoded_data=base64.b64encode(data).decode("utf-8"),
@@ -903,10 +899,12 @@ class Component(metaclass=BlockFrontendUpdate):
         self._js_component = js_comp
 
     def _set_js_callback(self, name, func):
-        if name not in self._js_callbacks:
-            self._js_callbacks[name] = []
+        if name in self._js_callbacks:
+            print(
+                f"Warning: Overwriting existing js callback {name} for component {self._index}"
+            )
 
-        self._js_callbacks[name].append(func)
+        self._js_callbacks[name] = func
 
     def _get_my_wrapper_props(self, *args, **kwargs):
         return {"compId": self._index}
