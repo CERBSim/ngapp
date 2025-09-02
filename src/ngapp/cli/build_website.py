@@ -1,15 +1,11 @@
 import argparse
 import importlib
-import io
 import json
-import os
-import zipfile
 from pathlib import Path
-
-import requests
 
 from ..app import AppConfig
 from ..utils import EnvironmentType, set_environment, zip_modules
+from .utils import download_frontend
 
 set_environment(EnvironmentType.STANDALONE)
 
@@ -94,17 +90,7 @@ def main():
                 f"Output directory {output_dir} already exists and is non-empty."
             )
 
-    response = requests.get("https://ngsolve.org/ngapp/ngapp-dev.zip")
-    response.raise_for_status()
-
-    with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
-        zip_ref.extractall(output_dir)
-
-    # # for some reason, some assets are loaded from assets/assets, create a symlink to work around this
-    # cwd = os.getcwd()
-    # os.chdir(output_dir / "assets")
-    # os.symlink(".", "assets")
-    # os.chdir(cwd)
+    download_frontend(output_dir)
 
     python_module_dir = output_dir / "python_modules"
     python_module_dir.mkdir(parents=True, exist_ok=True)

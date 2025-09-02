@@ -1,24 +1,17 @@
 import argparse
-import hashlib
 import http.server
 import importlib
 import importlib.util
 import json
 import os
-import shutil
 import socketserver
 import sys
-import tempfile
 import threading
 import time
 import webbrowser
-import zipfile
-from io import BytesIO
 from pathlib import Path
 from urllib.parse import urlparse
 
-import platformdirs
-import requests
 from watchdog.observers import Observer
 
 from ngapp.app import loadModel
@@ -26,6 +19,7 @@ from ngapp.cli.serve_in_venv import EventHandler
 from ngapp.components.basecomponent import get_component
 
 from .. import utils
+from .utils import download_frontend
 
 
 def dump(data):
@@ -35,50 +29,6 @@ def dump(data):
         print("could not serialize data", e)
         print(data)
         return "could_not_serialize"
-
-
-def download_and_extract_frontend():
-    user_data_dir = Path(platformdirs.user_data_dir("ngapp"))
-    if not os.path.exists(user_data_dir):
-        os.makedirs(user_data_dir)
-
-    cache_file = user_data_dir / "ngapp-dev.zip"
-
-    try:
-        response = requests.get(
-            "https://ngsolve.org/ngapp/ngapp-dev.zip.md5", timeout=1000
-        )
-        response.raise_for_status()
-        latest_md5 = response.text.strip().split()[0]
-    except Exception as e:
-        if cache_file.exists():
-            cache_data = cache_file.read_bytes()
-            print("Error downloading latest frontend, using cached version")
-            latest_md5 = hashlib.md5(cache_data).hexdigest()
-        else:
-            raise e
-
-    zip_data = None
-    if os.path.exists(cache_file):
-        cache_data = cache_file.read_bytes()
-        cache_md5 = hashlib.md5(cache_data).hexdigest()
-        if cache_md5 == latest_md5:
-            zip_data = cache_data
-
-    if not zip_data:
-        response = requests.get("https://ngsolve.org/ngapp/ngapp-dev.zip")
-        response.raise_for_status()
-        zip_data = response.content
-        cache_file.write_bytes(zip_data)
-
-    temp_dir = Path(tempfile.mkdtemp())
-
-    with zipfile.ZipFile(BytesIO(zip_data), "r") as zip_ref:
-        zip_ref.extractall(temp_dir)
-
-    shutil.copytree(temp_dir / "assets", temp_dir / "assets" / "assets")
-
-    return temp_dir
 
 
 HTTP_PORT = 8765
@@ -115,7 +65,8 @@ class _HTTPServer(http.server.SimpleHTTPRequestHandler):
 
 
 def run_http_server():
-    STATIC_DIR = download_and_extract_frontend()
+    STATIC_DIR = download_frontend()
+    print("Serving frontend from", STATIC_DIR)
 
     os.chdir(STATIC_DIR)
 
