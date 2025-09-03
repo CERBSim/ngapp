@@ -176,7 +176,7 @@ def host_local_app(
 
         if start_browser:
             default_browser_path = (
-                "usr/bin/google-chrome-unstable"
+                "/usr/bin/google-chrome-unstable"
                 if sys.platform == "linux"
                 else None
             )
