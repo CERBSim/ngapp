@@ -399,6 +399,7 @@ class App:
         Reset the app in the user interface to clean initial state. Only available in frontend and local environment. Return value is the new app instance.
         """
         app = cls()
+        app.load({})
         get_environment().frontend.reset_app(app)
         return app
 
