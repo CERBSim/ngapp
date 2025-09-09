@@ -690,6 +690,13 @@ class Component(metaclass=BlockFrontendUpdate):
     ):
         return self.on("mounted", func, arg)
 
+    def on_unmount(
+        self,
+        func: Callable[[dict], None] | Callable[[], None],
+        arg: object = None,
+    ):
+        return self.on("unmount", func, arg)
+
     def on_before_save(
         self,
         func: Callable[[dict], None] | Callable[[], None],

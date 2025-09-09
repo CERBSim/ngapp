@@ -643,8 +643,8 @@ class WebgpuComponent(Component):
             self.draw(scene)
 
     def __on_unmount(self):
-        if self.scene is not None:
-            self.scene.input_handler.unregister_callbacks()
+        if self.canvas is not None:
+            self.canvas.update_html_canvas(None)
 
     def connect_webgpu(self):
         from webgpu import canvas, utils
@@ -662,6 +662,11 @@ class WebgpuComponent(Component):
             self.draw(self.scene)
         elif scene is not None:
             self.draw(scene)
+
+        if self.scene is not None:
+            self.scene.options.camera.set_render_functions(
+                self.scene.render, self.scene.get_position
+            )
 
     def draw(self, scene, camera=None, light=None):
         """
