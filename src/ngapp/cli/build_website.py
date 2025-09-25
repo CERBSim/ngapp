@@ -90,7 +90,7 @@ def main():
                 f"Output directory {output_dir} already exists and is non-empty."
             )
 
-    download_frontend(output_dir)
+    download_frontend(output_dir, check_path=False)
 
     python_module_dir = output_dir / "python_modules"
     python_module_dir.mkdir(parents=True, exist_ok=True)

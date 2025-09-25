@@ -1,5 +1,6 @@
 import hashlib
 import shutil
+import sys
 import zipfile
 from pathlib import Path
 
@@ -27,13 +28,15 @@ def get_frontend_dir() -> Path:
     return get_cache_dir() / "frontend" / get_version_name()
 
 
-def download_frontend(output_dir: Path | str | None = None) -> Path:
+def download_frontend(
+    output_dir: Path | str | None = None, check_path=True
+) -> Path:
     if output_dir is None:
         output_dir = get_frontend_dir()
     output_dir = Path(output_dir)
     version = get_version_name()
 
-    if not "ngapp" in str(output_dir):
+    if check_path and not "ngapp" in str(output_dir):
         raise ValueError("Output directory must contain 'ngapp' in its path.")
 
     file_name = f"ngapp-{version}.zip"
@@ -55,7 +58,8 @@ def download_frontend(output_dir: Path | str | None = None) -> Path:
         except Exception as e:
             if output_hash_file.exists():
                 print(
-                    "Error downloading latest frontend hash, using cached version"
+                    "Error downloading latest frontend hash, using cached version",
+                    file=sys.stderr,
                 )
             else:
                 raise e
