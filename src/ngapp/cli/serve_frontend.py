@@ -64,7 +64,7 @@ def run_http_server():
             print(f"{port}\n", file=_stdout, flush=True)
             thread.join()
         except OSError as e:
-            if e.errno == 98:
+            if e.errno in [48, 98]:
                 print(f"Port {port} is already in use, trying next port")
                 port += 1
 
