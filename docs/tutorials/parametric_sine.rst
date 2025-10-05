@@ -15,7 +15,7 @@ Then, we import the necessary libraries and components
         from ngapp.app import App
         from ngapp.components import Heading, NumberInput, Row, Centered, PlotlyComponent
         
-Creating a title for the app using the Heading component.
+Create a title for the app using the Heading component
 
 .. code-block:: python
 
