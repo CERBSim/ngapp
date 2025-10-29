@@ -748,11 +748,11 @@ _vtk_script = None
 
 
 class BaseVtkComponent(Div):
-    def __init__(self, id, width="600px", height="400px"):
+    def __init__(self, id, width="100%", height="100%"):
         self.width = width
         self.height = height
         super().__init__(
-            id=id, ui_style=f"min-width: {width}; min-height: {height};"
+            id=id, ui_style=f"width: {width} height: {height};"
         )
         self.on_mounted(self.setup_vtk)
 
