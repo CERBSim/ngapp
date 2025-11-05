@@ -621,7 +621,7 @@ class Component(metaclass=BlockFrontendUpdate):
 
     # @result_to_js
     def _js_init(self):
-        self._js_callbacks = {}
+        # self._js_callbacks = {}
         return {
             "slots": self._get_js_slots(),
             "props": self._get_js_props(),
@@ -906,11 +906,6 @@ class Component(metaclass=BlockFrontendUpdate):
         self._js_component = js_comp
 
     def _set_js_callback(self, name, func):
-        if name in self._js_callbacks:
-            print(
-                f"Warning: Overwriting existing js callback {name} for component {self._index}"
-            )
-
         self._js_callbacks[name] = func
 
     def _get_my_wrapper_props(self, *args, **kwargs):
