@@ -13,22 +13,21 @@ def _request(method, url, data):
 
     env = get_environment()
 
-    if data is None:
-        data = data or {}
-    content_type = _CONTENT_TYPES.get(type(data), "application/json")
-
-    if content_type == "application/json":
-        data = orjson.dumps(data, option=orjson.OPT_SERIALIZE_NUMPY)
-
-    if isinstance(data, str):
-        data = data.encode("utf-8")
-
-    url = env.backend_api_url + url
     headers = {
-        "Content-type": content_type,
         "Authorization": env.backend_api_token,
         "X-Client-Id": env.backend_api_client_id,
     }
+    if data is not None:
+        content_type = _CONTENT_TYPES.get(type(data), "application/json")
+        headers["Content-type"] = content_type
+
+        if content_type == "application/json":
+            data = orjson.dumps(data, option=orjson.OPT_SERIALIZE_NUMPY)
+
+        if isinstance(data, str):
+            data = data.encode("utf-8")
+
+    url = env.backend_api_url + url
     http = urllib3.PoolManager(
         cert_reqs="CERT_REQUIRED", ca_certs=certifi.where()
     )
