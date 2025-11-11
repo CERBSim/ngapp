@@ -74,22 +74,25 @@ NGApp keeps your Python logic in sync with a Quasar/Vue UI in the browser. Only 
 
 ```mermaid
 flowchart TD
-  subgraph PY[Python process]
-    A[Your App\n(domain logic)]
-    B[NGApp Core\n(state, events)]
-  end
+subgraph PY["Python process"]
+A["Your App"]
+B["NGApp Core"]
+end
 
-  subgraph BR[Bridge]
-    C[(WS/HTTP)]
-  end
 
-  subgraph FE[Browser]
-    D[Quasar/Vue UI\n(components)]
-  end
+subgraph BR["Bridge"]
+C["WS/HTTP"]
+end
 
-  A <--> B
-  B <--> C
-  C <--> D
+
+subgraph FE["Browser"]
+D["Quasar/Vue UI"]
+end
+
+
+A <--> B
+B <--> C
+C <--> D
 ```
 
 **How it fits together**
