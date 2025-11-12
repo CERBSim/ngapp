@@ -41,10 +41,12 @@ class _QProxy:
 def get_component(index: int):
     return _components.get(index, None)
 
+
 def unmount_component(index: int):
     if index in _components:
         c = _components[index]
         c._emit_recursive("unmount")
+
 
 def reset_components():
     _components.clear()
@@ -646,13 +648,15 @@ class Component(metaclass=BlockFrontendUpdate):
         import base64
 
         if callback := self._js_callbacks.get("download", None):
-            callback(
+            ret = callback(
                 dict(
                     encoded_data=base64.b64encode(data).decode("utf-8"),
                     filename=filename,
                     applicationType=mime_type,
                 )
-            ).catch(print_exception)
+            )
+            if ret:
+                ret.catch(print_exception)
 
     def on(
         self,
