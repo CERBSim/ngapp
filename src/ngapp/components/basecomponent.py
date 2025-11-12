@@ -39,11 +39,14 @@ class _QProxy:
 
 
 def get_component(index: int):
-    return _components[index]
+    return _components.get(index, None)
 
+def unmount_component(index: int):
+    if index in _components:
+        c = _components[index]
+        c._emit_recursive("unmount")
 
 def reset_components():
-    global _component_counter
     _components.clear()
 
 
@@ -432,8 +435,8 @@ class Component(metaclass=BlockFrontendUpdate):
 
         Args:
             func (callable): A Python function
-            \*args: Positional arguments to pass to the function when called.
-            \*\*kwargs: Keyword arguments to pass to the function when called.
+            *args: Positional arguments to pass to the function when called.
+            **kwargs: Keyword arguments to pass to the function when called.
 
         Note:
             - Safe to call in app __init__ method (when .js is not yet available)

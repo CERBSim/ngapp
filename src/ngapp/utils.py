@@ -440,7 +440,7 @@ def zip_directory(path: str, ignore: str = "*backend*") -> bytes:
         return data
 
 
-def zip_modules(modules) -> bytes:
+def zip_modules(modules: list[str]) -> bytes:
     """Zip a list of python modules and return the zip file as a bytes object"""
     with tempfile.TemporaryDirectory() as root:
         for module_name in modules:
