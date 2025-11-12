@@ -569,8 +569,10 @@ class Component(metaclass=BlockFrontendUpdate):
         return self._id
 
     def _set_prop(self, key: str, value):
+        old_value = self._props.get(key, None)
         self._props[key] = value
-        self._update_frontend({"props": {key: value}})
+        if value != old_value:
+            self._update_frontend({"props": {key: value}})
 
     def _set_slot(self, key: str, value):
         self.ui_slots[key] = value
