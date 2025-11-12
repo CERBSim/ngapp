@@ -266,8 +266,7 @@ class Environment:
                 comp.storage._load_metadata(data["storage"])
 
         if method in comp._js_callbacks:
-            for func in comp._js_callbacks[method]:
-                func(data)
+            comp._js_callbacks[method](data)
 
 
 _environment = None
