@@ -104,6 +104,7 @@ def host_local_app(
     def before_wait_for_connection(server):
         server = platform.websocket_server
         server.expose("get_component", get_component)
+        server.expose("unmount_component", lambda _: None)
 
         ws_port = server.port
 
