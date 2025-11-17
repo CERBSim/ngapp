@@ -56,8 +56,8 @@ def reset_components():
 class AppStatus:
     capture_events: bool = False
     capture_call_stack: bool = False
-    app_id: int | None = None
-    file_id: int | None = None
+    _app_id: int | None = None
+    _file_id: int | None = None
     app: object = None
     components_by_id: dict[str, object] = dataclasses.field(
         default_factory=dict
@@ -68,6 +68,22 @@ class AppStatus:
             self.capture_events = options["capture_events"]
         if "capture_call_stack" in options:
             self.capture_call_stack = options["capture_call_stack"]
+
+    @property
+    def app_id(self):
+        if self._app_id is None:
+            self._app_id = get_environment().frontend.get_query_parameter(
+                "appId"
+            )
+        return self._app_id
+
+    @property
+    def file_id(self):
+        if self._file_id is None:
+            self._file_id = get_environment().frontend.get_query_parameter(
+                "fileId"
+            )
+        return self._file_id
 
 
 C = TypeVar("T", bound="Component")

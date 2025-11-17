@@ -380,7 +380,7 @@ class App:
             metadata = api.post(
                 "/create_model",
                 {
-                    "app_id": self.metadata["app_id"],
+                    "app_id": self._status.app_id,
                     "name": self.name or "Untitled",
                 },
             )
