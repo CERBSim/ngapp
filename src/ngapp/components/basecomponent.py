@@ -77,6 +77,10 @@ class AppStatus:
             )
         return self._app_id
 
+    @app_id.setter
+    def app_id(self, value):
+        self._app_id = value
+
     @property
     def file_id(self):
         if self._file_id is None:
@@ -84,6 +88,10 @@ class AppStatus:
                 "fileId"
             )
         return self._file_id
+
+    @file_id.setter
+    def file_id(self, value):
+        self._file_id = value
 
 
 C = TypeVar("T", bound="Component")
