@@ -720,6 +720,21 @@ class WebgpuComponent(Component):
 
         return utils.read_texture(self.canvas.target_texture)
 
+    def screenshot_as_image(self, format="png"):
+        """
+        Get a screenshot of the canvas as an image (e.g., PIL Image).
+
+        Args:
+            format: Image format, e.g., "png" or "jpeg".
+        Returns:
+            Image object.
+        """
+        import io
+        from PIL import Image
+        buf = io.BytesIO()
+        Image.fromarray(self.screenshot(), mode="RGBA").save(buf, format=format.upper())
+        return buf.getvalue()
+
     def screenshot_as_data_url(self, format="image/png"):
         """
         Get a screenshot of the canvas as a data URL (e.g., for embedding in HTML).

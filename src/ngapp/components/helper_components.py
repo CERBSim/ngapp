@@ -1116,6 +1116,11 @@ class Report(QBtn):
         if self._filename is not None:
             report = self.storage.get("report")
             self.download_file(data=report, filename=self._filename)
+            self.quasar.notify({ "message" : f"Report downloaded as {self._filename}",
+                                 "type" : "positive" })
+        else:
+            self.quasar.notify({ "message" : "No report available",
+                                 "type" : "negative" })
 
     def dump(self):
         return (super().dump() or {}) | {"filename": self._filename}
