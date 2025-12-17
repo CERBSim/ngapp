@@ -413,15 +413,12 @@ class App:
         save_file_local(data, name)
 
     def quit(self):
-        from webgpu import platform as pl
-
-        pl.js.close()
+        self.js.close()
+        os._exit(0)
 
     def load_local(self):
-        from webgpu import platform
-
         options = {"multiple": False, "accept": ".sav"}
-        pick = platform.js.showOpenFilePicker(options)
+        pick = self.js.showOpenFilePicker(options)
         import pickle
 
         data = pickle.loads(pick[0].getFile().arrayBuffer())
