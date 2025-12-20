@@ -76,8 +76,16 @@ class WebguiComponent(Component):
         return data
 
     @property
-    def radius(self) -> QInput:
-        return self._webgui_data.get("mesh_radius", 1.0)
+    def radius(self) -> float:
+        """Return characteristic radius from webgui data.
+
+        Falls back to ``1.0`` if no ``mesh_radius`` entry is present.
+        """
+        value = self._webgui_data.get("mesh_radius", 1.0)
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return 1.0
 
     def update_settings(self, event: Event) -> None:
         try:
@@ -180,13 +188,18 @@ class WebguiComponent(Component):
         """Toggle mesh"""
         self._update_frontend({}, "ToggleMesh")
 
-    def set_camera(self, data: dict = {}) -> None:
+    def set_camera(self, data: dict | None = None) -> None:
         """Set camera"""
-        self._update_frontend(data, "SetCamera")
+        self._update_frontend(data or {}, "SetCamera")
 
-    def set_colormap(self, data: dict = {}) -> None:
-        """Set colormap"""
-        self._update_frontend(data, "SetColormap")
+    def set_colormap(self, data: dict | None = None) -> None:
+        """Set colormap.
+
+        ``data`` should contain keys such as ``min`` and ``max``. If
+        omitted, an empty payload is sent so that the front-end can
+        decide on sensible defaults.
+        """
+        self._update_frontend(data or {}, "SetColormap")
 
     def set_clipping_plane(self, data: dict) -> None:
         """Set clipping plane"""
@@ -207,10 +220,7 @@ class WebguiComponent(Component):
         self._update_frontend(data, "SetColor")
 
     def update_camera_settings(self):
-        """Update camera settings
-
-        :param callback: Callback function to call after settings are updated
-        """
+        """Request updated camera settings from the front-end."""
         self._update_frontend({}, "GetCameraSettings")
 
     def on_draw(self, callback: Callable) -> None:
@@ -418,15 +428,22 @@ class Colormap(Col):
             cmax.ui_model_value = round(colormap_max, 4)
 
     def set_colormap(self, min: float | None = None, max: float | None = None):
+        """Update colormap range.
+
+        If either *min* or *max* is provided, only those values are
+        updated and the new range is pushed to the webgui. If both are
+        omitted, the default range from the current webgui data is
+        restored and sent to the front-end.
+        """
+
         if min is not None:
             self.colormap_min.ui_model_value = min
         if max is not None:
             self.colormap_max.ui_model_value = max
 
-        if min or max is not None:
+        if min is not None or max is not None:
             self._update_colormap()
-
-        if min is None and max is None:
+        elif min is None and max is None:
             default_colormap = self._webgui.webgui_data
             self.colormap_min.ui_model_value = round(
                 default_colormap["funcmin"], 4
@@ -560,11 +577,39 @@ class SolutionWebgui(Row):
 
     async def generate_markdown(self) -> str:
         return await self._get_markdown()
-
-
 class PlotlyComponent(Component):
-    """Plotly plot component"""
+    """Plotly plot component.
 
+     This component renders Plotly figures inside an ngapp application.
+     It supports two main modes of operation:
+
+     1. **Inline mode** (no ``filename``): the figure data is sent to the
+         browser and rendered directly in the client.
+     2. **File mode** (``filename`` set): the figure is exported as a
+         static ``.png`` image and the Plotly JSON description is written
+         to disk. This is useful for documentation and offline reports.
+
+     Basic usage (inline):
+
+     .. code-block:: python
+
+         from ngapp.components.visualization import PlotlyComponent
+         import plotly.graph_objects as go
+
+         fig = go.Figure(data=[go.Scatter(y=[1, 3, 2, 4])])
+         plot = PlotlyComponent(id="my_plot")
+         plot.draw(fig)
+
+     File-based usage (for docs and reports):
+
+     .. code-block:: python
+
+         plot = PlotlyComponent(filename="results/my_plot")
+         plot.draw(fig)
+
+     After calling :meth:`draw`, ``results/my_plot.png`` and
+     ``results/my_plot.json`` will be created.
+     """
     def __init__(
         self,
         id: str = "",
@@ -603,21 +648,49 @@ canvas_counter = 0
 
 
 class WebgpuComponent(Component):
-    """
-    GPU-accelerated 3D canvas for interactive scientific visualization using WebGPU.
-    This uses the webgpu Python package (https://github.com/CERBSim/webgpu) to render 3D scenes directly in the browser.
+    """GPU-accelerated 3D canvas for interactive scientific visualization.
 
-    This component provides a high-performance rendering surface for custom 3D scenes, supporting real-time updates and user interaction. Scenes can be drawn using the webgpu Python package and updated dynamically from Python.
+    This component integrates with the
+    `webgpu <https://github.com/CERBSim/webgpu>`_ Python package to
+    render 3D scenes directly in the browser using WebGPU. It provides
+    a high-performance canvas for custom 3D scenes, supporting
+    real-time updates and user interaction.
 
-    Key features:
-    - Integrates with the webgpu Python ecosystem for advanced graphics.
-    - Supports storing and restoring scenes, camera, and lighting state.
-    - Handles mounting, unmounting, and frontend synchronization automatically.
-    - Allows custom event handling for mouse and interaction events.
+    Key features
+    ------------
 
-    Usage:
-        webgpu = WebgpuComponent()
-        webgpu.draw(scene)
+    - Integrates with the webgpu Python ecosystem for advanced
+        graphics.
+    - Supports storing and restoring scenes, camera, and lighting
+        state via the internal storage.
+    - Handles mounting, unmounting, and frontend synchronization
+        automatically.
+    - Allows custom event handling for mouse and interaction events via
+        :meth:`click`, :meth:`mousedown`, :meth:`mouseup`, and
+        :meth:`mouseout` methods.
+
+    Minimal example
+    ----------------
+
+    .. code-block:: python
+
+            from ngapp.components.visualization import WebgpuComponent
+            from webgpu import shapes, Scene
+
+            # Create the canvas component
+            canvas = WebgpuComponent(width="800px", height="600px")
+
+            # Build a simple scene using the built-in ShapeRenderer
+            shape = shapes.generate_cylinder(32, radius=1.0, height=2.0)
+            renderer = shapes.ShapeRenderer(shape)
+            scene = Scene([renderer])
+
+            # Render the scene on the canvas
+            canvas.draw(scene)
+
+    You can subclass :class:`WebgpuComponent` and override
+    :meth:`click`, :meth:`mousedown`, :meth:`mouseup`, or
+    :meth:`mouseout` to react to user input on the canvas.
     """
 
     def __init__(self, width="800px", height="600px", **kwargs):
@@ -822,10 +895,13 @@ def _get_webgui_js_code():
     if _webgui_js_code is None:
         import urllib.request
 
-        with urllib.request.urlopen(
-            "https://cdn.jsdelivr.net/npm/webgui@0.2.37/dist/webgui.js"
-        ) as f:
-            _webgui_js_code = f.read().decode("utf-8")
+        try:
+            with urllib.request.urlopen(
+                "https://cdn.jsdelivr.net/npm/webgui@0.2.37/dist/webgui.js"
+            ) as f:
+                _webgui_js_code = f.read().decode("utf-8")
+        except Exception as exc:  # pragma: no cover - network failures
+            raise RuntimeError("Failed to download webgui JavaScript bundle") from exc
     return _webgui_js_code
 
 
@@ -863,6 +939,8 @@ async def _make_html_screenshot(html_file, width=800, height=600):
 async def _generate_webgui_screenshot(name, data, width, height):
     """Generates a screenshot for the given webgui data file."""
     html_file = name + ".html"
+    # Avoid mutating the original data structure passed in by callers.
+    data = dict(data)
     data["on_init"] = "scene.gui.hide()"
     import numpy
     import orjson

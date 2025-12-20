@@ -1,38 +1,75 @@
 
-NGApp
-========
+ngapp
+=====
 
-Welcome to NGApp — a Python framework for building interactive scientific and engineering applications as web or desktop apps.
+Welcome to the ngapp documentation.
 
-NGApp makes it easy to turn your existing Python scripts or Jupyter notebooks into user-friendly, production-ready applications — without needing to write a single line of JavaScript or HTML. Whether you're developing a prototype or deploying tools for end users, NGApp provides a clean and Pythonic interface for building rich UIs and synchronizing frontend and backend logic.
+ngapp is a Python framework for building interactive scientific and engineering
+applications as web or desktop apps — without writing JavaScript or HTML.
+You declare user interfaces in Python, ngapp wires them to a Quasar/Vue
+frontend, and keeps browser state and Python logic in sync.
 
-This documentation will guide you through:
+What you can do with ngapp
+--------------------------
 
-* Getting started with installation and first steps
-* Understanding NGApp’s architecture and core components
-* Tips and best practices for development
-* Troubleshooting common issues
-* Full API reference for advanced usage
+ngapp is a good fit when you want to:
 
-Installation
-------------
+* Turn scripts or Jupyter notebooks into user-friendly apps
+* Build rich forms, dashboards, and visualizations in pure Python
+* Run heavy numerical workflows locally or on remote compute nodes
+* Ship your app as a desktop-like tool or deploy it as a web app
 
-To get started with NGApp, install it using pip:
+Typical workflow
+----------------
 
-.. code-block:: bash
+1. **Install** ngapp and development extras::
 
-   pip install ngapp[dev]
+      pip install ngapp[dev]
 
-The [dev] extras include tools needed for developing NGApp-based apps. When distributing your own app, you can simply depend on ngapp — users do not need the [dev] extras.
+2. **Create** a new app skeleton with a guided wizard::
+
+      python -m ngapp.create_app
+
+3. **Run** your app in development mode with hot reload::
+
+      python -m <module_name> --dev
+
+4. **Iterate** on the generated ``app.py`` using ngapp components, helper
+   widgets, and visualization tools.
+
+5. **Deploy** your app, for example using the included GitHub Pages workflow
+   or your own infrastructure.
+
+Where to start
+--------------
+
+If you are new to ngapp, begin with:
+
+* :doc:`getting_started` – installation, project layout, first run
+* :doc:`tutorials` – step-by-step examples (parametric sine, NACA generator,
+  beam solver, GitHub deployment)
+
+Then explore:
+
+* :doc:`concepts_architecture` – core ideas: apps, components, state, compute
+* :doc:`components` – building interfaces from ngapp and Quasar components
+* :doc:`visualization` – interactive Plotly, WebGPU, and VTK-based views
+* :doc:`deployment_environments` – deployment options and compute environments
+* :doc:`tips_and_tricks` – advanced topics and JavaScript/Quasar integration
+* :doc:`api_doc` – full Python API reference and component listings
+
+Contents
+--------
 
 .. toctree::
-   :maxdepth: 4
-   :hidden:
+      :maxdepth: 2
 
-   getting_started.rst
-   tutorials.rst
-   components.rst
-   visualization.rst
-   tips_and_tricks.rst
-   api_doc.rst
+      getting_started
+      concepts_architecture
+      components
+      visualization
+      tutorials
+      deployment_environments
+      tips_and_tricks
+      api_doc
 

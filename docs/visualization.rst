@@ -2,12 +2,26 @@
 Visualization
 =============
 
-NGApp provides powerful components for interactive scientific visualization. Two of the most important are :class:`~ngapp.components.visualization.PlotlyComponent` and :class:`~ngapp.components.visualization.WebgpuComponent`.
+ngapp provides powerful components for interactive scientific visualization.
+Two of the most important are
+:class:`~ngapp.components.visualization.PlotlyComponent` and
+:class:`~ngapp.components.visualization.WebgpuComponent`. For a full
+reference of all visualization helpers, see :doc:`api_components`.
 
 PlotlyComponent
 ---------------
 
-The :class:`~ngapp.components.visualization.PlotlyComponent` lets you embed interactive Plotly plots in your NGApp application. It supports both static and dynamic plots, and can save images automatically if a filename is provided.
+The :class:`~ngapp.components.visualization.PlotlyComponent` lets you
+embed interactive `Plotly <https://plotly.com/python/>`_ figures inside
+your ngapp application. You can use the full Plotly Python API
+(`graph_objects <https://plotly.com/python/graph-objects/>`_ or
+`express <https://plotly.com/python/plotly-express/>`_) to construct
+figures in Python and then render them as live, zoomable, pannable
+plots in the browser.
+
+Plotly supports a wide range of visualizations (2D/3D scatter, surface
+plots, contour plots, maps, histograms, subplots, animations, etc.),
+all of which can be displayed through this component.
 
 **Example:**
 
@@ -22,8 +36,23 @@ The :class:`~ngapp.components.visualization.PlotlyComponent` lets you embed inte
 
 **Key features:**
 
-- Supports all Plotly figures (2D/3D, scatter, surface, etc.)
-- Responsive and embeddable in any NGApp layout
+- Supports all Plotly figures (2D/3D, scatter, surface, contour,
+    volume, maps, etc.)
+- Fully interactive in the browser (zoom, pan, hover tooltips,
+    legends, saving as PNG from the mode bar)
+- Works with both :mod:`plotly.graph_objects` and
+    :mod:`plotly.express` figures
+- Embeddable in any ngapp layout alongside other components
+
+For more details on what you can build with Plotly, see the official
+Python documentation:
+
+- Getting started guide:
+    https://plotly.com/python/getting-started/
+- Figure structure and layout system:
+    https://plotly.com/python/renderers/
+- Gallery of example charts:
+    https://plotly.com/python/
 
 WebgpuComponent
 ---------------
@@ -46,7 +75,56 @@ The :class:`~ngapp.components.visualization.WebgpuComponent` provides a GPU-acce
 - Custom event handling for mouse and interaction events
 - Can capture screenshots as images or data URLs
 
-Have a look at the webgpu documentation for hwo to build scenes or at the `ngsolve_webgpu documentation <https://github.com/CERBSim/ngsolve_webgpu>`_ for examples of using the finite element framework NGSolve with WebGPU.
+
+Using NGSolve solution fields
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The `ngsolve_webgpu <https://github.com/CERBSim/ngsolve_webgpu>`_
+package provides ready-made WebGPU renderers for NGSolve meshes and
+CoefficientFunctions. You can combine these renderers with
+``WebgpuComponent`` to display finite element solution fields directly
+inside an ngapp UI.
+
+**Basic example (2D scalar CoefficientFunction):**
+
+.. code-block:: python
+
+     from ngsolve import Mesh, H1, GridFunction, unit_square
+     from ngsolve_webgpu.mesh import MeshData
+     from ngsolve_webgpu.cf import FunctionData, CFRenderer
+     from webgpu.colormap import Colorbar
+     from webgpu import Scene
+
+     from ngapp.components.visualization import WebgpuComponent
+
+     # Build an NGSolve mesh and solution
+     mesh = Mesh(unit_square.GenerateMesh(maxh=0.1))
+     V = H1(mesh, order=2)
+     u = GridFunction(V)
+     u.Set(x * y)  # example solution field
+
+     # Convert to WebGPU renderers using ngsolve_webgpu
+     mesh_data = MeshData(mesh)
+     func_data = FunctionData(mesh_data, u, order=2)
+     cf_renderer = CFRenderer(func_data)
+     colorbar = Colorbar(colormap=cf_renderer.colormap)
+
+     # Create a webgpu.Scene and attach it to WebgpuComponent
+     scene = Scene([cf_renderer, colorbar])
+     canvas = WebgpuComponent(width="800px", height="600px")
+     canvas.draw(scene)
+
+This draws the scalar field ``u`` on the mesh with an interactive
+WebGPU renderer and a linked colorbar, all embedded as an ngapp
+component.
+
+For more advanced examples of visualizing NGSolve solution fields with
+WebGPU, see the tutorials in the ngsolve_webgpu repository:
+
+- Function visualization examples:
+    https://github.com/CERBSim/ngsolve_webgpu/blob/main/docs/functions.ipynb
+- Extended WebGPU demo notebook (geometry, functions, clipping, etc.):
+    https://github.com/CERBSim/ngsolve_webgpu/blob/main/webgpu.ipynb
 
 
 VtkComponent

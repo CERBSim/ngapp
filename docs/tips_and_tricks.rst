@@ -1,4 +1,4 @@
-Tips and Tricks
+Advanced Topics
 ===============
 
 Printing
@@ -9,7 +9,10 @@ You can see Python print statements as output in the console and get with this i
 JavaScript Integration
 ----------------------
 
-ngapp provides seamless integration with JavaScript, allowing you to execute JavaScript code, manipulate the DOM, and access browser APIs directly from Python. There are three main ways to interact with JavaScript:
+ngapp provides seamless integration with JavaScript, allowing you to execute
+JavaScript code, manipulate the DOM, and access browser APIs directly from
+Python. There are three main ways to interact with JavaScript (see also
+the lower-level utilities documented in :doc:`api_utils`):
 
 1. **Direct JavaScript access with `.js`**
 2. **Deferred execution with `call_js()`**
@@ -256,7 +259,59 @@ The ``.quasar`` property provides access to the Quasar framework's ``$q`` object
 Common Patterns and Best Practices
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**1. Initialization Pattern:**
+Using JavaScript ``new`` from Python
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When working with browser APIs, you often need to call JavaScript
+constructors using the ``new`` operator (for example, ``new
+Uint8ClampedArray(...)`` or ``new ImageData(...)``). The JavaScript
+proxy objects exposed by ngapp support this via a special ``_new``
+method on constructor functions and classes.
+
+Instead of writing JavaScript like:
+
+.. code-block:: javascript
+
+     const u8 = new Uint8ClampedArray(buffer);
+     const imageData = new ImageData(u8, width, height);
+
+you can do the equivalent from Python using ``.js``:
+
+.. code-block:: python
+
+     # self is a Component (or App) with access to self.js
+
+     width, height = 640, 480
+     buffer = some_numpy_array.tobytes()
+
+     # Call JS constructors via _new
+     u8 = self.js.Uint8ClampedArray._new(buffer)
+     image_data = self.js.ImageData._new(u8, width, height)
+
+     # Use the constructed objects as usual
+     canvas = self.js.document.createElement("canvas")
+     canvas.width = width
+     canvas.height = height
+     ctx = canvas.getContext("2d")
+     ctx.putImageData(image_data, 0, 0)
+
+**Guidelines for using ``_new``:**
+
+- Use ``Class._new(...)`` whenever you would normally write
+  ``new Class(...)`` in JavaScript.
+- Arguments and return values are proxied automatically; you can pass
+  basic Python types (``int``, ``float``, ``str``), lists, dicts, or
+  byte buffers (e.g. ``numpy_array.tobytes()``).
+- Combine ``_new`` with ``call_js()`` if you need to construct objects
+  during component initialization, before ``self.js`` is directly
+  available.
+
+Initialization Pattern
+^^^^^^^^^^^^^^^^^^^^^^
+
+This pattern uses ``call_js()`` during ``__init__`` to perform any
+JavaScript setup once the environment is ready, while keeping direct
+``.js`` access for code that runs after mounting.
 
 .. code-block:: python
 
@@ -274,7 +329,11 @@ Common Patterns and Best Practices
            # Use .js for immediate access after mounting
            self.js.console.log("Component mounted")
 
-**2. Error Handling:**
+Error Handling
+^^^^^^^^^^^^^^
+
+Wrap risky JavaScript operations and surface failures to the user
+through Quasar notifications or other UI feedback.
 
 .. code-block:: python
 
@@ -289,7 +348,11 @@ Common Patterns and Best Practices
            })
            return None
 
-**3. Async Operations:**
+Async Operations
+^^^^^^^^^^^^^^^^
+
+Use JavaScript promises for async operations and bridge success/error
+callbacks back into Python.
 
 .. code-block:: python
 

@@ -461,8 +461,8 @@ class Component(metaclass=BlockFrontendUpdate):
 
         Args:
             func (callable): A Python function
-            *args: Positional arguments to pass to the function when called.
-            **kwargs: Keyword arguments to pass to the function when called.
+            ``*args``: Positional arguments to pass to the function when called.
+            ``**kwargs``: Keyword arguments to pass to the function when called.
 
         Note:
             - Safe to call in app __init__ method (when .js is not yet available)

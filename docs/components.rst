@@ -2,14 +2,14 @@
 Components
 ==========
 
-NGApp lets you build interactive web apps entirely in Python, using a rich set of UI components—no JavaScript or HTML required. Components are the building blocks of your app’s interface, from buttons and sliders to tables, dialogs, and custom visualizations.
+ngapp lets you build interactive web apps entirely in Python, using a rich set of UI components—no JavaScript or HTML required. Components are the building blocks of your app’s interface, from buttons and sliders to tables, dialogs, and custom visualizations.
 
-NGApp synchronizes state and events between Python and the browser, so you can focus on your logic and data.
+ngapp synchronizes state and events between Python and the browser, so you can focus on your logic and data.
 
 Quick Example
-==============
+=============
 
-Here’s a minimal example of using NGApp components:
+Here’s a minimal example of using ngapp components:
 
 .. code-block:: python
 
@@ -28,7 +28,7 @@ Here’s a minimal example of using NGApp components:
 Component Overview
 ===================
 
-NGApp provides:
+ngapp provides:
 
 - **Quasar-based UI components** (QBtn, QInput, QTable, etc.) for forms, layouts, and controls
 - **Helper components** (Row, Col, Div, FileName, etc.) for layout, utilities, and common patterns
@@ -36,13 +36,15 @@ NGApp provides:
 - **Material and scientific widgets** for domain-specific input
 - **BaseComponent** for building your own custom components
 
-You can mix and match these to create complex, interactive apps. See the API docs and tutorials for more details and advanced usage.
+You can mix and match these to create complex, interactive apps. See the
+API reference (:doc:`api_qcomponents` and :doc:`api_components`) and
+the :doc:`tutorials` for more details and advanced usage.
 
 
 Basic Quasar Components
 ========================
 
-NGApp wraps the popular Quasar UI library, giving you access to a wide range of ready-to-use components. Most component properties use a `ui_` prefix (e.g., `ui_label`, `ui_color`). This makes it clear which arguments are passed to the frontend and avoids conflicts with Python keywords or internal names. For example, to set the label of a button, use `ui_label="Click me"`.
+ngapp wraps the popular Quasar UI library, giving you access to a wide range of ready-to-use components. Most component properties use a `ui_` prefix (e.g., `ui_label`, `ui_color`). This makes it clear which arguments are passed to the frontend and avoids conflicts with Python keywords or internal names. For example, to set the label of a button, use `ui_label="Click me"`.
 
 Here are some of the most useful components to get started:
 
@@ -99,7 +101,7 @@ Group related content in a card with sections and actions. See :class:`~ngapp.co
 Helper Components
 ==================
 
-NGApp includes a set of helper components that simplify common layout patterns, provide useful utilities, and offer convenient wrappers for frequent use cases. These components help you build interfaces faster without needing to create custom components from scratch.
+ngapp includes a set of helper components that simplify common layout patterns, provide useful utilities, and offer convenient wrappers for frequent use cases. These components help you build interfaces faster without needing to create custom components from scratch.
 
 
 :class:`~ngapp.components.helper_components.Row` — Horizontal Layout
@@ -210,7 +212,7 @@ Additional helper components like :class:`~ngapp.components.helper_components.Br
 Component Arguments and Customization
 ========================================
 
-Each Quasar component in NGApp accepts a variety of keyword arguments to control its appearance and behavior. Most of these arguments are prefixed with `ui_` (such as `ui_label`, `ui_color`, `ui_icon`, `ui_value`, etc.).
+Each Quasar component in ngapp accepts a variety of keyword arguments to control its appearance and behavior. Most of these arguments are prefixed with `ui_` (such as `ui_label`, `ui_color`, `ui_icon`, `ui_value`, etc.).
 
 **Types of arguments include:**
 
@@ -240,7 +242,7 @@ You can nest components to build complex layouts and combine multiple arguments 
 Building Custom Components
 =============================
 
-NGApp makes it easy to create your own custom UI components by subclassing existing ones or the base :class:`~ngapp.components.basecomponent.Component`. You can add new properties, override methods, or combine multiple components to build reusable widgets tailored to your needs.
+ngapp makes it easy to create your own custom UI components by subclassing existing ones or the base :class:`~ngapp.components.basecomponent.Component`. You can add new properties, override methods, or combine multiple components to build reusable widgets tailored to your needs.
 
 
 **Example: Custom Labeled Number Input**
