@@ -1,118 +1,128 @@
 
-# NGApp
+# ngapp
 
-A Python framework for building interactive scientific and engineering applications as web or desktop apps — **without writing JavaScript**. NGApp wraps a modern Quasar/Vue frontend with a clean, Python-first API and automatic state synchronization.
-
-<p align="center">
-  <em>Turn scripts and notebooks into polished apps with reactive UIs, events, and deployment baked in.</em>
-</p>
-
----
-
-## ✨ Highlights
-
-* **Python-only UI**: Compose rich interfaces from Python (Quasar components under the hood).
-* **Reactive state & events**: Bind inputs, handle callbacks, and keep frontend & backend in sync.
-* **Batteries included**: Helper components (forms, tables, file I/O, warnings), plotting hooks, and deploy-to-GitHub workflow.
-* **Dev mode**: Hot reload (`--dev`) for instant feedback while editing.
+ngapp is a Python framework for building interactive scientific and engineering
+applications as web or desktop apps – without writing JavaScript or HTML.
+You declare user interfaces in Python, ngapp connects them to a Quasar/Vue
+frontend, and keeps browser state and Python logic in sync.
 
 ---
 
-## 📦 Installation
+## What you can use it for
+
+ngapp is a good fit when you want to:
+
+* turn scripts or Jupyter notebooks into user-friendly apps,
+* build forms, dashboards, and visualizations in pure Python,
+* run heavy numerical workflows locally or on remote compute nodes,
+* ship your app as a desktop-like tool or as a web app.
+
+---
+
+## Installation
+
+Install ngapp and the development extras with:
 
 ```bash
 pip install ngapp[dev]
 ```
 
-> The `[dev]` extra includes tools useful during development. End users of your apps typically only need `ngapp`.
+The [dev] extras include tools useful while developing ngapp-based apps.
+When distributing your own app to end users, you usually only need a
+dependency on ngapp itself.
 
 ---
 
-## ⏱️ 90‑second minimal app
+## Create your first app
 
-1. **Create a new app** (answer the prompts)
+1. Open a console in the directory where you want to create the project and run:
 
    ```bash
    python -m ngapp.create_app
    ```
 
-   The wizard asks for your **module name**, **app name**, and **app class** (valid Python identifiers).
+   The wizard will ask for:
 
+   * the Python module name for the project,
+   * the app name, and
+   * the name of the app class.
 
-2. **Run in development mode**
+   The module name and the app class name must be valid Python identifiers.
+   If you want to create an app with additional backend resources, pass the
+   `--with_backend` flag to the command above.
+
+2. Start the new app in development mode:
 
    ```bash
    python -m <module_name> --dev
    ```
 
-   Dev mode enables hot reload and opens the app in your browser (or prints a link in the console).
+   where `<module_name>` is the module name you provided. The `--dev` option
+   starts the app in development mode, which enables hot reloading and other
+   development features.
 
-3. **Project layout**
-
-   ```text
-   <module_name>/
-   ├─ src/
-   │  └─ <module_name>/
-   │     ├─ __init__.py
-   │     ├─ app.py            # main app code
-   │     ├─ appconfig.py
-   │     └─ __main__.py
-   ├─ .github/
-   │  └─ workflows/deploy.yml # deploys web version to GitHub Pages
-   ├─ README.md
-   └─ pyproject.toml
-   ```
-
-4. **Make your first change**
-   Open `src/<module_name>/app.py` and tweak labels or the `increment_counter` function. Save the file and watch the UI update immediately in the browser while logs print to the console.
+3. You should see a "Hello World" app in your browser. If the browser does
+   not open automatically, click on the link printed in the console.
 
 ---
 
-## 🧭 Architecture (at a glance)
+## First edits
 
-NGApp keeps your Python logic in sync with a Quasar/Vue UI in the browser. Only minimal diffs are sent across a lightweight bridge.
+Open the new module directory in your editor and start coding. As a first step,
+change some labels or add print statements to the `increment_counter`
+function in the generated app and observe live updates in the browser and
+console.
 
-```mermaid
-flowchart TD
-subgraph PY["Python process"]
-A["Your App"]
-B["NGApp Core"]
-end
+---
 
+## Generated project layout
 
-subgraph BR["Bridge"]
-C["WS/HTTP"]
-end
+The new directory called `<module_name>` will have the following structure:
 
-
-subgraph FE["Browser"]
-D["Quasar/Vue UI"]
-end
-
-
-A <--> B
-B <--> C
-C <--> D
+```text
+<module_name>/
+├── src/
+│   └── <module_name>/
+│       ├── __init__.py
+│       ├── app.py
+│       ├── appconfig.py
+│       └── __main__.py
+├── .github/
+│   └── workflows/
+│       └── deploy.yml
+├── README.md
+└── pyproject.toml
 ```
 
-**How it fits together**
-
-* **Components** are declared in Python (wrapping Quasar). Their props/events map to the frontend.
-* **Bridge** sends UI/state changes and events (e.g., `on_click`) efficiently.
-* **Dev mode** hot‑reloads Python and refreshes the UI without losing state where possible.
-
----
-
-## 📚 Documentation & examples
-
-👉 **Documentation:** [https://cerbsim.github.io/ngapp](https://cerbsim.github.io/ngapp)
-
-* **Getting Started**: installation, scaffolding, and first run
-* **Components**: Quasar wrappers (e.g. `QBtn`, `QInput`, `QTable`) and helper widgets
-* **Tutorials**: Parametric Sine Wave, NACA Airfoil, Beam Solver, Deploy to GitHub Pages
+The file `<module_name>/src/<module_name>/app.py` contains the main app code.
+The workflow file `.github/workflows/deploy.yml` defines a GitHub Actions
+pipeline that can automatically deploy your app as a web version to
+GitHub Pages.
 
 ---
 
-## 📄 License
+## Documentation and next steps
 
-LGPL‑2.1
+Full documentation is available at:
+
+https://cerbsim.github.io/ngapp
+
+If you are new to ngapp, start with:
+
+* Getting Started – installation, project layout, first run
+* Tutorials – step-by-step examples (parametric sine, NACA generator,
+  beam solver, GitHub deployment)
+
+Then explore:
+
+* Concepts and architecture – core ideas: apps, components, state, compute
+* Components – building interfaces from ngapp and Quasar components
+* Visualization – interactive plots and 3D views
+* Deployment environments – deployment options and compute environments
+* Tips and tricks – advanced topics and JavaScript/Quasar integration
+
+---
+
+## License
+
+LGPL-2.1
