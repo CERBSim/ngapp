@@ -21,3 +21,131 @@ dl.function > dd:first-of-type {
     padding: 0.5em;
 }
 
+/* Layout tweaks: widen main content, narrow sidebars on larger screens */
+@media (min-width: 960px) {
+    /* Make the primary (left) navigation sidebar clearly narrower */
+    .bd-sidebar-primary {
+        width: 15%;
+    }
+}
+
+@media (min-width: 1200px) {
+    /* Allow the central article to use significantly more horizontal space */
+    .bd-main .bd-content .bd-article-container {
+        max-width: 80em;
+    }
+
+    /* Further narrow the secondary (right) sidebar */
+    html {
+        --pst-sidebar-secondary: 12rem;
+    }
+}
+
+/* Make autodoc API signatures and parameter blocks more compact */
+/* Inline parameters in signatures (classes, methods, functions) */
+dt.sig.sig-object.py dl {
+    display: inline;
+    margin: 0;
+}
+
+dt.sig.sig-object.py dl dd {
+    display: inline;
+    margin: 0;
+    padding: 0;
+}
+
+/* Keep parameters inline; use original commas from Sphinx output */
+
+/* Tighten vertical spacing around autodoc description blocks */
+dl.py {
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    line-height: 1.25;
+    font-size: 0.9em;
+}
+
+dl.py > dd {
+    margin-top: 0.08rem;
+    margin-bottom: 0.08rem;
+}
+
+/* Remove most extra space from paragraphs inside autodoc blocks */
+dl.py > dd > p {
+    margin-top: 0.1rem;
+    margin-bottom: 0.1rem;
+}
+
+dl.py > dd ul.simple {
+    margin-top: 0.06rem;
+    margin-bottom: 0.06rem;
+}
+
+dl.py > dd ul.simple li {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+dl.py > dd ul.simple li p {
+    margin-top: 0.03rem;
+    margin-bottom: 0.03rem;
+}
+
+/* Extra-tight spacing specifically between member functions/properties */
+dl.py.method,
+dl.py.function,
+dl.py.property {
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+}
+
+dl.py.method + dl.py.method,
+dl.py.method + dl.py.property,
+dl.py.property + dl.py.method,
+dl.py.function + dl.py.function,
+dl.py.property + dl.py.property {
+    margin-top: 0.05rem;
+}
+
+/* Make field lists (Parameters, Returns, etc.) extremely compact */
+dl.field-list.simple {
+    margin-top: 0.08rem;
+    margin-bottom: 0.15rem;
+}
+
+dl.field-list.simple > dt,
+dl.field-list.simple > dd {
+    margin: 0.02rem 0;
+}
+
+dl.field-list.simple ul.simple {
+    margin-top: 0.03rem;
+    margin-bottom: 0.03rem;
+}
+
+dl.field-list.simple ul.simple li p {
+    margin-top: 0.015rem;
+    margin-bottom: 0.015rem;
+}
+
+/* Slightly smaller font for signatures themselves */
+dl.py dt.sig {
+    font-size: 0.95em;
+}
+
+
+/* Headings coming from markdown inside docstrings: make them smaller */
+dl.py h2,
+dl.py h3,
+dl.py h4,
+dl.py h5,
+dl.py h6 {
+    font-size: 1.0em;
+    margin-top: 0.4rem;
+    margin-bottom: 0.2rem;
+}
+
+/* First-level heading under a class/method docstring slightly larger */
+dl.py h2 {
+    font-size: 1.05em;
+}
+

@@ -40,3 +40,4 @@ python_maximum_signature_line_length = 80
 
 def setup(app):
     app.add_css_file("custom.css")
+    app.add_css_file("custom_qcomponents.css")

@@ -1,0 +1,14 @@
+/* QComponents API (qcomponents.html): show only *children and **kwargs in signatures */
+/* Hide all original parameter <dd> entries */
+section#qcomponents dt.sig.sig-object.py dl dd {
+    display: none;
+}
+
+/* Rebuild a compact signature: (*children, **kwargs) */
+section#qcomponents dt.sig.sig-object.py dl::before {
+    content: "*children";
+}
+
+section#qcomponents dt.sig.sig-object.py dl::after {
+    content: ", **kwargs";
+}
