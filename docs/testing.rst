@@ -18,7 +18,7 @@ the result to a reference state.
 You can create input and reference states directly from the running app
 using :meth:`ngapp.app.App.save_local`. The files produced (``.sav``) are
 pickled dictionaries and use the same format as the snapshots handled by
- :mod:`ngapp.test_utils`.
+:mod:`ngapp.test_utils`.
 
 Snapshot files are stored under ``tests/cases/<folder_path>``. A typical
 calculation test might look like this::
@@ -59,7 +59,7 @@ component data and JSON files to compare local storage. See that module for
 more advanced options.
 
 End-to-end (browser) tests with Playwright
------------------------------------------
+------------------------------------------
 
 E2E tests focus on the *user experience*: they start the full app, interact
 with the UI like a user (typing into inputs, clicking buttons, etc.), and

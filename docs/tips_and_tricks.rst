@@ -12,7 +12,7 @@ JavaScript Integration
 ngapp provides seamless integration with JavaScript, allowing you to execute
 JavaScript code, manipulate the DOM, and access browser APIs directly from
 Python. There are three main ways to interact with JavaScript (see also
-the lower-level utilities documented in :doc:`api_utils`):
+the lower-level utilities documented in :doc:`api/utils`):
 
 1. **Direct JavaScript access with `.js`**
 2. **Deferred execution with `call_js()`**

@@ -15,9 +15,11 @@ What you can do with ngapp
 ngapp is a good fit when you want to:
 
 * Turn scripts or Jupyter notebooks into user-friendly apps
-* Build rich forms, dashboards, and visualizations in pure Python
-* Run heavy numerical workflows locally or on remote compute nodes
+* Build rich forms, dashboards, and 3D visualizations in pure Python
 * Ship your app as a desktop-like tool or deploy it as a web app
+* Especially for scientific and engineering use cases
+* Built for use with the Finite Element Framework NGSolve, but usable
+  independently
 
 Typical workflow
 ----------------
@@ -56,7 +58,7 @@ Then explore:
 * :doc:`visualization` – interactive Plotly, WebGPU, and VTK-based views
 * :doc:`deployment_environments` – deployment options and compute environments
 * :doc:`tips_and_tricks` – advanced topics and JavaScript/Quasar integration
-* :doc:`api_doc` – full Python API reference and component listings
+* :doc:`api/api_doc` – full Python API reference and component listings
 * :doc:`testing` – snapshot and end-to-end testing utilities for apps
 
 Contents
@@ -65,13 +67,7 @@ Contents
 .. toctree::
       :maxdepth: 2
 
-      getting_started
-      concepts_architecture
-      components
-      visualization
+      user_guide
       tutorials
-      deployment_environments
-      tips_and_tricks
-      api_doc
-      testing
+      api/api_doc
 

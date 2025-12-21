@@ -40,7 +40,7 @@ Where to go next
 
 - See the :doc:`tutorials` for concrete deployment and compute
   examples.
-- Consult :doc:`api_utils` for details on the environment and backend
+- Consult :doc:`api/utils` for details on the environment and backend
   helper functions.
 - For front-end focused work continue with :doc:`components` and
   :doc:`visualization`.

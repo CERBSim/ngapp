@@ -66,4 +66,4 @@ Where to go next
 - For plots and 3D graphics, see :doc:`visualization`.
 - To configure deployment, see
   :doc:`deployment_environments`.
-- For detailed APIs, go to :doc:`api_doc`.
+- For detailed APIs, go to :doc:`api/api_doc`.

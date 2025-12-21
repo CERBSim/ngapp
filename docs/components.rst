@@ -37,7 +37,7 @@ ngapp provides:
 - **BaseComponent** for building your own custom components
 
 You can mix and match these to create complex, interactive apps. See the
-API reference (:doc:`api_qcomponents` and :doc:`api_components`) and
+API reference (:doc:`api/components/qcomponents`) and
 the :doc:`tutorials` for more details and advanced usage.
 
 
@@ -223,7 +223,7 @@ Each Quasar component in ngapp accepts a variety of keyword arguments to control
 
 **How to find available options:**
 
-- See the :doc:`api_qcomponents` for a full list of all Quasar components and their arguments, including docstrings and parameter descriptions.
+- See the :doc:`api/components/qcomponents` for a full list of all Quasar components and their arguments, including docstrings and parameter descriptions.
 - You can also refer to the official Quasar documentation (https://quasar.dev/vue-components) for a detailed explanation of each component’s properties and events. Most Quasar property names map directly to NGApp’s `ui_` arguments.
 
 **Example:**
@@ -302,6 +302,6 @@ For more about CSS and styling:
 Next Steps
 ===========
 
-- Explore the :doc:`api_qcomponents` for a full list of UI widgets
+- Explore the :doc:`api/components/qcomponents` for a full list of UI widgets
 - See :doc:`tutorials` for step-by-step guides
-- Check :doc:`api_components` for advanced and custom components
+- Check :doc:`api/components/helper_components` for advanced and custom components

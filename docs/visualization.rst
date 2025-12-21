@@ -6,7 +6,7 @@ ngapp provides powerful components for interactive scientific visualization.
 Two of the most important are
 :class:`~ngapp.components.visualization.PlotlyComponent` and
 :class:`~ngapp.components.visualization.WebgpuComponent`. For a full
-reference of all visualization helpers, see :doc:`api_components`.
+reference of all visualization helpers, see :doc:`api/components/visualization`.
 
 PlotlyComponent
 ---------------
