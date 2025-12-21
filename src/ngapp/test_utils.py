@@ -1,20 +1,27 @@
-"""This module contains utility functions for testing the webapp"""
+"""Utility functions for testing ngapp apps.
 
-import json
+This module provides helpers for comparing component state and local storage.
+Snapshot files use the same pickled data format as
+ :meth:`ngapp.app.App.save_local`, so you can reuse ``.sav`` files created
+ from the running app inside your test suite.
+"""
+
 import os
+import pickle
 import tempfile
+from functools import wraps
 from pathlib import Path
 
 import deepdiff
 
 import ngapp.components.basecomponent
 from ngapp.app import App
-from ngapp.utils import read_json, write_json
+from ngapp.utils import EnvironmentType, read_json, set_environment, write_json
 
 os.environ["WEBAPP_TESTING"] = str(True)
 
 
-def _get_foler_path(folder_path: str | Path, create_folder: bool = True):
+def _get_folder_path(folder_path: str | Path, create_folder: bool = True):
     path = (
         Path(folder_path)
         if "tests/cases" in str(folder_path)
@@ -26,7 +33,7 @@ def _get_foler_path(folder_path: str | Path, create_folder: bool = True):
 
 
 def _set_local_storage_path(folder_path: str, create_folder: bool = True):
-    path = _get_foler_path(folder_path, create_folder=create_folder) / "storage"
+    path = _get_folder_path(folder_path, create_folder=create_folder) / "storage"
     ngapp.components.basecomponent._local_storage_path = path
     return path
 
@@ -38,23 +45,35 @@ def assert_equal_components_data(data: dict, comparison: dict):
     assert diff == {}
 
 
+def _load_snapshot_file(path: Path) -> dict:
+    """Load snapshot data from *path*.
+
+    Snapshot files are stored as pickled dictionaries, compatible with the
+    output of :meth:`ngapp.app.App.dump` and :meth:`ngapp.app.App.save_local`.
+    For backwards compatibility, if unpickling fails we fall back to reading
+    JSON from the same path.
+    """
+
+    with path.open("rb") as fh:
+        return pickle.load(fh)
+
 def snapshot(
     app: App,
     folder_path: str,
-    filename: str = "data.json",
+    filename: str = "data.sav",
     write_data: bool = False,
     keep_storage: bool = False,
     check_data: bool = False,
     check_storage: bool = False,
 ):
     """Save the data of the app to a file or compare it to the reference data if requested"""
-    folder = _get_foler_path(folder_path)
+    folder = _get_folder_path(folder_path)
     _set_local_storage_path(folder_path)
     file_path = folder / filename
 
     if check_data:
         data = app.dump()
-        ref_data = read_json(file_path)
+        ref_data = _load_snapshot_file(file_path)
         assert_equal_components_data(data, ref_data)
 
     if check_storage:
@@ -93,7 +112,8 @@ def snapshot(
 
     if write_data:
         data = app.dump(keep_storage=keep_storage)
-        write_json(data, file_path)
+        with file_path.open("wb") as fh:
+            pickle.dump(data, fh)
 
 
 def load(
@@ -105,15 +125,21 @@ def load(
 ):
     """Load the data into the app"""
     if filename is not None:
-        data = read_json(filename)
+        path = Path(filename)
+        data = _load_snapshot_file(path)
     app.load(data, load_local_storage=load_storage)
 
 
-def load_case(app, folder_path, filename="data.json", load_storage=False):
-    """Load the data of a case and load it into the app"""
+def load_case(app, folder_path, filename="data.sav", load_storage=False):
+    """Load the data of a case and load it into the app.
+
+    ``filename`` is expected to be a pickled dump compatible with
+    :meth:`ngapp.app.App.save_local`, for example a ``.sav`` file created
+    by the running app or a snapshot written by :func:`snapshot`.
+    """
     _set_local_storage_path(folder_path, create_folder=False)
-    folder_path = _get_foler_path(folder_path, create_folder=False)
-    data = read_json(folder_path / filename)
+    folder_path = _get_folder_path(folder_path, create_folder=False)
+    data = _load_snapshot_file(folder_path / filename)
     load(app, data=data, load_storage=load_storage)
     return data
 
@@ -124,3 +150,23 @@ def save_testing_data(folder_path: str | Path, testing_data: dict):
     folder_path.mkdir(parents=True, exist_ok=True)
     for key, value in testing_data.items():
         write_json(value, folder_path / f"{key}.json")
+
+
+def standalone_app_test(func):
+    """Decorator for tests that only exercise Python app state.
+
+    It sets up a minimal :class:`~ngapp.utils.Environment` in
+    ``STANDALONE`` mode with a no-op ``update_component`` so that
+    components can be constructed and updated without a real frontend.
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):  # type: ignore[no-untyped-def]
+        env = set_environment(EnvironmentType.STANDALONE, have_backend=False)
+        # Ignore frontend updates during pure-Python tests
+        env.frontend.update_component = (  # type: ignore[method-assign]
+            lambda *a, **k: None
+        )
+        return func(*args, **kwargs)
+
+    return wrapper

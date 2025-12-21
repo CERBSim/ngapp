@@ -57,6 +57,7 @@ Then explore:
 * :doc:`deployment_environments` – deployment options and compute environments
 * :doc:`tips_and_tricks` – advanced topics and JavaScript/Quasar integration
 * :doc:`api_doc` – full Python API reference and component listings
+* :doc:`testing` – snapshot and end-to-end testing utilities for apps
 
 Contents
 --------
@@ -72,4 +73,5 @@ Contents
       deployment_environments
       tips_and_tricks
       api_doc
+      testing
 

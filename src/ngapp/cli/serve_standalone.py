@@ -121,6 +121,16 @@ def host_local_app(
 
         url = f"http://localhost:{http_port}?backendPort={http_port}&websocketPort={ws_port}"
 
+        # Optional test hook: when running under automated tests, write the
+        # computed URL into a file so that external processes can discover it
+        # without relying on stdout buffering behaviour.
+        url_file = os.environ.get("NGAPP_TEST_URL_FILE")
+        if url_file:
+            try:
+                Path(url_file).write_text(url, encoding="utf-8")
+            except Exception as e:  # pragma: no cover - best effort only
+                print("Failed to write NGAPP_TEST_URL_FILE:", e)
+
         if start_browser:
             default_browser_path = (
                 "/usr/bin/google-chrome-unstable"
