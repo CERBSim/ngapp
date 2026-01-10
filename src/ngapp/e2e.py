@@ -11,11 +11,6 @@ layout at the base URL.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
-from collections.abc import Callable
-
 import functools
 import inspect
 import os
@@ -23,6 +18,11 @@ import subprocess
 import sys
 import tempfile
 import time
+import threading
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+from collections.abc import Callable
 
 import pytest
 from playwright.sync_api import Page
@@ -130,20 +130,84 @@ class LocalAppRunner:
         self.timeout = timeout
         self.extra_args = list(extra_args or [])
         self._proc: subprocess.Popen | None = None
+        self._thread: threading.Thread | None = None
+        self._stop_event: threading.Event | None = None
         self.url: str | None = None
+        # When running the app in-process (for tests), this holds the
+        # live App instance from ``ngapp.cli.serve_standalone``. It is
+        # ``None`` when using the subprocess-based runner.
+        self.app: Any | None = None
 
-    def start(self, url_file: str | Path | None = None) -> str:
+    def start(
+        self,
+        url_file: str | Path | None = None,
+        *,
+        in_process: bool = False,
+    ) -> str:
         """Start the app process and wait until its URL is available.
 
-        The app must be implemented so that running ``python -m app_module``
-        eventually calls :func:`ngapp.cli.serve_standalone.host_local_app`,
-        which writes the computed URL into the file pointed to by
-        ``NGAPP_TEST_URL_FILE``.
+        For subprocess-based tests the app must be implemented so that
+        running ``python -m app_module`` eventually calls
+        :func:`ngapp.cli.serve_standalone.host_local_app`, which writes
+        the computed URL into the file pointed to by
+        ``NGAPP_TEST_URL_FILE``. For in-process tests the URL is
+        delivered via a callback from :func:`host_local_app` instead of
+        using the file hook.
         """
 
-        if self._proc is not None:
+        if self._proc is not None or self._thread is not None:
             raise RuntimeError("LocalAppRunner.start() called twice without stop()")
 
+        # In-process mode: start host_local_app in a background thread
+        # and obtain the computed URL via its url_callback hook.
+        if in_process:
+            from ngapp.cli import serve_standalone
+
+            url_ready = threading.Event()
+            url_holder: list[str] = []
+
+            stop_event = threading.Event()
+            self._stop_event = stop_event
+
+            def _url_callback(u: str) -> None:
+                url_holder.append(u)
+                url_ready.set()
+
+            def _run_app() -> None:
+                serve_standalone.host_local_app(
+                    self.app_module,
+                    start_browser=False,
+                    watch_code=False,
+                    dev_frontend=False,
+                    app_args={},
+                    exit_on_unload=False,
+                    stop_event=stop_event,
+                    url_callback=_url_callback,
+                )
+
+            thread = threading.Thread(target=_run_app, daemon=True)
+            self._thread = thread
+            thread.start()
+
+            start_t = time.time()
+            while not url_ready.is_set():
+                if not thread.is_alive():
+                    raise RuntimeError(
+                        "In-process app thread exited before URL was available"
+                    )
+                if time.time() - start_t > self.timeout:
+                    stop_event.set()
+                    raise TimeoutError("Timed out waiting for in-process app URL")
+                time.sleep(0.1)
+
+            url = url_holder[0]
+            self.url = url
+            # Expose the live App instance from the in-process server.
+            self.app = serve_standalone.app
+            return url
+
+        # Subprocess mode: fall back to the original NGAPP_TEST_URL_FILE
+        # hook used by host_local_app.
         if url_file is None:
             tmp_dir = Path(tempfile.gettempdir())
             url_file = tmp_dir / f"ngapp_e2e_url_{self.app_module.replace('.', '_')}.txt"
@@ -160,13 +224,13 @@ class LocalAppRunner:
         proc = subprocess.Popen(cmd, env=env, text=True)
         self._proc = proc
 
-        start = time.time()
+        start_t = time.time()
         while not url_file.exists():
             if proc.poll() is not None:
                 raise RuntimeError(
                     f"App process exited early with code {proc.returncode}"
                 )
-            if time.time() - start > self.timeout:
+            if time.time() - start_t > self.timeout:
                 proc.terminate()
                 raise TimeoutError("Timed out waiting for app URL file")
             time.sleep(0.1)
@@ -181,18 +245,25 @@ class LocalAppRunner:
 
     def stop(self) -> None:
         """Terminate the app process if it is still running."""
+        # Stop subprocess-based apps if present.
+        if self._proc is not None:
+            proc = self._proc
+            self._proc = None
 
-        if self._proc is None:
-            return
+            proc.terminate()
+            try:
+                proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                proc.kill()
 
-        proc = self._proc
-        self._proc = None
-
-        proc.terminate()
-        try:
-            proc.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            proc.kill()
+        # Stop in-process apps if present.
+        if self._stop_event is not None:
+            self._stop_event.set()
+        if self._thread is not None:
+            self._thread.join(timeout=10)
+        self._thread = None
+        self._stop_event = None
+        self.app = None
 def app_test(
     *dargs: object,
     app_module: str | None = None,
@@ -234,7 +305,10 @@ def app_test(
              page.get_by_label("Length (m)").fill("5")
 
     The decorated test must accept a ``page`` argument so that pytest-
-    Playwright can inject the Playwright :class:`Page` instance.
+    Playwright can inject the Playwright :class:`Page` instance. If the
+    test function also declares an ``app`` parameter, the running
+    :class:`~ngapp.app.App` instance will be provided as a second
+    argument.
     """
 
     # Handle bare ``@app_test`` usage where the function is passed directly.
@@ -247,9 +321,14 @@ def app_test(
         app_module = dargs[0]
 
     def decorator(func: Callable[..., object]) -> Callable[..., object]:
+        sig = inspect.signature(func)
+        # Decide whether the test wants access to the live App
+        # instance; if so, we run the app in-process so we can pass
+        # it into the test as an ``app`` argument.
+        wants_app_arg = "app" in sig.parameters
+
         @functools.wraps(func)
         def wrapper(*args: object, **kwargs: object) -> object:
-            sig = inspect.signature(func)
             bound = sig.bind_partial(*args, **kwargs)
             page = bound.arguments.get("page")
             if page is None:
@@ -267,15 +346,36 @@ def app_test(
 
             runner = LocalAppRunner(
                 app_module=module_name,
+                python_executable=None,
                 timeout=timeout,
                 extra_args=extra_args,
             )
             url = runner.start()
             try:
                 page.goto(url)  # type: ignore[call-arg]
-                return func(*args, **kwargs)
+                call_kwargs = dict(kwargs)
+                if wants_app_arg and "app" not in call_kwargs and getattr(
+                    runner, "app", None
+                ) is not None:
+                    call_kwargs["app"] = runner.app
+                return func(*args, **call_kwargs)
             finally:
                 runner.stop()
+
+        # Pytest inspects the function signature (via ``__wrapped__``)
+        # to determine which fixtures to inject. If the test declares
+        # an ``app`` parameter, we do *not* want pytest to look for an
+        # ``app`` fixture (there is none); instead the decorator
+        # injects the running App instance itself. To avoid a missing
+        # fixture error while keeping type hints for the original test
+        # function, override ``__wrapped__`` with a dummy function that
+        # only declares the ``page`` argument which pytest should
+        # treat as a fixture.
+        if wants_app_arg:
+            def _pytest_signature(page: Page) -> None:  # pragma: no cover - used for introspection only
+                return None
+
+            wrapper.__wrapped__ = _pytest_signature  # type: ignore[attr-defined]
 
         return wrapper
 

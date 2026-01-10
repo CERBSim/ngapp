@@ -8,6 +8,8 @@ import sys
 import time
 import webbrowser
 from pathlib import Path
+from threading import Event
+from collections.abc import Callable
 
 from watchdog.observers import Observer
 
@@ -27,7 +29,7 @@ def dump(data):
         return "could_not_serialize"
 
 
-def watch_python_modules(modules, callback):
+def watch_python_modules(modules, callback, stop_event: Event | None = None):
     observers = []
     handler = EventHandler(lambda: callback(modules))
 
@@ -43,9 +45,11 @@ def watch_python_modules(modules, callback):
             observer.schedule(handler, path, recursive=True)
             observers.append(observer)
             observer.start()
+        # Run until explicitly stopped (for tests) or interrupted (CLI usage).
         while True:
+            if stop_event is not None and stop_event.is_set():
+                break
             time.sleep(1)
-            pass
     except KeyboardInterrupt:
         print("Shutting down")
     except Exception as e:
@@ -83,6 +87,10 @@ def host_local_app(
     watch_code=False,
     dev_frontend=False,
     app_args={},
+    *,
+    exit_on_unload: bool = True,
+    stop_event: Event | None = None,
+    url_callback: Callable[[str], None] | None = None,
 ):
     global app
     env = utils.set_environment(utils.Environment.LOCAL_APP, False)
@@ -100,8 +108,10 @@ def host_local_app(
     from webgpu import platform
 
     start_http_server = not dev_frontend
+    http_process: subprocess.Popen | None = None
 
     def before_wait_for_connection(server):
+        nonlocal http_process
         server = platform.websocket_server
         server.expose("get_component", get_component)
         server.expose("unmount_component", lambda _: None)
@@ -144,6 +154,15 @@ def host_local_app(
                 webbrowser.open("--app=" + url)
         print("Url to run the app:\n", url, "\n")
 
+        # Optional hook for in-process test runners which prefer to
+        # receive the computed URL directly instead of polling a
+        # temporary file.
+        if url_callback is not None:
+            try:
+                url_callback(url)
+            except Exception as e:  # pragma: no cover - best effort only
+                print("Failed to call url_callback:", e)
+
     platform.init(before_wait_for_connection)
     from webgpu import platform
 
@@ -153,7 +172,11 @@ def host_local_app(
                 on_exit_handler()
             except Exception as e:
                 print("Error in on_exit handler:", e)
-        os._exit(0)
+        # In normal CLI usage we exit the whole process. For tests or
+        # embedded usage, ``exit_on_unload`` can be set to ``False`` so
+        # that the caller controls shutdown.
+        if exit_on_unload:
+            os._exit(0)
 
     platform.js.addEventListener(
         "unload",
@@ -168,11 +191,22 @@ def host_local_app(
     else:
         watch_modules = []
 
-    # this is blocking until a KeyboardInterrupt occurs
+    # this is blocking until a KeyboardInterrupt occurs (CLI) or until
+    # ``stop_event`` is set (tests / embedded usage).
     watch_python_modules(
         watch_modules,
         lambda modules: reload_app(app_module, modules),
+        stop_event=stop_event,
     )
+
+    # Gracefully shut down the frontend and backend servers.
+    if http_process is not None:
+        http_process.terminate()
+        try:
+            http_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            http_process.kill()
+
     platform.js.close()
     platform.websocket_server.stop()
 

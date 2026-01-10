@@ -38,11 +38,12 @@ class InputChangeApp(App):
         )
         self.button = QBtn(ui_label="Solve", ui_color="primary")
         self.result_label = Label("Result: waiting")
-
+        self.reset_button = QBtn(ui_label="Reset", ui_color="warning")
+        self.reset_button.on_click(self.reset)
 
         self.button.on_click(self._on_click)
 
-        root = Col(self.length, self.width, self.button, self.result_label)
+        root = Col(self.length, self.width, self.button, self.result_label, self.reset_button)
         super().__init__(component=root, name="Local area demo")
         self.length.ui_model_value = self.usersettings.get("last_length", 5)
         # Remember the last used length across sessions via usersettings

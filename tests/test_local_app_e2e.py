@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from playwright.sync_api import Page
 
+from ngapp.app import App
 from ngapp.e2e import app_test
 
 
@@ -47,8 +48,9 @@ def test_local_app_usersettings_persists_length(page: Page) -> None:
     # Give the client<->Python roundtrip a short moment
     page.wait_for_timeout(100)
 
-    from ngapp.cli.serve_standalone import app
-    app.reset()
+    # Reset the running app instance so that a fresh frontend session
+    # will load persisted usersettings from disk.
+    page.get_by_role("button", name="Reset").click()
 
     page.wait_for_timeout(100)
 
