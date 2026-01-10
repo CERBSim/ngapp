@@ -20,6 +20,7 @@ from zipfile import ZipFile
 
 import orjson
 import pydantic
+from platformdirs import user_config_dir
 
 from . import api
 
@@ -369,6 +370,155 @@ def read_json(filename: str | Path) -> dict:
 def write_json(data: dict, filename: str | Path) -> None:
     """Write a file from the filesystem"""
     Path(filename).write_bytes(orjson.dumps(data))
+
+
+def _get_user_config_dir(app_name: str = "ngapp") -> Path:
+    """Return a cross-platform user configuration directory for ngapp.
+
+    This uses platformdirs.user_config_dir, which follows the
+    appropriate conventions on each supported operating system.
+    """
+
+    return Path(user_config_dir(app_name))
+
+
+def _sanitize_app_id(app_id: str) -> str:
+    """Sanitize an app identifier so it can be used as a folder name."""
+
+    # Replace path separators and a few other problematic characters
+    for ch in (os.sep, os.altsep, ":", " "):
+        if ch:
+            app_id = app_id.replace(ch, "_")
+    return app_id
+
+
+def default_usersettings_dir(app_id: str, app_name: str = "ngapp") -> Path:
+    """Return the default directory for storing user-wide settings of an app.
+
+    The directory is placed inside the ngapp user config directory and named
+    after the given app_id (sanitized to be filesystem-safe).
+    """
+
+    safe_id = _sanitize_app_id(app_id)
+    return _get_user_config_dir(app_name) / safe_id
+
+
+def default_usersettings_path(app_id: str, app_name: str = "ngapp") -> Path:
+    """Return the default *config.json* path for an app's user settings."""
+
+    return default_usersettings_dir(app_id, app_name) / "config.json"
+
+
+class SettingsFile:
+    """JSON-backed key/value store for small settings files.
+
+    This is a generic helper that loads and saves a JSON file on demand
+    and exposes ``get``, ``set`` and ``update`` utilities. It is used by
+    :class:`UserSettings` for both the main ``config.json`` and any
+    additional JSON settings files in the app's settings directory.
+    """
+
+    def __init__(self, path: Path):
+        self._path = path
+        self._data: dict = {}
+        self._loaded = False
+
+    @property
+    def path(self) -> Path:
+        return self._path
+
+    def _load(self) -> None:
+        if self._loaded:
+            return
+        self._loaded = True
+        try:
+            if self._path.exists():
+                self._data = orjson.loads(self._path.read_bytes())
+            else:
+                self._data = {}
+        except Exception:
+            # On any error, fall back to empty settings to avoid
+            # breaking the UI.
+            self._data = {}
+
+    def _save(self) -> None:
+        self._path.parent.mkdir(parents=True, exist_ok=True)
+        self._path.write_bytes(orjson.dumps(self._data))
+
+    def get(self, key: str, default=None):
+        """Get a setting by key, returning default if missing."""
+
+        self._load()
+        return self._data.get(key, default)
+
+    def set(self, key: str, value, *, autosave: bool = True) -> None:
+        """Set a setting value and persist it (by default)."""
+
+        self._load()
+        self._data[key] = value
+        if autosave:
+            self._save()
+
+    def update(self, key: str):
+        """Return a handler suitable for on_update_model_value.
+
+        Example::
+
+            nthreads = QInput(
+                ui_label="Number of Threads",
+                ui_model_value=app.usersettings.get("nthreads", default=None),
+            )
+            nthreads.on_update_model_value(
+                app.usersettings.update("nthreads")
+            )
+        """
+
+        def _handler(event):
+            # Components usually pass an Event with a .value attribute,
+            # but allow raw values as well for flexibility.
+            value = getattr(event, "value", event)
+            self.set(key, value)
+
+        return _handler
+
+
+class UserSettings(SettingsFile):
+    """Simple persistent storage for user-wide, per-app settings.
+
+    Each app gets its own subfolder within the ngapp user config directory,
+    and the main settings are stored in ``config.json`` inside that folder.
+
+    Additional JSON settings files for the same app can be created via
+    :meth:`json_file`.
+    """
+
+    def __init__(
+        self,
+        app_id: str,
+        path: Path | None = None,
+        app_name: str = "ngapp",
+    ):
+        self.app_id = app_id
+        self._dir = default_usersettings_dir(app_id, app_name)
+        settings_path = path or (self._dir / "config.json")
+        super().__init__(settings_path)
+
+    @property
+    def directory(self) -> Path:
+        """Directory that contains this app's JSON settings files."""
+
+        return self._dir
+
+    def json_file(self, name: str) -> "SettingsFile":
+        """Return a SettingsFile wrapper for an additional JSON file.
+
+        The file is created on first save. ``.json`` is appended to
+        *name* if it does not already end with it.
+        """
+
+        if not name.endswith(".json"):
+            name = f"{name}.json"
+        return SettingsFile(self._dir / name)
 
 
 def read_file(filename: str | Path) -> str:

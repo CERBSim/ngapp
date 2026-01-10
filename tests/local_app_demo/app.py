@@ -39,10 +39,16 @@ class InputChangeApp(App):
         self.button = QBtn(ui_label="Solve", ui_color="primary")
         self.result_label = Label("Result: waiting")
 
+
         self.button.on_click(self._on_click)
 
         root = Col(self.length, self.width, self.button, self.result_label)
         super().__init__(component=root, name="Local area demo")
+        self.length.ui_model_value = self.usersettings.get("last_length", 5)
+        # Remember the last used length across sessions via usersettings
+        self.length.on_update_model_value(
+            self.usersettings.update("last_length")
+        )
 
     def _on_click(self):
         """Handle button clicks by computing and displaying the area."""

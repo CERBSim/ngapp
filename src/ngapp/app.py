@@ -30,6 +30,7 @@ from .components.basecomponent import (
 from .utils import (
     ComputeEnvironment,
     EnvironmentType,
+    UserSettings,
     call_js,
     get_environment,
     is_pyodide,
@@ -245,6 +246,7 @@ class App:
     metadata: dict
     _default_data: dict | None
     _status: AppStatus
+    _usersettings: UserSettings | None = None
 
     def __init__(self, component: Component | None = None, name=None):
         self.metadata = {"name": name}
@@ -252,6 +254,7 @@ class App:
         self._status = AppStatus()
         self._status.app = self
         self._on_exit_handlers = []
+        self._usersettings: UserSettings | None = None
 
         if component is not None:
             self.component = component
@@ -269,6 +272,24 @@ class App:
         This is useful for cleanup tasks or saving state.
         """
         self._on_exit_handlers.append(handler)
+
+    @property
+    def usersettings(self) -> UserSettings:
+        """Per-user, per-app persistent settings.
+
+        Settings are backed by ``config.json`` in a per-app subfolder
+        of the user-wide ngapp configuration directory and keyed by
+        simple strings, e.g. "nthreads".
+        """
+
+        if self._usersettings is None:
+            # Use a stable identifier for the app; fall back to the
+            # fully qualified class name if no name is set.
+            app_id = self.metadata.get("name") or (
+                self.__class__.__module__ + "." + self.__class__.__name__
+            )
+            self._usersettings = UserSettings(app_id=app_id)
+        return self._usersettings
 
     @property
     def assets_path(self) -> Path:

@@ -15,6 +15,7 @@ with Concepts & Architecture and Components.
    concepts_architecture
    components
    visualization
+   user_settings
    deployment_environments
    testing
    tips_and_tricks
