@@ -572,6 +572,8 @@ class Component(metaclass=BlockFrontendUpdate):
                 raise RuntimeError(
                     "Parent of component is not set", self._id, type(self)
                 )
+            if parent._namespace_id is None:
+                parent._calc_namespace_id()
             self._namespace_id = (
                 parent._fullid if parent._namespace else parent._namespace_id
             )
