@@ -145,7 +145,7 @@ class Storage:
     def _decode(self, value: bytes, type_: str) -> str | dict | list | bytes:
         if type_ == "str":
             return value.decode("utf-8")
-        if type_ == "bytes":
+        if type_ in ["bytes", "pickle"]:
             return value
         return orjson.loads(value)
 

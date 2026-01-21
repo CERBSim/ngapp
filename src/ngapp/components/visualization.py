@@ -7,7 +7,7 @@ from typing import Any, Callable
 
 import numpy as np
 
-from ..utils import read_file, write_file
+from ..utils import get_environment, read_file, write_file, EnvironmentType
 from .basecomponent import Component
 from .helper_components import Col, Div, Event, NumberInput, Row
 from .qcomponents import QBtn, QBtnGroup, QInput, QSlider, QToggle, QTooltip
@@ -711,6 +711,9 @@ class WebgpuComponent(Component):
         self.on_load(self.__on_load)
 
     def __on_load(self):
+        env = get_environment()
+        if env.type == EnvironmentType.COMPUTE:
+            return
         scene = self.storage.get("scene")
         if scene is not None:
             self.draw(scene)
@@ -758,7 +761,15 @@ class WebgpuComponent(Component):
             scene = draw.Scene([scene], camera=camera, light=light)
         elif isinstance(scene, list):
             scene = draw.Scene(scene, camera=camera, light=light)
-        if self.canvas:
+
+        # env = self._status.env
+        env = get_environment()
+        if env.type == EnvironmentType.COMPUTE:
+            # we store the sence in storage for later retrieval
+            if self._id:
+                self.storage.set("scene", scene, use_pickle=True)
+            self.scene = scene
+        elif self.canvas:
             if self.scene not in [None, scene]:
                 self.scene.cleanup()
             self.scene = draw.Draw(scene, self.canvas, lilgui=False)

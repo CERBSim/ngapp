@@ -156,7 +156,7 @@ class EnvironmentType(str, Enum):
     Environment type
     PYODIDE: Environment is a frontend (running with pyodide in the browser)
     COMPUTE: We are running a compute function on a separate compute node
-    APP: Backend serves one app locally
+    LOCAL_APP: Backend serves one app locally
     STANDALONE: Standalone mode with no frontend, used for testing
     """
 
@@ -230,6 +230,10 @@ class Environment:
         self.backend_api_url = api_url
         self.backend_api_token = api_token
         self.backend_api_client_id = client_id
+
+    @property
+    def is_backend(self) -> bool:
+        return self.type == EnvironmentType.BACKEND or self.type == EnvironmentType.COMPUTE
 
     def update_component(
         self,
