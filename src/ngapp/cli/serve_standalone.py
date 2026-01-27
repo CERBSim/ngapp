@@ -188,6 +188,8 @@ def host_local_app(
         watch_modules = [app_module.split(".")[0]]
         if isinstance(watch_code, list):
             watch_modules += watch_code
+        elif isinstance(watch_code, str):
+            watch_modules += [mod.strip() for mod in watch_code.split(",")]
     else:
         watch_modules = []
 
@@ -230,8 +232,11 @@ def main(app_module=None):
     )
     args.add_argument(
         "--dev",
-        help="Development mode - watch for changes in the app code and does automatic reloading",
-        action="store_true",
+        help="Development mode - watch for changes in the app code (and additionally provided modules) and does automatic reloading",
+        nargs="?",
+        const=True,
+        default=False,
+        metavar="MODULES",
     )
     args = args.parse_args()
 
