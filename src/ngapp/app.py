@@ -313,6 +313,26 @@ class App:
         """See Component.quasar for full documentation."""
         return self.component.quasar
 
+    def download_file(
+        self,
+        data: bytes,
+        filename: str,
+        mime_type: str = "application/octet-stream",
+    ):
+        import base64
+        from .utils import print_exception
+
+        if callback := self.component._js_callbacks.get("download", None):
+            ret = callback(
+                dict(
+                    encoded_data=base64.b64encode(data).decode("utf-8"),
+                    filename=filename,
+                    applicationType=mime_type,
+                )
+            )
+            if ret:
+                ret.catch(print_exception)
+
     def set_colors(
         self,
         primary: str | None = None,
