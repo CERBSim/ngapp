@@ -772,6 +772,13 @@ class Component(metaclass=BlockFrontendUpdate):
     ):
         return self.on("save", func, arg)
 
+    def on_before_load(
+        self,
+        func: Callable[[dict], None] | Callable[[], None],
+        arg: object = None,
+    ):
+        return self.on("before_load", func, arg)
+
     def on_load(
         self,
         func: Callable[[dict], None] | Callable[[], None],
@@ -888,6 +895,7 @@ class Component(metaclass=BlockFrontendUpdate):
 
             if comp._id in data:
                 comp._block_frontend_update = True
+                comp._emit("before_load", data[comp._id])
                 comp.load(data[comp._id])
                 if update_frontend:
                     comp._update_frontend()
