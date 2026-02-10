@@ -128,7 +128,7 @@ class Storage:
     _needs_save: set[str]
     _component: C
 
-    def __init__(self, component: C):
+    def __init__(self, component: C | "ngapp.App"):
         self._component = component
         self._data = {}
         self._metadata = _StorageMetadata(entries={})
@@ -155,6 +155,16 @@ class Storage:
     def _dump_data(self):
         return copy.deepcopy(self._data)
 
+    def dump(self, include_data=False):
+        metadata = self._dump_metadata()
+        if include_data:
+            return {
+                "_have_data": True,
+                "data": self._dump_data(),
+                "metadata": metadata,
+            }
+        return metadata
+
     def _load_metadata(self, data):
         self._metadata = _StorageMetadata(entries=data)
 
@@ -172,6 +182,15 @@ class Storage:
             local_path = _local_storage_path / mdata.hash
             if not local_path.exists() and key in self._data:
                 local_path.write_bytes(self._encode(self._data[key]))
+
+    def _load_data(self, data: dict | None):
+        if data is None:
+            return
+        if data.get("_have_data", False):
+            self._load_metadata(data["metadata"])
+            self._data = copy.deepcopy(data["data"])
+        else:
+            self._load_metadata(data)
 
     def load(self, key: str):
         if not get_environment().have_backend:
@@ -228,6 +247,8 @@ class Storage:
         use_pickle=False,
     ):
         """Set data in storage"""
+        from ..app import App
+
         if use_pickle:
             value = pickle.dumps(value)
             type_ = "pickle"
@@ -242,11 +263,16 @@ class Storage:
             old_hash = self._metadata.get(key).hash
 
         self._data[key] = copy.deepcopy(value)
+        fullid = (
+            "__app__"
+            if isinstance(self._component, App)
+            else self._component._fullid
+        )
         self._metadata.set(
             key,
             self._encode(value),
             type_,
-            id=self._encode(self._component._fullid),
+            id=self._encode(fullid),
         )
         self._needs_save.add(key)
         if old_hash and old_hash != self._metadata.get(key):
@@ -820,15 +846,7 @@ class Component(metaclass=BlockFrontendUpdate):
             if comp._id in data:
                 raise RuntimeError("Duplicate keys in components", comp._id)
 
-            metadata = comp.storage._dump_metadata()
-            if include_data:
-                data[comp._id] = {
-                    "_have_data": True,
-                    "data": comp.storage._dump_data(),
-                    "metadata": metadata,
-                }
-            else:
-                data[comp._id] = metadata
+            data[comp._id] = comp.storage.dump(include_data)
             return data
 
         data = {}
@@ -851,13 +869,7 @@ class Component(metaclass=BlockFrontendUpdate):
             if not comp._id:
                 return data
 
-            if comp._id in data:
-                comp_data = data[comp._id]
-                if comp_data.get("_have_data", False):
-                    comp.storage._load_metadata(comp_data["metadata"])
-                    comp.storage._data = copy.deepcopy(comp_data["data"])
-                else:
-                    comp.storage._load_metadata(comp_data)
+            comp.storage._load_data(data.get(comp._id, None))
             return data
 
         self._recurse(func, True, set(), data)

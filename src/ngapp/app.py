@@ -24,6 +24,7 @@ from . import api, utils
 from .components.basecomponent import (
     AppStatus,
     Component,
+    Storage,
     reset_components,
     _QProxy,
 )
@@ -255,6 +256,7 @@ class App:
         self._status.app = self
         self._on_exit_handlers = []
         self._usersettings: UserSettings | None = None
+        self.storage = Storage(self)
 
         if component is not None:
             self.component = component
@@ -405,7 +407,13 @@ class App:
             "storage": self.component._dump_storage(include_storage_data),
         }
 
-        return {"component": component_data, "metadata": self.metadata}
+        storage = self.storage.dump(include_storage_data)
+
+        return {
+            "component": component_data,
+            "metadata": self.metadata,
+            "storage": storage,
+        }
 
     def save(self):
         """Save data to backend"""
@@ -430,6 +438,7 @@ class App:
 
         api.put(f"/model/{status.file_id}", self.dump())
         self.component._emit_recursive("save")
+        self.storage.save()
 
         if env.type == EnvironmentType.PYODIDE:
             env.frontend.set_query_parameter("fileId", status.file_id)
@@ -474,10 +483,14 @@ class App:
             "component", data.get("data", {}).get("component", {})
         )
 
+        self.storage._load_data(data.get("storage", None))
+
         if metadata:
             self.metadata.update(metadata)
             self._status.app_id = metadata.get("app_id", None)
             self._status.file_id = metadata.get("id", None)
+
+        self.component._emit_recursive("on_before_load")
 
         if "storage" in component_data:
             self.component._load_storage(component_data["storage"])
