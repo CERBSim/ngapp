@@ -23,7 +23,7 @@ from ..utils import (
     time_now,
 )
 
-_component_counter = itertools.count()
+_component_counter = itertools.count(1)
 _components = {}
 _components_with_id = {}
 
