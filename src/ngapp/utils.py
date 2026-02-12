@@ -784,7 +784,7 @@ def compute_node(
                         api.post(
                             "/job",
                             {
-                                "file_id": app.metadata["id"],
+                                "file_id": app._status.file_id,
                                 "compute_env": compute_env,
                                 "comp_id": comp_id,
                                 "func": f.__name__,

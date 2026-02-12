@@ -765,7 +765,7 @@ class WebgpuComponent(Component):
         # env = self._status.env
         env = get_environment()
         if env.type == EnvironmentType.COMPUTE:
-            # we store the sence in storage for later retrieval
+            # we store the scene in storage for later retrieval
             if self._id:
                 self.storage.set("scene", scene, use_pickle=True)
             self.scene = scene
