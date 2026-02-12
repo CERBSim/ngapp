@@ -511,6 +511,8 @@ class App:
 
         def unblock_frontend_update(comp):
             comp._block_frontend_update = False
+            if comp._namespace_id is None:
+                comp._calc_namespace_id()
 
         self.component._recurse(unblock_frontend_update, True, set())
         if is_pyodide() and update_frontend:

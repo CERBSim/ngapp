@@ -44,8 +44,7 @@ def get_component(index: int):
 
 def unmount_component(index: int):
     if index in _components:
-        c = _components[index]
-        c._emit_recursive("unmount")
+        _components[index]._handle("unmount")
 
 
 def reset_components():
@@ -936,11 +935,19 @@ class Component(metaclass=BlockFrontendUpdate):
             visited=set(),
         )
         return None
+        
+    def _set_parent(self, parent):
+        changed = self._parent != parent
+        self._parent = parent
+        self._status = parent._status
+        
+        if changed and self._status:
+            self._namespace_id = None
+            self._calc_namespace_id()
 
     def _set_parent_recursive(self, parent):
         """Set parent for all components"""
-        self._parent = parent
-        self._status = parent._status
+        self._set_parent(parent)
 
         def func(comp):
             for slot in comp.ui_slots.values():
@@ -948,8 +955,7 @@ class Component(metaclass=BlockFrontendUpdate):
                     continue
                 for child in slot:
                     if not isinstance(child, str):
-                        child._parent = comp
-                        child._status = comp._status
+                        child._set_parent(parent)
 
         self._recurse(func, True, set())
 
