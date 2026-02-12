@@ -490,7 +490,7 @@ class App:
             self._status.app_id = metadata.get("app_id", None)
             self._status.file_id = metadata.get("id", None)
 
-        self.component._emit_recursive("on_before_load")
+        self.component._emit_recursive("before_load")
 
         if "storage" in component_data:
             self.component._load_storage(component_data["storage"])
