@@ -60,7 +60,7 @@ def asset(filename: Path | str, binary: bool | None = None, module=None) -> str:
         raise FileNotFoundError(f"Asset file {filename} not found.")
 
     if binary is None:
-        binary = filename.suffix in [".png", ".jpg", ".jpeg", ".gif", ".svg"]
+        binary = filename.suffix in [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"]
 
     if binary:
         data = base64.b64encode(read_file_binary(filename)).decode("ascii")
