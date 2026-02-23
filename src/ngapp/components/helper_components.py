@@ -8,10 +8,9 @@ from typing import Callable, Literal
 from .. import api
 from ..utils import (
     Job,
-    copy_simulation,
     is_pyodide,
-    load_simulation,
-    new_simulation,
+    load_file_backend,
+    new_file,
     set_directory,
     temp_dir_with_files,
 )
@@ -714,37 +713,6 @@ class SaveSimulationButton(QBtn):
         self.on("click", self.app.save)
 
 
-class CopySimulationButton(QBtn):
-    """Helper class to copy a simulation"""
-
-    def __init__(
-        self,
-        app,
-        ui_tooltip="Copy",
-        ui_icon="mdi-content-copy",
-        ui_flat=True,
-        *args,
-        **kwargs,
-    ):
-        super().__init__(
-            QTooltip(ui_tooltip),
-            ui_icon=ui_icon,
-            ui_flat=ui_flat,
-            *args,
-            **kwargs,
-        )
-        self.app = app
-        self.on("click", self.__on_click)
-
-    def __on_click(self):
-        data = self.app.dump()
-        name = data["metadata"].get("name", "")
-        if name:
-            name += " (copy)"
-        data["metadata"]["name"] = name
-        copy_simulation(data)
-
-
 class RunSimulationButton(QBtn):
     """Helper class to run a simulation"""
 
@@ -800,7 +768,7 @@ class SimulationTable(QTable):
 
     def _load_simulation(self, event: Event):
         file_id = event.arg["file_id"]
-        load_simulation(file_id)
+        load_file_backend(file_id)
         if self.ui_dialog:
             self.ui_dialog.ui_hide()
             self.ui_dialog.app.load(api.get(f"/model/{file_id}"))

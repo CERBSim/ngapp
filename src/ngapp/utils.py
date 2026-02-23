@@ -24,12 +24,47 @@ from platformdirs import user_config_dir
 
 from . import api
 
+_TRACING = False
+
 
 def calc_hash(*data):
     hash_ = hashlib.sha256()
     for d in data:
         hash_.update(d)
     return hash_.hexdigest()
+
+
+_counts = {}
+
+
+def _count_calls(f):
+    if not _TRACING:
+        return f
+
+    def wrapper(*args, **kwargs):
+        _counts[f.__name__] = _counts.get(f.__name__, 0) + 1
+        return f(*args, **kwargs)
+
+    return wrapper
+
+
+def _reset_counts():
+    if not _TRACING:
+        return
+    _counts.clear()
+
+
+def _print_counts():
+    if not _TRACING:
+        return
+    for name in sorted(_counts):
+        print(f"\t{name:<30}: {_counts[name]}")
+
+
+def _trace_call(name):
+    if not _TRACING:
+        return
+    _counts[name] = _counts.get(name, 0) + 1
 
 
 class BaseFrontend:
@@ -49,6 +84,7 @@ class BaseFrontend:
 
 
 class BrowserFrontend(BaseFrontend):
+    @_count_calls
     def update_component(self, comp, data, method):
         if method not in comp._js_callbacks:
             return
@@ -233,7 +269,10 @@ class Environment:
 
     @property
     def is_backend(self) -> bool:
-        return self.type == EnvironmentType.BACKEND or self.type == EnvironmentType.COMPUTE
+        return (
+            self.type == EnvironmentType.BACKEND
+            or self.type == EnvironmentType.COMPUTE
+        )
 
     def update_component(
         self,
@@ -844,24 +883,47 @@ def compute_node(
         return decorator(_func)
 
 
-def new_simulation():
-    """Create a new simulation"""
-    import webapp_frontend
-
-    webapp_frontend.set_file_id()
-
-
-def load_simulation(file_id: str):
-    """Load a simulation from file id"""
-    env = get_environment()
-    env.frontend.set_query_parameter("fileId", file_id)
+def replace_app(new_app):
+    """Replace the current app instance with a new one"""
+    env = get_environment().frontend
+    env.reset_app(new_app)
+    env.set_query_parameter("fileId", new_app.metadata.get("id", None))
+    # new_app._status.file_id = None
+    return new_app
 
 
-def copy_simulation(data: dict):
-    """Create a new simulation and copy the data"""
-    import webapp_frontend
+def new_file(app, data=None):
+    """Create a new file"""
+    env = get_environment().frontend
+    env.set_query_parameter("fileId", None)
+    new_app = app.__class__()
+    data = data or {}
+    new_app.load(data)
+    replace_app(new_app)
+    return new_app
 
-    webapp_frontend.copy_simulation(data)
+
+def load_file_backend(file_id: str):
+    """Load a file from backend with given file id"""
+    from .app import loadModel
+
+    data = api.get(f"/model/{file_id}")
+    app_id = data["metadata"]["app_id"]
+    app = loadModel(app_id, data)
+    replace_app(app)
+    return app
+
+
+def copy_file(app):
+    """Create a new file and copy the data"""
+    data = app.dump()
+    name = data["metadata"].get("name", "")
+    if name:
+        name += " (copy)"
+    data["metadata"]["name"] = name
+    data["metadata"].pop("file_id", None)
+    data["metadata"].pop("id", None)
+    new_file(app, data)
 
 
 def print_exception(ex, file=sys.stderr):

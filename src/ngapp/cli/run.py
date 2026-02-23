@@ -237,7 +237,7 @@ def main():
             raise RuntimeError(f"Function {func_name} not found in model")
         func = getattr(model, func_name)
 
-    if not func.__is_compute_node_function:
+    if not hasattr(func, "__is_compute_node_function"):
         raise RuntimeError(
             f"Function {func} not allowed in backend computation"
         )

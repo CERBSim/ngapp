@@ -23,6 +23,8 @@ from ..utils import (
     time_now,
 )
 
+from .. import utils
+
 _component_counter = itertools.count(1)
 _components = {}
 _components_with_id = {}
@@ -336,6 +338,7 @@ class Component(metaclass=BlockFrontendUpdate):
     _keybindings: List[Tuple[str, Callable, dict]]
     storage: Storage
 
+    @utils._count_calls
     def __init__(
         self,
         component: str,
@@ -592,6 +595,7 @@ class Component(metaclass=BlockFrontendUpdate):
 
     def _calc_namespace_id(self):
         if self._namespace_id is None:
+            utils._trace_call("_calc_namespace_id")
             parent = self._parent
             if parent is None:
                 raise RuntimeError(
@@ -610,6 +614,7 @@ class Component(metaclass=BlockFrontendUpdate):
     @property
     def _fullid(self):
         if self._namespace_id is None:
+            utils._trace_call("_calc_namespace_id._fullid")
             self._calc_namespace_id()
 
         if not self._id:
@@ -619,12 +624,14 @@ class Component(metaclass=BlockFrontendUpdate):
             return self._namespace_id + "." + self._id
         return self._id
 
+    @utils._count_calls
     def _set_prop(self, key: str, value):
         old_value = self._props.get(key, None)
         self._props[key] = value
         if value != old_value:
             self._update_frontend({"props": {key: value}})
 
+    @utils._count_calls
     def _set_slot(self, key: str, value):
         self.ui_slots[key] = value
         if isinstance(value, list):
@@ -688,6 +695,7 @@ class Component(metaclass=BlockFrontendUpdate):
             "type": self.component,
         }
 
+    @utils._count_calls
     def _update_frontend(self, data=None, method="update_frontend"):
         environment = get_environment()
         environment.frontend.update_component(self, data, method)
@@ -711,6 +719,7 @@ class Component(metaclass=BlockFrontendUpdate):
             if ret:
                 ret.catch(print_exception)
 
+    @utils._count_calls
     def on(
         self,
         events: str | list,
@@ -743,6 +752,7 @@ class Component(metaclass=BlockFrontendUpdate):
             self._callbacks[event].append(wrapper)
         return self
 
+    @utils._count_calls
     def on_mounted(
         self,
         func: Callable[[dict], None] | Callable[[], None],
@@ -750,6 +760,7 @@ class Component(metaclass=BlockFrontendUpdate):
     ):
         return self.on("mounted", func, arg)
 
+    @utils._count_calls
     def on_unmount(
         self,
         func: Callable[[dict], None] | Callable[[], None],
@@ -757,6 +768,7 @@ class Component(metaclass=BlockFrontendUpdate):
     ):
         return self.on("unmount", func, arg)
 
+    @utils._count_calls
     def on_before_save(
         self,
         func: Callable[[dict], None] | Callable[[], None],
@@ -764,6 +776,7 @@ class Component(metaclass=BlockFrontendUpdate):
     ):
         return self.on("before_save", func, arg)
 
+    @utils._count_calls
     def on_save(
         self,
         func: Callable[[dict], None] | Callable[[], None],
@@ -771,6 +784,7 @@ class Component(metaclass=BlockFrontendUpdate):
     ):
         return self.on("save", func, arg)
 
+    @utils._count_calls
     def on_before_load(
         self,
         func: Callable[[dict], None] | Callable[[], None],
@@ -903,12 +917,16 @@ class Component(metaclass=BlockFrontendUpdate):
         self._recurse(func, True, set(), data)
         self._block_frontend_update = False
 
+    @utils._count_calls
     def _recurse(
         self, func: Callable, parent_first: bool, visited: set, arg=None
     ):
         """Recursively call function for all components"""
+        if len(visited) == 0:
+            utils._trace_call("_recurse.start")
 
         if self in visited:
+            utils._trace_call("_recurse.alread_visited")
             return
         visited.add(self)
 
@@ -927,6 +945,7 @@ class Component(metaclass=BlockFrontendUpdate):
         if not parent_first:
             arg = func(self) if arg is None else func(self, arg)
 
+    @utils._count_calls
     def _emit_recursive(self, event, value: Optional[dict] = None) -> None:
         """Emit event to all components"""
         self._recurse(
@@ -935,16 +954,21 @@ class Component(metaclass=BlockFrontendUpdate):
             visited=set(),
         )
         return None
-        
+
+    @utils._count_calls
     def _set_parent(self, parent):
-        changed = self._parent != parent
+        changed = (
+            self._parent != parent
+            and self._namespace_id != parent._namespace_id
+        )
         self._parent = parent
         self._status = parent._status
-        
         if changed and self._status and not self._block_frontend_update:
+            utils._trace_call("_calc_namespace_id._set_parent")
             self._namespace_id = None
             self._calc_namespace_id()
 
+    @utils._count_calls
     def _set_parent_recursive(self, parent):
         """Set parent for all components"""
         self._set_parent(parent)
@@ -962,12 +986,15 @@ class Component(metaclass=BlockFrontendUpdate):
     def _clear_js_callbacks(self):
         self._js_callbacks = {}
 
+    @utils._count_calls
     def _set_js_component(self, js_comp):
         self._js_component = js_comp
 
+    @utils._count_calls
     def _set_js_callback(self, name, func):
         self._js_callbacks[name] = func
 
+    @utils._count_calls
     def _get_my_wrapper_props(self, *args, **kwargs):
         return {"compId": self._index}
 

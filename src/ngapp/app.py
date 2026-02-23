@@ -39,6 +39,7 @@ from .utils import (
     read_file_binary,
     read_json,
     save_file_local,
+    replace_app,
 )
 
 
@@ -643,13 +644,22 @@ document.get_quasar_obj = (name) =>
 BaseModel = App
 
 
-def replace_app(new_app):
-    env = get_environment()
-    env.frontend.reset_app(new_app)
+_app_cache = {}
+
+
+def get_app_metadata(app_id):
+    app_id = str(app_id)
+
+    if app_id not in _app_cache:
+        apps = api.get("/get_available_applications")
+        _app_cache.clear()
+        _app_cache.update(apps)
+    return _app_cache[app_id]
 
 
 def reload_package(package_name):
     """Reload python package and all submodules (searches in modules for references to other submodules)"""
+    _app_cache.clear()
     package = importlib.import_module(package_name)
     assert hasattr(package, "__package__")
     file_name = package.__file__
@@ -688,6 +698,10 @@ def loadModel(
     app_args={},
 ):
     """Load model from data"""
+    utils._print_counts()
+    utils._reset_counts()
+    if isinstance(app_metadata, (int, str)):
+        app_metadata = get_app_metadata(app_metadata)
 
     reloaded_modules = {}
     for m in reload_python_modules:
@@ -713,6 +727,8 @@ def loadModel(
             "python_class": app_metadata["python_class"],
         }
     app.load(data=data, load_local_storage=load_local_storage)
+    utils._print_counts()
+    utils._reset_counts()
     return app
 
 
