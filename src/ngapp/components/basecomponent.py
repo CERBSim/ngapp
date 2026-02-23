@@ -941,7 +941,7 @@ class Component(metaclass=BlockFrontendUpdate):
         self._parent = parent
         self._status = parent._status
         
-        if changed and self._status:
+        if changed and self._status and not self._block_frontend_update:
             self._namespace_id = None
             self._calc_namespace_id()
 
