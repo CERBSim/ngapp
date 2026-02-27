@@ -12,7 +12,7 @@ from pydantic import BaseModel
 
 from .. import api
 from .._version import version
-from ..app import loadModel
+from ..app import create_app
 from ..utils import (
     EnvironmentType,
     _get_app_assets,
@@ -211,7 +211,7 @@ def main():
     env = get_environment()
     env.set_backend(data.api_url, data.api_token)
 
-    model = loadModel(
+    model = create_app(
         data.app,
         {"component": data.load_file_data(), "metadata": data.load_file()},
     )

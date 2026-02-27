@@ -63,3 +63,15 @@ def put(url, data):
 
 def delete(url, data=None):
     return _request("DELETE", url, data)
+
+
+def load_file(file_id: str):
+    """Load a file from backend with given file id"""
+    from .app import create_app
+    from .utils import replace_app
+
+    data = get(f"/model/{file_id}")
+    app_id = data["metadata"]["app_id"]
+    app = create_app(app_id, data)
+    replace_app(app)
+    return app

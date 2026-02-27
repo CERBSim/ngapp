@@ -66,6 +66,7 @@ class NgAppSession:
             return
         locator.wait_for(state="hidden", timeout=eff_timeout)
 
+
 class LocalAppRunner:
     """Helper to start and stop a local ngapp application for tests.
 
@@ -156,7 +157,9 @@ class LocalAppRunner:
         """
 
         if self._proc is not None or self._thread is not None:
-            raise RuntimeError("LocalAppRunner.start() called twice without stop()")
+            raise RuntimeError(
+                "LocalAppRunner.start() called twice without stop()"
+            )
 
         # In-process mode: start host_local_app in a background thread
         # and obtain the computed URL via its url_callback hook.
@@ -197,7 +200,9 @@ class LocalAppRunner:
                     )
                 if time.time() - start_t > self.timeout:
                     stop_event.set()
-                    raise TimeoutError("Timed out waiting for in-process app URL")
+                    raise TimeoutError(
+                        "Timed out waiting for in-process app URL"
+                    )
                 time.sleep(0.1)
 
             url = url_holder[0]
@@ -210,7 +215,10 @@ class LocalAppRunner:
         # hook used by host_local_app.
         if url_file is None:
             tmp_dir = Path(tempfile.gettempdir())
-            url_file = tmp_dir / f"ngapp_e2e_url_{self.app_module.replace('.', '_')}.txt"
+            url_file = (
+                tmp_dir
+                / f"ngapp_e2e_url_{self.app_module.replace('.', '_')}.txt"
+            )
         else:
             url_file = Path(url_file)
 
@@ -220,7 +228,12 @@ class LocalAppRunner:
         env = os.environ.copy()
         env["NGAPP_TEST_URL_FILE"] = str(url_file)
 
-        cmd = [self.python_executable, "-u", "-m", self.app_module] + self.extra_args
+        cmd = [
+            self.python_executable,
+            "-u",
+            "-m",
+            self.app_module,
+        ] + self.extra_args
         proc = subprocess.Popen(cmd, env=env, text=True)
         self._proc = proc
 
@@ -264,12 +277,17 @@ class LocalAppRunner:
         self._thread = None
         self._stop_event = None
         self.app = None
+
+
 def app_test(
     *dargs: object,
     app_module: str | None = None,
     timeout: float = 30.0,
     extra_args: list[str] | None = None,
-) -> Callable[[Callable[..., object]], Callable[..., object]] | Callable[..., object]:
+) -> (
+    Callable[[Callable[..., object]], Callable[..., object]]
+    | Callable[..., object]
+):
     """Decorator to run a local ngapp app for a single test.
 
     This helper wraps a pytest test function and:
@@ -354,9 +372,11 @@ def app_test(
             try:
                 page.goto(url)  # type: ignore[call-arg]
                 call_kwargs = dict(kwargs)
-                if wants_app_arg and "app" not in call_kwargs and getattr(
-                    runner, "app", None
-                ) is not None:
+                if (
+                    wants_app_arg
+                    and "app" not in call_kwargs
+                    and getattr(runner, "app", None) is not None
+                ):
                     call_kwargs["app"] = runner.app
                 return func(*args, **call_kwargs)
             finally:
@@ -372,7 +392,10 @@ def app_test(
         # only declares the ``page`` argument which pytest should
         # treat as a fixture.
         if wants_app_arg:
-            def _pytest_signature(page: Page) -> None:  # pragma: no cover - used for introspection only
+
+            def _pytest_signature(
+                page: Page,
+            ) -> None:  # pragma: no cover - used for introspection only
                 return None
 
             wrapper.__wrapped__ = _pytest_signature  # type: ignore[attr-defined]
@@ -380,4 +403,3 @@ def app_test(
         return wrapper
 
     return decorator
-

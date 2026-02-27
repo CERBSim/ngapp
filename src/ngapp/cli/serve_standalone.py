@@ -7,13 +7,13 @@ import subprocess
 import sys
 import time
 import webbrowser
+from collections.abc import Callable
 from pathlib import Path
 from threading import Event
-from collections.abc import Callable
 
 from watchdog.observers import Observer
 
-from ngapp.app import loadModel
+from ngapp.app import create_app
 from ngapp.cli.serve_in_venv import EventHandler
 from ngapp.components.basecomponent import get_component
 
@@ -70,14 +70,7 @@ def reload_app(app_module, reload_modules):
     data = old_app.dump(exclude_default_data=True, include_storage_data=True)
     print("Reloading app")
     app_config = importlib.import_module(app_module).config
-    app_data = {
-        "id": 0,
-        "python_class": app_config.python_class,
-        "frontend_dependencies": app_config.frontend_dependencies,
-        "frontend_pip_dependencies": app_config.frontend_pip_dependencies,
-    }
-
-    app = loadModel(app_data, data, reload_python_modules=reload_modules)
+    app = create_app(app_config, data, reload_python_modules=reload_modules)
     utils.get_environment().frontend.reset_app(app)
 
 
@@ -92,29 +85,26 @@ def host_local_app(
     stop_event: Event | None = None,
     url_callback: Callable[[str], None] | None = None,
 ):
-    global app
-    env = utils.set_environment(utils.Environment.LOCAL_APP, False)
-
-    app_config = importlib.import_module(app_module).config
-    app_data = {
-        "id": 0,
-        "python_class": app_config.python_class,
-        "frontend_dependencies": app_config.frontend_dependencies,
-        "frontend_pip_dependencies": app_config.frontend_pip_dependencies,
-    }
-
-    app = loadModel(app_data, {}, app_args=app_args)
-
     from webgpu import platform
+
+    global app
 
     start_http_server = not dev_frontend
     http_process: subprocess.Popen | None = None
+    env: Environment = None
 
     def before_wait_for_connection(server):
-        nonlocal http_process
+        nonlocal http_process, env
+        global app
+
         server = platform.websocket_server
         server.expose("get_component", get_component)
         server.expose("unmount_component", lambda _: None)
+
+        env = utils.set_environment(utils.Environment.LOCAL_APP, False, server)
+
+        app_config = importlib.import_module(app_module).config
+        app = create_app(app_config, {}, app_args=app_args)
 
         ws_port = server.port
 
@@ -252,5 +242,4 @@ def main(app_module=None):
 
 
 if __name__ == "__main__":
-
     main(args.app, not args.dev)

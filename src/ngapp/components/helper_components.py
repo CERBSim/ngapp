@@ -223,10 +223,10 @@ class FileName(QInput):
         self._compute_filename = compute_filename
 
     def _on_update_model_value(self):
-        self.app.name = self._compute_filename()
+        self.app.file_data.name = self._compute_filename()
 
     def _on_load(self):
-        self.ui_model_value = self.app.name
+        self.ui_model_value = self.app.file_data.name
         self.ui_model_value = self._compute_filename()
 
     def _on_before_save(self):
@@ -328,17 +328,19 @@ class FileUpload(QFile):
             print("set storage", value.name)
             self.storage.set(value.name, value.arrayBuffer())
 
-    def dump(self):
-        data = (super().dump() or {}) | {"filename": self.filename}
+    def _dump(self):
+        if not self._id:
+            return None
+        data = (super()._dump() or {}) | {"filename": self.filename}
         if "model-value" in data:
             data.pop("model-value")
         return data
 
-    def load(self, data):
+    def _load(self, data):
         if data is not None:
             self.filename = data.pop("filename")
             self.display_value = self.filename
-        super().load(data)
+        super()._load(data)
 
     def on_file_loaded(self, handler: Callable):
         self.on("file_loaded", handler)
@@ -416,13 +418,15 @@ class FileDownload(QBtn):
             result = self.storage.get("file")
             self.download_file(data=result, filename=self._filename)
 
-    def dump(self):
-        return (super().dump() or {}) | {"filename": self._filename}
+    def _dump(self):
+        if not self._id:
+            return None
+        return (super()._dump() or {}) | {"filename": self._filename}
 
-    def load(self, data):
+    def _load(self, data):
         self._filename = data.pop("filename", None)
         self.ui_disable = self._filename == None
-        super().load(data)
+        super()._load(data)
 
 
 class JsonEditor(Component):
@@ -622,18 +626,20 @@ class JobComponent(QBtn):
         self.tooltip.ui_children = ["Start job"]
         self._set_prop("icon", "mdi-play")
 
-    def dump(self):
-        data = (super().dump() or {}) | {"job_status": self.job_status}
+    def _dump(self):
+        if not self._id:
+            return None
+        data = (super()._dump() or {}) | {"job_status": self.job_status}
         if self.job is not None:
             data["job"] = self.job.model_dump()
         return data
 
-    def load(self, data):
+    def _load(self, data):
         self.job_status = data.pop("job_status", {})
         job = data.pop("job", None)
         if job is not None:
             self.job = Job(**job)
-        super().load(data)
+        super()._load(data)
 
     def on_stop(self, handler: Callable):
         """Set the function to be called when the job is stopped."""
@@ -680,7 +686,7 @@ class SimulationTable(QTable):
         load_file_backend(file_id)
         if self.ui_dialog:
             self.ui_dialog.ui_hide()
-            self.ui_dialog.app.load(api.get(f"/model/{file_id}"))
+            self.ui_dialog.app._load_from_data(api.get(f"/model/{file_id}"))
 
     def _delete_simulation(self, event: Event):
         file_id = event.arg["file_id"]
@@ -993,16 +999,23 @@ class Report(QBtn):
         if self._filename is not None:
             report = self.storage.get("report")
             self.download_file(data=report, filename=self._filename)
-            self.quasar.notify({ "message" : f"Report downloaded as {self._filename}",
-                                 "type" : "positive" })
+            self.quasar.notify(
+                {
+                    "message": f"Report downloaded as {self._filename}",
+                    "type": "positive",
+                }
+            )
         else:
-            self.quasar.notify({ "message" : "No report available",
-                                 "type" : "negative" })
+            self.quasar.notify(
+                {"message": "No report available", "type": "negative"}
+            )
 
-    def dump(self):
-        return (super().dump() or {}) | {"filename": self._filename}
+    def _dump(self):
+        if not self._id:
+            return None
+        return (super()._dump() or {}) | {"filename": self._filename}
 
-    def load(self, data):
+    def _load(self, data):
         self._filename = data.pop("filename", None)
         self.disable = self._filename == None
-        super().load(data)
+        super()._load(data)

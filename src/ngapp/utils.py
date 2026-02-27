@@ -21,6 +21,7 @@ from zipfile import ZipFile
 import orjson
 import pydantic
 from platformdirs import user_config_dir
+from webgpu.link.base import LinkBase
 
 from . import api
 
@@ -70,9 +71,12 @@ def _trace_call(name):
 class BaseFrontend:
     """Base class for the frontend"""
 
-    app = None
+    link: LinkBase = None
 
-    def update_component(self, component_id: str, data, method):
+    def __init__(self, link: LinkBase):
+        self.link = link
+
+    def update_component(self, comp, data, method):
         raise NotImplementedError()
 
     def reset_app(self, app):
@@ -96,7 +100,7 @@ class BrowserFrontend(BaseFrontend):
             data = {
                 "slots": comp._get_js_slots(),
                 "props": comp._get_js_props(),
-                "type": comp.component,
+                "type": comp._component_name,
             }
 
         if "source" not in data:
@@ -111,38 +115,42 @@ class BrowserFrontend(BaseFrontend):
         comp._js_callbacks[method](data)
 
     def reset_app(self, app):
-        from webgpu.platform import link
-
-        link.call_method_ignore_return(
+        self.link.call_method_ignore_return(
             id="resetApp", args=[app.component._get_my_wrapper_props()]
         )
         self.app = app
 
     def get_query_parameter(self, name: str, default=None):
-        from webgpu.platform import link
-
-        return link.get("router").currentRoute.value.query.get(name, default)
+        return self.link.get("router").currentRoute.value.query.get(
+            name, default
+        )
 
     def set_query_parameter(self, name: str, value: str):
-        from webgpu.platform import link
-
-        router = link.get("router")
+        router = self.link.get("router")
         q = router.currentRoute.value.query
         q[name] = value
         router.replace({"query": q})
 
     @property
     def url_hash(self):
-        from webgpu.platform import link
-
-        h = link.get("router").currentRoute.value.hash or "#"
+        h = self.link.get("router").currentRoute.value.hash or "#"
         return h[1:]
 
     @url_hash.setter
     def url_hash(self, value):
-        from webgpu.platform import link
-
         return link.get("router").replace({"hash": "#" + value})
+
+    @property
+    def file_id(self):
+        return self.get_query_parameter("fileId", None)
+
+    @file_id.setter
+    def file_id(self, value):
+        self.set_query_parameter("fileId", value)
+
+    @property
+    def app_id(self):
+        return self.get_query_parameter("appId", None)
 
 
 class ComputeFrontend(BaseFrontend):
@@ -159,7 +167,7 @@ class ComputeFrontend(BaseFrontend):
 
             if data is None:
                 data = {
-                    "data": comp.dump(),
+                    "data": comp._dump(),
                     "storage": comp.storage._dump_metadata(),
                 }
 
@@ -215,8 +223,8 @@ class Environment:
         This python instance is running in the browser in a web worker and communicates with the main thread via web worker postMessage interface.
 
         The backend might be:
-            - No backend
-            - A "full" backend with http api interface + websocket interface
+            - No backend (frontend-only apps)
+            - A full backend with http + websocket interface
 
     2.) Local App environment
         type = EnvironmentType.LOCAL_APP
@@ -242,30 +250,34 @@ class Environment:
 
     type: EnvironmentType
     have_backend: bool = False
+    link: LinkBase = None
 
     frontend: BaseFrontend
     backend_api_url: str = ""
     backend_api_token: str = ""
     backend_api_client_id: str = ""
 
-    def __init__(self, type: EnvironmentType, have_backend: bool):
+    def __init__(self, type: EnvironmentType, have_backend: bool, link=None):
+        self.link = link
         self.type = type
         self.have_backend = have_backend
 
         match type:
             case EnvironmentType.PYODIDE:
-                self.frontend = BrowserFrontend()
+                self.frontend = BrowserFrontend(link)
             case EnvironmentType.LOCAL_APP:
-                self.frontend = BrowserFrontend()
+                self.frontend = BrowserFrontend(link)
             case EnvironmentType.COMPUTE:
-                self.frontend = ComputeFrontend()
+                self.frontend = ComputeFrontend(link)
             case EnvironmentType.STANDALONE:
-                self.frontend = BaseFrontend()
+                self.frontend = BaseFrontend(link)
 
-    def set_backend(self, api_url: str, api_token: str, client_id: str = ""):
-        self.backend_api_url = api_url
-        self.backend_api_token = api_token
-        self.backend_api_client_id = client_id
+    @classmethod
+    def set_backend(cls, api_url: str, api_token: str, client_id: str = ""):
+        cls.backend_api_url = api_url
+        cls.backend_api_token = api_token
+        cls.backend_api_client_id = client_id
+        cls.have_backend = bool(len(api_url))
 
     @property
     def is_backend(self) -> bool:
@@ -274,17 +286,16 @@ class Environment:
             or self.type == EnvironmentType.COMPUTE
         )
 
-    def update_component(
+    def _update_python_component(
         self,
         file_id: int,
         method: str,
         data: dict,
         component_id: int | None = None,
     ):
-        if self.type not in [
-            EnvironmentType.PYODIDE,
-            EnvironmentType.LOCAL_APP,
-        ]:
+        """This function is called from JS when updates are received via websocket messages from the backend"""
+
+        if self.type != EnvironmentType.PYODIDE:
             raise RuntimeError(
                 "update_component is only available in pyodide or local app environment"
             )
@@ -293,7 +304,7 @@ class Environment:
             return
 
         if component_id is None:
-            app.load(data)
+            app._load_from_data(data)
             return
 
         comp = app[component_id]
@@ -303,7 +314,7 @@ class Environment:
 
         if method == "update_frontend":
             if "data" in data:
-                comp.load(data["data"])
+                comp._load(data["data"])
             if "props" in data:
                 comp._props.update(data["props"])
             if "storage" in data:
@@ -312,13 +323,42 @@ class Environment:
         if method in comp._js_callbacks:
             comp._js_callbacks[method](data)
 
+    def load_local(self, cls: type):
+        # TODO: file picker, load local (browser oder local_app)
+        pass
+
+    def save_as(self, app, path):
+        # TODO: save as, je nach env
+        pass
+
+    def save(self, app):
+        # TODO: save, je nach env
+        # app has no path -> exception
+        # check if name is unique on frontend/backend
+        # check if you want to overwrite on existing
+        pass
+
+    def save_local(self, app):
+        # TODO: file picker, store local (browser oder local_app)
+        pass
+
+    def delete(cls, path):
+        get_environment().delete(path)
+
+    @property
+    def is_pyodide(self) -> bool:
+        return self.type == Environment.PYODIDE
+
 
 _environment = None
 
 
-def set_environment(type: EnvironmentType, have_backend: bool = True):
+def set_environment(
+    type: EnvironmentType, have_backend: bool = True, link: LinkBase = None
+):
+    print("set environment, link = ", link)
     global _environment
-    _environment = Environment(type, have_backend)
+    _environment = Environment(type, have_backend, link)
     if type == Environment.PYODIDE:
         import webgpu.platform
     return _environment
@@ -671,7 +711,6 @@ def temp_dir_with_files(
     """
 
     def handle_zip(data: bytes, tmp_path: Path, files: list[Path]):
-
         byte_stream = io.BytesIO(data)
         with ZipFile(byte_stream, "r") as zip_ref:
             zip_ref.extractall(tmp_path)
@@ -898,25 +937,25 @@ def new_file(app, data=None):
     env.set_query_parameter("fileId", None)
     new_app = app.__class__()
     data = data or {}
-    new_app.load(data)
+    new_app._load_from_data(data)
     replace_app(new_app)
     return new_app
 
 
 def load_file_backend(file_id: str):
     """Load a file from backend with given file id"""
-    from .app import loadModel
+    from .app import create_app
 
     data = api.get(f"/model/{file_id}")
     app_id = data["metadata"]["app_id"]
-    app = loadModel(app_id, data)
+    app = create_app(app_id, data)
     replace_app(app)
     return app
 
 
 def copy_file(app):
     """Create a new file and copy the data"""
-    data = app.dump()
+    data = app._dump_app()
     name = data["metadata"].get("name", "")
     if name:
         name += " (copy)"

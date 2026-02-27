@@ -577,39 +577,42 @@ class SolutionWebgui(Row):
 
     async def generate_markdown(self) -> str:
         return await self._get_markdown()
+
+
 class PlotlyComponent(Component):
     """Plotly plot component.
 
-     This component renders Plotly figures inside an ngapp application.
-     It supports two main modes of operation:
+    This component renders Plotly figures inside an ngapp application.
+    It supports two main modes of operation:
 
-     1. **Inline mode** (no ``filename``): the figure data is sent to the
-         browser and rendered directly in the client.
-     2. **File mode** (``filename`` set): the figure is exported as a
-         static ``.png`` image and the Plotly JSON description is written
-         to disk. This is useful for documentation and offline reports.
+    1. **Inline mode** (no ``filename``): the figure data is sent to the
+        browser and rendered directly in the client.
+    2. **File mode** (``filename`` set): the figure is exported as a
+        static ``.png`` image and the Plotly JSON description is written
+        to disk. This is useful for documentation and offline reports.
 
-     Basic usage (inline):
+    Basic usage (inline):
 
-     .. code-block:: python
+    .. code-block:: python
 
-         from ngapp.components.visualization import PlotlyComponent
-         import plotly.graph_objects as go
+        from ngapp.components.visualization import PlotlyComponent
+        import plotly.graph_objects as go
 
-         fig = go.Figure(data=[go.Scatter(y=[1, 3, 2, 4])])
-         plot = PlotlyComponent(id="my_plot")
-         plot.draw(fig)
+        fig = go.Figure(data=[go.Scatter(y=[1, 3, 2, 4])])
+        plot = PlotlyComponent(id="my_plot")
+        plot.draw(fig)
 
-     File-based usage (for docs and reports):
+    File-based usage (for docs and reports):
 
-     .. code-block:: python
+    .. code-block:: python
 
-         plot = PlotlyComponent(filename="results/my_plot")
-         plot.draw(fig)
+        plot = PlotlyComponent(filename="results/my_plot")
+        plot.draw(fig)
 
-     After calling :meth:`draw`, ``results/my_plot.png`` and
-     ``results/my_plot.json`` will be created.
-     """
+    After calling :meth:`draw`, ``results/my_plot.png`` and
+    ``results/my_plot.json`` will be created.
+    """
+
     def __init__(
         self,
         id: str = "",
@@ -815,8 +818,11 @@ class WebgpuComponent(Component):
         """
         import io
         from PIL import Image
+
         buf = io.BytesIO()
-        Image.fromarray(self.screenshot(), mode="RGBA").save(buf, format=format.upper())
+        Image.fromarray(self.screenshot(), mode="RGBA").save(
+            buf, format=format.upper()
+        )
         return buf.getvalue()
 
     def screenshot_as_data_url(self, format="image/png"):
@@ -912,7 +918,9 @@ def _get_webgui_js_code():
             ) as f:
                 _webgui_js_code = f.read().decode("utf-8")
         except Exception as exc:  # pragma: no cover - network failures
-            raise RuntimeError("Failed to download webgui JavaScript bundle") from exc
+            raise RuntimeError(
+                "Failed to download webgui JavaScript bundle"
+            ) from exc
     return _webgui_js_code
 
 

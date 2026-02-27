@@ -54,15 +54,27 @@ def reset_components():
 
 
 @dataclasses.dataclass
+class FileData:
+    app_id: str
+    name: str = ""
+    id: int | None = None
+
+
+@dataclasses.dataclass
 class AppStatus:
+    app: object
     capture_events: bool = False
     capture_call_stack: bool = False
     _app_id: int | None = None
     _file_id: int | None = None
-    app: object = None
+    environment: utils.Environment = None
     components_by_id: dict[str, object] = dataclasses.field(
         default_factory=dict
     )
+
+    @property
+    def file_data(self):
+        return self.app.file_data
 
     def update(self, options):
         if "capture_events" in options:
@@ -84,15 +96,16 @@ class AppStatus:
 
     @property
     def file_id(self):
+        return self.app.file_data.id
         if self._file_id is None:
             self._file_id = get_environment().frontend.get_query_parameter(
                 "fileId"
             )
         return self._file_id
 
-    @file_id.setter
-    def file_id(self, value):
-        self._file_id = value
+    # @file_id.setter
+    # def file_id(self, value):
+    #     self._file_id = value
 
 
 C = TypeVar("T", bound="Component")
@@ -156,7 +169,7 @@ class Storage:
     def _dump_data(self):
         return copy.deepcopy(self._data)
 
-    def dump(self, include_data=False):
+    def _dump(self, include_data=False):
         metadata = self._dump_metadata()
         if include_data:
             return {
@@ -335,6 +348,7 @@ class Component(metaclass=BlockFrontendUpdate):
     _status: AppStatus = None
     _namespace: bool
     _js_component = None
+    _component_name: str
     _keybindings: List[Tuple[str, Callable, dict]]
     storage: Storage
 
@@ -359,7 +373,6 @@ class Component(metaclass=BlockFrontendUpdate):
         self._callbacks = {}
         self._js_callbacks = {}
 
-        self.component = component
         self._component_name = component
         self._props = {}
         self.ui_slots = ui_slots or {}
@@ -596,17 +609,24 @@ class Component(metaclass=BlockFrontendUpdate):
     def _calc_namespace_id(self):
         if self._namespace_id is None:
             utils._trace_call("_calc_namespace_id")
-            parent = self._parent
-            if parent is None:
-                raise RuntimeError(
-                    "Parent of component is not set", self._id, type(self)
+            from ..app import App
+
+            if isinstance(self, App):
+                self._namespace_id = ""
+            else:
+                parent = self._parent
+                if parent is None:
+                    raise RuntimeError(
+                        "Parent of component is not set", self._id, type(self)
+                    )
+                if parent._namespace_id is None:
+                    parent._calc_namespace_id()
+                self._namespace_id = (
+                    parent._fullid
+                    if parent._namespace
+                    else parent._namespace_id
                 )
-            if parent._namespace_id is None:
-                parent._calc_namespace_id()
-            self._namespace_id = (
-                parent._fullid if parent._namespace else parent._namespace_id
-            )
-            self._status = parent._status
+                self._status = parent._status
             if self._id:
                 _components_with_id[self._fullid] = self
                 self._status.components_by_id[self._fullid] = self
@@ -692,7 +712,7 @@ class Component(metaclass=BlockFrontendUpdate):
             "props": self._get_js_props(),
             "methods": self._get_js_methods(),
             "events": self._get_registered_events(),
-            "type": self.component,
+            "type": self._component_name,
         }
 
     @utils._count_calls
@@ -799,14 +819,12 @@ class Component(metaclass=BlockFrontendUpdate):
     ):
         return self.on("load", func, arg)
 
-    def dump(self):
-        """Override this method for components with a state. Dumps component state for storage on backend. Only data types which can be converted to json are allowed"""
+    def _dump(self):
         if self._id:
             return self._props
         return None
 
-    def load(self, data):
-        """Override this method for components with a state. Loads component data from backend (data argument is the return value of dump)"""
+    def _load(self, data):
         if data is not None:
             self._props = data
 
@@ -820,7 +838,7 @@ class Component(metaclass=BlockFrontendUpdate):
                 data = data[comp._id]
                 exclude = exclude[comp._id] if exclude else None
 
-            value = comp.dump()
+            value = comp._dump()
             if not value:
                 return (data, exclude)
             if exclude is not None and comp._id in exclude:
@@ -835,7 +853,7 @@ class Component(metaclass=BlockFrontendUpdate):
 
             if not comp._id:
                 raise RuntimeError(
-                    f"Component {type(self)} with input data {value} must have id"
+                    f"Component {type(comp)} with input data {value} must have id"
                 )
             if comp._id in data:
                 raise RuntimeError("Duplicate id in components", comp._id)
@@ -866,7 +884,7 @@ class Component(metaclass=BlockFrontendUpdate):
             if comp._id in data:
                 raise RuntimeError("Duplicate keys in components", comp._id)
 
-            data[comp._id] = comp.storage.dump(include_data)
+            data[comp._id] = comp.storage._dump(include_data)
             return data
 
         data = {}
@@ -908,7 +926,7 @@ class Component(metaclass=BlockFrontendUpdate):
 
             if comp._id in data:
                 comp._block_frontend_update = True
-                comp.load(data[comp._id])
+                comp._load(data[comp._id])
                 if update_frontend:
                     comp._update_frontend()
                 comp._block_frontend_update = False

@@ -9,7 +9,7 @@ from .app import (
     BaseModel,
     ComputeEnvironment,
     asset,
-    loadModel,
+    create_app,
     register_application,
 )
 from .utils import (
@@ -27,7 +27,7 @@ __all__ = [
     "AccessLevelConfig",
     "BaseModel",
     "file",
-    "loadModel",
+    "create_app",
     "load_image",
     "read_file",
     "read_file_binary",

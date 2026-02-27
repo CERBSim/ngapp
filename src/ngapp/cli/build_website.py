@@ -7,7 +7,7 @@ from ..app import AppConfig
 from ..utils import EnvironmentType, set_environment, zip_modules
 from .utils import download_frontend
 
-set_environment(EnvironmentType.STANDALONE)
+set_environment(None, EnvironmentType.STANDALONE)
 
 
 def build_app(app: str, app_id: int, output_dir: Path):

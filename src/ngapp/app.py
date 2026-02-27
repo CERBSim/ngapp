@@ -14,8 +14,10 @@ import tempfile
 import time
 import types
 from contextlib import contextmanager
+from dataclasses import dataclass
 from enum import IntEnum
 from pathlib import Path
+from typing import final
 
 import pydantic
 import urllib3
@@ -24,10 +26,12 @@ from . import api, utils
 from .components.basecomponent import (
     AppStatus,
     Component,
+    FileData,
     Storage,
-    reset_components,
     _QProxy,
+    reset_components,
 )
+from .components.helper_components import Div
 from .utils import (
     ComputeEnvironment,
     EnvironmentType,
@@ -38,8 +42,8 @@ from .utils import (
     read_file,
     read_file_binary,
     read_json,
-    save_file_local,
     replace_app,
+    save_file_local,
 )
 
 
@@ -61,7 +65,14 @@ def asset(filename: Path | str, binary: bool | None = None, module=None) -> str:
         raise FileNotFoundError(f"Asset file {filename} not found.")
 
     if binary is None:
-        binary = filename.suffix in [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"]
+        binary = filename.suffix in [
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".svg",
+            ".webp",
+        ]
 
     if binary:
         data = base64.b64encode(read_file_binary(filename)).decode("ascii")
@@ -152,6 +163,7 @@ class AppConfig(pydantic.BaseModel):
 
     model_config = pydantic.ConfigDict(extra="forbid")
 
+    id: int = -1
     name: str
     version: str
 
@@ -172,6 +184,7 @@ class AppConfig(pydantic.BaseModel):
 
     def __init__(self, python_class, **kwargs):
         if not isinstance(python_class, str):
+            python_class.config = self
             python_class = python_class.__module__ + "." + python_class.__name__
         super().__init__(python_class=python_class, **kwargs)
 
@@ -241,30 +254,46 @@ class AppConfig(pydantic.BaseModel):
             self.python_packages_hash = package_hash.hexdigest()
 
 
-class App:
+class App(Div):
     """Base class for all applications"""
 
-    component: Component
-    metadata: dict
     _default_data: dict | None
     _status: AppStatus
     _usersettings: UserSettings | None = None
 
-    def __init__(self, component: Component | None = None, name=None):
-        self.metadata = {"name": name}
+    config: AppConfig
+    file_data: FileData
+
+    def __init__(
+        self, *ui_children: Component | str, name: str | None = None, **kwargs
+    ):
+        self._status = AppStatus(app=self)
+        super().__init__(id="__app__", *ui_children, **kwargs)
+
+        self.file_data = FileData(
+            name=name or "",
+            app_id=self.config.id,
+        )
         self._default_data = None
-        self._status = AppStatus()
-        self._status.app = self
         self._on_exit_handlers = []
         self._usersettings: UserSettings | None = None
         self.storage = Storage(self)
 
-        if component is not None:
-            self.component = component
-            component._namespace_id = ""
-            component._parent = self
-            component._status = self._status
-            component._recurse(Component._calc_namespace_id, True, set())
+        self._namespace_id = ""
+        self._parent = None
+        self._status.components_by_id[self._id] = self
+        if not self._id:
+            return None
+        if ui_children:
+            self._recurse(Component._calc_namespace_id, True, set())
+
+    @property
+    def component(self) -> Component:
+        return self.ui_children[0]
+
+    @component.setter
+    def component(self, value: Component):
+        self.ui_children = [value]
 
     def __getitem__(self, key: str) -> Component:
         return self._status.components_by_id[key]
@@ -288,7 +317,7 @@ class App:
         if self._usersettings is None:
             # Use a stable identifier for the app; fall back to the
             # fully qualified class name if no name is set.
-            app_id = self.metadata.get("name") or (
+            app_id = self.config.name or (
                 self.__class__.__module__ + "." + self.__class__.__name__
             )
             self._usersettings = UserSettings(app_id=app_id)
@@ -303,38 +332,8 @@ class App:
         )
 
     @property
-    def js(self):
-        """See Component.js for full documentation."""
-        return self.component.js
-
-    def call_js(self, func, *args, **kwargs):
-        """See Component.call_js for full documentation."""
-        call_js(func, *args, **kwargs)
-
-    @property
-    def quasar(self):
-        """See Component.quasar for full documentation."""
-        return self.component.quasar
-
-    def download_file(
-        self,
-        data: bytes,
-        filename: str,
-        mime_type: str = "application/octet-stream",
-    ):
-        import base64
-        from .utils import print_exception
-
-        if callback := self.component._js_callbacks.get("download", None):
-            ret = callback(
-                dict(
-                    encoded_data=base64.b64encode(data).decode("utf-8"),
-                    filename=filename,
-                    applicationType=mime_type,
-                )
-            )
-            if ret:
-                ret.catch(print_exception)
+    def metadata(self):
+        return {} | self.file_data.__dict__
 
     def set_colors(
         self,
@@ -375,25 +374,23 @@ class App:
 
     @property
     def name(self):
-        return self.metadata.get("name", "Untitled")
+        return self.file_data.name
 
     @name.setter
     def name(self, value):
-        self.metadata["name"] = value
+        self.file_data.name = value
 
     def upgrade(self, data):
         """Upgrade data to the current version"""
         return data
 
-    def dump(
+    def _dump_app(
         self,
         exclude_default_data=False,
         keep_storage=False,
         include_storage_data=False,
     ):
         """Get input data for storage"""
-        if self.component is None:
-            return {}
         if (
             not include_storage_data
             and keep_storage
@@ -404,17 +401,48 @@ class App:
             self._default_data["data"] if exclude_default_data else None
         )
         component_data = {
-            "data": self.component._dump_recursive(exclude_default),
-            "storage": self.component._dump_storage(include_storage_data),
+            "data": self._dump_recursive(exclude_default),
+            "storage": self._dump_storage(include_storage_data),
         }
 
-        storage = self.storage.dump(include_storage_data)
+        storage = self.storage._dump(include_storage_data)
 
         return {
             "component": component_data,
-            "metadata": self.metadata,
+            "metadata": {} | self.file_data.__dict__,
             "storage": storage,
         }
+
+    @property
+    def env(self):
+        return self._status.env
+
+    @final
+    @classmethod
+    def load(cls, path: str):
+        get_environment().load(cls, path)
+
+    @final
+    @classmethod
+    def load_local(cls):
+        get_environment().load_local(cls)
+
+    @final
+    def save_as(self, path: str):
+        get_environment().save_as(self, path)
+
+    @final
+    def save(self):
+        get_environment().save(self)
+
+    @final
+    def save_local(self):
+        get_environment().save_local(self)
+
+    @final
+    @classmethod
+    def delete(cls, path):
+        get_environment().delete(path)
 
     def save(self):
         """Save data to backend"""
@@ -427,23 +455,24 @@ class App:
         status = self._status
         file_id = status.file_id
         if file_id is None:
-            metadata = api.post(
-                "/create_model",
-                {
-                    "app_id": self._status.app_id,
-                    "name": self.name or "Untitled",
-                },
+            self.file_data = FileData(
+                **api.post(
+                    "/create_model",
+                    {
+                        "app_id": self._status.app_id,
+                        "name": self.name or "untitled",
+                    },
+                )
             )
-            self.metadata |= metadata
-            status.file_id = metadata["id"]
 
-        api.put(f"/model/{status.file_id}", self.dump())
+        api.put(f"/model/{status.file_id}", self._dump_app())
         self.component._emit_recursive("save")
         self.storage.save()
 
         if env.type == EnvironmentType.PYODIDE:
             env.frontend.set_query_parameter("fileId", status.file_id)
 
+    @final
     @classmethod
     def reset(cls):
         """
@@ -454,15 +483,17 @@ class App:
         get_environment().frontend.reset_app(app)
         return app
 
+    @final
     def save_local(self):
         import pickle
 
         self.component._emit_recursive("before_save")
-        dump = self.dump(include_storage_data=True)
+        dump = self._dump_app(include_storage_data=True)
         name = self.name + ".sav" if self.name is not None else "untitled.sav"
         data = pickle.dumps(dump)
         save_file_local(data, name)
 
+    @final
     def quit(self):
         self.js.close()
         os._exit(0)
@@ -487,43 +518,42 @@ class App:
         self.storage._load_data(data.get("storage", None))
 
         if metadata:
-            self.metadata.update(metadata)
-            self._status.app_id = metadata.get("app_id", None)
-            self._status.file_id = metadata.get("id", None)
+            self.file_data.app_id = metadata.get("app_id", None)
+            self.file_data.id = metadata.get("id", None)
 
-        self.component._emit_recursive("before_load")
+        self._emit_recursive("before_load")
 
         if "storage" in component_data:
-            self.component._load_storage(component_data["storage"])
+            self._load_storage(component_data["storage"])
 
         if load_local_storage:
-            self.component._load_storage_local()
+            self._load_storage_local()
 
         if "data" in component_data:
-            self.component._load_recursive(
+            self._load_recursive(
                 component_data["data"], update_frontend=update_frontend
             )
 
         def block_frontend_update(comp):
             comp._block_frontend_update = True
 
-        self.component._recurse(block_frontend_update, True, set())
-        self.component._emit_recursive("load")
+        self._recurse(block_frontend_update, True, set())
+        self._emit_recursive("load")
 
         def unblock_frontend_update(comp):
             comp._block_frontend_update = False
             if comp._namespace_id is None:
                 comp._calc_namespace_id()
 
-        self.component._recurse(unblock_frontend_update, True, set())
+        self._recurse(unblock_frontend_update, True, set())
         if is_pyodide() and update_frontend:
             import webapp_frontend
 
             webapp_frontend.reload(
-                webapp_frontend.to_js(self.component._get_my_wrapper_props())
+                webapp_frontend.to_js(self._get_my_wrapper_props())
             )
 
-    def load(
+    def _load_from_data(
         self,
         data,
         load_local_storage=False,
@@ -539,10 +569,10 @@ document.get_quasar_obj = (name) =>
 """
             )
 
-        self.component.on_mounted(initialize_quasar_proxy)
-        self.component._namespace_id = ""
-        self.component._parent = self
-        self.component._status = self._status
+        self.on_mounted(initialize_quasar_proxy)
+        self._namespace_id = ""
+        self._parent = self
+        self._status = self._status
         self._namespace_id = ""
 
         if update_frontend is None:
@@ -551,7 +581,7 @@ document.get_quasar_obj = (name) =>
                 EnvironmentType.LOCAL_APP,
             ]
 
-        self.component._recurse(Component._calc_namespace_id, True, set())
+        self._recurse(Component._calc_namespace_id, True, set())
 
         component_data = data.get("component", {})
 
@@ -602,7 +632,7 @@ document.get_quasar_obj = (name) =>
             response = http.request(
                 "GET",
                 self._get_file_url(name),
-                headers={"Authorization": f'{os.environ["WEBAPP_API_TOKEN"]}'},
+                headers={"Authorization": f"{os.environ['WEBAPP_API_TOKEN']}"},
             )
             return response.json()
         return read_json(f"_data_files/{name}")
@@ -620,19 +650,13 @@ document.get_quasar_obj = (name) =>
         #     import json
         #     write_json(json.dumps(data), f"_data_files/{name}")
 
-    def _save_storage_local(self):
-        self.component._save_storage_local()
-
-    def _load_storage_local(self):
-        self.component._load_storage_local()
-
     def testing_data(self):
         """
         Get data for testing purposes. User should implement this method in the app class.
         Returns:
             dict: Dictionary with filename, data and type keys
         """
-        app_data = self.dump()
+        app_data = self._dump_app()
         app_data["component"].pop("storage", None)
         return {
             "filename": f"{self.name}.json",
@@ -643,17 +667,18 @@ document.get_quasar_obj = (name) =>
 
 BaseModel = App
 
-
 _app_cache = {}
 
 
-def get_app_metadata(app_id):
-    app_id = str(app_id)
-
+def get_app_config(app_id) -> AppConfig:
+    app_id = int(app_id)
     if app_id not in _app_cache:
-        apps = api.get("/get_available_applications")
-        _app_cache.clear()
-        _app_cache.update(apps)
+        tokens = api.get(f"/get_app/{app_id}")["python_class"].split(".")
+        module_name = ".".join(tokens[:-1])
+        module = importlib.import_module(module_name)
+        cls = getattr(module, tokens[-1])
+        _app_cache[app_id] = cls.config
+
     return _app_cache[app_id]
 
 
@@ -674,7 +699,7 @@ def reload_package(package_name):
         t = time.time() - t
 
         if t > 0.1:
-            print(f"Reloaded module {module.__name__} in {1000*t:.0f} ms")
+            print(f"Reloaded module {module.__name__} in {1000 * t:.0f} ms")
 
         var_values = vars(module).values()
         for var in list(var_values):
@@ -690,8 +715,8 @@ def reload_package(package_name):
     return reloaded_modules
 
 
-def loadModel(
-    app_metadata,
+def create_app(
+    app_config: AppConfig | int | dict,
     data,
     reload_python_modules=[],
     load_local_storage=False,
@@ -700,8 +725,17 @@ def loadModel(
     """Load model from data"""
     utils._print_counts()
     utils._reset_counts()
-    if isinstance(app_metadata, (int, str)):
-        app_metadata = get_app_metadata(app_metadata)
+
+    if isinstance(app_config, int):
+        app_config = get_app_config(app_config)
+
+    if isinstance(app_config, dict):
+        # Ignore extra fields by filtering only those accepted by AppConfig
+        allowed_fields = set(AppConfig.model_fields)
+        filtered_config = {
+            k: v for k, v in app_config.items() if k in allowed_fields
+        }
+        app_config = AppConfig(**filtered_config)
 
     reloaded_modules = {}
     for m in reload_python_modules:
@@ -709,24 +743,25 @@ def loadModel(
         t = time.time()
         reloaded_modules |= reload_package(m)
         t = time.time() - t
-        print(f"Reloaded package {m} in {1000*t:.0f} ms")
+        print(f"Reloaded package {m} in {1000 * t:.0f} ms")
 
-    module_name = app_metadata["python_class"].split(".")
+    module_name = app_config.python_class.split(".")
     module_name, class_name = ".".join(module_name[:-1]), module_name[-1]
     if module_name in reloaded_modules:
         module = reloaded_modules[module_name]
     else:
         module = importlib.import_module(module_name)
     cls = getattr(module, class_name)
+    cls.config = app_config
     reset_components()
     app = cls(**app_args)
-    app._default_data = copy.deepcopy(app.dump()["component"])
-    if not "metadata" in data:
-        data["metadata"] = {
-            "app_id": app_metadata["id"],
-            "python_class": app_metadata["python_class"],
-        }
-    app.load(data=data, load_local_storage=load_local_storage)
+    app._default_data = copy.deepcopy(app._dump_app()["component"])
+    # if not "metadata" in data:
+    #     data["metadata"] = {
+    #         "app_id": app_metadata["id"],
+    #         "python_class": app_metadata["python_class"],
+    #     }
+    app._load_from_data(data=data, load_local_storage=load_local_storage)
     utils._print_counts()
     utils._reset_counts()
     return app

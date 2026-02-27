@@ -33,7 +33,9 @@ def _get_folder_path(folder_path: str | Path, create_folder: bool = True):
 
 
 def _set_local_storage_path(folder_path: str, create_folder: bool = True):
-    path = _get_folder_path(folder_path, create_folder=create_folder) / "storage"
+    path = (
+        _get_folder_path(folder_path, create_folder=create_folder) / "storage"
+    )
     ngapp.components.basecomponent._local_storage_path = path
     return path
 
@@ -56,6 +58,7 @@ def _load_snapshot_file(path: Path) -> dict:
 
     with path.open("rb") as fh:
         return pickle.load(fh)
+
 
 def snapshot(
     app: App,
