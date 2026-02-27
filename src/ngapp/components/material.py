@@ -31,6 +31,7 @@ class QuantityInput(NumberInput):
 
     def __init__(
         self,
+        *children,
         ui_units: list[str] | str,
         ui_value: str | None = None,
         ui_label: str = "",
@@ -52,7 +53,7 @@ class QuantityInput(NumberInput):
                 ui_class="q-ml-xs",
                 ui_style="width: 4em;",
             )
-        super().__init__(ui_label=ui_label, **kwargs)
+        super().__init__(*children, ui_label=ui_label, **kwargs)
         if self._unit_input is not None:
             self.ui_slots["after"] = [self._unit_input]
 
@@ -65,9 +66,7 @@ class QuantityInput(NumberInput):
         if self._unit_input is not None:
             # Trigger update:model-value of value when unit changes
             self._unit_input.on_update_model_value(
-                lambda args: self._handle(
-                    "update:model-value", self.ui_model_value
-                )
+                lambda args: self._handle("update:model-value", self.ui_model_value)
             )
 
     @property
