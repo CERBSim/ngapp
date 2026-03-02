@@ -267,7 +267,7 @@ class App(Div):
     def __init__(
         self, *ui_children: Component | str, name: str | None = None, **kwargs
     ):
-        self._status = AppStatus(app=self)
+        self._status = AppStatus(app=self, environment=get_environment())
         super().__init__(id="__app__", *ui_children, **kwargs)
 
         self.file_data = FileData(
@@ -347,7 +347,7 @@ class App(Div):
         warning: str | None = None,
     ):
         """Set the colors of the app"""
-        if get_environment().type == EnvironmentType.LOCAL_APP:
+        if self.env.type == EnvironmentType.LOCAL_APP:
             from webgpu.platform import execute_when_init
 
             def f(js):
@@ -394,7 +394,7 @@ class App(Div):
         if (
             not include_storage_data
             and keep_storage
-            and not get_environment().have_backend
+            and not self.env.have_backend
         ):
             self._save_storage_local()
         exclude_default = (
@@ -415,7 +415,7 @@ class App(Div):
 
     @property
     def env(self):
-        return self._status.env
+        return self._status.environment
 
     @final
     @classmethod
@@ -425,30 +425,34 @@ class App(Div):
     @final
     @classmethod
     def load_local(cls):
-        get_environment().load_local(cls)
+        env = get_environment()
+        data = env.load_data_local()
+        app = cls()
+        app._load_app(data)
+        env.reset_app(app)
 
     @final
-    def save_as(self, path: str):
-        get_environment().save_as(self, path)
-
-    @final
-    def save(self):
-        get_environment().save(self)
-
-    @final
-    def save_local(self):
-        get_environment().save_local(self)
+    def save_as(self, name: str):
+        self.env.save_as(self, name)
 
     @final
     @classmethod
     def delete(cls, path):
         get_environment().delete(path)
-
+        
+    @final
     def save(self):
+        if self.env.have_backend:
+            self.save_backend()
+        else:
+            self.save_local()
+
+    @final
+    def save_backend(self):
         """Save data to backend"""
-        env = get_environment()
+        env = self.env
         if not env.have_backend:
-            return
+            raise RuntimeError("No backend available")
 
         env.frontend.app = self
         self.component._emit_recursive("before_save")
@@ -480,7 +484,7 @@ class App(Div):
         """
         app = cls()
         app.load({})
-        get_environment().frontend.reset_app(app)
+        get_environment().reset_app(app)
         return app
 
     @final
@@ -491,20 +495,12 @@ class App(Div):
         dump = self._dump_app(include_storage_data=True)
         name = self.name + ".sav" if self.name is not None else "untitled.sav"
         data = pickle.dumps(dump)
-        save_file_local(data, name)
+        self.env.save_file_local(data, name)
 
     @final
     def quit(self):
         self.js.close()
         os._exit(0)
-
-    def load_local(self):
-        options = {"multiple": False, "accept": ".sav"}
-        pick = self.js.showOpenFilePicker(options)
-        import pickle
-
-        data = pickle.loads(pick[0].getFile().arrayBuffer())
-        self.load(data)
 
     def update(
         self, data: dict, load_local_storage=False, update_frontend=False
@@ -553,7 +549,7 @@ class App(Div):
                 webapp_frontend.to_js(self._get_my_wrapper_props())
             )
 
-    def _load_from_data(
+    def _load_app(
         self,
         data,
         load_local_storage=False,
@@ -576,7 +572,7 @@ document.get_quasar_obj = (name) =>
         self._namespace_id = ""
 
         if update_frontend is None:
-            update_frontend = get_environment().type in [
+            update_frontend = self.env.type in [
                 EnvironmentType.PYODIDE,
                 EnvironmentType.LOCAL_APP,
             ]
@@ -756,12 +752,7 @@ def create_app(
     reset_components()
     app = cls(**app_args)
     app._default_data = copy.deepcopy(app._dump_app()["component"])
-    # if not "metadata" in data:
-    #     data["metadata"] = {
-    #         "app_id": app_metadata["id"],
-    #         "python_class": app_metadata["python_class"],
-    #     }
-    app._load_from_data(data=data, load_local_storage=load_local_storage)
+    app._load_app(data=data, load_local_storage=load_local_storage)
     utils._print_counts()
     utils._reset_counts()
     return app

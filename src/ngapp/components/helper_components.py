@@ -686,7 +686,7 @@ class SimulationTable(QTable):
         load_file_backend(file_id)
         if self.ui_dialog:
             self.ui_dialog.ui_hide()
-            self.ui_dialog.app._load_from_data(api.get(f"/model/{file_id}"))
+            self.ui_dialog.app._load_app(api.get(f"/model/{file_id}"))
 
     def _delete_simulation(self, event: Event):
         file_id = event.arg["file_id"]

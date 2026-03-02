@@ -138,7 +138,7 @@ class BrowserFrontend(BaseFrontend):
 
     @url_hash.setter
     def url_hash(self, value):
-        return link.get("router").replace({"hash": "#" + value})
+        return self.link.get("router").replace({"hash": "#" + value})
 
     @property
     def file_id(self):
@@ -250,7 +250,6 @@ class Environment:
 
     type: EnvironmentType
     have_backend: bool = False
-    link: LinkBase = None
 
     frontend: BaseFrontend
     backend_api_url: str = ""
@@ -258,7 +257,6 @@ class Environment:
     backend_api_client_id: str = ""
 
     def __init__(self, type: EnvironmentType, have_backend: bool, link=None):
-        self.link = link
         self.type = type
         self.have_backend = have_backend
 
@@ -278,6 +276,14 @@ class Environment:
         cls.backend_api_token = api_token
         cls.backend_api_client_id = client_id
         cls.have_backend = bool(len(api_url))
+        
+    @property
+    def link(self):
+        return self.frontend.link
+        
+    @property
+    def js(self):
+        return self.link.get(None, None)
 
     @property
     def is_backend(self) -> bool:
@@ -304,7 +310,7 @@ class Environment:
             return
 
         if component_id is None:
-            app._load_from_data(data)
+            app._load_app(data)
             return
 
         comp = app[component_id]
@@ -323,24 +329,28 @@ class Environment:
         if method in comp._js_callbacks:
             comp._js_callbacks[method](data)
 
-    def load_local(self, cls: type):
-        # TODO: file picker, load local (browser oder local_app)
-        pass
+    def load_data_local(self, options: dict | None = None):
+        import pickle
+        options = {"multiple": False, "accept": ".sav"} | (options or {})
+        pick = self.js.showOpenFilePicker(options)
+        return pickle.loads(pick[0].getFile().arrayBuffer())
 
-    def save_as(self, app, path):
-        # TODO: save as, je nach env
-        pass
+    def reset_app(self, app):
+        self.frontend.reset_app(app)
 
-    def save(self, app):
-        # TODO: save, je nach env
-        # app has no path -> exception
-        # check if name is unique on frontend/backend
-        # check if you want to overwrite on existing
-        pass
-
-    def save_local(self, app):
-        # TODO: file picker, store local (browser oder local_app)
-        pass
+    def save_file_local(
+        self, data: bytes | str, filename: str, options: dict | None = None
+    ) -> None:
+        from webgpu import platform
+    
+        options = options or {}
+        if "suggestedName" not in options:
+            options["suggestedName"] = filename
+    
+        pick = self.js.showSaveFilePicker(options)
+        stream = pick.createWritable()
+        stream.write(data)
+        stream.close()
 
     def delete(cls, path):
         get_environment().delete(path)
@@ -937,7 +947,7 @@ def new_file(app, data=None):
     env.set_query_parameter("fileId", None)
     new_app = app.__class__()
     data = data or {}
-    new_app._load_from_data(data)
+    new_app._load_app(data)
     replace_app(new_app)
     return new_app
 
@@ -988,16 +998,8 @@ def _get_app_assets(app_name: str):
             yield file.name, f.read()
 
 
+
 def save_file_local(
     data: bytes | str, filename: str, options: dict | None = None
 ) -> None:
-    from webgpu import platform
-
-    options = options or {}
-    if "suggestedName" not in options:
-        options["suggestedName"] = filename
-
-    pick = platform.js.showSaveFilePicker(options)
-    stream = pick.createWritable()
-    stream.write(data)
-    stream.close()
+    get_environment().save_file_local(data, filename, options)
