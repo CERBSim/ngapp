@@ -550,12 +550,6 @@ class App(Div):
                 comp._calc_namespace_id()
 
         self._recurse(unblock_frontend_update, True, set())
-        if is_pyodide() and update_frontend:
-            import webapp_frontend
-
-            webapp_frontend.reload(
-                webapp_frontend.to_js(self._get_my_wrapper_props())
-            )
 
     def _load_app(
         self,
@@ -674,19 +668,30 @@ BaseModel = App
 _app_cache = {}
 
 
-def get_app_config(app_id) -> AppConfigWithAccess:
-    app_id = int(app_id)
-    if app_id not in _app_cache:
-        app_data = api.get(f"/get_app/{app_id}")
-        tokens = app_data["python_class"].split(".")
-        module_name = ".".join(tokens[:-1])
-        module = importlib.import_module(module_name)
-        cls = getattr(module, tokens[-1])
-        _app_cache[app_id] = AppConfigWithAccess(
-            **cls._config.model_dump(), access_level=app_data["access_level"]
-        )
+def _get_app_config(
+    app_config: int | dict | AppConfigWithAccess,
+) -> AppConfigWithAccess:
+    if isinstance(app_config, AppConfigWithAccess):
+        return app_config
 
-    return _app_cache[app_id]
+    if isinstance(app_config, int):
+        if app_config in _app_cache:
+            return _app_cache[app_config]
+        app_config = api.get(f"/get_app/{app_config}")
+
+    if isinstance(app_config, dict):
+        if "app_id" in app_config and app_config["app_id"] in _app_cache:
+            return _app_cache[app_config["app_id"]]
+
+        # Ignore extra fields by filtering only those accepted by AppConfig
+        allowed_fields = set(AppConfigWithAccess.model_fields)
+        filtered_config = {
+            k: v for k, v in app_config.items() if k in allowed_fields
+        }
+        app_config = AppConfigWithAccess(**filtered_config)
+        _app_cache[app_config.id] = app_config
+        return app_config
+    raise ValueError(f"Unsupported app_config type: {type(app_config)}")
 
 
 def reload_package(package_name):
@@ -733,16 +738,7 @@ def create_app(
     utils._print_counts()
     utils._reset_counts()
 
-    if isinstance(app_config, int):
-        app_config = get_app_config(app_config)
-
-    if isinstance(app_config, dict):
-        # Ignore extra fields by filtering only those accepted by AppConfig
-        allowed_fields = set(AppConfigWithAccess.model_fields)
-        filtered_config = {
-            k: v for k, v in app_config.items() if k in allowed_fields
-        }
-        app_config = AppConfigWithAccess(**filtered_config)
+    app_config = _get_app_config(app_config)
 
     reloaded_modules = {}
     for m in reload_python_modules:
