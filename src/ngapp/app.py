@@ -671,6 +671,9 @@ _app_cache = {}
 def _get_app_config(
     app_config: int | dict | AppConfigWithAccess,
 ) -> AppConfigWithAccess:
+    if isinstance(app_config, AppConfig):
+        return AppConfigWithAccess(**app_config.model_dump())
+
     if isinstance(app_config, AppConfigWithAccess):
         return app_config
 
