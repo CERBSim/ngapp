@@ -73,6 +73,15 @@ class AppStatus:
     )
 
     @property
+    def is_admin(self):
+        from ..app import AppConfigWithAccess
+
+        config = self.app._config
+        if isinstance(config, AppConfigWithAccess):
+            return config.is_admin
+        return False
+
+    @property
     def file_data(self):
         return self.app.file_data
 

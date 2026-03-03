@@ -184,7 +184,7 @@ class AppConfig(pydantic.BaseModel):
 
     def __init__(self, python_class, **kwargs):
         if not isinstance(python_class, str):
-            python_class.config = self
+            python_class._config = self
             python_class = python_class.__module__ + "." + python_class.__name__
         super().__init__(python_class=python_class, **kwargs)
 
@@ -254,6 +254,14 @@ class AppConfig(pydantic.BaseModel):
             self.python_packages_hash = package_hash.hexdigest()
 
 
+class AppConfigWithAccess(AppConfig):
+    access_level: AccessLevel = AccessLevel.HIDDEN
+
+    @property
+    def is_admin(self) -> bool:
+        return self.access_level == AccessLevel.ADMIN
+
+
 class App(Div):
     """Base class for all applications"""
 
@@ -261,7 +269,7 @@ class App(Div):
     _status: AppStatus
     _usersettings: UserSettings | None = None
 
-    config: AppConfig
+    _config: AppConfigWithAccess
     file_data: FileData
 
     def __init__(
@@ -272,7 +280,7 @@ class App(Div):
 
         self.file_data = FileData(
             name=name or "",
-            app_id=self.config.id,
+            app_id=self._config.id,
         )
         self._default_data = None
         self._on_exit_handlers = []
@@ -317,7 +325,7 @@ class App(Div):
         if self._usersettings is None:
             # Use a stable identifier for the app; fall back to the
             # fully qualified class name if no name is set.
-            app_id = self.config.name or (
+            app_id = self._config.name or (
                 self.__class__.__module__ + "." + self.__class__.__name__
             )
             self._usersettings = UserSettings(app_id=app_id)
@@ -666,14 +674,17 @@ BaseModel = App
 _app_cache = {}
 
 
-def get_app_config(app_id) -> AppConfig:
+def get_app_config(app_id) -> AppConfigWithAccess:
     app_id = int(app_id)
     if app_id not in _app_cache:
-        tokens = api.get(f"/get_app/{app_id}")["python_class"].split(".")
+        app_data = api.get(f"/get_app/{app_id}")
+        tokens = app_data["python_class"].split(".")
         module_name = ".".join(tokens[:-1])
         module = importlib.import_module(module_name)
         cls = getattr(module, tokens[-1])
-        _app_cache[app_id] = cls.config
+        _app_cache[app_id] = AppConfigWithAccess(
+            **cls._config.model_dump(), access_level=app_data["access_level"]
+        )
 
     return _app_cache[app_id]
 
@@ -727,11 +738,11 @@ def create_app(
 
     if isinstance(app_config, dict):
         # Ignore extra fields by filtering only those accepted by AppConfig
-        allowed_fields = set(AppConfig.model_fields)
+        allowed_fields = set(AppConfigWithAccess.model_fields)
         filtered_config = {
             k: v for k, v in app_config.items() if k in allowed_fields
         }
-        app_config = AppConfig(**filtered_config)
+        app_config = AppConfigWithAccess(**filtered_config)
 
     reloaded_modules = {}
     for m in reload_python_modules:
@@ -748,7 +759,7 @@ def create_app(
     else:
         module = importlib.import_module(module_name)
     cls = getattr(module, class_name)
-    cls.config = app_config
+    cls._config = app_config
     reset_components()
     app = cls(**app_args)
     app._default_data = copy.deepcopy(app._dump_app()["component"])
