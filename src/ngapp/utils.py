@@ -276,11 +276,11 @@ class Environment:
         cls.backend_api_token = api_token
         cls.backend_api_client_id = client_id
         cls.have_backend = bool(len(api_url))
-        
+
     @property
     def link(self):
         return self.frontend.link
-        
+
     @property
     def js(self):
         return self.link.get(None, None)
@@ -331,6 +331,7 @@ class Environment:
 
     def load_data_local(self, options: dict | None = None):
         import pickle
+
         options = {"multiple": False, "accept": ".sav"} | (options or {})
         pick = self.js.showOpenFilePicker(options)
         return pickle.loads(pick[0].getFile().arrayBuffer())
@@ -342,11 +343,11 @@ class Environment:
         self, data: bytes | str, filename: str, options: dict | None = None
     ) -> None:
         from webgpu import platform
-    
+
         options = options or {}
         if "suggestedName" not in options:
             options["suggestedName"] = filename
-    
+
         pick = self.js.showSaveFilePicker(options)
         stream = pick.createWritable()
         stream.write(data)
@@ -996,7 +997,6 @@ def _get_app_assets(app_name: str):
     for file in app_path.rglob("assets/*"):
         with open(file, "rb") as f:
             yield file.name, f.read()
-
 
 
 def save_file_local(

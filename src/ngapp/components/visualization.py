@@ -103,7 +103,7 @@ class WebguiComponent(Component):
     def __on_load(self):
         if self._js_component is None:
             return
-            
+
         self._webgui_data = self.storage.get("webgui_data") or {}
         self._settings = self.storage.get("settings") or {}
         if self._webgui_data:
@@ -112,7 +112,7 @@ class WebguiComponent(Component):
     def __on_mounted(self) -> None:
         self._webgui_data = self.storage.get("webgui_data") or {}
         self._settings = self.storage.get("settings") or {}
-        
+
         if self._webgui_data:
             self._update_frontend(method="Redraw", data=self.webgui_data)
 

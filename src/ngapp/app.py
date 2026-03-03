@@ -439,7 +439,7 @@ class App(Div):
     @classmethod
     def delete(cls, path):
         get_environment().delete(path)
-        
+
     @final
     def save(self):
         if self.env.have_backend:

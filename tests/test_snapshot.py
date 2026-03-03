@@ -31,5 +31,7 @@ def test_snapshot_roundtrip() -> None:
     )
 
     # Finally, ensure load_case can load the stored data without error
-    data = load_case(app_again, folder_path="snapshot_demo/default", load_storage=True)
+    data = load_case(
+        app_again, folder_path="snapshot_demo/default", load_storage=True
+    )
     assert isinstance(data, dict)
