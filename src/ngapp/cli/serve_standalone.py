@@ -3,6 +3,7 @@ import importlib
 import importlib.util
 import json
 import os
+import socket
 import subprocess
 import sys
 import time
@@ -89,12 +90,42 @@ def host_local_app(
 
     global app
 
+    timing_enabled = os.environ.get("NGAPP_STARTUP_TIMING", "0") in (
+        "1",
+        "true",
+        "True",
+    )
+    reuse_frontend = os.environ.get("NGAPP_FRONTEND_REUSE", "0") in (
+        "1",
+        "true",
+        "True",
+    )
+    persist_frontend = os.environ.get("NGAPP_FRONTEND_PERSIST", "0") in (
+        "1",
+        "true",
+        "True",
+    )
+    frontend_port_env = os.environ.get("NGAPP_FRONTEND_PORT")
+    try:
+        frontend_port = int(frontend_port_env) if frontend_port_env else 8765
+    except ValueError:
+        frontend_port = 8765
+    startup_t0 = time.perf_counter()
+    last_checkpoint = startup_t0
+
+    def _is_port_open(port: int) -> bool:
+        try:
+            with socket.create_connection(("127.0.0.1", port), timeout=0.2):
+                return True
+        except OSError:
+            return False
+
     start_http_server = not dev_frontend
     http_process: subprocess.Popen | None = None
     env: Environment = None
 
     def before_wait_for_connection(server):
-        nonlocal http_process, env
+        nonlocal http_process, env, last_checkpoint, startup_t0
         global app
 
         server = platform.websocket_server
@@ -105,21 +136,65 @@ def host_local_app(
 
         app_config = importlib.import_module(app_module).config
         app = create_app(app_config, {}, app_args=app_args)
+        now = time.perf_counter()
+        if timing_enabled:
+            print(
+                f"Standalone startup: create_app={now - last_checkpoint:.3f}s "
+                f"(total={now - startup_t0:.3f}s)"
+            )
+
+            def _log_js_ready(js):
+                js_now = time.perf_counter()
+                print(
+                    f"Standalone startup: js_ready={js_now - startup_t0:.3f}s"
+                )
+
+            def _log_app_mounted(_=None):
+                mounted_now = time.perf_counter()
+                print(
+                    f"Standalone startup: app_mounted={mounted_now - startup_t0:.3f}s"
+                )
+
+            app.call_js(_log_js_ready)
+            app.component.on_mounted(_log_app_mounted)
+        last_checkpoint = now
 
         ws_port = server.port
 
         if start_http_server:
-            http_process = subprocess.Popen(
-                [sys.executable, "-m", "ngapp.cli.serve_frontend"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-            )
-            http_port = int(http_process.stdout.readline().strip())
+            if reuse_frontend and _is_port_open(frontend_port):
+                http_port = frontend_port
+                if timing_enabled:
+                    print(
+                        f"Standalone startup: frontend_reuse=True (port={http_port})"
+                    )
+            else:
+                child_env = os.environ.copy()
+                child_env["NGAPP_FRONTEND_PORT"] = str(frontend_port)
+                http_process = subprocess.Popen(
+                    [sys.executable, "-m", "ngapp.cli.serve_frontend"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    env=child_env,
+                )
+                http_port = int(http_process.stdout.readline().strip())
         else:
             http_port = 3000
 
-        url = f"http://localhost:{http_port}?backendPort={http_port}&websocketPort={ws_port}"
+        now = time.perf_counter()
+        if timing_enabled:
+            print(
+                f"Standalone startup: frontend_server={now - last_checkpoint:.3f}s "
+                f"(total={now - startup_t0:.3f}s, port={http_port})"
+            )
+        last_checkpoint = now
+
+        startup_timing_query = "&startupTiming=1" if timing_enabled else ""
+        url = (
+            f"http://localhost:{http_port}?backendPort={http_port}"
+            f"&websocketPort={ws_port}{startup_timing_query}"
+        )
 
         # Optional test hook: when running under automated tests, write the
         # computed URL into a file so that external processes can discover it
@@ -142,6 +217,13 @@ def host_local_app(
                 webbrowser.get(f"{browser_path} %s &").open("--app=" + url)
             else:
                 webbrowser.open("--app=" + url)
+        now = time.perf_counter()
+        if timing_enabled:
+            print(
+                f"Standalone startup: browser_launch={now - last_checkpoint:.3f}s "
+                f"(total={now - startup_t0:.3f}s)"
+            )
+        last_checkpoint = now
         print("Url to run the app:\n", url, "\n")
 
         # Optional hook for in-process test runners which prefer to
@@ -192,7 +274,7 @@ def host_local_app(
     )
 
     # Gracefully shut down the frontend and backend servers.
-    if http_process is not None:
+    if http_process is not None and not persist_frontend:
         http_process.terminate()
         try:
             http_process.wait(timeout=5)
