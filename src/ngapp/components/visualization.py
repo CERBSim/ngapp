@@ -164,7 +164,7 @@ class WebguiComponent(Component):
 
     def clear(self):
         """Clear webgui canvas"""
-        self._update_frontend(method="Clear")
+        self._js_callback("Clear")
 
     def draw(
         self, *args, data: dict | None = None, redraw=False, **kwargs
@@ -182,21 +182,21 @@ class WebguiComponent(Component):
         self.storage.set("webgui_data", self._webgui_data)
         self.changed = True
         method = "Redraw" if redraw else "Draw"
-        self._update_frontend(method=method, data=data)
+        self._js_callback(method, data)
         self._handle("draw")
         return self._webgui_data
 
     def toggle_fullscreen(self) -> None:
         """Toggle fullscreen"""
-        self._update_frontend({}, "ToggleFullScreen")
+        self._js_callback("ToggleFullScreen")
 
     def toggle_mesh(self) -> None:
         """Toggle mesh"""
-        self._update_frontend({}, "ToggleMesh")
+        self._js_callback("ToggleMesh")
 
     def set_camera(self, data: dict | None = None) -> None:
         """Set camera"""
-        self._update_frontend(data or {}, "SetCamera")
+        self._js_callback("SetCamera", data)
 
     def set_colormap(self, data: dict | None = None) -> None:
         """Set colormap.
@@ -205,11 +205,11 @@ class WebguiComponent(Component):
         omitted, an empty payload is sent so that the front-end can
         decide on sensible defaults.
         """
-        self._update_frontend(data or {}, "SetColormap")
+        self._js_callback("SetColormap", data)
 
     def set_clipping_plane(self, data: dict) -> None:
         """Set clipping plane"""
-        self._update_frontend(data, "SetClippingPlane")
+        self._js_callback("SetClippingPlane", data)
 
     def set_color(
         self,
@@ -223,11 +223,11 @@ class WebguiComponent(Component):
             data["faces"] = faces
         if edges is not None:
             data["edges"] = edges
-        self._update_frontend(data, "SetColor")
+        self._js_callback("SetColor", data)
 
     def update_camera_settings(self):
         """Request updated camera settings from the front-end."""
-        self._update_frontend({}, "GetCameraSettings")
+        self._js_callback("GetCameraSettings")
 
     def on_draw(self, callback: Callable) -> None:
         """Set callback for draw event"""

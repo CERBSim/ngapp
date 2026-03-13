@@ -713,6 +713,11 @@ class Component(metaclass=BlockFrontendUpdate):
             )
         self._js_component._call_method(method, args, ignore_result=True)
 
+    def _js_callback(self, name, arg=None):
+        """Call callback on frontend component"""
+        if name in self._js_callbacks:
+            self._js_callbacks[name](arg)
+
     # @result_to_js
     def _js_init(self):
         # self._js_callbacks = {}
