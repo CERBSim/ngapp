@@ -582,6 +582,8 @@ document.get_quasar_obj = (name) =>
         self._recurse(Component._calc_namespace_id, True, set())
 
         component_data = data.get("component", {})
+        metadata = data.get("metadata", {})
+        self.file_data.__dict__.update(metadata)
 
         if self._default_data and "data" in component_data:
             # we are hot-reloading the app, this means we skipped the default data when dumping before

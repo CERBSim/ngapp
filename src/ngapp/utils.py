@@ -973,7 +973,7 @@ def copy_file(app):
     data["metadata"]["name"] = name
     data["metadata"].pop("file_id", None)
     data["metadata"].pop("id", None)
-    new_file(app, data)
+    return new_file(app, data)
 
 
 def print_exception(ex, file=sys.stderr):

@@ -599,7 +599,6 @@ class JobComponent(QBtn):
             self._start_job()
 
     def _update_button(self):
-        print("update job status", self.job_status.get("status"))
         if self.job_status.get("status") in ["started", "queued"]:
             self.tooltip.ui_children = [f"Abort"]
             self._set_prop("icon", "mdi-stop")
@@ -623,6 +622,8 @@ class JobComponent(QBtn):
             self._update_button()
 
     def _reset_button(self):
+        self.job = None
+        self.job_status.clear()
         self.tooltip.ui_children = ["Start job"]
         self._set_prop("icon", "mdi-play")
 
