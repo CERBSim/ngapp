@@ -26,6 +26,7 @@ class InputChangeApp(App):
     """
 
     def __init__(self):
+        super().__init__()
         self.length = QInput(
             ui_label="Length (m)",
             ui_model_value=5,
@@ -42,24 +43,22 @@ class InputChangeApp(App):
         self.reset_button.on_click(self.reset)
 
         self.button.on_click(self._on_click)
-
-        root = Col(
-            self.length,
-            self.width,
-            self.button,
-            self.result_label,
-            self.reset_button,
-        )
-        super().__init__(component=root, name="Local area demo")
         self.length.ui_model_value = self.usersettings.get("last_length", 5)
         # Remember the last used length across sessions via usersettings
         self.length.on_update_model_value(
             self.usersettings.update("last_length")
         )
 
+        self.component = Col(
+            self.length,
+            self.width,
+            self.button,
+            self.result_label,
+            self.reset_button,
+        )
+
     def _on_click(self):
         """Handle button clicks by computing and displaying the area."""
-
         try:
             length = float(self.length.ui_model_value or 0)
             width = float(self.width.ui_model_value or 0)
