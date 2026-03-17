@@ -29,7 +29,9 @@ def get_frontend_dir() -> Path:
 
 
 def download_frontend(
-    output_dir: Path | str | None = None, check_path=True
+    output_dir: Path | str | None = None,
+    check_path=True,
+    cache_only: bool = False,
 ) -> Path:
     if output_dir is None:
         output_dir = get_frontend_dir()
@@ -46,10 +48,22 @@ def download_frontend(
     hash_file = data_file.with_suffix(".zip.md5")
     output_hash_file = output_dir / ".zip_hash.md5"
 
+    if cache_only:
+        if output_hash_file.exists() and output_dir.exists():
+            return output_dir
+        if not hash_file.exists():
+            raise FileNotFoundError(
+                "Frontend cache hash not found. Run without cache_only to download."
+            )
+        if not data_file.exists():
+            raise FileNotFoundError(
+                "Frontend cache archive not found. Run without cache_only to download."
+            )
+
     if not hash_file.parent.exists():
         hash_file.parent.mkdir(parents=True, exist_ok=True)
 
-    if version == "main":
+    if not cache_only and version == "main":
         try:
             # use local version if no internet connection is available
             response = requests.get(hash_url, timeout=1000)
@@ -64,7 +78,7 @@ def download_frontend(
             else:
                 raise e
 
-    if not hash_file.exists():
+    if not cache_only and not hash_file.exists():
         response = requests.get(hash_url)
         response.raise_for_status()
         hash_file.write_text(response.text.strip())
@@ -80,6 +94,10 @@ def download_frontend(
         or hashlib.md5(data_file.read_bytes()).hexdigest()
         != hash_file.read_text().strip().split()[0]
     ):
+        if cache_only:
+            raise FileNotFoundError(
+                "Frontend cache archive is missing or invalid. Run without cache_only to download."
+            )
         response = requests.get(data_url)
         response.raise_for_status()
         data_file.write_bytes(response.content)

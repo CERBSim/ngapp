@@ -8,6 +8,7 @@ import os
 import socketserver
 import sys
 import threading
+import time
 from urllib.parse import urlparse
 
 from .. import utils
@@ -47,14 +48,34 @@ class _HTTPServer(http.server.SimpleHTTPRequestHandler):
 
 
 def run_http_server():
-    STATIC_DIR = download_frontend()
-    print("Serving frontend from", STATIC_DIR)
+    cache_only = os.environ.get("NGAPP_FRONTEND_CACHE_ONLY", "0") in (
+        "1",
+        "true",
+        "True",
+    )
+    timing_enabled = os.environ.get("NGAPP_STARTUP_TIMING", "0") in (
+        "1",
+        "true",
+        "True",
+    )
+    t0 = time.perf_counter()
+    STATIC_DIR = download_frontend(cache_only=cache_only)
+    t1 = time.perf_counter()
+    if timing_enabled:
+        print(
+            f"Serving frontend from {STATIC_DIR} "
+            f"(download_frontend={t1 - t0:.3f}s, cache_only={cache_only})"
+        )
 
     os.chdir(STATIC_DIR)
 
     socketserver.ThreadingTCPServer.allow_reuse_address = True
     running = False
-    port = HTTP_PORT
+    env_port = os.environ.get("NGAPP_FRONTEND_PORT")
+    try:
+        port = int(env_port) if env_port else HTTP_PORT
+    except ValueError:
+        port = HTTP_PORT
     while not running:
         try:
             httpd = socketserver.ThreadingTCPServer(("", port), _HTTPServer)
