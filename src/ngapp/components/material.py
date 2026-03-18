@@ -4,12 +4,12 @@ import dataclasses
 from typing import Optional
 
 import pint
+from pydantic_pint.registry import get_registry
 
 from .helper_components import NumberInput
 from .qcomponents import QSelect
 
-ureg = pint.UnitRegistry()
-ureg.formatter.default_format = "{:~P}"
+ureg = get_registry()
 pint.set_application_registry(ureg)
 Unit = ureg.Unit
 Quantity = ureg.Quantity
