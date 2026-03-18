@@ -16,8 +16,6 @@ from .qcomponents import QBtn, QBtnGroup, QInput, QSlider, QToggle, QTooltip
 class WebguiComponent(Component):
     """Webgui component"""
 
-    changed: bool = False
-
     def __init__(
         self,
         id: str = "",
@@ -27,7 +25,6 @@ class WebguiComponent(Component):
     ):
         super().__init__(id=id, component="WebguiComponent", **kwargs)
 
-        self.changed = False
         self._canvas_buttons = []
         self._caption = caption
         self._canvas_buttons_callbacks = []
@@ -180,7 +177,9 @@ class WebguiComponent(Component):
         self._webgui_data = data
         self.storage.set("settings", self._settings)
         self.storage.set("webgui_data", self._webgui_data)
-        self.changed = True
+        if get_environment().type == EnvironmentType.COMPUTE:
+            # save the data files immediately, so they can be fetched by the frontend
+            self.storage.save()
         method = "Redraw" if redraw else "Draw"
         self._js_callback(method, data)
         self._handle("draw")
@@ -777,6 +776,7 @@ class WebgpuComponent(Component):
             # we store the scene in storage for later retrieval
             if self._id:
                 self.storage.set("scene", scene, use_pickle=True)
+                self.storage.save()
             self.scene = scene
         elif self.canvas:
             if self.scene not in [None, scene]:
