@@ -117,7 +117,7 @@ class QuantityInput(NumberInput):
     def _dump(self):
         if not self._id:
             return None
-        data = super().dump()
+        data = super()._dump()
         if self.quantity is not None:
             if data is None:
                 data = {}
@@ -128,7 +128,7 @@ class QuantityInput(NumberInput):
     def _load(self, data):
         self.unit = data.pop("unit", None)
         self.ui_units = data.pop("units", self.ui_units)
-        super().load(data)
+        super()._load(data)
 
     @NumberInput.ui_label.getter
     def ui_label(self):
