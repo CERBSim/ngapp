@@ -72,6 +72,7 @@ class BaseFrontend:
     """Base class for the frontend"""
 
     link: LinkBase = None
+    app = None
 
     def __init__(self, link: LinkBase):
         self.link = link
