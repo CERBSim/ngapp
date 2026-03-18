@@ -81,7 +81,7 @@ class QuantityInput(NumberInput):
     @unit.setter
     def unit(self, unit: str):
         if self._unit_input is not None:
-            self._unit_input.ui_model_value = unit
+            self._unit_input.ui_model_value = f"{Unit(unit):~P}"
 
     @property
     def quantity(self) -> Quantity | None:
