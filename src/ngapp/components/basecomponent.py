@@ -370,6 +370,7 @@ class Component(metaclass=BlockFrontendUpdate):
         namespace: bool = False,
         ui_style: str | dict | None = None,
         ui_class: str | list[str] | None = None,
+        ui_hidden: bool | None = None,
         id: str = "",
     ):
         self._index = next(_component_counter)
@@ -410,6 +411,9 @@ class Component(metaclass=BlockFrontendUpdate):
             self._props["class"] = (
                 ui_class if isinstance(ui_class, str) else " ".join(ui_class)
             )
+            
+        if ui_hidden is not None:
+            self.ui_hidden = ui_hidden
 
     def create_event_handler(
         self,

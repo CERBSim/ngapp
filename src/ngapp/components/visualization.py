@@ -180,6 +180,7 @@ class WebguiComponent(Component):
         if get_environment().type == EnvironmentType.COMPUTE:
             # save the data files immediately, so they can be fetched by the frontend
             self.storage.save()
+            self._update_frontend({"storage": self.storage._dump_metadata()})
         method = "Redraw" if redraw else "Draw"
         self._js_callback(method, data)
         self._handle("draw")
@@ -777,6 +778,7 @@ class WebgpuComponent(Component):
             if self._id:
                 self.storage.set("scene", scene, use_pickle=True)
                 self.storage.save()
+                self._update_frontend({"storage": self.storage._dump_metadata()})
             self.scene = scene
         elif self.canvas:
             if self.scene not in [None, scene]:

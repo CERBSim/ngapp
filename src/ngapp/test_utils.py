@@ -51,7 +51,7 @@ def _load_snapshot_file(path: Path) -> dict:
     """Load snapshot data from *path*.
 
     Snapshot files are stored as pickled dictionaries, compatible with the
-    output of :meth:`ngapp.app.App.dump` and :meth:`ngapp.app.App.save_local`.
+    output of :meth:`ngapp.app.App._dump_app` and :meth:`ngapp.app.App.save_local`.
     For backwards compatibility, if unpickling fails we fall back to reading
     JSON from the same path.
     """
@@ -75,7 +75,7 @@ def snapshot(
     file_path = folder / filename
 
     if check_data:
-        data = app.dump()
+        data = app._dump_app()
         ref_data = _load_snapshot_file(file_path)
         assert_equal_components_data(data, ref_data)
 
@@ -114,7 +114,7 @@ def snapshot(
                         ) from e
 
     if write_data:
-        data = app.dump(keep_storage=keep_storage)
+        data = app._dump_app(keep_storage=keep_storage)
         with file_path.open("wb") as fh:
             pickle.dump(data, fh)
 
@@ -130,7 +130,7 @@ def load(
     if filename is not None:
         path = Path(filename)
         data = _load_snapshot_file(path)
-    app.load(data, load_local_storage=load_storage)
+    app._load_app(data, load_local_storage=load_storage)
 
 
 def load_case(app, folder_path, filename="data.sav", load_storage=False):
