@@ -114,7 +114,7 @@ class QuantityInput(NumberInput):
             return None
         return q.m_as(unit)
 
-    def dump(self):
+    def _dump(self):
         if not self._id:
             return None
         data = super().dump()
@@ -125,7 +125,7 @@ class QuantityInput(NumberInput):
         data["units"] = self.ui_units
         return data
 
-    def load(self, data):
+    def _load(self, data):
         self.unit = data.pop("unit", None)
         self.ui_units = data.pop("units", self.ui_units)
         super().load(data)
