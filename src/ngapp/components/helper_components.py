@@ -304,7 +304,8 @@ class FileUpload(QFile):
             ui_title=ui_error_title, ui_message=ui_error_message
         )
         self.slot_prepend = [QIcon(ui_name="upload"), self.user_warning]
-        self.on_update_model_value(self.read_file)
+        if id:
+            self.on_update_model_value(self.read_file)
         self.on_clear(self.clear_file)
         self.filename = None
         self.on_rejected(self.user_warning.ui_show)
@@ -325,7 +326,6 @@ class FileUpload(QFile):
         else:
             self.filename = value.name
             self.display_value = self.filename
-            print("set storage", value.name)
             self.storage.set(value.name, value.arrayBuffer())
 
     def _dump(self):
