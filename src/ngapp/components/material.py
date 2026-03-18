@@ -121,12 +121,14 @@ class QuantityInput(NumberInput):
         if self.quantity is not None:
             if data is None:
                 data = {}
-            data["unit"] = f"{self.unit:~P}"
+            if self.unit is not None:
+                data["unit"] = f"{self.unit:~P}"
         data["units"] = self.ui_units
         return data
 
     def _load(self, data):
-        self.unit = data.pop("unit", None)
+        if "unit" in data:
+            self.unit = data.pop("unit")
         self.ui_units = data.pop("units", self.ui_units)
         super()._load(data)
 
