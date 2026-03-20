@@ -295,6 +295,19 @@ class App(Div):
         if ui_children:
             self._recurse(Component._calc_namespace_id, True, set())
 
+        env = get_environment()
+        if isinstance(env.frontend, utils.BrowserFrontend):
+            def initialize_quasar_proxy():
+                print("initialize quasar proxy")
+                self.js.eval(
+                    """
+    document.get_quasar_obj = (name) =>
+                { return document.querySelector('#q-app').__vue_app__.config.globalProperties.$q[name] }
+    """
+                )
+
+            self.on_mounted(initialize_quasar_proxy)
+
     @property
     def component(self) -> Component:
         return self.ui_children[0]
@@ -499,7 +512,7 @@ class App(Div):
     def save_local(self):
         import pickle
 
-        self.component._emit_recursive("before_save")
+        self._emit_recursive("before_save")
         dump = self._dump_app(include_storage_data=True)
         name = self.name + ".sav" if self.name is not None else "untitled.sav"
         data = pickle.dumps(dump)
@@ -559,15 +572,6 @@ class App(Div):
     ):
         """Load app from stored data"""
 
-        def initialize_quasar_proxy():
-            self.js.eval(
-                """
-document.get_quasar_obj = (name) =>
-            { return document.querySelector('#q-app').__vue_app__.config.globalProperties.$q[name] }
-"""
-            )
-
-        self.on_mounted(initialize_quasar_proxy)
         self._namespace_id = ""
         self._parent = self
         self._status = self._status
