@@ -298,7 +298,6 @@ class App(Div):
         env = get_environment()
         if isinstance(env.frontend, utils.BrowserFrontend):
             def initialize_quasar_proxy():
-                print("initialize quasar proxy")
                 self.js.eval(
                     """
     document.get_quasar_obj = (name) =>
