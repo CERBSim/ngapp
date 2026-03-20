@@ -435,7 +435,7 @@ class App(Div):
 
     @property
     def env(self):
-        return self._status.environment
+        return self._status.environment or get_environment()
 
     @final
     @classmethod

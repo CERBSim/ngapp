@@ -67,7 +67,7 @@ app = None
 def reload_app(app_module, reload_modules):
     global app
     old_app = app
-    old_app.component._emit_recursive("before_save")
+    old_app._emit_recursive("before_save")
     data = old_app._dump_app(exclude_default_data=True, include_storage_data=True)
     print("Reloading app")
     app_config = importlib.import_module(app_module).config
@@ -156,7 +156,7 @@ def host_local_app(
                 )
 
             app.call_js(_log_js_ready)
-            app.component.on_mounted(_log_app_mounted)
+            app.on_mounted(_log_app_mounted)
         last_checkpoint = now
 
         ws_port = server.port

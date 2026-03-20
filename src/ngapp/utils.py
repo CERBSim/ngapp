@@ -117,7 +117,7 @@ class BrowserFrontend(BaseFrontend):
 
     def reset_app(self, app):
         self.link.call_method_ignore_return(
-            id="resetApp", args=[app.component._get_my_wrapper_props()]
+            id="resetApp", args=[app._get_my_wrapper_props()]
         )
         self.app = app
 
