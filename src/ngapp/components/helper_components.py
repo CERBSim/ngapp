@@ -300,50 +300,65 @@ class FileUpload(QFile):
             }
         style.update(user_style)
         super().__init__(id=id, ui_style=style, **kwargs)
-        self.user_warning = UserWarning(
+        self._files = {}
+        self._user_warning = UserWarning(
             ui_title=ui_error_title, ui_message=ui_error_message
         )
-        self.slot_prepend = [QIcon(ui_name="upload"), self.user_warning]
-        if id:
-            self.on_update_model_value(self.read_file)
-        self.on_clear(self.clear_file)
-        self.filename = None
-        self.on_rejected(self.user_warning.ui_show)
+        self.slot_prepend = [QIcon(ui_name="upload"), self._user_warning]
+        self.on_update_model_value(self._on_update_model_value)
+        self.on_rejected(self._user_warning.ui_show)
+        self.on_clear(self._on_clear)
 
-    def clear_file(self):
-        self.filename = None
-        self.display_value = self.filename
+    def on_upload(self, handler: Callable, arg: object = None):
+        """
+        Emitted after files are uploaded. When the handler is called, `self.files` is available.
 
-    def read_file(self, event: Event):
+        :param handler: Function to be called on emit event
+        :param arg: Additional argument to be passed to the handler
+        """
+        return self.on("upload", handler, arg)
+
+    @property
+    def files(self) -> dict:
+        if self._id:
+            return self.storage.get("files", {})
+        return self._files
+
+    @property
+    def filename(self):
+        files = self.files
+        if self.ui_multiple or len(files) != 1:
+            return None
+        return list(files.keys())[0]
+
+    @property
+    def file_data(self):
+        files = self.files
+        if self.ui_multiple or len(files) != 1:
+            return None
+        list(files.values())[0]
+
+    def _on_clear(self, event: Event):
+        if self._id:
+            self.storage.set("files", {})
+        else:
+            self._files = {}
+
+    def _on_update_model_value(self, event: Event):
         value = event.value
 
+        files = {}
+
         if self.ui_multiple:
-            self.filename = [file.name for file in value]
-            self.display_value = ", ".join(self.filename)
-
             for file in value:
-                self.storage.set(file.name, file.arrayBuffer())
+                files[file.name] = file.arrayBuffer()
         else:
-            self.filename = value.name
-            self.display_value = self.filename
-            self.storage.set(value.name, value.arrayBuffer())
+            files[value.name] = value.arrayBuffer()
 
-    def _dump(self):
-        if not self._id:
-            return None
-        data = (super()._dump() or {}) | {"filename": self.filename}
-        if "model-value" in data:
-            data.pop("model-value")
-        return data
-
-    def _load(self, data):
-        if data is not None:
-            self.filename = data.pop("filename")
-            self.display_value = self.filename
-        super()._load(data)
-
-    def on_file_loaded(self, handler: Callable):
-        self.on("file_loaded", handler)
+        if self._id:
+            self.storage.set("files", files)
+        else:
+            self._files = files
 
     @property
     def as_temporary_file(self) -> Path:
@@ -354,26 +369,15 @@ class FileUpload(QFile):
                 "Multiple files cannot be saved as temporary file."
             )
 
-        return temp_dir_with_files(
-            {self.filename: self.storage.get(self.filename)}, return_list=False
-        )
+        return temp_dir_with_files(self.files, return_list=False)
 
     def as_temporary_directory(self, extract_zip=False):
         """Returns a context manager that creates a temporary directory with all files.
-        The context manager returns a list of file paths."""
+        The context manager returns a list of file paths if ui_multiple is True, otherwise a single Path.
+        """
 
-        if self.ui_multiple:
-            return temp_dir_with_files(
-                {
-                    filename: self.storage.get(filename)
-                    for filename in self.filename
-                },
-                extract_zip=extract_zip,
-            )
         return temp_dir_with_files(
-            {self.filename: self.storage.get(self.filename)},
-            extract_zip=extract_zip,
-            return_list=False,
+            self.files, extract_zip=extract_zip, return_list=self.ui_multiple
         )
 
 

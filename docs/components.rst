@@ -180,15 +180,19 @@ Upload files with drag-and-drop support and error handling. See :class:`~ngapp.c
 
 .. code-block:: python
 
-   from ngapp.components import FileUpload
+   from ngapp.components import FileUpload, Event
+
+   def process_file(ev: Event):
+     # Access uploaded file
+     comp = ev.component
+     name = comp.filename
+     data = comp.file_data
+
    upload = FileUpload(
        ui_error_title="Upload Error",
        ui_error_message="Please select a valid file"
-   )
-   # Access uploaded file
-   with upload.as_temporary_file as temp_file:
-       # Process the uploaded file
-       pass
+   ).on_upload(process_file)
+
 
 
 :class:`~ngapp.components.helper_components.SaveSimulationButton` — Save Simulation Button

@@ -411,7 +411,7 @@ class Component(metaclass=BlockFrontendUpdate):
             self._props["class"] = (
                 ui_class if isinstance(ui_class, str) else " ".join(ui_class)
             )
-            
+
         if ui_hidden is not None:
             self.ui_hidden = ui_hidden
 
