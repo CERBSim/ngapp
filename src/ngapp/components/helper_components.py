@@ -360,6 +360,8 @@ class FileUpload(QFile):
         else:
             self._files = files
 
+        self._handle("upload", self.files)
+
     @property
     def as_temporary_file(self) -> Path:
         """Returns a context manager with a temporary file on disk"""
