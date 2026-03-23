@@ -376,7 +376,7 @@ class FileUpload(QFile):
         if self.ui_multiple:
             for file in value:
                 files[file.name] = JSFile.from_js(file)
-        else:
+        elif value is not None:
             files[value.name] = JSFile.from_js(value)
 
         if self._id:
