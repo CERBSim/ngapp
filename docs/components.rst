@@ -182,7 +182,11 @@ Upload files with drag-and-drop support and error handling. See :class:`~ngapp.c
 
    from ngapp.components import FileUpload, Event
 
-   def process_file(ev: Event):
+   def show_notifcation(ev: Event):
+     ev.component.quasar.notify("Upload started!")
+
+   def on_upload_done(ev: Event):
+     ev.component.quasar.notify("Upload done!")
      # Access uploaded file
      comp = ev.component
      name = comp.filename
@@ -191,7 +195,7 @@ Upload files with drag-and-drop support and error handling. See :class:`~ngapp.c
    upload = FileUpload(
        ui_error_title="Upload Error",
        ui_error_message="Please select a valid file"
-   ).on_upload(process_file)
+   ).on_upload_start(show_notifcation).on_upload_done(process_file)
 
 
 

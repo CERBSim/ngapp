@@ -247,12 +247,12 @@ class Storage:
             )
         self._needs_save.clear()
 
-    def get(self, key: str):
+    def get(self, key: str, default=None):
         """Get data from storage"""
         if key not in self._data:
             self.load(key)
 
-        value = self._data.get(key, None)
+        value = self._data.get(key, default)
 
         if (
             value is not None

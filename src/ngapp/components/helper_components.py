@@ -309,14 +309,23 @@ class FileUpload(QFile):
         self.on_rejected(self._user_warning.ui_show)
         self.on_clear(self._on_clear)
 
-    def on_upload(self, handler: Callable, arg: object = None):
+    def on_upload_start(self, handler: Callable, arg: object = None):
+        """
+        Emitted when files are uploaded but before they are processed. `self.files` is **NOT** available at this point.
+
+        :param handler: Function to be called on emit event
+        :param arg: Additional argument to be passed to the handler
+        """
+        return self.on("upload_start", handler, arg)
+
+    def on_upload_complete(self, handler: Callable, arg: object = None):
         """
         Emitted after files are uploaded. When the handler is called, `self.files` is available.
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
-        return self.on("upload", handler, arg)
+        return self.on("upload_complete", handler, arg)
 
     @property
     def files(self) -> dict:
@@ -344,7 +353,15 @@ class FileUpload(QFile):
         else:
             self._files = {}
 
+    def _dump(self):
+        data = super()._dump()
+        if data is not None and "model-value" in data:
+            data.pop("model-value")
+        return data
+
     def _on_update_model_value(self, event: Event):
+        self._handle("upload_start")
+
         value = event.value
 
         files = {}
@@ -356,11 +373,11 @@ class FileUpload(QFile):
             files[value.name] = value.arrayBuffer()
 
         if self._id:
-            self.storage.set("files", files)
+            self.storage.set("files", files, use_pickle=True)
         else:
             self._files = files
 
-        self._handle("upload", self.files)
+        self._handle("upload_complete")
 
     @property
     def as_temporary_file(self) -> Path:
