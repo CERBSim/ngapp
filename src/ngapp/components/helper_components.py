@@ -7,6 +7,7 @@ from typing import Callable, Literal
 
 from .. import api
 from ..utils import (
+    JSFile,
     Job,
     is_pyodide,
     load_file_backend,
@@ -308,6 +309,8 @@ class FileUpload(QFile):
         self.on_update_model_value(self._on_update_model_value)
         self.on_rejected(self._user_warning.ui_show)
         self.on_clear(self._on_clear)
+        self.on_mounted(self._on_mounted)
+        self._model_value = None
 
     def on_upload_start(self, handler: Callable, arg: object = None):
         """
@@ -341,11 +344,11 @@ class FileUpload(QFile):
         return list(files.keys())[0]
 
     @property
-    def file_data(self):
+    def file_data(self) -> bytes | None:
         files = self.files
         if self.ui_multiple or len(files) != 1:
             return None
-        list(files.values())[0]
+        return list(files.values())[0].data
 
     def _on_clear(self, event: Event):
         if self._id:
@@ -355,9 +358,13 @@ class FileUpload(QFile):
 
     def _dump(self):
         data = super()._dump()
-        if data is not None and "model-value" in data:
+        if "model-value" in data:
             data.pop("model-value")
         return data
+
+    def _on_mounted(self, event: Event):
+        if not self.ui_multiple and len(self.files) == 1:
+            self.ui_model_value = list(self.files.values())[0].to_js(self.js)
 
     def _on_update_model_value(self, event: Event):
         self._handle("upload_start")
@@ -368,9 +375,9 @@ class FileUpload(QFile):
 
         if self.ui_multiple:
             for file in value:
-                files[file.name] = file.arrayBuffer()
+                files[file.name] = JSFile.from_js(file)
         else:
-            files[value.name] = value.arrayBuffer()
+            files[value.name] = JSFile.from_js(value)
 
         if self._id:
             self.storage.set("files", files, use_pickle=True)
@@ -387,6 +394,8 @@ class FileUpload(QFile):
             raise ValueError(
                 "Multiple files cannot be saved as temporary file."
             )
+
+        files = {self.filename: self.file_data}
 
         return temp_dir_with_files(self.files, return_list=False)
 

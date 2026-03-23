@@ -1,6 +1,7 @@
 """Utility functions for the ngapp module"""
 
 import base64
+import dataclasses
 import datetime
 import functools
 import hashlib
@@ -710,9 +711,44 @@ def zip_modules(modules: list[str]) -> bytes:
         return data
 
 
+@dataclasses.dataclass
+class JSFile:
+    name: str
+    lastModified: int
+    type: str
+    size: int
+    data: bytes
+
+    @staticmethod
+    def from_js(js_file) -> "JSFile":
+        if isinstance(js_file, JSFile):
+            return js_file
+        return JSFile(
+            name=js_file.name,
+            lastModified=js_file.lastModified,
+            type=js_file.type,
+            size=js_file.size,
+            data=js_file.arrayBuffer(),
+        )
+
+    def to_js(self, js):
+        return js.File._new(
+            b"",
+            self.name,
+            {
+                "lastModified": self.lastModified,
+                "type": self.type,
+            },
+        )
+
+    @property
+    def lastModifiedDate(self) -> datetime.datetime:
+        return datetime.datetime.fromtimestamp(self.lastModified)
+
+
 @contextmanager
 def temp_dir_with_files(
-    data: dict[str, bytes], extract_zip: bool = False, return_list=True
+    data: dict[str, bytes | JSFile], extract_zip: bool = False, return_list=True
 ) -> list[Path] | Path:
     """Context manager to handle files stored in a dictionary
 
@@ -734,6 +770,9 @@ def temp_dir_with_files(
         tmpdir = Path(tmpdir)
         file_paths = []
         for filename, file_data in data.items():
+            if isinstance(file_data, JSFile):
+                file_data = file_data.data
+
             if filename.endswith(".zip") and extract_zip:
                 handle_zip(file_data, tmpdir, file_paths)
             else:
