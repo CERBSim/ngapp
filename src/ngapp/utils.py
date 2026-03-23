@@ -804,14 +804,13 @@ def get_job_component():
     return _job_component
 
 
-__DEFAULT_DOCKERFILE__ = """
-FROM python:3.12
-RUN python3 -m venv /venv
-ENV PATH="/venv/bin:$PATH"
-RUN pip3 install watchdog websockets wheel pydantic==2.* urllib3 certifi pint colorama fore
-ADD wheels /webapp_wheels
-RUN pip3 install /webapp_wheels/*.whl
-RUN unzip /webapp_wheels/ngapp.zip -d /venv/lib/python3.12/site-packages/
+DEFAULT_DOCKERFILE = """
+FROM ubuntu:25.10
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt-get -y upgrade
+RUN apt install -y python3 python3-pip python3-venv
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 """
 
 __PDF_DOCKERFILE__ = """
@@ -840,7 +839,7 @@ class ComputeEnvironment(pydantic.BaseModel):
     cpus: int = 1
     memory: str = "1G"
     env_type: typing.Literal["venv", "docker", "local"] = "venv"
-    dockerfile: str = __DEFAULT_DOCKERFILE__
+    dockerfile: str = DEFAULT_DOCKERFILE
 
     def __call__(self, *args, **kwargs):
         return compute_node(*args, **kwargs, compute_env=self)
