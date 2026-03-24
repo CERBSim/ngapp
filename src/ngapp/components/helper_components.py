@@ -310,7 +310,6 @@ class FileUpload(QFile):
         self.on_rejected(self._user_warning.ui_show)
         self.on_clear(self._on_clear)
         self.on_mounted(self._on_mounted)
-        self._model_value = None
 
     def on_upload_start(self, handler: Callable, arg: object = None):
         """
@@ -336,6 +335,13 @@ class FileUpload(QFile):
             return self.storage.get("files", {})
         return self._files
 
+    @files.setter
+    def files(self, value):
+        if self._id:
+            self.storage.set("files", value, use_pickle=True)
+        else:
+            self._files = value
+
     @property
     def filename(self):
         files = self.files
@@ -351,26 +357,32 @@ class FileUpload(QFile):
         return list(files.values())[0].data
 
     def _on_clear(self, event: Event):
-        if self._id:
-            self.storage.set("files", {})
-        else:
-            self._files = {}
+        self.files = {}
+        self._update_frontend({"props": {"model-value": None}})
 
     def _dump(self):
         data = super()._dump()
-        if "model-value" in data:
+        if data and "model-value" in data:
             data.pop("model-value")
         return data
 
-    def _on_mounted(self, event: Event):
-        if not self.ui_multiple and len(self.files) == 1:
-            self.ui_model_value = list(self.files.values())[0].to_js(self.js)
+    def _on_mounted(self):
+        files = [f.to_js(self.js) for f in self.files.values()]
+        if not self.ui_multiple:
+            files = files[0] if files else None
+
+        if files:
+            self.ui_model_value = files
 
     def _on_update_model_value(self, event: Event):
+        if event.value is None:
+            self._props.pop("model-value", None)
+            self.ui_model_value = None
+            return
+
         self._handle("upload_start")
 
         value = event.value
-
         files = {}
 
         if self.ui_multiple:
@@ -379,11 +391,7 @@ class FileUpload(QFile):
         elif value is not None:
             files[value.name] = JSFile.from_js(value)
 
-        if self._id:
-            self.storage.set("files", files, use_pickle=True)
-        else:
-            self._files = files
-
+        self.files = files
         self._handle("upload_complete")
 
     @property
@@ -394,8 +402,6 @@ class FileUpload(QFile):
             raise ValueError(
                 "Multiple files cannot be saved as temporary file."
             )
-
-        files = {self.filename: self.file_data}
 
         return temp_dir_with_files(self.files, return_list=False)
 
