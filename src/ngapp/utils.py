@@ -369,7 +369,6 @@ _environment = None
 def set_environment(
     type: EnvironmentType, have_backend: bool = True, link: LinkBase = None
 ):
-    print("set environment, link = ", link)
     global _environment
     _environment = Environment(type, have_backend, link)
     if type == Environment.PYODIDE:
