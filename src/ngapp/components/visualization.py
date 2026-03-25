@@ -771,7 +771,7 @@ class WebgpuComponent(Component):
         elif isinstance(scene, list):
             scene = draw.Scene(scene, camera=camera, light=light)
 
-        # env = self._status.env
+        # env = self.context.env
         env = get_environment()
         if env.type == EnvironmentType.COMPUTE:
             # we store the scene in storage for later retrieval

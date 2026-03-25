@@ -981,7 +981,7 @@ class Report(QBtn):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             with set_directory(temp_dir):
-                template_path = self._status.app.assets_path / template_file
+                template_path = self.context.app.assets_path / template_file
                 if file_type == "md":
                     self._generate_md_report(
                         template_path=template_path,
@@ -1013,7 +1013,7 @@ class Report(QBtn):
         Raises:
             ValueError: If the file type is not supported.
         """
-        template_path = self._status.app.assets_path / template_path
+        template_path = self.context.app.assets_path / template_path
         if file_type == "md":
             self._generate_md_report(
                 pdf_file=filename, template_path=template_path

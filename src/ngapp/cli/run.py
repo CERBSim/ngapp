@@ -43,9 +43,9 @@ class RunData(BaseModel):
     env: dict = {}
     use_venv: bool = False
 
-    def update_app_status(self, app_status):
-        app_status.capture_events = self.capture_events
-        app_status.capture_call_stack = self.capture_call_stack
+    def update_app_context(self, app_context):
+        app_context.capture_events = self.capture_events
+        app_context.capture_call_stack = self.capture_call_stack
 
     def load_file(self):
         return api.get(f"/files/{self.file_id}")
@@ -225,7 +225,7 @@ def main():
         if (Path("/") / "assets").exists():
             shutil.copytree(Path("/") / "assets", Path().cwd() / "assets")
 
-    data.update_app_status(model._status)
+    data.update_app_context(model.context)
 
     func_name = data.func_name
 

@@ -108,7 +108,7 @@ class BrowserFrontend(BaseFrontend):
         if "source" not in data:
             data["source"] = "frontend"
 
-        if data["source"] == "frontend" and comp._status.capture_events:
+        if data["source"] == "frontend" and comp.context.capture_events:
             data["debug"] = comp._get_debug_data(
                 method=method,
                 **data,
@@ -161,10 +161,10 @@ class ComputeFrontend(BaseFrontend):
             if comp._block_frontend_update:
                 return
 
-            if comp._status is None:
+            if comp.context is None:
                 return
 
-            if comp._status.app is None:
+            if comp.context.app is None:
                 return
 
             if data is None:
@@ -175,13 +175,13 @@ class ComputeFrontend(BaseFrontend):
 
             data["source"] = "backend"
 
-            if comp._status.capture_events:
+            if comp.context.capture_events:
                 data["debug"] = comp._get_debug_data(
                     method=method,
                     **data,
                 )
 
-            file_id = comp._status.app.metadata["id"]
+            file_id = comp.context.app.metadata["id"]
             component_id = comp._fullid
             if component_id:
                 api.post(
@@ -308,7 +308,7 @@ class Environment:
                 "update_component is only available in pyodide or local app environment"
             )
         app = self.frontend.app
-        if app is None or app._status.file_id != file_id:
+        if app is None or app.context.file_id != file_id:
             return
 
         if component_id is None:
@@ -886,7 +886,7 @@ def compute_node(
                     *args,
                     **kwargs,
                 ):
-                    app = self._status.app
+                    app = self.context.app
                     comp_id = None
                     kwargs["job_component_id"] = (
                         _job_component._fullid if _job_component else ""
@@ -911,13 +911,13 @@ def compute_node(
                         api.post(
                             "/job",
                             {
-                                "file_id": app._status.file_id,
+                                "file_id": app.context.file_id,
                                 "compute_env": compute_env,
                                 "comp_id": comp_id,
                                 "func": f.__name__,
                                 "status": {
-                                    "capture_events": app._status.capture_events,
-                                    "capture_call_stack": app._status.capture_call_stack,
+                                    "capture_events": app.context.capture_events,
+                                    "capture_call_stack": app.context.capture_call_stack,
                                 },
                                 "depends_on": depends_on,
                                 "args": args,
@@ -941,7 +941,7 @@ def compute_node(
                 ):
                     global _job_component
 
-                    app = self._status.app
+                    app = self.context.app
                     _job_component = (
                         app[job_component_id] if job_component_id else None
                     )
@@ -976,7 +976,7 @@ def replace_app(new_app):
     env = get_environment().frontend
     env.reset_app(new_app)
     env.set_query_parameter("fileId", new_app.metadata.get("id", None))
-    # new_app._status.file_id = None
+    # new_app.context.file_id = None
     return new_app
 
 

@@ -62,16 +62,15 @@ class FileData:
 
 
 @dataclasses.dataclass
-class AppStatus:
+class AppContext:
     app: object
     capture_events: bool = False
     capture_call_stack: bool = False
-    _app_id: int | None = None
-    _file_id: int | None = None
     environment: utils.Environment = None
     components_by_id: dict[str, object] = dataclasses.field(
         default_factory=dict
     )
+    _cached_app_id: int | None = None
 
     @property
     def access_level(self):
@@ -104,28 +103,19 @@ class AppStatus:
 
     @property
     def app_id(self):
-        if self._app_id is None:
-            self._app_id = get_environment().frontend.get_query_parameter(
-                "appId"
+        if self._cached_app_id is None:
+            self._cached_app_id = (
+                get_environment().frontend.get_query_parameter("appId")
             )
-        return self._app_id
+        return self._cached_app_id
 
     @app_id.setter
     def app_id(self, value):
-        self._app_id = value
+        self._cached_app_id = value
 
     @property
     def file_id(self):
         return self.app.file_data.id
-        if self._file_id is None:
-            self._file_id = get_environment().frontend.get_query_parameter(
-                "fileId"
-            )
-        return self._file_id
-
-    # @file_id.setter
-    # def file_id(self, value):
-    #     self._file_id = value
 
 
 C = TypeVar("T", bound="Component")
@@ -230,7 +220,7 @@ class Storage:
         if not get_environment().have_backend:
             self._load_local()
             return
-        file_id = self._component._status.file_id
+        file_id = self._component.context.file_id
         if file_id is None:
             return
         mdata = self._metadata.get(key)
@@ -247,7 +237,7 @@ class Storage:
         if not get_environment().have_backend:
             self._save_local()
             return
-        file_id = self._component._status.file_id
+        file_id = self._component.context.file_id
         if self._needs_deletion:
             api.delete(f"/files/{file_id}/files", data=self._needs_deletion)
         for key in self._needs_save:
@@ -365,7 +355,7 @@ class Component(metaclass=BlockFrontendUpdate):
     _id: str
     _namespace_id: str | None = None
     _parent: C | None = None
-    _status: AppStatus = None
+    context: AppContext = None
     _namespace: bool
     _js_component = None
     _component_name: str
@@ -650,10 +640,10 @@ class Component(metaclass=BlockFrontendUpdate):
                     if parent._namespace
                     else parent._namespace_id
                 )
-                self._status = parent._status
+                self.context = parent.context
             if self._id:
                 _components_with_id[self._fullid] = self
-                self._status.components_by_id[self._fullid] = self
+                self.context.components_by_id[self._fullid] = self
 
     @property
     def _fullid(self):
@@ -705,7 +695,7 @@ class Component(metaclass=BlockFrontendUpdate):
 
     def _get_debug_data(self, **kwargs):
         stack_trace = ""
-        if self._status.capture_call_stack:
+        if self.context.capture_call_stack:
             import traceback
 
             stack_trace = "".join(
@@ -986,7 +976,7 @@ class Component(metaclass=BlockFrontendUpdate):
             for comp in slot:
                 if not isinstance(comp, str):
                     comp._parent = self
-                    comp._status = self._status
+                    comp.context = self.context
                     comp._recurse(func, parent_first, visited, arg)
 
         if not parent_first:
@@ -1009,8 +999,8 @@ class Component(metaclass=BlockFrontendUpdate):
             and self._namespace_id != parent._namespace_id
         )
         self._parent = parent
-        self._status = parent._status
-        if changed and self._status and not self._block_frontend_update:
+        self.context = parent.context
+        if changed and self.context and not self._block_frontend_update:
             utils._trace_call("_calc_namespace_id._set_parent")
             self._namespace_id = None
             self._calc_namespace_id()

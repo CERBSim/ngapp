@@ -24,7 +24,7 @@ import urllib3
 
 from . import api, utils
 from .components.basecomponent import (
-    AppStatus,
+    AppContext,
     Component,
     FileData,
     Storage,
@@ -267,7 +267,7 @@ class App(Div):
     """Base class for all applications"""
 
     _default_data: dict | None
-    _status: AppStatus
+    context: AppContext
     _usersettings: UserSettings | None = None
 
     _config: AppConfigWithAccess
@@ -276,7 +276,7 @@ class App(Div):
     def __init__(
         self, *ui_children: Component | str, name: str | None = None, **kwargs
     ):
-        self._status = AppStatus(app=self, environment=get_environment())
+        self.context = AppContext(app=self, environment=get_environment())
         super().__init__(id="__app__", *ui_children, **kwargs)
 
         self.file_data = FileData(
@@ -290,7 +290,7 @@ class App(Div):
 
         self._namespace_id = ""
         self._parent = None
-        self._status.components_by_id[self._id] = self
+        self.context.components_by_id[self._id] = self
         if not self._id:
             return None
         if ui_children:
@@ -310,6 +310,10 @@ class App(Div):
             self.on_mounted(initialize_quasar_proxy)
 
     @property
+    def _status(self):
+        return self.context
+
+    @property
     def component(self) -> Component:
         return self.ui_children[0]
 
@@ -318,7 +322,7 @@ class App(Div):
         self.ui_children = [value]
 
     def __getitem__(self, key: str) -> Component:
-        return self._status.components_by_id[key]
+        return self.context.components_by_id[key]
 
     def on_exit(self, handler):
         """
@@ -437,7 +441,7 @@ class App(Div):
 
     @property
     def env(self):
-        return self._status.environment or get_environment()
+        return self.context.environment or get_environment()
 
     @final
     @classmethod
@@ -478,14 +482,14 @@ class App(Div):
 
         env.frontend.app = self
         self.component._emit_recursive("before_save")
-        status = self._status
+        status = self.context
         file_id = status.file_id
         if file_id is None:
             self.file_data = FileData(
                 **api.post(
                     "/create_model",
                     {
-                        "app_id": self._status.app_id,
+                        "app_id": self.context.app_id,
                         "name": self.name or "untitled",
                     },
                 )
@@ -575,7 +579,7 @@ class App(Div):
 
         self._namespace_id = ""
         self._parent = self
-        self._status = self._status
+        self.context = self.context
         self._namespace_id = ""
 
         if update_frontend is None:
