@@ -90,6 +90,7 @@ class AccessLevel(IntEnum):
 
     HIDDEN = 0
     VISIBLE = 5
+    VIEW = 7
     TRIAL = 10
     STANDARD = 20
     ADMIN = 9000

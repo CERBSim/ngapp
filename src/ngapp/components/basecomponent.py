@@ -74,6 +74,10 @@ class AppStatus:
     )
 
     @property
+    def access_level(self):
+        return self.app._config.access_level
+
+    @property
     def is_admin(self):
         from ..app import AppConfigWithAccess
 
@@ -81,6 +85,12 @@ class AppStatus:
         if isinstance(config, AppConfigWithAccess):
             return config.is_admin
         return False
+
+    @property
+    def is_view_only(self):
+        from ..app import AccessLevel
+
+        return self.access_level == AccessLevel.VIEW
 
     @property
     def file_data(self):
