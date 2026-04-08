@@ -481,7 +481,7 @@ class App(Div):
             raise RuntimeError("No backend available")
 
         env.frontend.app = self
-        self.component._emit_recursive("before_save")
+        self._emit_recursive("before_save")
         status = self.context
         file_id = status.file_id
         if file_id is None:
@@ -496,7 +496,7 @@ class App(Div):
             )
 
         api.put(f"/model/{status.file_id}", self._dump_app())
-        self.component._emit_recursive("save")
+        self._emit_recursive("save")
         self.storage.save()
 
         if env.type == EnvironmentType.PYODIDE:
@@ -536,8 +536,6 @@ class App(Div):
         component_data = data.get(
             "component", data.get("data", {}).get("component", {})
         )
-
-        self.storage._load_data(data.get("storage", None))
 
         if metadata:
             self.file_data.app_id = metadata.get("app_id", None)
