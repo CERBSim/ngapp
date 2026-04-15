@@ -700,6 +700,12 @@ def _get_app_config(
         filtered_config = {
             k: v for k, v in app_config.items() if k in allowed_fields
         }
+        if (
+            "image" not in filtered_config
+            or type(filtered_config["image"]) != str
+        ):
+            filtered_config["image"] = None
+
         app_config = AppConfigWithAccess(**filtered_config)
         _app_cache[app_config.id] = app_config
         return app_config
