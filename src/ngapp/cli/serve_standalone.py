@@ -209,16 +209,46 @@ def host_local_app(
                 print("Failed to write NGAPP_TEST_URL_FILE:", e)
 
         if start_browser:
-            default_browser_path = (
-                "/usr/bin/google-chrome-unstable"
-                if sys.platform == "linux"
-                else None
-            )
-            browser_path = os.environ.get("NGAPP_BROWSER", default_browser_path)
+            browser = os.environ.get("NGAPP_BROWSER")
+            browser_path = None
+            if browser:
+                if browser.startswith("/"):
+                    browser_path = browser
+                else:
+                    for path_dir in os.environ.get("PATH", "").split(os.pathsep):
+                        candidate = Path(path_dir) / browser
+                        if candidate.exists() and candidate.is_file():
+                            browser_path = str(candidate)
+                            break
+            if not browser_path and sys.platform == "linux":
+                for name in (
+                    "google-chrome-unstable",
+                    "google-chrome-stable",
+                    "google-chrome",
+                    "chromium",
+                    "chromium-browser",
+                ):
+                    candidate = f"/usr/bin/{name}"
+                    if Path(candidate).exists():
+                        browser_path = candidate
+                        break
             if browser_path and Path(browser_path).exists():
-                webbrowser.get(f"{browser_path} %s &").open("--app=" + url)
+                user_data_dir = Path(
+                    os.environ.get(
+                        "NGAPP_CHROME_PROFILE",
+                        Path.home() / ".config" / "ngapp-chrome",
+                    )
+                )
+                subprocess.Popen(
+                    [
+                        browser_path,
+                        f"--user-data-dir={user_data_dir}",
+                        "--app=" + url,
+                    ],
+                    start_new_session=True,
+                )
             else:
-                webbrowser.open("--app=" + url)
+                webbrowser.open(url)
         now = time.perf_counter()
         if timing_enabled:
             print(
