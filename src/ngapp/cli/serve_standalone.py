@@ -232,6 +232,28 @@ def host_local_app(
                     if Path(candidate).exists():
                         browser_path = candidate
                         break
+            if not browser_path and sys.platform == "darwin":
+                for candidate in (
+                    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                ):
+                    if Path(candidate).exists():
+                        browser_path = candidate
+                        break
+            if not browser_path and sys.platform == "win32":
+                win_candidates = []
+                for env_var in ("PROGRAMFILES", "PROGRAMFILES(X86)", "LOCALAPPDATA"):
+                    base = os.environ.get(env_var)
+                    if base:
+                        win_candidates.append(
+                            Path(base) / "Google" / "Chrome" / "Application" / "chrome.exe"
+                        )
+                        win_candidates.append(
+                            Path(base) / "Microsoft" / "Edge" / "Application" / "msedge.exe"
+                        )
+                for candidate in win_candidates:
+                    if candidate.exists():
+                        browser_path = str(candidate)
+                        break
             if browser_path and Path(browser_path).exists():
                 user_data_dir = Path(
                     os.environ.get(
