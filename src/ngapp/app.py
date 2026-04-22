@@ -31,6 +31,7 @@ from .components.basecomponent import (
     _QProxy,
     reset_components,
 )
+from .components.qcomponents import QPage
 from .components.helper_components import Div
 from .utils import (
     ComputeEnvironment,
@@ -263,7 +264,7 @@ class AppConfigWithAccess(AppConfig):
         return self.access_level == AccessLevel.ADMIN
 
 
-class App(Div):
+class App(QPage):
     """Base class for all applications"""
 
     _default_data: dict | None
