@@ -180,7 +180,13 @@ def host_local_app(
                     text=True,
                     env=child_env,
                 )
-                http_port = int(http_process.stdout.readline().strip())
+                output = http_process.stdout.readline().strip()
+                try:
+                    http_port = int(output)
+                except ValueError:
+                    print("Failed to start fronten server:", output)
+                    sys.exit(1)
+
         else:
             http_port = 3000
 

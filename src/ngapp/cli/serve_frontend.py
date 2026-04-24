@@ -91,4 +91,8 @@ def run_http_server():
 
 
 if __name__ == "__main__":
-    run_http_server()
+    try:
+        run_http_server()
+    except Exception as e:
+        err = str(e).replace("\n", "  ")
+        print(f"Error starting HTTP server: {e}", file=_stdout, flush=True)
