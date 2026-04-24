@@ -368,7 +368,7 @@ def app_test(
                 timeout=timeout,
                 extra_args=extra_args,
             )
-            url = runner.start()
+            url = runner.start(in_process=wants_app_arg)
             try:
                 page.goto(url)  # type: ignore[call-arg]
                 call_kwargs = dict(kwargs)

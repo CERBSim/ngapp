@@ -129,3 +129,178 @@ Run the tests with::
 By default Playwright will open a headless browser. To debug a failing test,
 you can use Playwright's own command line flags or insert ``page.pause()``
 statements in your tests.
+
+WebGPU visual regression tests
+------------------------------
+
+If your app uses :class:`~ngapp.components.visualization.WebgpuComponent`,
+you can write tests that compare rendered 3D scenes against stored baseline
+images. The framework reads back the GPU texture directly, so it works in
+headless Chrome where normal Playwright screenshots of WebGPU canvases are
+blank.
+
+Setup
+~~~~~
+
+Install the extra dependencies::
+
+   pip install "ngapp[e2e]"
+   playwright install
+
+Create a ``tests/conftest.py`` that registers the WebGPU plugin and
+configures directories for output images and baselines::
+
+   from pathlib import Path
+   import ngapp.e2e_webgpu as e2e_webgpu
+
+   pytest_plugins = ["ngapp.e2e_webgpu"]
+
+   TESTS_DIR = Path(__file__).parent
+   e2e_webgpu.configure(
+       output_dir=TESTS_DIR / "output",
+       baseline_dir=TESTS_DIR / "baselines",
+   )
+
+``output/`` receives images from the current run. ``baselines/`` stores the
+reference images you commit to version control.
+
+Writing a test
+~~~~~~~~~~~~~~
+
+Use :func:`~ngapp.e2e.app_test` with an ``app`` parameter to get access to
+the live ``App`` instance. Call
+:func:`~ngapp.e2e_webgpu.assert_matches_baseline` with the
+``WebgpuComponent`` you want to check::
+
+   import time
+   from playwright.sync_api import Page
+   from ngapp.e2e import app_test
+   from ngapp.e2e_webgpu import assert_matches_baseline
+
+
+   @app_test("my_3d_app")
+   def test_scene_renders(page: Page, app):
+       # The mounted callback that calls draw() runs asynchronously,
+       # so poll until the scene is ready.
+       deadline = time.time() + 15
+       while app.my_canvas.scene is None and time.time() < deadline:
+           page.wait_for_timeout(500)
+       assert app.my_canvas.scene is not None, "scene never initialised"
+
+       assert_matches_baseline(page, app.my_canvas, "my_scene.png")
+
+``assert_matches_baseline`` accepts these keyword arguments:
+
+- **threshold** (float, default ``0.01``): maximum fraction of pixels
+  allowed to differ before the test fails.
+- **output_dir** / **baseline_dir**: override the directories set in
+  ``conftest.py`` for a single call.
+
+When the *target* is a ``WebgpuComponent`` the GPU texture is read back
+automatically. For any other target (a Playwright ``Locator`` or a CSS
+selector string) it falls back to a regular Playwright screenshot.
+
+Generating baselines
+~~~~~~~~~~~~~~~~~~~~
+
+On the first run there are no baselines yet. Set the ``UPDATE_BASELINES``
+environment variable to create them::
+
+   UPDATE_BASELINES=1 pytest tests/ -vv -s
+
+This writes the current output images into ``tests/baselines/``. Commit
+these files to version control. Subsequent runs without the variable will
+compare against them and fail if any pixels differ beyond the threshold.
+
+Running in Docker (CI)
+~~~~~~~~~~~~~~~~~~~~~~
+
+WebGPU requires a GPU driver. In CI or on machines without a physical GPU,
+run the tests inside Docker using ``ghcr.io/cerbsim/ngapp-base`` which
+ships Chrome, Mesa Vulkan drivers, and the lavapipe software renderer with
+ngapp pre-installed.
+
+A minimal ``Dockerfile`` for your app's tests::
+
+   FROM ghcr.io/cerbsim/ngapp-base:latest
+   WORKDIR /app
+   COPY . .
+   ENV SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0.dev0
+   RUN pip install --no-cache-dir --break-system-packages .
+   CMD ["pytest", "tests/", "-vv", "-s"]
+
+Build and run::
+
+   docker build -t my-tests .
+
+   # First run: generate baselines
+   docker run --rm \
+       -v "$(pwd)/tests/baselines:/app/tests/baselines" \
+       -e UPDATE_BASELINES=1 my-tests
+
+   # Subsequent runs: compare against baselines
+   docker run --rm \
+       -v "$(pwd)/tests/baselines:/app/tests/baselines" \
+       my-tests
+
+The ngapp repository ships a helper script ``run_tests_in_docker.sh`` that
+wraps these steps and accepts ``--update-baselines``.
+
+Complete example
+~~~~~~~~~~~~~~~~
+
+Given an app that renders a triangle::
+
+   # my_app/app.py
+   import numpy as np
+   from ngapp.app import App
+   from ngapp.components import Col
+   from ngapp.components.visualization import WebgpuComponent
+
+
+   class MyApp(App):
+       def __init__(self):
+           super().__init__()
+           self.canvas = WebgpuComponent(width="400px", height="400px")
+           self.canvas.on_mounted(self._draw)
+           self.component = Col(self.canvas)
+
+       def _draw(self):
+           from webgpu.triangles import TriangulationRenderer
+
+           points = np.array(
+               [[-1, -1, 0], [1, -1, 0], [0, 1, 0]], dtype=np.float32
+           )
+           renderer = TriangulationRenderer(points, color=(0.2, 0.6, 1.0, 1.0))
+           self.canvas.draw([renderer])
+
+The test file::
+
+   # tests/test_visual.py
+   import time
+   from playwright.sync_api import Page
+   from ngapp.e2e import app_test
+   from ngapp.e2e_webgpu import assert_matches_baseline
+
+
+   @app_test("my_app")
+   def test_triangle(page: Page, app):
+       deadline = time.time() + 15
+       while app.canvas.scene is None and time.time() < deadline:
+           page.wait_for_timeout(500)
+       assert app.canvas.scene is not None
+
+       assert_matches_baseline(page, app.canvas, "triangle.png")
+
+And ``tests/conftest.py``::
+
+   from pathlib import Path
+   import ngapp.e2e_webgpu as e2e_webgpu
+
+   pytest_plugins = ["ngapp.e2e_webgpu"]
+
+   TESTS_DIR = Path(__file__).parent
+   e2e_webgpu.configure(
+       output_dir=TESTS_DIR / "output",
+       baseline_dir=TESTS_DIR / "baselines",
+   )

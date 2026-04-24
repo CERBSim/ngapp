@@ -6,3 +6,4 @@ dist
 **/_version.py
 *.whl
 /docs/html/
+tests/output/

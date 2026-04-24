@@ -12,7 +12,7 @@ build-backend = "setuptools.build_meta"
 
 [project.optional-dependencies]
 dev = ['websockets', 'watchdog', 'wheel', 'setuptools', 'cookiecutter', 'deepdiff']
-e2e = ['pytest', 'pytest-playwright', 'pytest-check', 'playwright', 'pytest-base-url']
+e2e = ['pytest', 'pytest-playwright', 'pytest-check', 'playwright', 'pytest-base-url', 'Pillow']
 
 [tool.setuptools_scm]
 version_file = "src/ngapp/_version.py"
