@@ -24,7 +24,7 @@ Then in tests::
 
     @app_test("my_3d_app")
     def test_scene(page, app):
-        page.wait_for_timeout(2000)
+        # draws happen via app-specific helpers, then just assert:
         assert_matches_baseline(page, app.my_canvas, "expected.png")
 """
 
@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import time
 from pathlib import Path
 
 import numpy as np
@@ -54,9 +55,22 @@ _baseline_dir: Path | None = None
 
 UPDATE_BASELINES = os.environ.get("UPDATE_BASELINES", "") == "1"
 
+# Replace requestAnimationFrame with a no-op.  The scene's render() method
+# calls _render_objects(to_canvas=False) which writes into target_texture
+# *before* calling patchedRequestAnimationFrame (which only copies to the
+# on-screen canvas).  Tests read target_texture directly, so the canvas
+# copy is unnecessary.
 _NOOP_RAF_JS = """
 window.requestAnimationFrame = function() {};
 """
+
+# How long to wait (ms) for the scene to finish initialising (GPU pipeline
+# creation, first render, etc.) after it first appears.
+_SCENE_INIT_WAIT_MS = 2000
+
+# How long to wait (ms) after the scene is known to be ready, to let a
+# debounced render triggered by a UI click complete.
+_RENDER_SETTLE_MS = 1000
 
 
 def configure(output_dir: Path | str, baseline_dir: Path | str) -> None:
@@ -83,6 +97,54 @@ def _locator_for(page, target) -> Locator:
     if isinstance(target, WebgpuComponent):
         return page.locator("canvas")
     raise TypeError(f"Cannot resolve target of type {type(target)}")
+
+
+# Track which WebgpuComponent instances have already had their scene
+# initialised (first render wait done).  Keyed by id(target).
+_initialised_scenes: set[int] = set()
+
+
+def _ensure_scene_ready(page, target, timeout: float = 30) -> None:
+    """Wait for the WebgpuComponent's scene and canvas to exist.
+
+    On the *first* call for a given target, waits for GPU pipelines to
+    finish initialising.  On subsequent calls (after UI interactions)
+    just waits long enough for the debounced render to complete.
+
+    Does **not** reset the camera or perform any app-specific setup —
+    that belongs in the test code.
+    """
+    target_key = id(target)
+    first_time = target_key not in _initialised_scenes
+
+    if first_time:
+        # Poll until scene + canvas exist.
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            if (
+                target.scene is not None
+                and target.scene.canvas is not None
+            ):
+                break
+            page.wait_for_timeout(200)
+        else:
+            raise AssertionError(
+                f"WebgpuComponent scene not initialised after {timeout}s"
+            )
+
+        # Give GPU pipelines time to finish building.
+        page.wait_for_timeout(_SCENE_INIT_WAIT_MS)
+
+        # Trigger a render (first call is not debounced — executes
+        # immediately) and wait for it.
+        target.scene.render()
+        page.wait_for_timeout(_RENDER_SETTLE_MS)
+
+        _initialised_scenes.add(target_key)
+    else:
+        # A UI click already triggered scene.render() via the normal
+        # callback path.  Just wait for the debounce + render to finish.
+        page.wait_for_timeout(_RENDER_SETTLE_MS)
 
 
 def _readback_webgpu_texture(page, target, out_path: Path) -> None:
@@ -112,6 +174,12 @@ def assert_matches_baseline(
 ) -> None:
     """Screenshot a canvas element and compare against a baseline image.
 
+    For :class:`~ngapp.components.visualization.WebgpuComponent` targets
+    this function automatically waits for the scene to be ready and for
+    any pending render (triggered by a prior UI interaction) to complete
+    before reading back the GPU texture.  No manual ``wait_for_scene``
+    or ``render`` calls are needed.
+
     Parameters
     ----------
     page : playwright.sync_api.Page
@@ -136,6 +204,7 @@ def assert_matches_baseline(
 
     from ngapp.components.visualization import WebgpuComponent
     if isinstance(target, WebgpuComponent):
+        _ensure_scene_ready(page, target)
         _readback_webgpu_texture(page, target, out_path)
     else:
         locator = _locator_for(page, target)
@@ -214,4 +283,6 @@ def page(browser):
     # canvas loop never starts.  This keeps the GPU queue idle for readback.
     p.add_init_script(_NOOP_RAF_JS)
     yield p
+    # Clean up the per-target scene tracking so a fresh page starts clean.
+    _initialised_scenes.clear()
     p.close()

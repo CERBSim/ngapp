@@ -335,8 +335,11 @@ def host_local_app(
         except subprocess.TimeoutExpired:
             http_process.kill()
 
-    platform.js.close()
-    platform.websocket_server.stop()
+    try:
+        platform.js.close()
+    except Exception:
+        pass
+    platform.reset()
 
 
 def main(app_module=None):
