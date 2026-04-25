@@ -4,15 +4,19 @@ Usage::
 
     python -m ngapp.compare_test_images path/to/tests
     python -m ngapp.compare_test_images path/to/tests --only-errors
+    python -m ngapp.compare_test_images path/to/tests --only-baseline
 """
 
 import argparse
+import math
 import sys
 from pathlib import Path
 
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
+
+PAGE_SIZE = 10
 
 
 def _has_diff(out_img: np.ndarray, ref_img: np.ndarray) -> bool:
@@ -22,6 +26,34 @@ def _has_diff(out_img: np.ndarray, ref_img: np.ndarray) -> bool:
     return (diff.max(axis=-1) > 2).sum() > 0
 
 
+def _show_baseline_grid(names: list[str], baseline_dir: Path) -> None:
+    """Show baseline images in pages of PAGE_SIZE, arranged in a grid."""
+    for page_start in range(0, len(names), PAGE_SIZE):
+        batch = names[page_start : page_start + PAGE_SIZE]
+        n = len(batch)
+        cols = min(n, 5)
+        rows = math.ceil(n / cols)
+
+        fig, axes = plt.subplots(rows, cols, figsize=(4 * cols, 4 * rows))
+        axes = np.atleast_1d(axes).flatten()
+
+        for i, name in enumerate(batch):
+            img = np.array(Image.open(baseline_dir / name))
+            axes[i].imshow(img)
+            axes[i].set_title(name, fontsize=9)
+            axes[i].axis("off")
+
+        for i in range(n, len(axes)):
+            axes[i].axis("off")
+
+        page_num = page_start // PAGE_SIZE + 1
+        total_pages = math.ceil(len(names) / PAGE_SIZE)
+        fig.suptitle(f"Baselines  (page {page_num}/{total_pages})", fontsize=14)
+        fig.tight_layout()
+        print(f"Page {page_num}/{total_pages} — close window for next")
+        plt.show(block=True)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Compare test output vs baselines.")
     parser.add_argument(
@@ -29,20 +61,35 @@ def main() -> None:
         type=Path,
         help="Test directory containing 'output' and 'baselines' subdirs.",
     )
-    parser.add_argument(
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
         "--only-errors",
         action="store_true",
         help="Only show images that differ.",
     )
+    group.add_argument(
+        "--only-baseline",
+        action="store_true",
+        help="Only show baseline images in a grid.",
+    )
     args = parser.parse_args()
 
-    output_dir = args.test_dir / "output"
     baseline_dir = args.test_dir / "baselines"
+    output_dir = args.test_dir / "output"
+
+    if not baseline_dir.is_dir():
+        sys.exit(f"Baseline directory not found: {baseline_dir}")
+
+    if args.only_baseline:
+        names = sorted(p.name for p in baseline_dir.glob("*.png"))
+        if not names:
+            sys.exit("No baseline images found.")
+        _show_baseline_grid(names, baseline_dir)
+        print("Done.")
+        return
 
     if not output_dir.is_dir():
         sys.exit(f"Output directory not found: {output_dir}")
-    if not baseline_dir.is_dir():
-        sys.exit(f"Baseline directory not found: {baseline_dir}")
 
     # Collect matching image pairs (skip diff_ files)
     names = sorted(
@@ -85,7 +132,7 @@ def main() -> None:
         axes[2].axis("off")
 
         fig.tight_layout()
-        print(f"{name}{status} — press Enter for next, q to quit")
+        print(f"{name}{status} — close window for next")
         plt.show(block=True)
 
     print("Done.")
