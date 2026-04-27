@@ -275,32 +275,11 @@ class UserWarning(QDialog):
 class FileUpload(QFile):
     def __init__(
         self,
-        id="",
         ui_error_title="Error in File Upload",
         ui_error_message="Please upload a valid file",
         **kwargs,
     ):
-        style = {
-            "height": "100px",
-            "border": "1px solid rgba(60, 190, 242, 1)",
-            "border-radius": "15px",
-            "background-color": "rgba(60, 190, 242, .2)",
-            "margin-top": "30px",
-            "margin-bottom": "70px",
-            "padding": "20px",
-            "border-style": "dashed",
-            "max-width": "400px",
-        }
-        user_style = kwargs.pop("ui_style", {})
-        if isinstance(user_style, str):
-            user_style = {
-                key: val
-                for key, val in (
-                    s.split(":") for s in user_style.split(";") if ":" in s
-                )
-            }
-        style.update(user_style)
-        super().__init__(id=id, ui_style=style, **kwargs)
+        super().__init__(**kwargs)
         self._files = {}
         self._user_warning = UserWarning(
             ui_title=ui_error_title, ui_message=ui_error_message
