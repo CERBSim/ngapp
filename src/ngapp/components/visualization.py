@@ -786,6 +786,7 @@ class WebgpuComponent(Component):
             if self.scene not in [None, scene]:
                 self.scene.cleanup()
             self.scene = draw.Draw(scene, self.canvas, lilgui=False)
+            self.scene.input_handler.set_canvas(self.canvas.canvas)
             self.scene.input_handler.on_mousedown(self.mousedown)
             self.scene.input_handler.on_mouseup(self.mouseup)
             self.scene.input_handler.on_mouseout(self.mouseout)
