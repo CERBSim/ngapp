@@ -215,13 +215,16 @@ def host_local_app(
                 print("Failed to write NGAPP_TEST_URL_FILE:", e)
 
         if start_browser:
-            browser = os.environ.get("NGAPP_BROWSER")
+            args = os.environ.get("NGAPP_BROWSER").split() or [None]
+            browser = args.pop(0)
             browser_path = None
             if browser:
                 if browser.startswith("/"):
                     browser_path = browser
                 else:
-                    for path_dir in os.environ.get("PATH", "").split(os.pathsep):
+                    for path_dir in os.environ.get("PATH", "").split(
+                        os.pathsep
+                    ):
                         candidate = Path(path_dir) / browser
                         if candidate.exists() and candidate.is_file():
                             browser_path = str(candidate)
@@ -272,7 +275,7 @@ def host_local_app(
                         browser_path,
                         f"--user-data-dir={user_data_dir}",
                         "--app=" + url,
-                    ],
+                    ] + args,
                     start_new_session=True,
                 )
             else:
