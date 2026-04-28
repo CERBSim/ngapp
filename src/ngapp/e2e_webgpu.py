@@ -278,7 +278,7 @@ def page(browser):
     never copies to the on-screen canvas.  Tests only need the off-screen
     ``target_texture`` which is read back via ``read_texture``.
     """
-    p = browser.new_page()
+    p = browser.new_page(viewport={"width": 1280, "height": 720})
     # Kill requestAnimationFrame before anything loads so the render-to-
     # canvas loop never starts.  This keeps the GPU queue idle for readback.
     p.add_init_script(_NOOP_RAF_JS)
