@@ -263,6 +263,7 @@ def host_local_app(
                     if candidate.exists():
                         browser_path = str(candidate)
                         break
+            opened_as_app = False
             if browser_path and Path(browser_path).exists():
                 user_data_dir = Path(
                     os.environ.get(
@@ -277,7 +278,10 @@ def host_local_app(
                         "--app=" + url,
                     ] + args,
                     start_new_session=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
                 )
+                opened_as_app = True
             else:
                 webbrowser.open(url)
         now = time.perf_counter()
@@ -287,7 +291,8 @@ def host_local_app(
                 f"(total={now - startup_t0:.3f}s)"
             )
         last_checkpoint = now
-        print("Url to run the app:\n", url, "\n")
+        if not (start_browser and opened_as_app):
+            print("Url to run the app:\n", url, "\n")
 
         # Optional hook for in-process test runners which prefer to
         # receive the computed URL directly instead of polling a
