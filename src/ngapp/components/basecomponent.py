@@ -471,11 +471,8 @@ class Component(metaclass=BlockFrontendUpdate):
         if f := self._js_callbacks.get("add_keybinding", None):
             f(key, pl.create_proxy(callback), options, _ignore_result=True)
             return
-
         # store keybindings until component is mounted
         if not self._keybindings:
-            self._keybindings.append((key, callback, options))
-
             def add_keybinding_later():
                 bindings = self._keybindings
                 self._keybindings = []
@@ -483,6 +480,8 @@ class Component(metaclass=BlockFrontendUpdate):
                     self.add_keybinding(key, func, **options)
 
             self.on_mounted(add_keybinding_later)
+
+        self._keybindings.append((key, callback, options))
 
     @property
     def js(self):
