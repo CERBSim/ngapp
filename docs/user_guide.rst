@@ -14,7 +14,9 @@ with Concepts & Architecture and Components.
    getting_started
    concepts_architecture
    components
+   observable
    styling
+   keybindings
    visualization
    user_settings
    deployment_environments

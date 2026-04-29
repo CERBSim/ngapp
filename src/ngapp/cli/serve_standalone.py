@@ -250,14 +250,26 @@ def host_local_app(
                         break
             if not browser_path and sys.platform == "win32":
                 win_candidates = []
-                for env_var in ("PROGRAMFILES", "PROGRAMFILES(X86)", "LOCALAPPDATA"):
+                for env_var in (
+                    "PROGRAMFILES",
+                    "PROGRAMFILES(X86)",
+                    "LOCALAPPDATA",
+                ):
                     base = os.environ.get(env_var)
                     if base:
                         win_candidates.append(
-                            Path(base) / "Google" / "Chrome" / "Application" / "chrome.exe"
+                            Path(base)
+                            / "Google"
+                            / "Chrome"
+                            / "Application"
+                            / "chrome.exe"
                         )
                         win_candidates.append(
-                            Path(base) / "Microsoft" / "Edge" / "Application" / "msedge.exe"
+                            Path(base)
+                            / "Microsoft"
+                            / "Edge"
+                            / "Application"
+                            / "msedge.exe"
                         )
                 for candidate in win_candidates:
                     if candidate.exists():
@@ -276,7 +288,8 @@ def host_local_app(
                         browser_path,
                         f"--user-data-dir={user_data_dir}",
                         "--app=" + url,
-                    ] + args,
+                    ]
+                    + args,
                     start_new_session=True,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,

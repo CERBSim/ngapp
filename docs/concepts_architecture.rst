@@ -43,6 +43,10 @@ The ngapp runtime keeps Python state and the browser UI in sync:
   call your Python callbacks (such as ``on_click`` or ``on_input``).
 - Only minimal **diffs** are sent over the bridge, making updates
   efficient.
+- :class:`~ngapp.observable.Observable` provides a reactive value
+  container with change notification and two-way widget binding,
+  making it straightforward to keep multiple consumers (UI, shortcuts,
+  persistence) in sync.  See :doc:`observable` for details.
 
 This lets you focus on your data and logic instead of manual
 JavaScript and DOM manipulation.

@@ -121,10 +121,7 @@ def _ensure_scene_ready(page, target, timeout: float = 30) -> None:
         # Poll until scene + canvas exist.
         deadline = time.time() + timeout
         while time.time() < deadline:
-            if (
-                target.scene is not None
-                and target.scene.canvas is not None
-            ):
+            if target.scene is not None and target.scene.canvas is not None:
                 break
             page.wait_for_timeout(200)
         else:
@@ -152,7 +149,9 @@ def _readback_webgpu_texture(page, target, out_path: Path) -> None:
     from webgpu.utils import read_texture
 
     scene = target.scene
-    assert scene is not None, "WebgpuComponent.scene is None — draw() hasn't run"
+    assert (
+        scene is not None
+    ), "WebgpuComponent.scene is None — draw() hasn't run"
 
     texture = scene.canvas.target_texture
     data = read_texture(texture)
@@ -196,13 +195,18 @@ def assert_matches_baseline(
     """
     out_dir = Path(output_dir) if output_dir else _output_dir
     base_dir = Path(baseline_dir) if baseline_dir else _baseline_dir
-    assert out_dir, "output_dir not configured – call ngapp.e2e_webgpu.configure()"
-    assert base_dir, "baseline_dir not configured – call ngapp.e2e_webgpu.configure()"
+    assert (
+        out_dir
+    ), "output_dir not configured – call ngapp.e2e_webgpu.configure()"
+    assert (
+        base_dir
+    ), "baseline_dir not configured – call ngapp.e2e_webgpu.configure()"
 
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / filename
 
     from ngapp.components.visualization import WebgpuComponent
+
     if isinstance(target, WebgpuComponent):
         _ensure_scene_ready(page, target)
         _readback_webgpu_texture(page, target, out_path)

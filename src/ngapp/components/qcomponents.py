@@ -1,8 +1,7 @@
 import re
 from typing import Any, Callable
-
-from ..utils import print_exception
 from .basecomponent import Component, Event
+from ..utils import print_exception
 
 
 class QAjaxBar(Component):
@@ -30,17 +29,17 @@ class QAjaxBar(Component):
     ):
         super().__init__("QAjaxBar", *children, **kwargs)
         if ui_position is not None:
-            self._props["position"] = ui_position
+            self._init_prop("position", ui_position)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_reverse is not None:
-            self._props["reverse"] = ui_reverse
+            self._init_prop("reverse", ui_reverse)
         if ui_skip_hijack is not None:
-            self._props["skip-hijack"] = ui_skip_hijack
+            self._init_prop("skip-hijack", ui_skip_hijack)
         if ui_hijack_filter is not None:
-            self._props["hijack-filter"] = ui_hijack_filter
+            self._init_prop("hijack-filter", ui_hijack_filter)
 
     @property
     def ui_position(self):
@@ -97,7 +96,6 @@ class QAjaxBar(Component):
     def on_start(self, handler: Callable, arg: object = None):
         """
         Emitted when bar is triggered to appear
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -106,7 +104,6 @@ class QAjaxBar(Component):
     def on_stop(self, handler: Callable, arg: object = None):
         """
         Emitted when bar has finished its job
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -161,19 +158,19 @@ class QAvatar(Component):
     ):
         super().__init__("QAvatar", *children, **kwargs)
         if ui_font_size is not None:
-            self._props["font-size"] = ui_font_size
+            self._init_prop("font-size", ui_font_size)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_font_size(self):
@@ -268,23 +265,23 @@ class QBadge(Component):
     ):
         super().__init__("QBadge", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_floating is not None:
-            self._props["floating"] = ui_floating
+            self._init_prop("floating", ui_floating)
         if ui_transparent is not None:
-            self._props["transparent"] = ui_transparent
+            self._init_prop("transparent", ui_transparent)
         if ui_multi_line is not None:
-            self._props["multi-line"] = ui_multi_line
+            self._init_prop("multi-line", ui_multi_line)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_align is not None:
-            self._props["align"] = ui_align
+            self._init_prop("align", ui_align)
         if ui_outline is not None:
-            self._props["outline"] = ui_outline
+            self._init_prop("outline", ui_outline)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
 
     @property
     def ui_color(self):
@@ -390,13 +387,13 @@ class QBanner(Component):
     ):
         super().__init__("QBanner", *children, **kwargs)
         if ui_inline_actions is not None:
-            self._props["inline-actions"] = ui_inline_actions
+            self._init_prop("inline-actions", ui_inline_actions)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
 
     @property
     def ui_inline_actions(self):
@@ -470,9 +467,9 @@ class QBar(Component):
     ):
         super().__init__("QBar", *children, **kwargs)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
 
     @property
     def ui_dense(self):
@@ -530,27 +527,27 @@ class QBreadcrumbsEl(Component):
     ):
         super().__init__("QBreadcrumbsEl", *children, **kwargs)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_tag is not None:
-            self._props["tag"] = ui_tag
+            self._init_prop("tag", ui_tag)
         if ui_to is not None:
-            self._props["to"] = ui_to
+            self._init_prop("to", ui_to)
         if ui_exact is not None:
-            self._props["exact"] = ui_exact
+            self._init_prop("exact", ui_exact)
         if ui_replace is not None:
-            self._props["replace"] = ui_replace
+            self._init_prop("replace", ui_replace)
         if ui_active_class is not None:
-            self._props["active-class"] = ui_active_class
+            self._init_prop("active-class", ui_active_class)
         if ui_exact_active_class is not None:
-            self._props["exact-active-class"] = ui_exact_active_class
+            self._init_prop("exact-active-class", ui_exact_active_class)
         if ui_href is not None:
-            self._props["href"] = ui_href
+            self._init_prop("href", ui_href)
         if ui_target is not None:
-            self._props["target"] = ui_target
+            self._init_prop("target", ui_target)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
 
     @property
     def ui_label(self):
@@ -651,7 +648,6 @@ class QBreadcrumbsEl(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
         Emitted when the component is clicked
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -684,15 +680,15 @@ class QBreadcrumbs(Component):
     ):
         super().__init__("QBreadcrumbs", *children, **kwargs)
         if ui_separator is not None:
-            self._props["separator"] = ui_separator
+            self._init_prop("separator", ui_separator)
         if ui_active_color is not None:
-            self._props["active-color"] = ui_active_color
+            self._init_prop("active-color", ui_active_color)
         if ui_gutter is not None:
-            self._props["gutter"] = ui_gutter
+            self._init_prop("gutter", ui_gutter)
         if ui_separator_color is not None:
-            self._props["separator-color"] = ui_separator_color
+            self._init_prop("separator-color", ui_separator_color)
         if ui_align is not None:
-            self._props["align"] = ui_align
+            self._init_prop("align", ui_align)
 
     @property
     def ui_separator(self):
@@ -833,73 +829,73 @@ class QBtn(Component):
     ):
         super().__init__("QBtn", *children, **kwargs)
         if ui_round is not None:
-            self._props["round"] = ui_round
+            self._init_prop("round", ui_round)
         if ui_percentage is not None:
-            self._props["percentage"] = ui_percentage
+            self._init_prop("percentage", ui_percentage)
         if ui_dark_percentage is not None:
-            self._props["dark-percentage"] = ui_dark_percentage
+            self._init_prop("dark-percentage", ui_dark_percentage)
         if ui_type is not None:
-            self._props["type"] = ui_type
+            self._init_prop("type", ui_type)
         if ui_to is not None:
-            self._props["to"] = ui_to
+            self._init_prop("to", ui_to)
         if ui_replace is not None:
-            self._props["replace"] = ui_replace
+            self._init_prop("replace", ui_replace)
         if ui_href is not None:
-            self._props["href"] = ui_href
+            self._init_prop("href", ui_href)
         if ui_target is not None:
-            self._props["target"] = ui_target
+            self._init_prop("target", ui_target)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_icon_right is not None:
-            self._props["icon-right"] = ui_icon_right
+            self._init_prop("icon-right", ui_icon_right)
         if ui_outline is not None:
-            self._props["outline"] = ui_outline
+            self._init_prop("outline", ui_outline)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_unelevated is not None:
-            self._props["unelevated"] = ui_unelevated
+            self._init_prop("unelevated", ui_unelevated)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_push is not None:
-            self._props["push"] = ui_push
+            self._init_prop("push", ui_push)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_glossy is not None:
-            self._props["glossy"] = ui_glossy
+            self._init_prop("glossy", ui_glossy)
         if ui_fab is not None:
-            self._props["fab"] = ui_fab
+            self._init_prop("fab", ui_fab)
         if ui_fab_mini is not None:
-            self._props["fab-mini"] = ui_fab_mini
+            self._init_prop("fab-mini", ui_fab_mini)
         if ui_padding is not None:
-            self._props["padding"] = ui_padding
+            self._init_prop("padding", ui_padding)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_no_caps is not None:
-            self._props["no-caps"] = ui_no_caps
+            self._init_prop("no-caps", ui_no_caps)
         if ui_no_wrap is not None:
-            self._props["no-wrap"] = ui_no_wrap
+            self._init_prop("no-wrap", ui_no_wrap)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_ripple is not None:
-            self._props["ripple"] = ui_ripple
+            self._init_prop("ripple", ui_ripple)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_align is not None:
-            self._props["align"] = ui_align
+            self._init_prop("align", ui_align)
         if ui_stack is not None:
-            self._props["stack"] = ui_stack
+            self._init_prop("stack", ui_stack)
         if ui_stretch is not None:
-            self._props["stretch"] = ui_stretch
+            self._init_prop("stretch", ui_stretch)
         if ui_loading is not None:
-            self._props["loading"] = ui_loading
+            self._init_prop("loading", ui_loading)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_round(self):
@@ -1210,7 +1206,6 @@ class QBtn(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
         Emitted when the component is clicked
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -1218,7 +1213,6 @@ class QBtn(Component):
 
     def on_keydown(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -1228,7 +1222,6 @@ class QBtn(Component):
     def on_keyup(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -1237,7 +1230,6 @@ class QBtn(Component):
     def on_mousedown(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -1245,7 +1237,6 @@ class QBtn(Component):
 
     def on_touchstart(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -1277,8 +1268,11 @@ class QBtnDropdown(Component):
     :param ui_content_class: Class definitions to be attributed to the menu
     :param ui_cover: Allows the menu to cover the button. When used, the 'menu-self' and 'menu-fit' props are no longer effective
     :param ui_persistent: Allows the menu to not be dismissed by a click/tap outside of the menu or by hitting the ESC key; Also, an app route change won't dismiss it
+    :param ui_no_esc_dismiss: User cannot dismiss the popup by hitting ESC key; No need to set it if 'persistent' prop is also set
     :param ui_no_route_dismiss: Changing route app won't dismiss the popup; No need to set it if 'persistent' prop is also set
     :param ui_auto_close: Allows any click/tap in the menu to close it; Useful instead of attaching events to each menu item that should close the menu on click/tap
+    :param ui_no_refocus: (Accessibility) When the dropdown gets hidden, do not refocus on the DOM element that previously had focus
+    :param ui_no_focus: (Accessibility) When the dropdown gets shown, do not switch focus on it
     :param ui_menu_anchor: Two values setting the starting position or anchor point of the menu relative to its target
     :param ui_menu_self: Two values setting the menu's own position relative to its target
     :param ui_menu_offset: An array of two numbers to offset the menu horizontally and vertically in pixels
@@ -1332,8 +1326,11 @@ class QBtnDropdown(Component):
         ui_content_class: str | list | dict | None = None,
         ui_cover: bool | None = None,
         ui_persistent: bool | None = None,
+        ui_no_esc_dismiss: bool | None = None,
         ui_no_route_dismiss: bool | None = None,
         ui_auto_close: bool | None = None,
+        ui_no_refocus: bool | None = None,
+        ui_no_focus: bool | None = None,
         ui_menu_anchor: str | None = None,
         ui_menu_self: str | None = None,
         ui_menu_offset: list | None = None,
@@ -1378,108 +1375,116 @@ class QBtnDropdown(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_split is not None:
-            self._props["split"] = ui_split
+            self._init_prop("split", ui_split)
         if ui_dropdown_icon is not None:
-            self._props["dropdown-icon"] = ui_dropdown_icon
+            self._init_prop("dropdown-icon", ui_dropdown_icon)
         if ui_disable_main_btn is not None:
-            self._props["disable-main-btn"] = ui_disable_main_btn
+            self._init_prop("disable-main-btn", ui_disable_main_btn)
         if ui_disable_dropdown is not None:
-            self._props["disable-dropdown"] = ui_disable_dropdown
+            self._init_prop("disable-dropdown", ui_disable_dropdown)
         if ui_no_icon_animation is not None:
-            self._props["no-icon-animation"] = ui_no_icon_animation
+            self._init_prop("no-icon-animation", ui_no_icon_animation)
         if ui_content_style is not None:
-            self._props["content-style"] = ui_content_style
+            self._init_prop("content-style", ui_content_style)
         if ui_content_class is not None:
-            self._props["content-class"] = ui_content_class
+            self._init_prop("content-class", ui_content_class)
         if ui_cover is not None:
-            self._props["cover"] = ui_cover
+            self._init_prop("cover", ui_cover)
         if ui_persistent is not None:
-            self._props["persistent"] = ui_persistent
+            self._init_prop("persistent", ui_persistent)
+        if ui_no_esc_dismiss is not None:
+            self._init_prop("no-esc-dismiss", ui_no_esc_dismiss)
         if ui_no_route_dismiss is not None:
-            self._props["no-route-dismiss"] = ui_no_route_dismiss
+            self._init_prop("no-route-dismiss", ui_no_route_dismiss)
         if ui_auto_close is not None:
-            self._props["auto-close"] = ui_auto_close
+            self._init_prop("auto-close", ui_auto_close)
+        if ui_no_refocus is not None:
+            self._init_prop("no-refocus", ui_no_refocus)
+        if ui_no_focus is not None:
+            self._init_prop("no-focus", ui_no_focus)
         if ui_menu_anchor is not None:
-            self._props["menu-anchor"] = ui_menu_anchor
+            self._init_prop("menu-anchor", ui_menu_anchor)
         if ui_menu_self is not None:
-            self._props["menu-self"] = ui_menu_self
+            self._init_prop("menu-self", ui_menu_self)
         if ui_menu_offset is not None:
-            self._props["menu-offset"] = ui_menu_offset
+            self._init_prop("menu-offset", ui_menu_offset)
         if ui_toggle_aria_label is not None:
-            self._props["toggle-aria-label"] = ui_toggle_aria_label
+            self._init_prop("toggle-aria-label", ui_toggle_aria_label)
         if ui_type is not None:
-            self._props["type"] = ui_type
+            self._init_prop("type", ui_type)
         if ui_to is not None:
-            self._props["to"] = ui_to
+            self._init_prop("to", ui_to)
         if ui_replace is not None:
-            self._props["replace"] = ui_replace
+            self._init_prop("replace", ui_replace)
         if ui_href is not None:
-            self._props["href"] = ui_href
+            self._init_prop("href", ui_href)
         if ui_target is not None:
-            self._props["target"] = ui_target
+            self._init_prop("target", ui_target)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_icon_right is not None:
-            self._props["icon-right"] = ui_icon_right
+            self._init_prop("icon-right", ui_icon_right)
         if ui_outline is not None:
-            self._props["outline"] = ui_outline
+            self._init_prop("outline", ui_outline)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_unelevated is not None:
-            self._props["unelevated"] = ui_unelevated
+            self._init_prop("unelevated", ui_unelevated)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_push is not None:
-            self._props["push"] = ui_push
+            self._init_prop("push", ui_push)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_glossy is not None:
-            self._props["glossy"] = ui_glossy
+            self._init_prop("glossy", ui_glossy)
         if ui_fab is not None:
-            self._props["fab"] = ui_fab
+            self._init_prop("fab", ui_fab)
         if ui_fab_mini is not None:
-            self._props["fab-mini"] = ui_fab_mini
+            self._init_prop("fab-mini", ui_fab_mini)
         if ui_padding is not None:
-            self._props["padding"] = ui_padding
+            self._init_prop("padding", ui_padding)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_no_caps is not None:
-            self._props["no-caps"] = ui_no_caps
+            self._init_prop("no-caps", ui_no_caps)
         if ui_no_wrap is not None:
-            self._props["no-wrap"] = ui_no_wrap
+            self._init_prop("no-wrap", ui_no_wrap)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_ripple is not None:
-            self._props["ripple"] = ui_ripple
+            self._init_prop("ripple", ui_ripple)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_align is not None:
-            self._props["align"] = ui_align
+            self._init_prop("align", ui_align)
         if ui_stack is not None:
-            self._props["stack"] = ui_stack
+            self._init_prop("stack", ui_stack)
         if ui_stretch is not None:
-            self._props["stretch"] = ui_stretch
+            self._init_prop("stretch", ui_stretch)
         if ui_loading is not None:
-            self._props["loading"] = ui_loading
+            self._init_prop("loading", ui_loading)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_transition_show is not None:
-            self._props["transition-show"] = ui_transition_show
+            self._init_prop("transition-show", ui_transition_show)
         if ui_transition_hide is not None:
-            self._props["transition-hide"] = ui_transition_hide
+            self._init_prop("transition-hide", ui_transition_hide)
         if ui_transition_duration is not None:
-            self._props["transition-duration"] = ui_transition_duration
+            self._init_prop("transition-duration", ui_transition_duration)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -1571,6 +1576,15 @@ class QBtnDropdown(Component):
         self._set_prop("persistent", value)
 
     @property
+    def ui_no_esc_dismiss(self):
+        """User cannot dismiss the popup by hitting ESC key; No need to set it if 'persistent' prop is also set"""
+        return self._props.get("no-esc-dismiss")
+
+    @ui_no_esc_dismiss.setter
+    def ui_no_esc_dismiss(self, value):
+        self._set_prop("no-esc-dismiss", value)
+
+    @property
     def ui_no_route_dismiss(self):
         """Changing route app won't dismiss the popup; No need to set it if 'persistent' prop is also set"""
         return self._props.get("no-route-dismiss")
@@ -1587,6 +1601,24 @@ class QBtnDropdown(Component):
     @ui_auto_close.setter
     def ui_auto_close(self, value):
         self._set_prop("auto-close", value)
+
+    @property
+    def ui_no_refocus(self):
+        """(Accessibility) When the dropdown gets hidden, do not refocus on the DOM element that previously had focus"""
+        return self._props.get("no-refocus")
+
+    @ui_no_refocus.setter
+    def ui_no_refocus(self, value):
+        self._set_prop("no-refocus", value)
+
+    @property
+    def ui_no_focus(self):
+        """(Accessibility) When the dropdown gets shown, do not switch focus on it"""
+        return self._props.get("no-focus")
+
+    @ui_no_focus.setter
+    def ui_no_focus(self, value):
+        self._set_prop("no-focus", value)
 
     @property
     def ui_menu_anchor(self):
@@ -1940,7 +1972,6 @@ class QBtnDropdown(Component):
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -1948,7 +1979,6 @@ class QBtnDropdown(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -1958,7 +1988,6 @@ class QBtnDropdown(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
         Emitted when user clicks/taps on the main button (not the icon one, if using 'split')
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -1966,7 +1995,6 @@ class QBtnDropdown(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -1976,7 +2004,6 @@ class QBtnDropdown(Component):
     def on_show(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -1985,7 +2012,6 @@ class QBtnDropdown(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when showing/hidden state changes; Is also used by v-model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -2035,23 +2061,23 @@ class QBtnGroup(Component):
     ):
         super().__init__("QBtnGroup", *children, **kwargs)
         if ui_spread is not None:
-            self._props["spread"] = ui_spread
+            self._init_prop("spread", ui_spread)
         if ui_outline is not None:
-            self._props["outline"] = ui_outline
+            self._init_prop("outline", ui_outline)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_unelevated is not None:
-            self._props["unelevated"] = ui_unelevated
+            self._init_prop("unelevated", ui_unelevated)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_push is not None:
-            self._props["push"] = ui_push
+            self._init_prop("push", ui_push)
         if ui_stretch is not None:
-            self._props["stretch"] = ui_stretch
+            self._init_prop("stretch", ui_stretch)
         if ui_glossy is not None:
-            self._props["glossy"] = ui_glossy
+            self._init_prop("glossy", ui_glossy)
 
     @property
     def ui_spread(self):
@@ -2202,58 +2228,60 @@ class QBtnToggle(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_options is not None:
-            self._props["options"] = ui_options
+            self._init_prop("options", ui_options)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_toggle_color is not None:
-            self._props["toggle-color"] = ui_toggle_color
+            self._init_prop("toggle-color", ui_toggle_color)
         if ui_toggle_text_color is not None:
-            self._props["toggle-text-color"] = ui_toggle_text_color
+            self._init_prop("toggle-text-color", ui_toggle_text_color)
         if ui_spread is not None:
-            self._props["spread"] = ui_spread
+            self._init_prop("spread", ui_spread)
         if ui_outline is not None:
-            self._props["outline"] = ui_outline
+            self._init_prop("outline", ui_outline)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_unelevated is not None:
-            self._props["unelevated"] = ui_unelevated
+            self._init_prop("unelevated", ui_unelevated)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_push is not None:
-            self._props["push"] = ui_push
+            self._init_prop("push", ui_push)
         if ui_glossy is not None:
-            self._props["glossy"] = ui_glossy
+            self._init_prop("glossy", ui_glossy)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_padding is not None:
-            self._props["padding"] = ui_padding
+            self._init_prop("padding", ui_padding)
         if ui_no_caps is not None:
-            self._props["no-caps"] = ui_no_caps
+            self._init_prop("no-caps", ui_no_caps)
         if ui_no_wrap is not None:
-            self._props["no-wrap"] = ui_no_wrap
+            self._init_prop("no-wrap", ui_no_wrap)
         if ui_ripple is not None:
-            self._props["ripple"] = ui_ripple
+            self._init_prop("ripple", ui_ripple)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_stack is not None:
-            self._props["stack"] = ui_stack
+            self._init_prop("stack", ui_stack)
         if ui_stretch is not None:
-            self._props["stretch"] = ui_stretch
+            self._init_prop("stretch", ui_stretch)
         if ui_clearable is not None:
-            self._props["clearable"] = ui_clearable
+            self._init_prop("clearable", ui_clearable)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -2479,7 +2507,6 @@ class QBtnToggle(Component):
     def on_clear(self, handler: Callable, arg: object = None):
         """
         When using the 'clearable' property, this event is emitted when the already selected button is clicked
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -2488,7 +2515,6 @@ class QBtnToggle(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -2496,7 +2522,6 @@ class QBtnToggle(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -2524,9 +2549,9 @@ class QCardActions(Component):
     ):
         super().__init__("QCardActions", *children, **kwargs)
         if ui_align is not None:
-            self._props["align"] = ui_align
+            self._init_prop("align", ui_align)
         if ui_vertical is not None:
-            self._props["vertical"] = ui_vertical
+            self._init_prop("vertical", ui_vertical)
 
     @property
     def ui_align(self):
@@ -2545,6 +2570,48 @@ class QCardActions(Component):
     @ui_vertical.setter
     def ui_vertical(self, value):
         self._set_prop("vertical", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QCardSection(Component):
+    """
+    Quasar Component: `QCardSection <https://v2.quasar.dev/vue-components/card>`__
+
+    :param ui_horizontal: Display a horizontal section (will have no padding and can contain other QCardSection)
+    :param ui_tag:
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_horizontal: bool | None = None,
+        ui_tag: Any | None = None,
+        **kwargs,
+    ):
+        super().__init__("QCardSection", *children, **kwargs)
+        if ui_horizontal is not None:
+            self._init_prop("horizontal", ui_horizontal)
+        if ui_tag is not None:
+            self._init_prop("tag", ui_tag)
+
+    @property
+    def ui_horizontal(self):
+        """Display a horizontal section (will have no padding and can contain other QCardSection)"""
+        return self._props.get("horizontal")
+
+    @ui_horizontal.setter
+    def ui_horizontal(self, value):
+        self._set_prop("horizontal", value)
+
+    @property
+    def ui_tag(self):
+        return self._props.get("tag")
+
+    @ui_tag.setter
+    def ui_tag(self, value):
+        self._set_prop("tag", value)
 
     def _get_js_methods(self):
         return []
@@ -2573,15 +2640,15 @@ class QCard(Component):
     ):
         super().__init__("QCard", *children, **kwargs)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_tag is not None:
-            self._props["tag"] = ui_tag
+            self._init_prop("tag", ui_tag)
 
     @property
     def ui_dark(self):
@@ -2614,48 +2681,6 @@ class QCard(Component):
     @ui_bordered.setter
     def ui_bordered(self, value):
         self._set_prop("bordered", value)
-
-    @property
-    def ui_tag(self):
-        return self._props.get("tag")
-
-    @ui_tag.setter
-    def ui_tag(self, value):
-        self._set_prop("tag", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QCardSection(Component):
-    """
-    Quasar Component: `QCardSection <https://v2.quasar.dev/vue-components/card>`__
-
-    :param ui_horizontal: Display a horizontal section (will have no padding and can contain other QCardSection)
-    :param ui_tag:
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_horizontal: bool | None = None,
-        ui_tag: Any | None = None,
-        **kwargs,
-    ):
-        super().__init__("QCardSection", *children, **kwargs)
-        if ui_horizontal is not None:
-            self._props["horizontal"] = ui_horizontal
-        if ui_tag is not None:
-            self._props["tag"] = ui_tag
-
-    @property
-    def ui_horizontal(self):
-        """Display a horizontal section (will have no padding and can contain other QCardSection)"""
-        return self._props.get("horizontal")
-
-    @ui_horizontal.setter
-    def ui_horizontal(self, value):
-        self._set_prop("horizontal", value)
 
     @property
     def ui_tag(self):
@@ -2742,68 +2767,70 @@ class QCarousel(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_height is not None:
-            self._props["height"] = ui_height
+            self._init_prop("height", ui_height)
         if ui_padding is not None:
-            self._props["padding"] = ui_padding
+            self._init_prop("padding", ui_padding)
         if ui_control_color is not None:
-            self._props["control-color"] = ui_control_color
+            self._init_prop("control-color", ui_control_color)
         if ui_control_text_color is not None:
-            self._props["control-text-color"] = ui_control_text_color
+            self._init_prop("control-text-color", ui_control_text_color)
         if ui_control_type is not None:
-            self._props["control-type"] = ui_control_type
+            self._init_prop("control-type", ui_control_type)
         if ui_autoplay is not None:
-            self._props["autoplay"] = ui_autoplay
+            self._init_prop("autoplay", ui_autoplay)
         if ui_arrows is not None:
-            self._props["arrows"] = ui_arrows
+            self._init_prop("arrows", ui_arrows)
         if ui_prev_icon is not None:
-            self._props["prev-icon"] = ui_prev_icon
+            self._init_prop("prev-icon", ui_prev_icon)
         if ui_next_icon is not None:
-            self._props["next-icon"] = ui_next_icon
+            self._init_prop("next-icon", ui_next_icon)
         if ui_navigation is not None:
-            self._props["navigation"] = ui_navigation
+            self._init_prop("navigation", ui_navigation)
         if ui_navigation_position is not None:
-            self._props["navigation-position"] = ui_navigation_position
+            self._init_prop("navigation-position", ui_navigation_position)
         if ui_navigation_icon is not None:
-            self._props["navigation-icon"] = ui_navigation_icon
+            self._init_prop("navigation-icon", ui_navigation_icon)
         if ui_navigation_active_icon is not None:
-            self._props["navigation-active-icon"] = ui_navigation_active_icon
+            self._init_prop("navigation-active-icon", ui_navigation_active_icon)
         if ui_thumbnails is not None:
-            self._props["thumbnails"] = ui_thumbnails
+            self._init_prop("thumbnails", ui_thumbnails)
         if ui_transition_prev is not None:
-            self._props["transition-prev"] = ui_transition_prev
+            self._init_prop("transition-prev", ui_transition_prev)
         if ui_transition_next is not None:
-            self._props["transition-next"] = ui_transition_next
+            self._init_prop("transition-next", ui_transition_next)
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_keep_alive is not None:
-            self._props["keep-alive"] = ui_keep_alive
+            self._init_prop("keep-alive", ui_keep_alive)
         if ui_keep_alive_include is not None:
-            self._props["keep-alive-include"] = ui_keep_alive_include
+            self._init_prop("keep-alive-include", ui_keep_alive_include)
         if ui_keep_alive_exclude is not None:
-            self._props["keep-alive-exclude"] = ui_keep_alive_exclude
+            self._init_prop("keep-alive-exclude", ui_keep_alive_exclude)
         if ui_keep_alive_max is not None:
-            self._props["keep-alive-max"] = ui_keep_alive_max
+            self._init_prop("keep-alive-max", ui_keep_alive_max)
         if ui_animated is not None:
-            self._props["animated"] = ui_animated
+            self._init_prop("animated", ui_animated)
         if ui_infinite is not None:
-            self._props["infinite"] = ui_infinite
+            self._init_prop("infinite", ui_infinite)
         if ui_swipeable is not None:
-            self._props["swipeable"] = ui_swipeable
+            self._init_prop("swipeable", ui_swipeable)
         if ui_vertical is not None:
-            self._props["vertical"] = ui_vertical
+            self._init_prop("vertical", ui_vertical)
         if ui_transition_duration is not None:
-            self._props["transition-duration"] = ui_transition_duration
+            self._init_prop("transition-duration", ui_transition_duration)
         if ui_fullscreen is not None:
-            self._props["fullscreen"] = ui_fullscreen
+            self._init_prop("fullscreen", ui_fullscreen)
         if ui_no_route_fullscreen_exit is not None:
-            self._props["no-route-fullscreen-exit"] = (
-                ui_no_route_fullscreen_exit
+            self._init_prop(
+                "no-route-fullscreen-exit", ui_no_route_fullscreen_exit
             )
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_dark(self):
@@ -3083,7 +3110,6 @@ class QCarousel(Component):
     def on_before_transition(self, handler: Callable, arg: object = None):
         """
         Emitted before transitioning to a new panel
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -3092,7 +3118,6 @@ class QCarousel(Component):
     def on_fullscreen(self, handler: Callable, arg: object = None):
         """
         Emitted when fullscreen state changes
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -3101,7 +3126,6 @@ class QCarousel(Component):
     def on_transition(self, handler: Callable, arg: object = None):
         """
         Emitted after component transitioned to a new panel
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -3110,7 +3134,6 @@ class QCarousel(Component):
     def on_update_fullscreen(self, handler: Callable, arg: object = None):
         """
         Used by Vue on 'v-model:fullscreen' prop for updating its value
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -3118,8 +3141,7 @@ class QCarousel(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        Emitted when the component changes the model; This event isn't fired if the model is changed externally; Is also used by v-model
-
+        Emitted when the component changes the model; This event _isn't_ fired if the model is changed externally; Is also used by v-model
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -3182,11 +3204,11 @@ class QCarouselSlide(Component):
     ):
         super().__init__("QCarouselSlide", *children, **kwargs)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
         if ui_img_src is not None:
-            self._props["img-src"] = ui_img_src
+            self._init_prop("img-src", ui_img_src)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
 
     @property
     def ui_name(self):
@@ -3235,9 +3257,9 @@ class QCarouselControl(Component):
     ):
         super().__init__("QCarouselControl", *children, **kwargs)
         if ui_position is not None:
-            self._props["position"] = ui_position
+            self._init_prop("position", ui_position)
         if ui_offset is not None:
-            self._props["offset"] = ui_offset
+            self._init_prop("offset", ui_offset)
 
     @property
     def ui_position(self):
@@ -3300,31 +3322,31 @@ class QChatMessage(Component):
     ):
         super().__init__("QChatMessage", *children, **kwargs)
         if ui_sent is not None:
-            self._props["sent"] = ui_sent
+            self._init_prop("sent", ui_sent)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_bg_color is not None:
-            self._props["bg-color"] = ui_bg_color
+            self._init_prop("bg-color", ui_bg_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
         if ui_avatar is not None:
-            self._props["avatar"] = ui_avatar
+            self._init_prop("avatar", ui_avatar)
         if ui_text is not None:
-            self._props["text"] = ui_text
+            self._init_prop("text", ui_text)
         if ui_stamp is not None:
-            self._props["stamp"] = ui_stamp
+            self._init_prop("stamp", ui_stamp)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_label_html is not None:
-            self._props["label-html"] = ui_label_html
+            self._init_prop("label-html", ui_label_html)
         if ui_name_html is not None:
-            self._props["name-html"] = ui_name_html
+            self._init_prop("name-html", ui_name_html)
         if ui_text_html is not None:
-            self._props["text-html"] = ui_text_html
+            self._init_prop("text-html", ui_text_html)
         if ui_stamp_html is not None:
-            self._props["stamp-html"] = ui_stamp_html
+            self._init_prop("stamp-html", ui_stamp_html)
 
     @property
     def ui_sent(self):
@@ -3538,48 +3560,50 @@ class QCheckbox(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_checked_icon is not None:
-            self._props["checked-icon"] = ui_checked_icon
+            self._init_prop("checked-icon", ui_checked_icon)
         if ui_unchecked_icon is not None:
-            self._props["unchecked-icon"] = ui_unchecked_icon
+            self._init_prop("unchecked-icon", ui_unchecked_icon)
         if ui_indeterminate_icon is not None:
-            self._props["indeterminate-icon"] = ui_indeterminate_icon
+            self._init_prop("indeterminate-icon", ui_indeterminate_icon)
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_val is not None:
-            self._props["val"] = ui_val
+            self._init_prop("val", ui_val)
         if ui_true_value is not None:
-            self._props["true-value"] = ui_true_value
+            self._init_prop("true-value", ui_true_value)
         if ui_false_value is not None:
-            self._props["false-value"] = ui_false_value
+            self._init_prop("false-value", ui_false_value)
         if ui_indeterminate_value is not None:
-            self._props["indeterminate-value"] = ui_indeterminate_value
+            self._init_prop("indeterminate-value", ui_indeterminate_value)
         if ui_toggle_order is not None:
-            self._props["toggle-order"] = ui_toggle_order
+            self._init_prop("toggle-order", ui_toggle_order)
         if ui_toggle_indeterminate is not None:
-            self._props["toggle-indeterminate"] = ui_toggle_indeterminate
+            self._init_prop("toggle-indeterminate", ui_toggle_indeterminate)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_left_label is not None:
-            self._props["left-label"] = ui_left_label
+            self._init_prop("left-label", ui_left_label)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_keep_color is not None:
-            self._props["keep-color"] = ui_keep_color
+            self._init_prop("keep-color", ui_keep_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_checked_icon(self):
@@ -3758,7 +3782,6 @@ class QCheckbox(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when the component needs to change the model; Is also used by v-model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -3827,48 +3850,50 @@ class QChip(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_icon_right is not None:
-            self._props["icon-right"] = ui_icon_right
+            self._init_prop("icon-right", ui_icon_right)
         if ui_icon_remove is not None:
-            self._props["icon-remove"] = ui_icon_remove
+            self._init_prop("icon-remove", ui_icon_remove)
         if ui_icon_selected is not None:
-            self._props["icon-selected"] = ui_icon_selected
+            self._init_prop("icon-selected", ui_icon_selected)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_selected is not None:
-            self._props["selected"] = ui_selected
+            self._init_prop("selected", ui_selected)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_outline is not None:
-            self._props["outline"] = ui_outline
+            self._init_prop("outline", ui_outline)
         if ui_clickable is not None:
-            self._props["clickable"] = ui_clickable
+            self._init_prop("clickable", ui_clickable)
         if ui_removable is not None:
-            self._props["removable"] = ui_removable
+            self._init_prop("removable", ui_removable)
         if ui_ripple is not None:
-            self._props["ripple"] = ui_ripple
+            self._init_prop("ripple", ui_ripple)
         if ui_remove_aria_label is not None:
-            self._props["remove-aria-label"] = ui_remove_aria_label
+            self._init_prop("remove-aria-label", ui_remove_aria_label)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_dense(self):
@@ -4042,7 +4067,6 @@ class QChip(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
         Emitted on QChip click if 'clickable' property is set
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -4051,7 +4075,6 @@ class QChip(Component):
     def on_remove(self, handler: Callable, arg: object = None):
         """
         Works along with 'value' and 'removable' prop. Emitted when toggling rendering state of the QChip
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -4059,7 +4082,6 @@ class QChip(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -4069,7 +4091,6 @@ class QChip(Component):
     def on_update_selected(self, handler: Callable, arg: object = None):
         """
         Used by Vue on 'v-model:selected' for updating its value
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -4124,37 +4145,37 @@ class QCircularProgress(Component):
     ):
         super().__init__("QCircularProgress", *children, **kwargs)
         if ui_value is not None:
-            self._props["value"] = ui_value
+            self._init_prop("value", ui_value)
         if ui_min is not None:
-            self._props["min"] = ui_min
+            self._init_prop("min", ui_min)
         if ui_max is not None:
-            self._props["max"] = ui_max
+            self._init_prop("max", ui_max)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_center_color is not None:
-            self._props["center-color"] = ui_center_color
+            self._init_prop("center-color", ui_center_color)
         if ui_track_color is not None:
-            self._props["track-color"] = ui_track_color
+            self._init_prop("track-color", ui_track_color)
         if ui_font_size is not None:
-            self._props["font-size"] = ui_font_size
+            self._init_prop("font-size", ui_font_size)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_thickness is not None:
-            self._props["thickness"] = ui_thickness
+            self._init_prop("thickness", ui_thickness)
         if ui_angle is not None:
-            self._props["angle"] = ui_angle
+            self._init_prop("angle", ui_angle)
         if ui_indeterminate is not None:
-            self._props["indeterminate"] = ui_indeterminate
+            self._init_prop("indeterminate", ui_indeterminate)
         if ui_show_value is not None:
-            self._props["show-value"] = ui_show_value
+            self._init_prop("show-value", ui_show_value)
         if ui_reverse is not None:
-            self._props["reverse"] = ui_reverse
+            self._init_prop("reverse", ui_reverse)
         if ui_instant_feedback is not None:
-            self._props["instant-feedback"] = ui_instant_feedback
+            self._init_prop("instant-feedback", ui_instant_feedback)
         if ui_animation_speed is not None:
-            self._props["animation-speed"] = ui_animation_speed
+            self._init_prop("animation-speed", ui_animation_speed)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_value(self):
@@ -4357,38 +4378,40 @@ class QColor(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_default_value is not None:
-            self._props["default-value"] = ui_default_value
+            self._init_prop("default-value", ui_default_value)
         if ui_default_view is not None:
-            self._props["default-view"] = ui_default_view
+            self._init_prop("default-view", ui_default_view)
         if ui_format_model is not None:
-            self._props["format-model"] = ui_format_model
+            self._init_prop("format-model", ui_format_model)
         if ui_palette is not None:
-            self._props["palette"] = ui_palette
+            self._init_prop("palette", ui_palette)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_no_header is not None:
-            self._props["no-header"] = ui_no_header
+            self._init_prop("no-header", ui_no_header)
         if ui_no_header_tabs is not None:
-            self._props["no-header-tabs"] = ui_no_header_tabs
+            self._init_prop("no-header-tabs", ui_no_header_tabs)
         if ui_no_footer is not None:
-            self._props["no-footer"] = ui_no_footer
+            self._init_prop("no-footer", ui_no_footer)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -4521,7 +4544,6 @@ class QColor(Component):
     def on_change(self, handler: Callable, arg: object = None):
         """
         Emitted on lazy model value change (after user finishes selecting a color)
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -4529,7 +4551,6 @@ class QColor(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -4617,74 +4638,76 @@ class QDate(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_title is not None:
-            self._props["title"] = ui_title
+            self._init_prop("title", ui_title)
         if ui_subtitle is not None:
-            self._props["subtitle"] = ui_subtitle
+            self._init_prop("subtitle", ui_subtitle)
         if ui_default_year_month is not None:
-            self._props["default-year-month"] = ui_default_year_month
+            self._init_prop("default-year-month", ui_default_year_month)
         if ui_mask is not None:
-            self._props["mask"] = ui_mask
+            self._init_prop("mask", ui_mask)
         if ui_default_view is not None:
-            self._props["default-view"] = ui_default_view
+            self._init_prop("default-view", ui_default_view)
         if ui_years_in_month_view is not None:
-            self._props["years-in-month-view"] = ui_years_in_month_view
+            self._init_prop("years-in-month-view", ui_years_in_month_view)
         if ui_events is not None:
-            self._props["events"] = ui_events
+            self._init_prop("events", ui_events)
         if ui_event_color is not None:
-            self._props["event-color"] = ui_event_color
+            self._init_prop("event-color", ui_event_color)
         if ui_options is not None:
-            self._props["options"] = ui_options
+            self._init_prop("options", ui_options)
         if ui_navigation_min_year_month is not None:
-            self._props["navigation-min-year-month"] = (
-                ui_navigation_min_year_month
+            self._init_prop(
+                "navigation-min-year-month", ui_navigation_min_year_month
             )
         if ui_navigation_max_year_month is not None:
-            self._props["navigation-max-year-month"] = (
-                ui_navigation_max_year_month
+            self._init_prop(
+                "navigation-max-year-month", ui_navigation_max_year_month
             )
         if ui_no_unset is not None:
-            self._props["no-unset"] = ui_no_unset
+            self._init_prop("no-unset", ui_no_unset)
         if ui_first_day_of_week is not None:
-            self._props["first-day-of-week"] = ui_first_day_of_week
+            self._init_prop("first-day-of-week", ui_first_day_of_week)
         if ui_today_btn is not None:
-            self._props["today-btn"] = ui_today_btn
+            self._init_prop("today-btn", ui_today_btn)
         if ui_minimal is not None:
-            self._props["minimal"] = ui_minimal
+            self._init_prop("minimal", ui_minimal)
         if ui_multiple is not None:
-            self._props["multiple"] = ui_multiple
+            self._init_prop("multiple", ui_multiple)
         if ui_range is not None:
-            self._props["range"] = ui_range
+            self._init_prop("range", ui_range)
         if ui_emit_immediately is not None:
-            self._props["emit-immediately"] = ui_emit_immediately
+            self._init_prop("emit-immediately", ui_emit_immediately)
         if ui_landscape is not None:
-            self._props["landscape"] = ui_landscape
+            self._init_prop("landscape", ui_landscape)
         if ui_locale is not None:
-            self._props["locale"] = ui_locale
+            self._init_prop("locale", ui_locale)
         if ui_calendar is not None:
-            self._props["calendar"] = ui_calendar
+            self._init_prop("calendar", ui_calendar)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -4960,7 +4983,6 @@ class QDate(Component):
     def on_navigation(self, handler: Callable, arg: object = None):
         """
         Emitted when user navigates to a different month or year (and even when the model changes from an outside source)
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -4969,7 +4991,6 @@ class QDate(Component):
     def on_range_end(self, handler: Callable, arg: object = None):
         """
         User has ended a range selection
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -4978,7 +4999,6 @@ class QDate(Component):
     def on_range_start(self, handler: Callable, arg: object = None):
         """
         User has started a range selection
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -4986,7 +5006,6 @@ class QDate(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5096,48 +5115,50 @@ class QDialog(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_persistent is not None:
-            self._props["persistent"] = ui_persistent
+            self._init_prop("persistent", ui_persistent)
         if ui_no_esc_dismiss is not None:
-            self._props["no-esc-dismiss"] = ui_no_esc_dismiss
+            self._init_prop("no-esc-dismiss", ui_no_esc_dismiss)
         if ui_no_backdrop_dismiss is not None:
-            self._props["no-backdrop-dismiss"] = ui_no_backdrop_dismiss
+            self._init_prop("no-backdrop-dismiss", ui_no_backdrop_dismiss)
         if ui_no_route_dismiss is not None:
-            self._props["no-route-dismiss"] = ui_no_route_dismiss
+            self._init_prop("no-route-dismiss", ui_no_route_dismiss)
         if ui_auto_close is not None:
-            self._props["auto-close"] = ui_auto_close
+            self._init_prop("auto-close", ui_auto_close)
         if ui_seamless is not None:
-            self._props["seamless"] = ui_seamless
+            self._init_prop("seamless", ui_seamless)
         if ui_backdrop_filter is not None:
-            self._props["backdrop-filter"] = ui_backdrop_filter
+            self._init_prop("backdrop-filter", ui_backdrop_filter)
         if ui_maximized is not None:
-            self._props["maximized"] = ui_maximized
+            self._init_prop("maximized", ui_maximized)
         if ui_full_width is not None:
-            self._props["full-width"] = ui_full_width
+            self._init_prop("full-width", ui_full_width)
         if ui_full_height is not None:
-            self._props["full-height"] = ui_full_height
+            self._init_prop("full-height", ui_full_height)
         if ui_position is not None:
-            self._props["position"] = ui_position
+            self._init_prop("position", ui_position)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_no_refocus is not None:
-            self._props["no-refocus"] = ui_no_refocus
+            self._init_prop("no-refocus", ui_no_refocus)
         if ui_no_focus is not None:
-            self._props["no-focus"] = ui_no_focus
+            self._init_prop("no-focus", ui_no_focus)
         if ui_no_shake is not None:
-            self._props["no-shake"] = ui_no_shake
+            self._init_prop("no-shake", ui_no_shake)
         if ui_allow_focus_outside is not None:
-            self._props["allow-focus-outside"] = ui_allow_focus_outside
+            self._init_prop("allow-focus-outside", ui_allow_focus_outside)
         if ui_transition_show is not None:
-            self._props["transition-show"] = ui_transition_show
+            self._init_prop("transition-show", ui_transition_show)
         if ui_transition_hide is not None:
-            self._props["transition-hide"] = ui_transition_hide
+            self._init_prop("transition-hide", ui_transition_hide)
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_transition_duration is not None:
-            self._props["transition-duration"] = ui_transition_duration
+            self._init_prop("transition-duration", ui_transition_duration)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_persistent(self):
@@ -5320,7 +5341,6 @@ class QDialog(Component):
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -5328,7 +5348,6 @@ class QDialog(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5338,7 +5357,6 @@ class QDialog(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -5346,8 +5364,7 @@ class QDialog(Component):
 
     def on_escape_key(self, handler: Callable, arg: object = None):
         """
-        Emitted when ESC key is pressed; Does not get emitted if Dialog is 'persistent' or it has 'no-esc-key' set
-
+        Emitted when ESC key is pressed; Does not get emitted if Dialog is 'persistent' or it has 'no-esc-dismiss' set
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -5355,7 +5372,6 @@ class QDialog(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5365,7 +5381,6 @@ class QDialog(Component):
     def on_shake(self, handler: Callable, arg: object = None):
         """
         Emitted when the Dialog shakes in order to catch user's attention, unless the 'no-shake' property is set
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -5373,7 +5388,6 @@ class QDialog(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5383,7 +5397,6 @@ class QDialog(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when showing/hidden state changes; Is also used by v-model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -5467,44 +5480,46 @@ class QDrawer(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_side is not None:
-            self._props["side"] = ui_side
+            self._init_prop("side", ui_side)
         if ui_overlay is not None:
-            self._props["overlay"] = ui_overlay
+            self._init_prop("overlay", ui_overlay)
         if ui_width is not None:
-            self._props["width"] = ui_width
+            self._init_prop("width", ui_width)
         if ui_mini is not None:
-            self._props["mini"] = ui_mini
+            self._init_prop("mini", ui_mini)
         if ui_mini_width is not None:
-            self._props["mini-width"] = ui_mini_width
+            self._init_prop("mini-width", ui_mini_width)
         if ui_mini_to_overlay is not None:
-            self._props["mini-to-overlay"] = ui_mini_to_overlay
+            self._init_prop("mini-to-overlay", ui_mini_to_overlay)
         if ui_no_mini_animation is not None:
-            self._props["no-mini-animation"] = ui_no_mini_animation
+            self._init_prop("no-mini-animation", ui_no_mini_animation)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_breakpoint is not None:
-            self._props["breakpoint"] = ui_breakpoint
+            self._init_prop("breakpoint", ui_breakpoint)
         if ui_behavior is not None:
-            self._props["behavior"] = ui_behavior
+            self._init_prop("behavior", ui_behavior)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_elevated is not None:
-            self._props["elevated"] = ui_elevated
+            self._init_prop("elevated", ui_elevated)
         if ui_persistent is not None:
-            self._props["persistent"] = ui_persistent
+            self._init_prop("persistent", ui_persistent)
         if ui_show_if_above is not None:
-            self._props["show-if-above"] = ui_show_if_above
+            self._init_prop("show-if-above", ui_show_if_above)
         if ui_no_swipe_open is not None:
-            self._props["no-swipe-open"] = ui_no_swipe_open
+            self._init_prop("no-swipe-open", ui_no_swipe_open)
         if ui_no_swipe_close is not None:
-            self._props["no-swipe-close"] = ui_no_swipe_close
+            self._init_prop("no-swipe-close", ui_no_swipe_close)
         if ui_no_swipe_backdrop is not None:
-            self._props["no-swipe-backdrop"] = ui_no_swipe_backdrop
+            self._init_prop("no-swipe-backdrop", ui_no_swipe_backdrop)
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_side(self):
@@ -5678,7 +5693,6 @@ class QDrawer(Component):
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -5686,7 +5700,6 @@ class QDrawer(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5696,7 +5709,6 @@ class QDrawer(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
         Emitted when user clicks/taps on the component; Useful for when taking a decision to toggle mini mode
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -5704,7 +5716,6 @@ class QDrawer(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5714,7 +5725,6 @@ class QDrawer(Component):
     def on_mini_state(self, handler: Callable, arg: object = None):
         """
         Emitted when drawer changes the mini-mode state (sometimes it is forced to do so)
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -5723,7 +5733,6 @@ class QDrawer(Component):
     def on_mouseout(self, handler: Callable, arg: object = None):
         """
         Emitted when user moves mouse cursor out of the component; Useful for when taking a decision to toggle mini mode
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -5732,7 +5741,6 @@ class QDrawer(Component):
     def on_mouseover(self, handler: Callable, arg: object = None):
         """
         Emitted when user moves mouse cursor over the component; Useful for when taking a decision to toggle mini mode
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -5741,7 +5749,6 @@ class QDrawer(Component):
     def on_on_layout(self, handler: Callable, arg: object = None):
         """
         Emitted when drawer toggles between occupying space on page or not
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -5749,7 +5756,6 @@ class QDrawer(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -5759,7 +5765,6 @@ class QDrawer(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when showing/hidden state changes; Is also used by v-model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -5845,62 +5850,64 @@ class QEditor(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_min_height is not None:
-            self._props["min-height"] = ui_min_height
+            self._init_prop("min-height", ui_min_height)
         if ui_max_height is not None:
-            self._props["max-height"] = ui_max_height
+            self._init_prop("max-height", ui_max_height)
         if ui_height is not None:
-            self._props["height"] = ui_height
+            self._init_prop("height", ui_height)
         if ui_definitions is not None:
-            self._props["definitions"] = ui_definitions
+            self._init_prop("definitions", ui_definitions)
         if ui_fonts is not None:
-            self._props["fonts"] = ui_fonts
+            self._init_prop("fonts", ui_fonts)
         if ui_toolbar is not None:
-            self._props["toolbar"] = ui_toolbar
+            self._init_prop("toolbar", ui_toolbar)
         if ui_toolbar_color is not None:
-            self._props["toolbar-color"] = ui_toolbar_color
+            self._init_prop("toolbar-color", ui_toolbar_color)
         if ui_toolbar_text_color is not None:
-            self._props["toolbar-text-color"] = ui_toolbar_text_color
+            self._init_prop("toolbar-text-color", ui_toolbar_text_color)
         if ui_toolbar_toggle_color is not None:
-            self._props["toolbar-toggle-color"] = ui_toolbar_toggle_color
+            self._init_prop("toolbar-toggle-color", ui_toolbar_toggle_color)
         if ui_toolbar_bg is not None:
-            self._props["toolbar-bg"] = ui_toolbar_bg
+            self._init_prop("toolbar-bg", ui_toolbar_bg)
         if ui_toolbar_outline is not None:
-            self._props["toolbar-outline"] = ui_toolbar_outline
+            self._init_prop("toolbar-outline", ui_toolbar_outline)
         if ui_toolbar_push is not None:
-            self._props["toolbar-push"] = ui_toolbar_push
+            self._init_prop("toolbar-push", ui_toolbar_push)
         if ui_toolbar_rounded is not None:
-            self._props["toolbar-rounded"] = ui_toolbar_rounded
+            self._init_prop("toolbar-rounded", ui_toolbar_rounded)
         if ui_paragraph_tag is not None:
-            self._props["paragraph-tag"] = ui_paragraph_tag
+            self._init_prop("paragraph-tag", ui_paragraph_tag)
         if ui_content_style is not None:
-            self._props["content-style"] = ui_content_style
+            self._init_prop("content-style", ui_content_style)
         if ui_content_class is not None:
-            self._props["content-class"] = ui_content_class
+            self._init_prop("content-class", ui_content_class)
         if ui_placeholder is not None:
-            self._props["placeholder"] = ui_placeholder
+            self._init_prop("placeholder", ui_placeholder)
         if ui_fullscreen is not None:
-            self._props["fullscreen"] = ui_fullscreen
+            self._init_prop("fullscreen", ui_fullscreen)
         if ui_no_route_fullscreen_exit is not None:
-            self._props["no-route-fullscreen-exit"] = (
-                ui_no_route_fullscreen_exit
+            self._init_prop(
+                "no-route-fullscreen-exit", ui_no_route_fullscreen_exit
             )
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -6139,7 +6146,6 @@ class QEditor(Component):
     def on_blur(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6147,7 +6153,6 @@ class QEditor(Component):
 
     def on_click(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6157,7 +6162,6 @@ class QEditor(Component):
     def on_dropdown_before_hide(self, handler: Callable, arg: object = None):
         """
         Emitted when a dropdown in the toolbar triggers hide() but before it finishes doing it
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6166,7 +6170,6 @@ class QEditor(Component):
     def on_dropdown_before_show(self, handler: Callable, arg: object = None):
         """
         Emitted when a dropdown in the toolbar triggers show() but before it finishes doing it
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6175,7 +6178,6 @@ class QEditor(Component):
     def on_dropdown_hide(self, handler: Callable, arg: object = None):
         """
         Emitted after a dropdown in the toolbar has triggered hide()
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6184,7 +6186,6 @@ class QEditor(Component):
     def on_dropdown_show(self, handler: Callable, arg: object = None):
         """
         Emitted after a dropdown in the toolbar has triggered show()
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6192,7 +6193,6 @@ class QEditor(Component):
 
     def on_focus(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6202,7 +6202,6 @@ class QEditor(Component):
     def on_fullscreen(self, handler: Callable, arg: object = None):
         """
         Emitted when fullscreen state changes
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6210,7 +6209,6 @@ class QEditor(Component):
 
     def on_keydown(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6220,7 +6218,6 @@ class QEditor(Component):
     def on_link_hide(self, handler: Callable, arg: object = None):
         """
         Emitted when the toolbar for editing a link is hidden
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6229,7 +6226,6 @@ class QEditor(Component):
     def on_link_show(self, handler: Callable, arg: object = None):
         """
         Emitted when the toolbar for editing a link is shown
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6238,7 +6234,6 @@ class QEditor(Component):
     def on_update_fullscreen(self, handler: Callable, arg: object = None):
         """
         Used by Vue on 'v-model:fullscreen' prop for updating its value
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6246,7 +6241,6 @@ class QEditor(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6381,74 +6375,76 @@ class QExpansionItem(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_expand_icon is not None:
-            self._props["expand-icon"] = ui_expand_icon
+            self._init_prop("expand-icon", ui_expand_icon)
         if ui_expanded_icon is not None:
-            self._props["expanded-icon"] = ui_expanded_icon
+            self._init_prop("expanded-icon", ui_expanded_icon)
         if ui_expand_icon_class is not None:
-            self._props["expand-icon-class"] = ui_expand_icon_class
+            self._init_prop("expand-icon-class", ui_expand_icon_class)
         if ui_toggle_aria_label is not None:
-            self._props["toggle-aria-label"] = ui_toggle_aria_label
+            self._init_prop("toggle-aria-label", ui_toggle_aria_label)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_label_lines is not None:
-            self._props["label-lines"] = ui_label_lines
+            self._init_prop("label-lines", ui_label_lines)
         if ui_caption is not None:
-            self._props["caption"] = ui_caption
+            self._init_prop("caption", ui_caption)
         if ui_caption_lines is not None:
-            self._props["caption-lines"] = ui_caption_lines
+            self._init_prop("caption-lines", ui_caption_lines)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_duration is not None:
-            self._props["duration"] = ui_duration
+            self._init_prop("duration", ui_duration)
         if ui_header_inset_level is not None:
-            self._props["header-inset-level"] = ui_header_inset_level
+            self._init_prop("header-inset-level", ui_header_inset_level)
         if ui_content_inset_level is not None:
-            self._props["content-inset-level"] = ui_content_inset_level
+            self._init_prop("content-inset-level", ui_content_inset_level)
         if ui_expand_separator is not None:
-            self._props["expand-separator"] = ui_expand_separator
+            self._init_prop("expand-separator", ui_expand_separator)
         if ui_default_opened is not None:
-            self._props["default-opened"] = ui_default_opened
+            self._init_prop("default-opened", ui_default_opened)
         if ui_hide_expand_icon is not None:
-            self._props["hide-expand-icon"] = ui_hide_expand_icon
+            self._init_prop("hide-expand-icon", ui_hide_expand_icon)
         if ui_expand_icon_toggle is not None:
-            self._props["expand-icon-toggle"] = ui_expand_icon_toggle
+            self._init_prop("expand-icon-toggle", ui_expand_icon_toggle)
         if ui_switch_toggle_side is not None:
-            self._props["switch-toggle-side"] = ui_switch_toggle_side
+            self._init_prop("switch-toggle-side", ui_switch_toggle_side)
         if ui_dense_toggle is not None:
-            self._props["dense-toggle"] = ui_dense_toggle
+            self._init_prop("dense-toggle", ui_dense_toggle)
         if ui_group is not None:
-            self._props["group"] = ui_group
+            self._init_prop("group", ui_group)
         if ui_popup is not None:
-            self._props["popup"] = ui_popup
+            self._init_prop("popup", ui_popup)
         if ui_header_style is not None:
-            self._props["header-style"] = ui_header_style
+            self._init_prop("header-style", ui_header_style)
         if ui_header_class is not None:
-            self._props["header-class"] = ui_header_class
+            self._init_prop("header-class", ui_header_class)
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_to is not None:
-            self._props["to"] = ui_to
+            self._init_prop("to", ui_to)
         if ui_exact is not None:
-            self._props["exact"] = ui_exact
+            self._init_prop("exact", ui_exact)
         if ui_replace is not None:
-            self._props["replace"] = ui_replace
+            self._init_prop("replace", ui_replace)
         if ui_active_class is not None:
-            self._props["active-class"] = ui_active_class
+            self._init_prop("active-class", ui_active_class)
         if ui_exact_active_class is not None:
-            self._props["exact-active-class"] = ui_exact_active_class
+            self._init_prop("exact-active-class", ui_exact_active_class)
         if ui_href is not None:
-            self._props["href"] = ui_href
+            self._init_prop("href", ui_href)
         if ui_target is not None:
-            self._props["target"] = ui_target
+            self._init_prop("target", ui_target)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_icon(self):
@@ -6754,7 +6750,6 @@ class QExpansionItem(Component):
     def on_after_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6762,7 +6757,6 @@ class QExpansionItem(Component):
 
     def on_after_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6772,7 +6766,6 @@ class QExpansionItem(Component):
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6780,7 +6773,6 @@ class QExpansionItem(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6790,7 +6782,6 @@ class QExpansionItem(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6798,7 +6789,6 @@ class QExpansionItem(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -6808,7 +6798,6 @@ class QExpansionItem(Component):
     def on_show(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6817,7 +6806,6 @@ class QExpansionItem(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when showing/hidden state changes; Is also used by v-model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -6901,58 +6889,60 @@ class QFab(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_active_icon is not None:
-            self._props["active-icon"] = ui_active_icon
+            self._init_prop("active-icon", ui_active_icon)
         if ui_hide_label is not None:
-            self._props["hide-label"] = ui_hide_label
+            self._init_prop("hide-label", ui_hide_label)
         if ui_hide_icon is not None:
-            self._props["hide-icon"] = ui_hide_icon
+            self._init_prop("hide-icon", ui_hide_icon)
         if ui_direction is not None:
-            self._props["direction"] = ui_direction
+            self._init_prop("direction", ui_direction)
         if ui_vertical_actions_align is not None:
-            self._props["vertical-actions-align"] = ui_vertical_actions_align
+            self._init_prop("vertical-actions-align", ui_vertical_actions_align)
         if ui_persistent is not None:
-            self._props["persistent"] = ui_persistent
+            self._init_prop("persistent", ui_persistent)
         if ui_type is not None:
-            self._props["type"] = ui_type
+            self._init_prop("type", ui_type)
         if ui_outline is not None:
-            self._props["outline"] = ui_outline
+            self._init_prop("outline", ui_outline)
         if ui_push is not None:
-            self._props["push"] = ui_push
+            self._init_prop("push", ui_push)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_unelevated is not None:
-            self._props["unelevated"] = ui_unelevated
+            self._init_prop("unelevated", ui_unelevated)
         if ui_padding is not None:
-            self._props["padding"] = ui_padding
+            self._init_prop("padding", ui_padding)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_glossy is not None:
-            self._props["glossy"] = ui_glossy
+            self._init_prop("glossy", ui_glossy)
         if ui_external_label is not None:
-            self._props["external-label"] = ui_external_label
+            self._init_prop("external-label", ui_external_label)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_label_position is not None:
-            self._props["label-position"] = ui_label_position
+            self._init_prop("label-position", ui_label_position)
         if ui_label_class is not None:
-            self._props["label-class"] = ui_label_class
+            self._init_prop("label-class", ui_label_class)
         if ui_label_style is not None:
-            self._props["label-style"] = ui_label_style
+            self._init_prop("label-style", ui_label_style)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -7212,7 +7202,6 @@ class QFab(Component):
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -7220,7 +7209,6 @@ class QFab(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -7230,7 +7218,6 @@ class QFab(Component):
     def on_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -7238,7 +7225,6 @@ class QFab(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -7248,7 +7234,6 @@ class QFab(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when showing/hidden state changes; Is also used by v-model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -7326,49 +7311,49 @@ class QFabAction(Component):
     ):
         super().__init__("QFabAction", *children, **kwargs)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_anchor is not None:
-            self._props["anchor"] = ui_anchor
+            self._init_prop("anchor", ui_anchor)
         if ui_to is not None:
-            self._props["to"] = ui_to
+            self._init_prop("to", ui_to)
         if ui_replace is not None:
-            self._props["replace"] = ui_replace
+            self._init_prop("replace", ui_replace)
         if ui_type is not None:
-            self._props["type"] = ui_type
+            self._init_prop("type", ui_type)
         if ui_outline is not None:
-            self._props["outline"] = ui_outline
+            self._init_prop("outline", ui_outline)
         if ui_push is not None:
-            self._props["push"] = ui_push
+            self._init_prop("push", ui_push)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_unelevated is not None:
-            self._props["unelevated"] = ui_unelevated
+            self._init_prop("unelevated", ui_unelevated)
         if ui_padding is not None:
-            self._props["padding"] = ui_padding
+            self._init_prop("padding", ui_padding)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_glossy is not None:
-            self._props["glossy"] = ui_glossy
+            self._init_prop("glossy", ui_glossy)
         if ui_external_label is not None:
-            self._props["external-label"] = ui_external_label
+            self._init_prop("external-label", ui_external_label)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_label_position is not None:
-            self._props["label-position"] = ui_label_position
+            self._init_prop("label-position", ui_label_position)
         if ui_hide_label is not None:
-            self._props["hide-label"] = ui_hide_label
+            self._init_prop("hide-label", ui_hide_label)
         if ui_label_class is not None:
-            self._props["label-class"] = ui_label_class
+            self._init_prop("label-class", ui_label_class)
         if ui_label_style is not None:
-            self._props["label-style"] = ui_label_style
+            self._init_prop("label-style", ui_label_style)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
 
     @property
     def ui_icon(self):
@@ -7584,7 +7569,6 @@ class QFabAction(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -7692,75 +7676,75 @@ class QField(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_maxlength is not None:
-            self._props["maxlength"] = ui_maxlength
+            self._init_prop("maxlength", ui_maxlength)
         if ui_tag is not None:
-            self._props["tag"] = ui_tag
+            self._init_prop("tag", ui_tag)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_stack_label is not None:
-            self._props["stack-label"] = ui_stack_label
+            self._init_prop("stack-label", ui_stack_label)
         if ui_hint is not None:
-            self._props["hint"] = ui_hint
+            self._init_prop("hint", ui_hint)
         if ui_hide_hint is not None:
-            self._props["hide-hint"] = ui_hide_hint
+            self._init_prop("hide-hint", ui_hide_hint)
         if ui_prefix is not None:
-            self._props["prefix"] = ui_prefix
+            self._init_prop("prefix", ui_prefix)
         if ui_suffix is not None:
-            self._props["suffix"] = ui_suffix
+            self._init_prop("suffix", ui_suffix)
         if ui_label_color is not None:
-            self._props["label-color"] = ui_label_color
+            self._init_prop("label-color", ui_label_color)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_bg_color is not None:
-            self._props["bg-color"] = ui_bg_color
+            self._init_prop("bg-color", ui_bg_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_loading is not None:
-            self._props["loading"] = ui_loading
+            self._init_prop("loading", ui_loading)
         if ui_clearable is not None:
-            self._props["clearable"] = ui_clearable
+            self._init_prop("clearable", ui_clearable)
         if ui_clear_icon is not None:
-            self._props["clear-icon"] = ui_clear_icon
+            self._init_prop("clear-icon", ui_clear_icon)
         if ui_filled is not None:
-            self._props["filled"] = ui_filled
+            self._init_prop("filled", ui_filled)
         if ui_outlined is not None:
-            self._props["outlined"] = ui_outlined
+            self._init_prop("outlined", ui_outlined)
         if ui_borderless is not None:
-            self._props["borderless"] = ui_borderless
+            self._init_prop("borderless", ui_borderless)
         if ui_standout is not None:
-            self._props["standout"] = ui_standout
+            self._init_prop("standout", ui_standout)
         if ui_label_slot is not None:
-            self._props["label-slot"] = ui_label_slot
+            self._init_prop("label-slot", ui_label_slot)
         if ui_bottom_slots is not None:
-            self._props["bottom-slots"] = ui_bottom_slots
+            self._init_prop("bottom-slots", ui_bottom_slots)
         if ui_hide_bottom_space is not None:
-            self._props["hide-bottom-space"] = ui_hide_bottom_space
+            self._init_prop("hide-bottom-space", ui_hide_bottom_space)
         if ui_counter is not None:
-            self._props["counter"] = ui_counter
+            self._init_prop("counter", ui_counter)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_item_aligned is not None:
-            self._props["item-aligned"] = ui_item_aligned
+            self._init_prop("item-aligned", ui_item_aligned)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_autofocus is not None:
-            self._props["autofocus"] = ui_autofocus
+            self._init_prop("autofocus", ui_autofocus)
         if ui_for is not None:
-            self._props["for"] = ui_for
+            self._init_prop("for", ui_for)
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_error is not None:
-            self._props["error"] = ui_error
+            self._init_prop("error", ui_error)
         if ui_error_message is not None:
-            self._props["error-message"] = ui_error_message
+            self._init_prop("error-message", ui_error_message)
         if ui_no_error_icon is not None:
-            self._props["no-error-icon"] = ui_no_error_icon
+            self._init_prop("no-error-icon", ui_no_error_icon)
 
         self._rules = [] if ui_rules is None else ui_rules
         self._rules_registered = False
@@ -7769,12 +7753,14 @@ class QField(Component):
             self.on_update_model_value(self._validate_rules)
 
         if ui_reactive_rules is not None:
-            self._props["reactive-rules"] = ui_reactive_rules
+            self._init_prop("reactive-rules", ui_reactive_rules)
         if ui_lazy_rules is not None:
-            self._props["lazy-rules"] = ui_lazy_rules
+            self._init_prop("lazy-rules", ui_lazy_rules)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_maxlength(self):
@@ -8223,7 +8209,6 @@ class QField(Component):
     def on_blur(self, handler: Callable, arg: object = None):
         """
         Emitted when component loses focus
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -8232,7 +8217,6 @@ class QField(Component):
     def on_clear(self, handler: Callable, arg: object = None):
         """
         When using the 'clearable' property, this event is emitted when the clear icon is clicked
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -8241,7 +8225,6 @@ class QField(Component):
     def on_focus(self, handler: Callable, arg: object = None):
         """
         Emitted when component gets focused
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -8250,7 +8233,6 @@ class QField(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when the model changes, only when used with 'clearable' or the 'control' scoped slot.
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -8396,87 +8378,87 @@ class QFile(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_append is not None:
-            self._props["append"] = ui_append
+            self._init_prop("append", ui_append)
         if ui_display_value is not None:
-            self._props["display-value"] = ui_display_value
+            self._init_prop("display-value", ui_display_value)
         if ui_use_chips is not None:
-            self._props["use-chips"] = ui_use_chips
+            self._init_prop("use-chips", ui_use_chips)
         if ui_counter_label is not None:
-            self._props["counter-label"] = ui_counter_label
+            self._init_prop("counter-label", ui_counter_label)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_input_class is not None:
-            self._props["input-class"] = ui_input_class
+            self._init_prop("input-class", ui_input_class)
         if ui_input_style is not None:
-            self._props["input-style"] = ui_input_style
+            self._init_prop("input-style", ui_input_style)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_stack_label is not None:
-            self._props["stack-label"] = ui_stack_label
+            self._init_prop("stack-label", ui_stack_label)
         if ui_hint is not None:
-            self._props["hint"] = ui_hint
+            self._init_prop("hint", ui_hint)
         if ui_hide_hint is not None:
-            self._props["hide-hint"] = ui_hide_hint
+            self._init_prop("hide-hint", ui_hide_hint)
         if ui_prefix is not None:
-            self._props["prefix"] = ui_prefix
+            self._init_prop("prefix", ui_prefix)
         if ui_suffix is not None:
-            self._props["suffix"] = ui_suffix
+            self._init_prop("suffix", ui_suffix)
         if ui_label_color is not None:
-            self._props["label-color"] = ui_label_color
+            self._init_prop("label-color", ui_label_color)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_bg_color is not None:
-            self._props["bg-color"] = ui_bg_color
+            self._init_prop("bg-color", ui_bg_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_loading is not None:
-            self._props["loading"] = ui_loading
+            self._init_prop("loading", ui_loading)
         if ui_clearable is not None:
-            self._props["clearable"] = ui_clearable
+            self._init_prop("clearable", ui_clearable)
         if ui_clear_icon is not None:
-            self._props["clear-icon"] = ui_clear_icon
+            self._init_prop("clear-icon", ui_clear_icon)
         if ui_filled is not None:
-            self._props["filled"] = ui_filled
+            self._init_prop("filled", ui_filled)
         if ui_outlined is not None:
-            self._props["outlined"] = ui_outlined
+            self._init_prop("outlined", ui_outlined)
         if ui_borderless is not None:
-            self._props["borderless"] = ui_borderless
+            self._init_prop("borderless", ui_borderless)
         if ui_standout is not None:
-            self._props["standout"] = ui_standout
+            self._init_prop("standout", ui_standout)
         if ui_label_slot is not None:
-            self._props["label-slot"] = ui_label_slot
+            self._init_prop("label-slot", ui_label_slot)
         if ui_bottom_slots is not None:
-            self._props["bottom-slots"] = ui_bottom_slots
+            self._init_prop("bottom-slots", ui_bottom_slots)
         if ui_hide_bottom_space is not None:
-            self._props["hide-bottom-space"] = ui_hide_bottom_space
+            self._init_prop("hide-bottom-space", ui_hide_bottom_space)
         if ui_counter is not None:
-            self._props["counter"] = ui_counter
+            self._init_prop("counter", ui_counter)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_item_aligned is not None:
-            self._props["item-aligned"] = ui_item_aligned
+            self._init_prop("item-aligned", ui_item_aligned)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_autofocus is not None:
-            self._props["autofocus"] = ui_autofocus
+            self._init_prop("autofocus", ui_autofocus)
         if ui_for is not None:
-            self._props["for"] = ui_for
+            self._init_prop("for", ui_for)
         if ui_error is not None:
-            self._props["error"] = ui_error
+            self._init_prop("error", ui_error)
         if ui_error_message is not None:
-            self._props["error-message"] = ui_error_message
+            self._init_prop("error-message", ui_error_message)
         if ui_no_error_icon is not None:
-            self._props["no-error-icon"] = ui_no_error_icon
+            self._init_prop("no-error-icon", ui_no_error_icon)
 
         self._rules = [] if ui_rules is None else ui_rules
         self._rules_registered = False
@@ -8485,26 +8467,28 @@ class QFile(Component):
             self.on_update_model_value(self._validate_rules)
 
         if ui_reactive_rules is not None:
-            self._props["reactive-rules"] = ui_reactive_rules
+            self._init_prop("reactive-rules", ui_reactive_rules)
         if ui_lazy_rules is not None:
-            self._props["lazy-rules"] = ui_lazy_rules
+            self._init_prop("lazy-rules", ui_lazy_rules)
         if ui_multiple is not None:
-            self._props["multiple"] = ui_multiple
+            self._init_prop("multiple", ui_multiple)
         if ui_accept is not None:
-            self._props["accept"] = ui_accept
+            self._init_prop("accept", ui_accept)
         if ui_capture is not None:
-            self._props["capture"] = ui_capture
+            self._init_prop("capture", ui_capture)
         if ui_max_file_size is not None:
-            self._props["max-file-size"] = ui_max_file_size
+            self._init_prop("max-file-size", ui_max_file_size)
         if ui_max_total_size is not None:
-            self._props["max-total-size"] = ui_max_total_size
+            self._init_prop("max-total-size", ui_max_total_size)
         if ui_max_files is not None:
-            self._props["max-files"] = ui_max_files
+            self._init_prop("max-files", ui_max_files)
         if ui_filter is not None:
-            self._props["filter"] = ui_filter
+            self._init_prop("filter", ui_filter)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -9071,7 +9055,6 @@ class QFile(Component):
     def on_blur(self, handler: Callable, arg: object = None):
         """
         Emitted when component loses focus
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -9080,7 +9063,6 @@ class QFile(Component):
     def on_clear(self, handler: Callable, arg: object = None):
         """
         When using the 'clearable' property, this event is emitted when the clear icon is clicked
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -9089,7 +9071,6 @@ class QFile(Component):
     def on_focus(self, handler: Callable, arg: object = None):
         """
         Emitted when component gets focused
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -9098,7 +9079,6 @@ class QFile(Component):
     def on_rejected(self, handler: Callable, arg: object = None):
         """
         Emitted after files are picked and some do not pass the validation props (accept, max-file-size, max-total-size, filter, etc)
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -9106,7 +9086,6 @@ class QFile(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -9203,18 +9182,20 @@ class QFooter(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_reveal is not None:
-            self._props["reveal"] = ui_reveal
+            self._init_prop("reveal", ui_reveal)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_elevated is not None:
-            self._props["elevated"] = ui_elevated
+            self._init_prop("elevated", ui_elevated)
         if ui_height_hint is not None:
-            self._props["height-hint"] = ui_height_hint
+            self._init_prop("height-hint", ui_height_hint)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -9263,7 +9244,6 @@ class QFooter(Component):
     def on_focusin(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -9272,7 +9252,6 @@ class QFooter(Component):
     def on_reveal(self, handler: Callable, arg: object = None):
         """
         Emitted when 'reveal' state gets changed
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -9303,13 +9282,13 @@ class QForm(Component):
     ):
         super().__init__("QForm", *children, **kwargs)
         if ui_autofocus is not None:
-            self._props["autofocus"] = ui_autofocus
+            self._init_prop("autofocus", ui_autofocus)
         if ui_no_error_focus is not None:
-            self._props["no-error-focus"] = ui_no_error_focus
+            self._init_prop("no-error-focus", ui_no_error_focus)
         if ui_no_reset_focus is not None:
-            self._props["no-reset-focus"] = ui_no_reset_focus
+            self._init_prop("no-reset-focus", ui_no_reset_focus)
         if ui_greedy is not None:
-            self._props["greedy"] = ui_greedy
+            self._init_prop("greedy", ui_greedy)
 
     @property
     def ui_autofocus(self):
@@ -9350,7 +9329,6 @@ class QForm(Component):
     def on_reset(self, handler: Callable, arg: object = None):
         """
         Emitted when all validations have been reset when tethered to a reset button; It is recommended to manually reset the wrapped components models in this handler
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -9359,7 +9337,6 @@ class QForm(Component):
     def on_submit(self, handler: Callable, arg: object = None):
         """
         Emitted when all validations have passed when tethered to a submit button
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -9368,7 +9345,6 @@ class QForm(Component):
     def on_validation_error(self, handler: Callable, arg: object = None):
         """
         Emitted after a validation was triggered and at least one of the inner Quasar components models are NOT valid
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -9377,7 +9353,6 @@ class QForm(Component):
     def on_validation_success(self, handler: Callable, arg: object = None):
         """
         Emitted after a validation was triggered and all inner Quasar components models are valid
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -9475,20 +9450,22 @@ class QHeader(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_reveal is not None:
-            self._props["reveal"] = ui_reveal
+            self._init_prop("reveal", ui_reveal)
         if ui_reveal_offset is not None:
-            self._props["reveal-offset"] = ui_reveal_offset
+            self._init_prop("reveal-offset", ui_reveal_offset)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_elevated is not None:
-            self._props["elevated"] = ui_elevated
+            self._init_prop("elevated", ui_elevated)
         if ui_height_hint is not None:
-            self._props["height-hint"] = ui_height_hint
+            self._init_prop("height-hint", ui_height_hint)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -9546,7 +9523,6 @@ class QHeader(Component):
     def on_focusin(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -9555,7 +9531,6 @@ class QHeader(Component):
     def on_reveal(self, handler: Callable, arg: object = None):
         """
         Emitted when 'reveal' state gets changed
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -9590,17 +9565,17 @@ class QIcon(Component):
     ):
         super().__init__("QIcon", *children, **kwargs)
         if ui_tag is not None:
-            self._props["tag"] = ui_tag
+            self._init_prop("tag", ui_tag)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_left is not None:
-            self._props["left"] = ui_left
+            self._init_prop("left", ui_left)
         if ui_right is not None:
-            self._props["right"] = ui_right
+            self._init_prop("right", ui_right)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_tag(self):
@@ -9723,57 +9698,57 @@ class QImg(Component):
     ):
         super().__init__("QImg", *children, **kwargs)
         if ui_src is not None:
-            self._props["src"] = ui_src
+            self._init_prop("src", ui_src)
         if ui_srcset is not None:
-            self._props["srcset"] = ui_srcset
+            self._init_prop("srcset", ui_srcset)
         if ui_sizes is not None:
-            self._props["sizes"] = ui_sizes
+            self._init_prop("sizes", ui_sizes)
         if ui_placeholder_src is not None:
-            self._props["placeholder-src"] = ui_placeholder_src
+            self._init_prop("placeholder-src", ui_placeholder_src)
         if ui_error_src is not None:
-            self._props["error-src"] = ui_error_src
+            self._init_prop("error-src", ui_error_src)
         if ui_ratio is not None:
-            self._props["ratio"] = ui_ratio
+            self._init_prop("ratio", ui_ratio)
         if ui_initial_ratio is not None:
-            self._props["initial-ratio"] = ui_initial_ratio
+            self._init_prop("initial-ratio", ui_initial_ratio)
         if ui_width is not None:
-            self._props["width"] = ui_width
+            self._init_prop("width", ui_width)
         if ui_height is not None:
-            self._props["height"] = ui_height
+            self._init_prop("height", ui_height)
         if ui_loading is not None:
-            self._props["loading"] = ui_loading
+            self._init_prop("loading", ui_loading)
         if ui_loading_show_delay is not None:
-            self._props["loading-show-delay"] = ui_loading_show_delay
+            self._init_prop("loading-show-delay", ui_loading_show_delay)
         if ui_crossorigin is not None:
-            self._props["crossorigin"] = ui_crossorigin
+            self._init_prop("crossorigin", ui_crossorigin)
         if ui_decoding is not None:
-            self._props["decoding"] = ui_decoding
+            self._init_prop("decoding", ui_decoding)
         if ui_referrerpolicy is not None:
-            self._props["referrerpolicy"] = ui_referrerpolicy
+            self._init_prop("referrerpolicy", ui_referrerpolicy)
         if ui_fetchpriority is not None:
-            self._props["fetchpriority"] = ui_fetchpriority
+            self._init_prop("fetchpriority", ui_fetchpriority)
         if ui_fit is not None:
-            self._props["fit"] = ui_fit
+            self._init_prop("fit", ui_fit)
         if ui_position is not None:
-            self._props["position"] = ui_position
+            self._init_prop("position", ui_position)
         if ui_alt is not None:
-            self._props["alt"] = ui_alt
+            self._init_prop("alt", ui_alt)
         if ui_draggable is not None:
-            self._props["draggable"] = ui_draggable
+            self._init_prop("draggable", ui_draggable)
         if ui_img_class is not None:
-            self._props["img-class"] = ui_img_class
+            self._init_prop("img-class", ui_img_class)
         if ui_img_style is not None:
-            self._props["img-style"] = ui_img_style
+            self._init_prop("img-style", ui_img_style)
         if ui_spinner_color is not None:
-            self._props["spinner-color"] = ui_spinner_color
+            self._init_prop("spinner-color", ui_spinner_color)
         if ui_spinner_size is not None:
-            self._props["spinner-size"] = ui_spinner_size
+            self._init_prop("spinner-size", ui_spinner_size)
         if ui_no_spinner is not None:
-            self._props["no-spinner"] = ui_no_spinner
+            self._init_prop("no-spinner", ui_no_spinner)
         if ui_no_native_menu is not None:
-            self._props["no-native-menu"] = ui_no_native_menu
+            self._init_prop("no-native-menu", ui_no_native_menu)
         if ui_no_transition is not None:
-            self._props["no-transition"] = ui_no_transition
+            self._init_prop("no-transition", ui_no_transition)
 
     @property
     def ui_src(self):
@@ -10030,7 +10005,6 @@ class QImg(Component):
     def on_error(self, handler: Callable, arg: object = None):
         """
         Emitted when browser could not load the image
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -10039,7 +10013,6 @@ class QImg(Component):
     def on_load(self, handler: Callable, arg: object = None):
         """
         Emitted when image has been loaded by the browser
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -10074,17 +10047,17 @@ class QInfiniteScroll(Component):
     ):
         super().__init__("QInfiniteScroll", *children, **kwargs)
         if ui_offset is not None:
-            self._props["offset"] = ui_offset
+            self._init_prop("offset", ui_offset)
         if ui_debounce is not None:
-            self._props["debounce"] = ui_debounce
+            self._init_prop("debounce", ui_debounce)
         if ui_initial_index is not None:
-            self._props["initial-index"] = ui_initial_index
+            self._init_prop("initial-index", ui_initial_index)
         if ui_scroll_target is not None:
-            self._props["scroll-target"] = ui_scroll_target
+            self._init_prop("scroll-target", ui_scroll_target)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_reverse is not None:
-            self._props["reverse"] = ui_reverse
+            self._init_prop("reverse", ui_reverse)
 
     @property
     def ui_offset(self):
@@ -10150,7 +10123,6 @@ class QInfiniteScroll(Component):
     def on_load(self, handler: Callable, arg: object = None):
         """
         Emitted when Infinite Scroll needs to load more data
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -10232,25 +10204,25 @@ class QInnerLoading(Component):
     ):
         super().__init__("QInnerLoading", *children, **kwargs)
         if ui_showing is not None:
-            self._props["showing"] = ui_showing
+            self._init_prop("showing", ui_showing)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_label_class is not None:
-            self._props["label-class"] = ui_label_class
+            self._init_prop("label-class", ui_label_class)
         if ui_label_style is not None:
-            self._props["label-style"] = ui_label_style
+            self._init_prop("label-style", ui_label_style)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_transition_show is not None:
-            self._props["transition-show"] = ui_transition_show
+            self._init_prop("transition-show", ui_transition_show)
         if ui_transition_hide is not None:
-            self._props["transition-hide"] = ui_transition_hide
+            self._init_prop("transition-hide", ui_transition_hide)
         if ui_transition_duration is not None:
-            self._props["transition-duration"] = ui_transition_duration
+            self._init_prop("transition-duration", ui_transition_duration)
 
     @property
     def ui_showing(self):
@@ -10395,6 +10367,7 @@ class QInput(Component):
     :param ui_fill_mask: Fills string with specified characters (or underscore if value is not string) to fill mask's length
     :param ui_reverse_fill_mask: Fills string from the right side of the mask
     :param ui_unmasked_value: Model will be unmasked (won't contain tokens/separation characters)
+    :param ui_mask_tokens: Object of custom mask tokens to be added on top of the default ones; Can also override any of the default ones
     """
 
     def __init__(
@@ -10448,93 +10421,94 @@ class QInput(Component):
         ui_fill_mask: bool | str | None = None,
         ui_reverse_fill_mask: bool | None = None,
         ui_unmasked_value: bool | None = None,
+        ui_mask_tokens: dict | None = None,
         **kwargs,
     ):
         super().__init__("QInput", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_shadow_text is not None:
-            self._props["shadow-text"] = ui_shadow_text
+            self._init_prop("shadow-text", ui_shadow_text)
         if ui_type is not None:
-            self._props["type"] = ui_type
+            self._init_prop("type", ui_type)
         if ui_debounce is not None:
-            self._props["debounce"] = ui_debounce
+            self._init_prop("debounce", ui_debounce)
         if ui_maxlength is not None:
-            self._props["maxlength"] = ui_maxlength
+            self._init_prop("maxlength", ui_maxlength)
         if ui_autogrow is not None:
-            self._props["autogrow"] = ui_autogrow
+            self._init_prop("autogrow", ui_autogrow)
         if ui_input_class is not None:
-            self._props["input-class"] = ui_input_class
+            self._init_prop("input-class", ui_input_class)
         if ui_input_style is not None:
-            self._props["input-style"] = ui_input_style
+            self._init_prop("input-style", ui_input_style)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_stack_label is not None:
-            self._props["stack-label"] = ui_stack_label
+            self._init_prop("stack-label", ui_stack_label)
         if ui_hint is not None:
-            self._props["hint"] = ui_hint
+            self._init_prop("hint", ui_hint)
         if ui_hide_hint is not None:
-            self._props["hide-hint"] = ui_hide_hint
+            self._init_prop("hide-hint", ui_hide_hint)
         if ui_prefix is not None:
-            self._props["prefix"] = ui_prefix
+            self._init_prop("prefix", ui_prefix)
         if ui_suffix is not None:
-            self._props["suffix"] = ui_suffix
+            self._init_prop("suffix", ui_suffix)
         if ui_label_color is not None:
-            self._props["label-color"] = ui_label_color
+            self._init_prop("label-color", ui_label_color)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_bg_color is not None:
-            self._props["bg-color"] = ui_bg_color
+            self._init_prop("bg-color", ui_bg_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_loading is not None:
-            self._props["loading"] = ui_loading
+            self._init_prop("loading", ui_loading)
         if ui_clearable is not None:
-            self._props["clearable"] = ui_clearable
+            self._init_prop("clearable", ui_clearable)
         if ui_clear_icon is not None:
-            self._props["clear-icon"] = ui_clear_icon
+            self._init_prop("clear-icon", ui_clear_icon)
         if ui_filled is not None:
-            self._props["filled"] = ui_filled
+            self._init_prop("filled", ui_filled)
         if ui_outlined is not None:
-            self._props["outlined"] = ui_outlined
+            self._init_prop("outlined", ui_outlined)
         if ui_borderless is not None:
-            self._props["borderless"] = ui_borderless
+            self._init_prop("borderless", ui_borderless)
         if ui_standout is not None:
-            self._props["standout"] = ui_standout
+            self._init_prop("standout", ui_standout)
         if ui_label_slot is not None:
-            self._props["label-slot"] = ui_label_slot
+            self._init_prop("label-slot", ui_label_slot)
         if ui_bottom_slots is not None:
-            self._props["bottom-slots"] = ui_bottom_slots
+            self._init_prop("bottom-slots", ui_bottom_slots)
         if ui_hide_bottom_space is not None:
-            self._props["hide-bottom-space"] = ui_hide_bottom_space
+            self._init_prop("hide-bottom-space", ui_hide_bottom_space)
         if ui_counter is not None:
-            self._props["counter"] = ui_counter
+            self._init_prop("counter", ui_counter)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_item_aligned is not None:
-            self._props["item-aligned"] = ui_item_aligned
+            self._init_prop("item-aligned", ui_item_aligned)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_autofocus is not None:
-            self._props["autofocus"] = ui_autofocus
+            self._init_prop("autofocus", ui_autofocus)
         if ui_for is not None:
-            self._props["for"] = ui_for
+            self._init_prop("for", ui_for)
         if ui_error is not None:
-            self._props["error"] = ui_error
+            self._init_prop("error", ui_error)
         if ui_error_message is not None:
-            self._props["error-message"] = ui_error_message
+            self._init_prop("error-message", ui_error_message)
         if ui_no_error_icon is not None:
-            self._props["no-error-icon"] = ui_no_error_icon
+            self._init_prop("no-error-icon", ui_no_error_icon)
 
         self._rules = [] if ui_rules is None else ui_rules
         self._rules_registered = False
@@ -10543,20 +10517,24 @@ class QInput(Component):
             self.on_update_model_value(self._validate_rules)
 
         if ui_reactive_rules is not None:
-            self._props["reactive-rules"] = ui_reactive_rules
+            self._init_prop("reactive-rules", ui_reactive_rules)
         if ui_lazy_rules is not None:
-            self._props["lazy-rules"] = ui_lazy_rules
+            self._init_prop("lazy-rules", ui_lazy_rules)
         if ui_mask is not None:
-            self._props["mask"] = ui_mask
+            self._init_prop("mask", ui_mask)
         if ui_fill_mask is not None:
-            self._props["fill-mask"] = ui_fill_mask
+            self._init_prop("fill-mask", ui_fill_mask)
         if ui_reverse_fill_mask is not None:
-            self._props["reverse-fill-mask"] = ui_reverse_fill_mask
+            self._init_prop("reverse-fill-mask", ui_reverse_fill_mask)
         if ui_unmasked_value is not None:
-            self._props["unmasked-value"] = ui_unmasked_value
+            self._init_prop("unmasked-value", ui_unmasked_value)
+        if ui_mask_tokens is not None:
+            self._init_prop("mask-tokens", ui_mask_tokens)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -10996,6 +10974,15 @@ class QInput(Component):
         self._set_prop("unmasked-value", value)
 
     @property
+    def ui_mask_tokens(self):
+        """Object of custom mask tokens to be added on top of the default ones; Can also override any of the default ones"""
+        return self._props.get("mask-tokens")
+
+    @ui_mask_tokens.setter
+    def ui_mask_tokens(self, value):
+        self._set_prop("mask-tokens", value)
+
+    @property
     def ui_slot_after(self):
         """Append outer field; Suggestions: QIcon, QBtn"""
         return self.ui_slots.get("after", [])
@@ -11079,7 +11066,6 @@ class QInput(Component):
     def on_animationend(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -11088,7 +11074,6 @@ class QInput(Component):
     def on_blur(self, handler: Callable, arg: object = None):
         """
         Emitted when component loses focus
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -11096,7 +11081,6 @@ class QInput(Component):
 
     def on_change(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -11106,7 +11090,6 @@ class QInput(Component):
     def on_clear(self, handler: Callable, arg: object = None):
         """
         When using the 'clearable' property, this event is emitted when the clear icon is clicked
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -11114,7 +11097,6 @@ class QInput(Component):
 
     def on_click(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -11124,7 +11106,6 @@ class QInput(Component):
     def on_focus(self, handler: Callable, arg: object = None):
         """
         Emitted when component gets focused
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -11132,7 +11113,6 @@ class QInput(Component):
 
     def on_keydown(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -11142,7 +11122,6 @@ class QInput(Component):
     def on_paste(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -11150,7 +11129,6 @@ class QInput(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -11226,23 +11204,23 @@ class QIntersection(Component):
     ):
         super().__init__("QIntersection", *children, **kwargs)
         if ui_tag is not None:
-            self._props["tag"] = ui_tag
+            self._init_prop("tag", ui_tag)
         if ui_once is not None:
-            self._props["once"] = ui_once
+            self._init_prop("once", ui_once)
         if ui_ssr_prerender is not None:
-            self._props["ssr-prerender"] = ui_ssr_prerender
+            self._init_prop("ssr-prerender", ui_ssr_prerender)
         if ui_root is not None:
-            self._props["root"] = ui_root
+            self._init_prop("root", ui_root)
         if ui_margin is not None:
-            self._props["margin"] = ui_margin
+            self._init_prop("margin", ui_margin)
         if ui_threshold is not None:
-            self._props["threshold"] = ui_threshold
+            self._init_prop("threshold", ui_threshold)
         if ui_transition is not None:
-            self._props["transition"] = ui_transition
+            self._init_prop("transition", ui_transition)
         if ui_transition_duration is not None:
-            self._props["transition-duration"] = ui_transition_duration
+            self._init_prop("transition-duration", ui_transition_duration)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
 
     @property
     def ui_tag(self):
@@ -11335,7 +11313,6 @@ class QIntersection(Component):
     def on_visibility(self, handler: Callable, arg: object = None):
         """
         Fires when visibility changes
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -11370,17 +11347,17 @@ class QList(Component):
     ):
         super().__init__("QList", *children, **kwargs)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_separator is not None:
-            self._props["separator"] = ui_separator
+            self._init_prop("separator", ui_separator)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_padding is not None:
-            self._props["padding"] = ui_padding
+            self._init_prop("padding", ui_padding)
         if ui_tag is not None:
-            self._props["tag"] = ui_tag
+            self._init_prop("tag", ui_tag)
 
     @property
     def ui_bordered(self):
@@ -11436,6 +11413,157 @@ class QList(Component):
         return []
 
 
+class QItemLabel(Component):
+    """
+    Quasar Component: `QItemLabel <https://v2.quasar.dev/vue-components/list-and-list-items>`__
+
+    :param ui_overline: Renders an overline label
+    :param ui_caption: Renders a caption label
+    :param ui_header: Renders a header label
+    :param ui_lines: Apply ellipsis when there's not enough space to render on the specified number of lines;
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_overline: bool | None = None,
+        ui_caption: bool | None = None,
+        ui_header: bool | None = None,
+        ui_lines: float | str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QItemLabel", *children, **kwargs)
+        if ui_overline is not None:
+            self._init_prop("overline", ui_overline)
+        if ui_caption is not None:
+            self._init_prop("caption", ui_caption)
+        if ui_header is not None:
+            self._init_prop("header", ui_header)
+        if ui_lines is not None:
+            self._init_prop("lines", ui_lines)
+
+    @property
+    def ui_overline(self):
+        """Renders an overline label"""
+        return self._props.get("overline")
+
+    @ui_overline.setter
+    def ui_overline(self, value):
+        self._set_prop("overline", value)
+
+    @property
+    def ui_caption(self):
+        """Renders a caption label"""
+        return self._props.get("caption")
+
+    @ui_caption.setter
+    def ui_caption(self, value):
+        self._set_prop("caption", value)
+
+    @property
+    def ui_header(self):
+        """Renders a header label"""
+        return self._props.get("header")
+
+    @ui_header.setter
+    def ui_header(self, value):
+        self._set_prop("header", value)
+
+    @property
+    def ui_lines(self):
+        """Apply ellipsis when there's not enough space to render on the specified number of lines;"""
+        return self._props.get("lines")
+
+    @ui_lines.setter
+    def ui_lines(self, value):
+        self._set_prop("lines", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QItemSection(Component):
+    """
+    Quasar Component: `QItemSection <https://v2.quasar.dev/vue-components/list-and-list-items>`__
+
+    :param ui_avatar: Render an avatar item side (does not needs 'side' prop to be set)
+    :param ui_thumbnail: Render a thumbnail item side (does not needs 'side' prop to be set)
+    :param ui_side: Renders as a side of the item
+    :param ui_top: Align content to top (useful for multi-line items)
+    :param ui_no_wrap: Do not wrap text (useful for item's main content)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_avatar: bool | None = None,
+        ui_thumbnail: bool | None = None,
+        ui_side: bool | None = None,
+        ui_top: bool | None = None,
+        ui_no_wrap: bool | None = None,
+        **kwargs,
+    ):
+        super().__init__("QItemSection", *children, **kwargs)
+        if ui_avatar is not None:
+            self._init_prop("avatar", ui_avatar)
+        if ui_thumbnail is not None:
+            self._init_prop("thumbnail", ui_thumbnail)
+        if ui_side is not None:
+            self._init_prop("side", ui_side)
+        if ui_top is not None:
+            self._init_prop("top", ui_top)
+        if ui_no_wrap is not None:
+            self._init_prop("no-wrap", ui_no_wrap)
+
+    @property
+    def ui_avatar(self):
+        """Render an avatar item side (does not needs 'side' prop to be set)"""
+        return self._props.get("avatar")
+
+    @ui_avatar.setter
+    def ui_avatar(self, value):
+        self._set_prop("avatar", value)
+
+    @property
+    def ui_thumbnail(self):
+        """Render a thumbnail item side (does not needs 'side' prop to be set)"""
+        return self._props.get("thumbnail")
+
+    @ui_thumbnail.setter
+    def ui_thumbnail(self, value):
+        self._set_prop("thumbnail", value)
+
+    @property
+    def ui_side(self):
+        """Renders as a side of the item"""
+        return self._props.get("side")
+
+    @ui_side.setter
+    def ui_side(self, value):
+        self._set_prop("side", value)
+
+    @property
+    def ui_top(self):
+        """Align content to top (useful for multi-line items)"""
+        return self._props.get("top")
+
+    @ui_top.setter
+    def ui_top(self, value):
+        self._set_prop("top", value)
+
+    @property
+    def ui_no_wrap(self):
+        """Do not wrap text (useful for item's main content)"""
+        return self._props.get("no-wrap")
+
+    @ui_no_wrap.setter
+    def ui_no_wrap(self, value):
+        self._set_prop("no-wrap", value)
+
+    def _get_js_methods(self):
+        return []
+
+
 class QItem(Component):
     """
     Quasar Component: `QItem <https://v2.quasar.dev/vue-components/list-and-list-items>`__
@@ -11483,39 +11611,39 @@ class QItem(Component):
     ):
         super().__init__("QItem", *children, **kwargs)
         if ui_active is not None:
-            self._props["active"] = ui_active
+            self._init_prop("active", ui_active)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_clickable is not None:
-            self._props["clickable"] = ui_clickable
+            self._init_prop("clickable", ui_clickable)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_inset_level is not None:
-            self._props["inset-level"] = ui_inset_level
+            self._init_prop("inset-level", ui_inset_level)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_tag is not None:
-            self._props["tag"] = ui_tag
+            self._init_prop("tag", ui_tag)
         if ui_manual_focus is not None:
-            self._props["manual-focus"] = ui_manual_focus
+            self._init_prop("manual-focus", ui_manual_focus)
         if ui_focused is not None:
-            self._props["focused"] = ui_focused
+            self._init_prop("focused", ui_focused)
         if ui_to is not None:
-            self._props["to"] = ui_to
+            self._init_prop("to", ui_to)
         if ui_exact is not None:
-            self._props["exact"] = ui_exact
+            self._init_prop("exact", ui_exact)
         if ui_replace is not None:
-            self._props["replace"] = ui_replace
+            self._init_prop("replace", ui_replace)
         if ui_active_class is not None:
-            self._props["active-class"] = ui_active_class
+            self._init_prop("active-class", ui_active_class)
         if ui_exact_active_class is not None:
-            self._props["exact-active-class"] = ui_exact_active_class
+            self._init_prop("exact-active-class", ui_exact_active_class)
         if ui_href is not None:
-            self._props["href"] = ui_href
+            self._init_prop("href", ui_href)
         if ui_target is not None:
-            self._props["target"] = ui_target
+            self._init_prop("target", ui_target)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
 
     @property
     def ui_active(self):
@@ -11669,7 +11797,6 @@ class QItem(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
         Emitted when the component is clicked
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -11678,162 +11805,10 @@ class QItem(Component):
     def on_keyup(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
         return self.on("keyup", handler, arg)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QItemSection(Component):
-    """
-    Quasar Component: `QItemSection <https://v2.quasar.dev/vue-components/list-and-list-items>`__
-
-    :param ui_avatar: Render an avatar item side (does not needs 'side' prop to be set)
-    :param ui_thumbnail: Render a thumbnail item side (does not needs 'side' prop to be set)
-    :param ui_side: Renders as a side of the item
-    :param ui_top: Align content to top (useful for multi-line items)
-    :param ui_no_wrap: Do not wrap text (useful for item's main content)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_avatar: bool | None = None,
-        ui_thumbnail: bool | None = None,
-        ui_side: bool | None = None,
-        ui_top: bool | None = None,
-        ui_no_wrap: bool | None = None,
-        **kwargs,
-    ):
-        super().__init__("QItemSection", *children, **kwargs)
-        if ui_avatar is not None:
-            self._props["avatar"] = ui_avatar
-        if ui_thumbnail is not None:
-            self._props["thumbnail"] = ui_thumbnail
-        if ui_side is not None:
-            self._props["side"] = ui_side
-        if ui_top is not None:
-            self._props["top"] = ui_top
-        if ui_no_wrap is not None:
-            self._props["no-wrap"] = ui_no_wrap
-
-    @property
-    def ui_avatar(self):
-        """Render an avatar item side (does not needs 'side' prop to be set)"""
-        return self._props.get("avatar")
-
-    @ui_avatar.setter
-    def ui_avatar(self, value):
-        self._set_prop("avatar", value)
-
-    @property
-    def ui_thumbnail(self):
-        """Render a thumbnail item side (does not needs 'side' prop to be set)"""
-        return self._props.get("thumbnail")
-
-    @ui_thumbnail.setter
-    def ui_thumbnail(self, value):
-        self._set_prop("thumbnail", value)
-
-    @property
-    def ui_side(self):
-        """Renders as a side of the item"""
-        return self._props.get("side")
-
-    @ui_side.setter
-    def ui_side(self, value):
-        self._set_prop("side", value)
-
-    @property
-    def ui_top(self):
-        """Align content to top (useful for multi-line items)"""
-        return self._props.get("top")
-
-    @ui_top.setter
-    def ui_top(self, value):
-        self._set_prop("top", value)
-
-    @property
-    def ui_no_wrap(self):
-        """Do not wrap text (useful for item's main content)"""
-        return self._props.get("no-wrap")
-
-    @ui_no_wrap.setter
-    def ui_no_wrap(self, value):
-        self._set_prop("no-wrap", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QItemLabel(Component):
-    """
-    Quasar Component: `QItemLabel <https://v2.quasar.dev/vue-components/list-and-list-items>`__
-
-    :param ui_overline: Renders an overline label
-    :param ui_caption: Renders a caption label
-    :param ui_header: Renders a header label
-    :param ui_lines: Apply ellipsis when there's not enough space to render on the specified number of lines;
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_overline: bool | None = None,
-        ui_caption: bool | None = None,
-        ui_header: bool | None = None,
-        ui_lines: float | str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QItemLabel", *children, **kwargs)
-        if ui_overline is not None:
-            self._props["overline"] = ui_overline
-        if ui_caption is not None:
-            self._props["caption"] = ui_caption
-        if ui_header is not None:
-            self._props["header"] = ui_header
-        if ui_lines is not None:
-            self._props["lines"] = ui_lines
-
-    @property
-    def ui_overline(self):
-        """Renders an overline label"""
-        return self._props.get("overline")
-
-    @ui_overline.setter
-    def ui_overline(self, value):
-        self._set_prop("overline", value)
-
-    @property
-    def ui_caption(self):
-        """Renders a caption label"""
-        return self._props.get("caption")
-
-    @ui_caption.setter
-    def ui_caption(self, value):
-        self._set_prop("caption", value)
-
-    @property
-    def ui_header(self):
-        """Renders a header label"""
-        return self._props.get("header")
-
-    @ui_header.setter
-    def ui_header(self, value):
-        self._set_prop("header", value)
-
-    @property
-    def ui_lines(self):
-        """Apply ellipsis when there's not enough space to render on the specified number of lines;"""
-        return self._props.get("lines")
-
-    @ui_lines.setter
-    def ui_lines(self, value):
-        self._set_prop("lines", value)
 
     def _get_js_methods(self):
         return []
@@ -11896,50 +11871,52 @@ class QKnob(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_min is not None:
-            self._props["min"] = ui_min
+            self._init_prop("min", ui_min)
         if ui_max is not None:
-            self._props["max"] = ui_max
+            self._init_prop("max", ui_max)
         if ui_inner_min is not None:
-            self._props["inner-min"] = ui_inner_min
+            self._init_prop("inner-min", ui_inner_min)
         if ui_inner_max is not None:
-            self._props["inner-max"] = ui_inner_max
+            self._init_prop("inner-max", ui_inner_max)
         if ui_step is not None:
-            self._props["step"] = ui_step
+            self._init_prop("step", ui_step)
         if ui_reverse is not None:
-            self._props["reverse"] = ui_reverse
+            self._init_prop("reverse", ui_reverse)
         if ui_instant_feedback is not None:
-            self._props["instant-feedback"] = ui_instant_feedback
+            self._init_prop("instant-feedback", ui_instant_feedback)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_center_color is not None:
-            self._props["center-color"] = ui_center_color
+            self._init_prop("center-color", ui_center_color)
         if ui_track_color is not None:
-            self._props["track-color"] = ui_track_color
+            self._init_prop("track-color", ui_track_color)
         if ui_font_size is not None:
-            self._props["font-size"] = ui_font_size
+            self._init_prop("font-size", ui_font_size)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_thickness is not None:
-            self._props["thickness"] = ui_thickness
+            self._init_prop("thickness", ui_thickness)
         if ui_angle is not None:
-            self._props["angle"] = ui_angle
+            self._init_prop("angle", ui_angle)
         if ui_show_value is not None:
-            self._props["show-value"] = ui_show_value
+            self._init_prop("show-value", ui_show_value)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -12129,7 +12106,6 @@ class QKnob(Component):
     def on_change(self, handler: Callable, arg: object = None):
         """
         Fires at the end of a knob's adjustment and offers the value of the model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -12138,7 +12114,6 @@ class QKnob(Component):
     def on_drag_value(self, handler: Callable, arg: object = None):
         """
         The value of the model while dragging is still in progress
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -12146,7 +12121,6 @@ class QKnob(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -12174,9 +12148,9 @@ class QLayout(Component):
     ):
         super().__init__("QLayout", *children, **kwargs)
         if ui_view is not None:
-            self._props["view"] = ui_view
+            self._init_prop("view", ui_view)
         if ui_container is not None:
-            self._props["container"] = ui_container
+            self._init_prop("container", ui_container)
 
     @property
     def ui_view(self):
@@ -12199,7 +12173,6 @@ class QLayout(Component):
     def on_resize(self, handler: Callable, arg: object = None):
         """
         Emitted when layout size (height, width) changes
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -12208,7 +12181,6 @@ class QLayout(Component):
     def on_scroll(self, handler: Callable, arg: object = None):
         """
         Emitted when user scrolls within layout
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -12217,7 +12189,6 @@ class QLayout(Component):
     def on_scroll_height(self, handler: Callable, arg: object = None):
         """
         Emitted when the scroll size of layout changes
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -12266,31 +12237,31 @@ class QLinearProgress(Component):
     ):
         super().__init__("QLinearProgress", *children, **kwargs)
         if ui_value is not None:
-            self._props["value"] = ui_value
+            self._init_prop("value", ui_value)
         if ui_buffer is not None:
-            self._props["buffer"] = ui_buffer
+            self._init_prop("buffer", ui_buffer)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_track_color is not None:
-            self._props["track-color"] = ui_track_color
+            self._init_prop("track-color", ui_track_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_reverse is not None:
-            self._props["reverse"] = ui_reverse
+            self._init_prop("reverse", ui_reverse)
         if ui_stripe is not None:
-            self._props["stripe"] = ui_stripe
+            self._init_prop("stripe", ui_stripe)
         if ui_indeterminate is not None:
-            self._props["indeterminate"] = ui_indeterminate
+            self._init_prop("indeterminate", ui_indeterminate)
         if ui_query is not None:
-            self._props["query"] = ui_query
+            self._init_prop("query", ui_query)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_instant_feedback is not None:
-            self._props["instant-feedback"] = ui_instant_feedback
+            self._init_prop("instant-feedback", ui_instant_feedback)
         if ui_animation_speed is not None:
-            self._props["animation-speed"] = ui_animation_speed
+            self._init_prop("animation-speed", ui_animation_speed)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_value(self):
@@ -12436,19 +12407,19 @@ class QMarkupTable(Component):
     ):
         super().__init__("QMarkupTable", *children, **kwargs)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_separator is not None:
-            self._props["separator"] = ui_separator
+            self._init_prop("separator", ui_separator)
         if ui_wrap_cells is not None:
-            self._props["wrap-cells"] = ui_wrap_cells
+            self._init_prop("wrap-cells", ui_wrap_cells)
 
     @property
     def ui_dense(self):
@@ -12525,6 +12496,7 @@ class QMenu(Component):
     :param ui_scroll_target:
     :param ui_touch_position: Allows for the target position to be set by the mouse position, when the target of the menu is either clicked or touched
     :param ui_persistent: Allows the menu to not be dismissed by a click/tap outside of the menu or by hitting the ESC key; Also, an app route change won't dismiss it
+    :param ui_no_esc_dismiss: User cannot dismiss the popup by hitting ESC key; No need to set it if 'persistent' prop is also set
     :param ui_no_route_dismiss: Changing route app won't dismiss the popup; No need to set it if 'persistent' prop is also set
     :param ui_auto_close: Allows any click/tap in the menu to close it; Useful instead of attaching events to each menu item that should close the menu on click/tap
     :param ui_separate_close_popup: Separate from parent menu, marking it as a separate closing point for v-close-popup (without this, chained menus close all together)
@@ -12554,6 +12526,7 @@ class QMenu(Component):
         ui_scroll_target: Any | None = None,
         ui_touch_position: bool | None = None,
         ui_persistent: bool | None = None,
+        ui_no_esc_dismiss: bool | None = None,
         ui_no_route_dismiss: bool | None = None,
         ui_auto_close: bool | None = None,
         ui_separate_close_popup: bool | None = None,
@@ -12575,56 +12548,60 @@ class QMenu(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_fit is not None:
-            self._props["fit"] = ui_fit
+            self._init_prop("fit", ui_fit)
         if ui_cover is not None:
-            self._props["cover"] = ui_cover
+            self._init_prop("cover", ui_cover)
         if ui_anchor is not None:
-            self._props["anchor"] = ui_anchor
+            self._init_prop("anchor", ui_anchor)
         if ui_self is not None:
-            self._props["self"] = ui_self
+            self._init_prop("self", ui_self)
         if ui_offset is not None:
-            self._props["offset"] = ui_offset
+            self._init_prop("offset", ui_offset)
         if ui_scroll_target is not None:
-            self._props["scroll-target"] = ui_scroll_target
+            self._init_prop("scroll-target", ui_scroll_target)
         if ui_touch_position is not None:
-            self._props["touch-position"] = ui_touch_position
+            self._init_prop("touch-position", ui_touch_position)
         if ui_persistent is not None:
-            self._props["persistent"] = ui_persistent
+            self._init_prop("persistent", ui_persistent)
+        if ui_no_esc_dismiss is not None:
+            self._init_prop("no-esc-dismiss", ui_no_esc_dismiss)
         if ui_no_route_dismiss is not None:
-            self._props["no-route-dismiss"] = ui_no_route_dismiss
+            self._init_prop("no-route-dismiss", ui_no_route_dismiss)
         if ui_auto_close is not None:
-            self._props["auto-close"] = ui_auto_close
+            self._init_prop("auto-close", ui_auto_close)
         if ui_separate_close_popup is not None:
-            self._props["separate-close-popup"] = ui_separate_close_popup
+            self._init_prop("separate-close-popup", ui_separate_close_popup)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_no_refocus is not None:
-            self._props["no-refocus"] = ui_no_refocus
+            self._init_prop("no-refocus", ui_no_refocus)
         if ui_no_focus is not None:
-            self._props["no-focus"] = ui_no_focus
+            self._init_prop("no-focus", ui_no_focus)
         if ui_max_height is not None:
-            self._props["max-height"] = ui_max_height
+            self._init_prop("max-height", ui_max_height)
         if ui_max_width is not None:
-            self._props["max-width"] = ui_max_width
+            self._init_prop("max-width", ui_max_width)
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_context_menu is not None:
-            self._props["context-menu"] = ui_context_menu
+            self._init_prop("context-menu", ui_context_menu)
         if ui_target is not None:
-            self._props["target"] = ui_target
+            self._init_prop("target", ui_target)
         if ui_no_parent_event is not None:
-            self._props["no-parent-event"] = ui_no_parent_event
+            self._init_prop("no-parent-event", ui_no_parent_event)
         if ui_transition_show is not None:
-            self._props["transition-show"] = ui_transition_show
+            self._init_prop("transition-show", ui_transition_show)
         if ui_transition_hide is not None:
-            self._props["transition-hide"] = ui_transition_hide
+            self._init_prop("transition-hide", ui_transition_hide)
         if ui_transition_duration is not None:
-            self._props["transition-duration"] = ui_transition_duration
+            self._init_prop("transition-duration", ui_transition_duration)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_dark(self):
@@ -12704,6 +12681,15 @@ class QMenu(Component):
     @ui_persistent.setter
     def ui_persistent(self, value):
         self._set_prop("persistent", value)
+
+    @property
+    def ui_no_esc_dismiss(self):
+        """User cannot dismiss the popup by hitting ESC key; No need to set it if 'persistent' prop is also set"""
+        return self._props.get("no-esc-dismiss")
+
+    @ui_no_esc_dismiss.setter
+    def ui_no_esc_dismiss(self, value):
+        self._set_prop("no-esc-dismiss", value)
 
     @property
     def ui_no_route_dismiss(self):
@@ -12841,7 +12827,6 @@ class QMenu(Component):
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -12849,7 +12834,6 @@ class QMenu(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -12859,7 +12843,6 @@ class QMenu(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -12867,8 +12850,7 @@ class QMenu(Component):
 
     def on_escape_key(self, handler: Callable, arg: object = None):
         """
-        Emitted when ESC key is pressed; Does not get emitted if Menu is 'persistent'
-
+        Emitted when ESC key is pressed; Does not get emitted if Menu is 'persistent' or it has 'no-esc-dismiss' set
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -12876,7 +12858,6 @@ class QMenu(Component):
 
     def on_hide(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -12886,7 +12867,6 @@ class QMenu(Component):
     def on_show(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -12895,7 +12875,6 @@ class QMenu(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when showing/hidden state changes; Is also used by v-model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -12939,9 +12918,9 @@ class QNoSsr(Component):
     ):
         super().__init__("QNoSsr", *children, **kwargs)
         if ui_tag is not None:
-            self._props["tag"] = ui_tag
+            self._init_prop("tag", ui_tag)
         if ui_placeholder is not None:
-            self._props["placeholder"] = ui_placeholder
+            self._init_prop("placeholder", ui_placeholder)
 
     @property
     def ui_tag(self):
@@ -13018,38 +12997,40 @@ class QOptionGroup(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_options is not None:
-            self._props["options"] = ui_options
+            self._init_prop("options", ui_options)
         if ui_option_value is not None:
-            self._props["option-value"] = ui_option_value
+            self._init_prop("option-value", ui_option_value)
         if ui_option_label is not None:
-            self._props["option-label"] = ui_option_label
+            self._init_prop("option-label", ui_option_label)
         if ui_option_disable is not None:
-            self._props["option-disable"] = ui_option_disable
+            self._init_prop("option-disable", ui_option_disable)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
         if ui_type is not None:
-            self._props["type"] = ui_type
+            self._init_prop("type", ui_type)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_keep_color is not None:
-            self._props["keep-color"] = ui_keep_color
+            self._init_prop("keep-color", ui_keep_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_left_label is not None:
-            self._props["left-label"] = ui_left_label
+            self._init_prop("left-label", ui_left_label)
         if ui_inline is not None:
-            self._props["inline"] = ui_inline
+            self._init_prop("inline", ui_inline)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -13197,7 +13178,6 @@ class QOptionGroup(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -13237,9 +13217,9 @@ class QPage(Component):
     ):
         super().__init__("QPage", *children, **kwargs)
         if ui_padding is not None:
-            self._props["padding"] = ui_padding
+            self._init_prop("padding", ui_padding)
         if ui_style_fn is not None:
-            self._props["style-fn"] = ui_style_fn
+            self._init_prop("style-fn", ui_style_fn)
 
     @property
     def ui_padding(self):
@@ -13288,17 +13268,17 @@ class QPageScroller(Component):
     ):
         super().__init__("QPageScroller", *children, **kwargs)
         if ui_scroll_offset is not None:
-            self._props["scroll-offset"] = ui_scroll_offset
+            self._init_prop("scroll-offset", ui_scroll_offset)
         if ui_reverse is not None:
-            self._props["reverse"] = ui_reverse
+            self._init_prop("reverse", ui_reverse)
         if ui_duration is not None:
-            self._props["duration"] = ui_duration
+            self._init_prop("duration", ui_duration)
         if ui_offset is not None:
-            self._props["offset"] = ui_offset
+            self._init_prop("offset", ui_offset)
         if ui_position is not None:
-            self._props["position"] = ui_position
+            self._init_prop("position", ui_position)
         if ui_expand is not None:
-            self._props["expand"] = ui_expand
+            self._init_prop("expand", ui_expand)
 
     @property
     def ui_scroll_offset(self):
@@ -13357,7 +13337,6 @@ class QPageScroller(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -13386,11 +13365,11 @@ class QPageSticky(Component):
     ):
         super().__init__("QPageSticky", *children, **kwargs)
         if ui_position is not None:
-            self._props["position"] = ui_position
+            self._init_prop("position", ui_position)
         if ui_offset is not None:
-            self._props["offset"] = ui_offset
+            self._init_prop("offset", ui_offset)
         if ui_expand is not None:
-            self._props["expand"] = ui_expand
+            self._init_prop("expand", ui_expand)
 
     @property
     def ui_position(self):
@@ -13506,76 +13485,78 @@ class QPagination(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_min is not None:
-            self._props["min"] = ui_min
+            self._init_prop("min", ui_min)
         if ui_max is not None:
-            self._props["max"] = ui_max
+            self._init_prop("max", ui_max)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_input is not None:
-            self._props["input"] = ui_input
+            self._init_prop("input", ui_input)
         if ui_icon_prev is not None:
-            self._props["icon-prev"] = ui_icon_prev
+            self._init_prop("icon-prev", ui_icon_prev)
         if ui_icon_next is not None:
-            self._props["icon-next"] = ui_icon_next
+            self._init_prop("icon-next", ui_icon_next)
         if ui_icon_first is not None:
-            self._props["icon-first"] = ui_icon_first
+            self._init_prop("icon-first", ui_icon_first)
         if ui_icon_last is not None:
-            self._props["icon-last"] = ui_icon_last
+            self._init_prop("icon-last", ui_icon_last)
         if ui_to_fn is not None:
-            self._props["to-fn"] = ui_to_fn
+            self._init_prop("to-fn", ui_to_fn)
         if ui_boundary_links is not None:
-            self._props["boundary-links"] = ui_boundary_links
+            self._init_prop("boundary-links", ui_boundary_links)
         if ui_boundary_numbers is not None:
-            self._props["boundary-numbers"] = ui_boundary_numbers
+            self._init_prop("boundary-numbers", ui_boundary_numbers)
         if ui_direction_links is not None:
-            self._props["direction-links"] = ui_direction_links
+            self._init_prop("direction-links", ui_direction_links)
         if ui_ellipses is not None:
-            self._props["ellipses"] = ui_ellipses
+            self._init_prop("ellipses", ui_ellipses)
         if ui_max_pages is not None:
-            self._props["max-pages"] = ui_max_pages
+            self._init_prop("max-pages", ui_max_pages)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_outline is not None:
-            self._props["outline"] = ui_outline
+            self._init_prop("outline", ui_outline)
         if ui_unelevated is not None:
-            self._props["unelevated"] = ui_unelevated
+            self._init_prop("unelevated", ui_unelevated)
         if ui_push is not None:
-            self._props["push"] = ui_push
+            self._init_prop("push", ui_push)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_active_design is not None:
-            self._props["active-design"] = ui_active_design
+            self._init_prop("active-design", ui_active_design)
         if ui_active_color is not None:
-            self._props["active-color"] = ui_active_color
+            self._init_prop("active-color", ui_active_color)
         if ui_active_text_color is not None:
-            self._props["active-text-color"] = ui_active_text_color
+            self._init_prop("active-text-color", ui_active_text_color)
         if ui_round is not None:
-            self._props["round"] = ui_round
+            self._init_prop("round", ui_round)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_glossy is not None:
-            self._props["glossy"] = ui_glossy
+            self._init_prop("glossy", ui_glossy)
         if ui_gutter is not None:
-            self._props["gutter"] = ui_gutter
+            self._init_prop("gutter", ui_gutter)
         if ui_padding is not None:
-            self._props["padding"] = ui_padding
+            self._init_prop("padding", ui_padding)
         if ui_input_style is not None:
-            self._props["input-style"] = ui_input_style
+            self._init_prop("input-style", ui_input_style)
         if ui_input_class is not None:
-            self._props["input-class"] = ui_input_class
+            self._init_prop("input-class", ui_input_class)
         if ui_ripple is not None:
-            self._props["ripple"] = ui_ripple
+            self._init_prop("ripple", ui_ripple)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -13881,7 +13862,6 @@ class QPagination(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -13926,13 +13906,13 @@ class QParallax(Component):
     ):
         super().__init__("QParallax", *children, **kwargs)
         if ui_src is not None:
-            self._props["src"] = ui_src
+            self._init_prop("src", ui_src)
         if ui_height is not None:
-            self._props["height"] = ui_height
+            self._init_prop("height", ui_height)
         if ui_speed is not None:
-            self._props["speed"] = ui_speed
+            self._init_prop("speed", ui_speed)
         if ui_scroll_target is not None:
-            self._props["scroll-target"] = ui_scroll_target
+            self._init_prop("scroll-target", ui_scroll_target)
 
     @property
     def ui_src(self):
@@ -13990,7 +13970,6 @@ class QParallax(Component):
     def on_scroll(self, handler: Callable, arg: object = None):
         """
         Emitted when scrolling occurs
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14055,48 +14034,50 @@ class QPopupEdit(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_title is not None:
-            self._props["title"] = ui_title
+            self._init_prop("title", ui_title)
         if ui_buttons is not None:
-            self._props["buttons"] = ui_buttons
+            self._init_prop("buttons", ui_buttons)
         if ui_label_set is not None:
-            self._props["label-set"] = ui_label_set
+            self._init_prop("label-set", ui_label_set)
         if ui_label_cancel is not None:
-            self._props["label-cancel"] = ui_label_cancel
+            self._init_prop("label-cancel", ui_label_cancel)
         if ui_auto_save is not None:
-            self._props["auto-save"] = ui_auto_save
+            self._init_prop("auto-save", ui_auto_save)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_validate is not None:
-            self._props["validate"] = ui_validate
+            self._init_prop("validate", ui_validate)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_fit is not None:
-            self._props["fit"] = ui_fit
+            self._init_prop("fit", ui_fit)
         if ui_cover is not None:
-            self._props["cover"] = ui_cover
+            self._init_prop("cover", ui_cover)
         if ui_anchor is not None:
-            self._props["anchor"] = ui_anchor
+            self._init_prop("anchor", ui_anchor)
         if ui_self is not None:
-            self._props["self"] = ui_self
+            self._init_prop("self", ui_self)
         if ui_offset is not None:
-            self._props["offset"] = ui_offset
+            self._init_prop("offset", ui_offset)
         if ui_touch_position is not None:
-            self._props["touch-position"] = ui_touch_position
+            self._init_prop("touch-position", ui_touch_position)
         if ui_persistent is not None:
-            self._props["persistent"] = ui_persistent
+            self._init_prop("persistent", ui_persistent)
         if ui_separate_close_popup is not None:
-            self._props["separate-close-popup"] = ui_separate_close_popup
+            self._init_prop("separate-close-popup", ui_separate_close_popup)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_max_height is not None:
-            self._props["max-height"] = ui_max_height
+            self._init_prop("max-height", ui_max_height)
         if ui_max_width is not None:
-            self._props["max-width"] = ui_max_width
+            self._init_prop("max-width", ui_max_width)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -14278,7 +14259,6 @@ class QPopupEdit(Component):
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
         Emitted right before Popup gets dismissed
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14287,7 +14267,6 @@ class QPopupEdit(Component):
     def on_before_show(self, handler: Callable, arg: object = None):
         """
         Emitted right before Popup gets shown
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14296,7 +14275,6 @@ class QPopupEdit(Component):
     def on_cancel(self, handler: Callable, arg: object = None):
         """
         Emitted when user cancelled the change (hit ESC key or clicking outside of Popup or hit 'Cancel' button)
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14305,7 +14283,6 @@ class QPopupEdit(Component):
     def on_hide(self, handler: Callable, arg: object = None):
         """
         Emitted right after Popup gets dismissed
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14314,7 +14291,6 @@ class QPopupEdit(Component):
     def on_save(self, handler: Callable, arg: object = None):
         """
         Emitted when value has been successfully validated and it should be saved
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14323,7 +14299,6 @@ class QPopupEdit(Component):
     def on_show(self, handler: Callable, arg: object = None):
         """
         Emitted right after Popup gets shown
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14332,7 +14307,6 @@ class QPopupEdit(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when Popup gets cancelled in order to reset model to its initial value; Is also used by v-model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14385,18 +14359,20 @@ class QPopupProxy(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_breakpoint is not None:
-            self._props["breakpoint"] = ui_breakpoint
+            self._init_prop("breakpoint", ui_breakpoint)
         if ui_context_menu is not None:
-            self._props["context-menu"] = ui_context_menu
+            self._init_prop("context-menu", ui_context_menu)
         if ui_target is not None:
-            self._props["target"] = ui_target
+            self._init_prop("target", ui_target)
         if ui_no_parent_event is not None:
-            self._props["no-parent-event"] = ui_no_parent_event
+            self._init_prop("no-parent-event", ui_no_parent_event)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -14446,7 +14422,6 @@ class QPopupProxy(Component):
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14454,7 +14429,6 @@ class QPopupProxy(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -14464,7 +14438,6 @@ class QPopupProxy(Component):
     def on_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14473,7 +14446,6 @@ class QPopupProxy(Component):
     def on_show(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14481,7 +14453,6 @@ class QPopupProxy(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -14526,17 +14497,17 @@ class QPullToRefresh(Component):
     ):
         super().__init__("QPullToRefresh", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_bg_color is not None:
-            self._props["bg-color"] = ui_bg_color
+            self._init_prop("bg-color", ui_bg_color)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_no_mouse is not None:
-            self._props["no-mouse"] = ui_no_mouse
+            self._init_prop("no-mouse", ui_no_mouse)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_scroll_target is not None:
-            self._props["scroll-target"] = ui_scroll_target
+            self._init_prop("scroll-target", ui_scroll_target)
 
     @property
     def ui_color(self):
@@ -14593,7 +14564,6 @@ class QPullToRefresh(Component):
     def on_refresh(self, handler: Callable, arg: object = None):
         """
         Called whenever a refresh is triggered; at this time, your function should load more data
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14654,36 +14624,38 @@ class QRadio(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_val is not None:
-            self._props["val"] = ui_val
+            self._init_prop("val", ui_val)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_left_label is not None:
-            self._props["left-label"] = ui_left_label
+            self._init_prop("left-label", ui_left_label)
         if ui_checked_icon is not None:
-            self._props["checked-icon"] = ui_checked_icon
+            self._init_prop("checked-icon", ui_checked_icon)
         if ui_unchecked_icon is not None:
-            self._props["unchecked-icon"] = ui_unchecked_icon
+            self._init_prop("unchecked-icon", ui_unchecked_icon)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_keep_color is not None:
-            self._props["keep-color"] = ui_keep_color
+            self._init_prop("keep-color", ui_keep_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -14808,7 +14780,6 @@ class QRadio(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when the component needs to change the model; Is also used by v-model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -14927,100 +14898,102 @@ class QRange(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_drag_range is not None:
-            self._props["drag-range"] = ui_drag_range
+            self._init_prop("drag-range", ui_drag_range)
         if ui_drag_only_range is not None:
-            self._props["drag-only-range"] = ui_drag_only_range
+            self._init_prop("drag-only-range", ui_drag_only_range)
         if ui_left_label_color is not None:
-            self._props["left-label-color"] = ui_left_label_color
+            self._init_prop("left-label-color", ui_left_label_color)
         if ui_left_label_text_color is not None:
-            self._props["left-label-text-color"] = ui_left_label_text_color
+            self._init_prop("left-label-text-color", ui_left_label_text_color)
         if ui_right_label_color is not None:
-            self._props["right-label-color"] = ui_right_label_color
+            self._init_prop("right-label-color", ui_right_label_color)
         if ui_right_label_text_color is not None:
-            self._props["right-label-text-color"] = ui_right_label_text_color
+            self._init_prop("right-label-text-color", ui_right_label_text_color)
         if ui_left_label_value is not None:
-            self._props["left-label-value"] = ui_left_label_value
+            self._init_prop("left-label-value", ui_left_label_value)
         if ui_right_label_value is not None:
-            self._props["right-label-value"] = ui_right_label_value
+            self._init_prop("right-label-value", ui_right_label_value)
         if ui_left_thumb_color is not None:
-            self._props["left-thumb-color"] = ui_left_thumb_color
+            self._init_prop("left-thumb-color", ui_left_thumb_color)
         if ui_right_thumb_color is not None:
-            self._props["right-thumb-color"] = ui_right_thumb_color
+            self._init_prop("right-thumb-color", ui_right_thumb_color)
         if ui_min is not None:
-            self._props["min"] = ui_min
+            self._init_prop("min", ui_min)
         if ui_max is not None:
-            self._props["max"] = ui_max
+            self._init_prop("max", ui_max)
         if ui_inner_min is not None:
-            self._props["inner-min"] = ui_inner_min
+            self._init_prop("inner-min", ui_inner_min)
         if ui_inner_max is not None:
-            self._props["inner-max"] = ui_inner_max
+            self._init_prop("inner-max", ui_inner_max)
         if ui_step is not None:
-            self._props["step"] = ui_step
+            self._init_prop("step", ui_step)
         if ui_snap is not None:
-            self._props["snap"] = ui_snap
+            self._init_prop("snap", ui_snap)
         if ui_reverse is not None:
-            self._props["reverse"] = ui_reverse
+            self._init_prop("reverse", ui_reverse)
         if ui_vertical is not None:
-            self._props["vertical"] = ui_vertical
+            self._init_prop("vertical", ui_vertical)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_track_color is not None:
-            self._props["track-color"] = ui_track_color
+            self._init_prop("track-color", ui_track_color)
         if ui_track_img is not None:
-            self._props["track-img"] = ui_track_img
+            self._init_prop("track-img", ui_track_img)
         if ui_inner_track_color is not None:
-            self._props["inner-track-color"] = ui_inner_track_color
+            self._init_prop("inner-track-color", ui_inner_track_color)
         if ui_inner_track_img is not None:
-            self._props["inner-track-img"] = ui_inner_track_img
+            self._init_prop("inner-track-img", ui_inner_track_img)
         if ui_selection_color is not None:
-            self._props["selection-color"] = ui_selection_color
+            self._init_prop("selection-color", ui_selection_color)
         if ui_selection_img is not None:
-            self._props["selection-img"] = ui_selection_img
+            self._init_prop("selection-img", ui_selection_img)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_label_color is not None:
-            self._props["label-color"] = ui_label_color
+            self._init_prop("label-color", ui_label_color)
         if ui_label_text_color is not None:
-            self._props["label-text-color"] = ui_label_text_color
+            self._init_prop("label-text-color", ui_label_text_color)
         if ui_switch_label_side is not None:
-            self._props["switch-label-side"] = ui_switch_label_side
+            self._init_prop("switch-label-side", ui_switch_label_side)
         if ui_label_always is not None:
-            self._props["label-always"] = ui_label_always
+            self._init_prop("label-always", ui_label_always)
         if ui_markers is not None:
-            self._props["markers"] = ui_markers
+            self._init_prop("markers", ui_markers)
         if ui_marker_labels is not None:
-            self._props["marker-labels"] = ui_marker_labels
+            self._init_prop("marker-labels", ui_marker_labels)
         if ui_marker_labels_class is not None:
-            self._props["marker-labels-class"] = ui_marker_labels_class
+            self._init_prop("marker-labels-class", ui_marker_labels_class)
         if ui_switch_marker_labels_side is not None:
-            self._props["switch-marker-labels-side"] = (
-                ui_switch_marker_labels_side
+            self._init_prop(
+                "switch-marker-labels-side", ui_switch_marker_labels_side
             )
         if ui_track_size is not None:
-            self._props["track-size"] = ui_track_size
+            self._init_prop("track-size", ui_track_size)
         if ui_thumb_size is not None:
-            self._props["thumb-size"] = ui_thumb_size
+            self._init_prop("thumb-size", ui_thumb_size)
         if ui_thumb_color is not None:
-            self._props["thumb-color"] = ui_thumb_color
+            self._init_prop("thumb-color", ui_thumb_color)
         if ui_thumb_path is not None:
-            self._props["thumb-path"] = ui_thumb_path
+            self._init_prop("thumb-path", ui_thumb_path)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -15439,7 +15412,6 @@ class QRange(Component):
     def on_change(self, handler: Callable, arg: object = None):
         """
         Emitted on lazy model value change (after user slides then releases the thumb)
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -15448,7 +15420,6 @@ class QRange(Component):
     def on_pan(self, handler: Callable, arg: object = None):
         """
         Triggered when user starts panning on the component
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -15456,7 +15427,6 @@ class QRange(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -15512,38 +15482,40 @@ class QRating(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_max is not None:
-            self._props["max"] = ui_max
+            self._init_prop("max", ui_max)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_icon_selected is not None:
-            self._props["icon-selected"] = ui_icon_selected
+            self._init_prop("icon-selected", ui_icon_selected)
         if ui_icon_half is not None:
-            self._props["icon-half"] = ui_icon_half
+            self._init_prop("icon-half", ui_icon_half)
         if ui_icon_aria_label is not None:
-            self._props["icon-aria-label"] = ui_icon_aria_label
+            self._init_prop("icon-aria-label", ui_icon_aria_label)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_color_selected is not None:
-            self._props["color-selected"] = ui_color_selected
+            self._init_prop("color-selected", ui_color_selected)
         if ui_color_half is not None:
-            self._props["color-half"] = ui_color_half
+            self._init_prop("color-half", ui_color_half)
         if ui_no_dimming is not None:
-            self._props["no-dimming"] = ui_no_dimming
+            self._init_prop("no-dimming", ui_no_dimming)
         if ui_no_reset is not None:
-            self._props["no-reset"] = ui_no_reset
+            self._init_prop("no-reset", ui_no_reset)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -15684,7 +15656,6 @@ class QRating(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -15706,7 +15677,7 @@ class QResizeObserver(Component):
     ):
         super().__init__("QResizeObserver", *children, **kwargs)
         if ui_debounce is not None:
-            self._props["debounce"] = ui_debounce
+            self._init_prop("debounce", ui_debounce)
 
     @property
     def ui_debounce(self):
@@ -15720,7 +15691,6 @@ class QResizeObserver(Component):
     def on_resize(self, handler: Callable, arg: object = None):
         """
         Parent element has resized (width or height changed)
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -15749,7 +15719,7 @@ class QResponsive(Component):
     ):
         super().__init__("QResponsive", *children, **kwargs)
         if ui_ratio is not None:
-            self._props["ratio"] = ui_ratio
+            self._init_prop("ratio", ui_ratio)
 
     @property
     def ui_ratio(self):
@@ -15805,33 +15775,33 @@ class QScrollArea(Component):
     ):
         super().__init__("QScrollArea", *children, **kwargs)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_vertical_offset is not None:
-            self._props["vertical-offset"] = ui_vertical_offset
+            self._init_prop("vertical-offset", ui_vertical_offset)
         if ui_horizontal_offset is not None:
-            self._props["horizontal-offset"] = ui_horizontal_offset
+            self._init_prop("horizontal-offset", ui_horizontal_offset)
         if ui_bar_style is not None:
-            self._props["bar-style"] = ui_bar_style
+            self._init_prop("bar-style", ui_bar_style)
         if ui_vertical_bar_style is not None:
-            self._props["vertical-bar-style"] = ui_vertical_bar_style
+            self._init_prop("vertical-bar-style", ui_vertical_bar_style)
         if ui_horizontal_bar_style is not None:
-            self._props["horizontal-bar-style"] = ui_horizontal_bar_style
+            self._init_prop("horizontal-bar-style", ui_horizontal_bar_style)
         if ui_thumb_style is not None:
-            self._props["thumb-style"] = ui_thumb_style
+            self._init_prop("thumb-style", ui_thumb_style)
         if ui_vertical_thumb_style is not None:
-            self._props["vertical-thumb-style"] = ui_vertical_thumb_style
+            self._init_prop("vertical-thumb-style", ui_vertical_thumb_style)
         if ui_horizontal_thumb_style is not None:
-            self._props["horizontal-thumb-style"] = ui_horizontal_thumb_style
+            self._init_prop("horizontal-thumb-style", ui_horizontal_thumb_style)
         if ui_content_style is not None:
-            self._props["content-style"] = ui_content_style
+            self._init_prop("content-style", ui_content_style)
         if ui_content_active_style is not None:
-            self._props["content-active-style"] = ui_content_active_style
+            self._init_prop("content-active-style", ui_content_active_style)
         if ui_visible is not None:
-            self._props["visible"] = ui_visible
+            self._init_prop("visible", ui_visible)
         if ui_delay is not None:
-            self._props["delay"] = ui_delay
+            self._init_prop("delay", ui_delay)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
 
     @property
     def ui_dark(self):
@@ -15960,7 +15930,6 @@ class QScrollArea(Component):
     def on_scroll(self, handler: Callable, arg: object = None):
         """
         Emitted when scroll information changes (and listener is configured)
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -16034,11 +16003,11 @@ class QScrollObserver(Component):
     ):
         super().__init__("QScrollObserver", *children, **kwargs)
         if ui_debounce is not None:
-            self._props["debounce"] = ui_debounce
+            self._init_prop("debounce", ui_debounce)
         if ui_axis is not None:
-            self._props["axis"] = ui_axis
+            self._init_prop("axis", ui_axis)
         if ui_scroll_target is not None:
-            self._props["scroll-target"] = ui_scroll_target
+            self._init_prop("scroll-target", ui_scroll_target)
 
     @property
     def ui_debounce(self):
@@ -16069,7 +16038,6 @@ class QScrollObserver(Component):
     def on_scroll(self, handler: Callable, arg: object = None):
         """
         Emitted when scroll position changes
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -16121,7 +16089,7 @@ class QSelect(Component):
     :param ui_use_chips: Use QChip to show what is currently selected
     :param ui_use_input: Use an input tag where users can type
     :param ui_maxlength: Specify a max length for the inner input tag (if 'use-input' is enabled)
-    :param ui_fill_input: Fills the input with current value; Useful along with 'hide-selected'; Does NOT works along with 'multiple' selection
+    :param ui_fill_input: Fills the input with current value; Useful along with 'hide-selected'; Does NOT work along with 'multiple' selection
     :param ui_new_value_mode: Enables creation of new values and defines behavior when a new value is added: 'add' means it adds the value (even if possible duplicate), 'add-unique' adds only unique values, and 'toggle' adds or removes the value (based on if it exists or not already); When using this prop then listening for @new-value becomes optional (only to override the behavior defined by 'new-value-mode')
     :param ui_map_options: Try to map labels of model from 'options' Array; has a small performance penalty; If you are using emit-value you will probably need to use map-options to display the label text in the select field rather than the value;  Refer to the 'Affecting model' section above
     :param ui_disable_tab_selection: Prevents the tab key from confirming the currently hovered option
@@ -16275,157 +16243,157 @@ class QSelect(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_multiple is not None:
-            self._props["multiple"] = ui_multiple
+            self._init_prop("multiple", ui_multiple)
         if ui_display_value is not None:
-            self._props["display-value"] = ui_display_value
+            self._init_prop("display-value", ui_display_value)
         if ui_display_value_html is not None:
-            self._props["display-value-html"] = ui_display_value_html
+            self._init_prop("display-value-html", ui_display_value_html)
         if ui_options is not None:
-            self._props["options"] = ui_options
+            self._init_prop("options", ui_options)
         if ui_option_value is not None:
-            self._props["option-value"] = ui_option_value
+            self._init_prop("option-value", ui_option_value)
         if ui_option_label is not None:
-            self._props["option-label"] = ui_option_label
+            self._init_prop("option-label", ui_option_label)
         if ui_option_disable is not None:
-            self._props["option-disable"] = ui_option_disable
+            self._init_prop("option-disable", ui_option_disable)
         if ui_hide_selected is not None:
-            self._props["hide-selected"] = ui_hide_selected
+            self._init_prop("hide-selected", ui_hide_selected)
         if ui_hide_dropdown_icon is not None:
-            self._props["hide-dropdown-icon"] = ui_hide_dropdown_icon
+            self._init_prop("hide-dropdown-icon", ui_hide_dropdown_icon)
         if ui_dropdown_icon is not None:
-            self._props["dropdown-icon"] = ui_dropdown_icon
+            self._init_prop("dropdown-icon", ui_dropdown_icon)
         if ui_max_values is not None:
-            self._props["max-values"] = ui_max_values
+            self._init_prop("max-values", ui_max_values)
         if ui_options_dense is not None:
-            self._props["options-dense"] = ui_options_dense
+            self._init_prop("options-dense", ui_options_dense)
         if ui_options_dark is not None:
-            self._props["options-dark"] = ui_options_dark
+            self._init_prop("options-dark", ui_options_dark)
         if ui_options_selected_class is not None:
-            self._props["options-selected-class"] = ui_options_selected_class
+            self._init_prop("options-selected-class", ui_options_selected_class)
         if ui_options_html is not None:
-            self._props["options-html"] = ui_options_html
+            self._init_prop("options-html", ui_options_html)
         if ui_options_cover is not None:
-            self._props["options-cover"] = ui_options_cover
+            self._init_prop("options-cover", ui_options_cover)
         if ui_menu_shrink is not None:
-            self._props["menu-shrink"] = ui_menu_shrink
+            self._init_prop("menu-shrink", ui_menu_shrink)
         if ui_menu_anchor is not None:
-            self._props["menu-anchor"] = ui_menu_anchor
+            self._init_prop("menu-anchor", ui_menu_anchor)
         if ui_menu_self is not None:
-            self._props["menu-self"] = ui_menu_self
+            self._init_prop("menu-self", ui_menu_self)
         if ui_menu_offset is not None:
-            self._props["menu-offset"] = ui_menu_offset
+            self._init_prop("menu-offset", ui_menu_offset)
         if ui_popup_content_class is not None:
-            self._props["popup-content-class"] = ui_popup_content_class
+            self._init_prop("popup-content-class", ui_popup_content_class)
         if ui_popup_content_style is not None:
-            self._props["popup-content-style"] = ui_popup_content_style
+            self._init_prop("popup-content-style", ui_popup_content_style)
         if ui_popup_no_route_dismiss is not None:
-            self._props["popup-no-route-dismiss"] = ui_popup_no_route_dismiss
+            self._init_prop("popup-no-route-dismiss", ui_popup_no_route_dismiss)
         if ui_use_chips is not None:
-            self._props["use-chips"] = ui_use_chips
+            self._init_prop("use-chips", ui_use_chips)
         if ui_use_input is not None:
-            self._props["use-input"] = ui_use_input
+            self._init_prop("use-input", ui_use_input)
         if ui_maxlength is not None:
-            self._props["maxlength"] = ui_maxlength
+            self._init_prop("maxlength", ui_maxlength)
         if ui_fill_input is not None:
-            self._props["fill-input"] = ui_fill_input
+            self._init_prop("fill-input", ui_fill_input)
         if ui_new_value_mode is not None:
-            self._props["new-value-mode"] = ui_new_value_mode
+            self._init_prop("new-value-mode", ui_new_value_mode)
         if ui_map_options is not None:
-            self._props["map-options"] = ui_map_options
+            self._init_prop("map-options", ui_map_options)
         if ui_disable_tab_selection is not None:
-            self._props["disable-tab-selection"] = ui_disable_tab_selection
+            self._init_prop("disable-tab-selection", ui_disable_tab_selection)
         if ui_emit_value is not None:
-            self._props["emit-value"] = ui_emit_value
+            self._init_prop("emit-value", ui_emit_value)
         if ui_input_debounce is not None:
-            self._props["input-debounce"] = ui_input_debounce
+            self._init_prop("input-debounce", ui_input_debounce)
         if ui_input_class is not None:
-            self._props["input-class"] = ui_input_class
+            self._init_prop("input-class", ui_input_class)
         if ui_input_style is not None:
-            self._props["input-style"] = ui_input_style
+            self._init_prop("input-style", ui_input_style)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_autocomplete is not None:
-            self._props["autocomplete"] = ui_autocomplete
+            self._init_prop("autocomplete", ui_autocomplete)
         if ui_transition_show is not None:
-            self._props["transition-show"] = ui_transition_show
+            self._init_prop("transition-show", ui_transition_show)
         if ui_transition_hide is not None:
-            self._props["transition-hide"] = ui_transition_hide
+            self._init_prop("transition-hide", ui_transition_hide)
         if ui_transition_duration is not None:
-            self._props["transition-duration"] = ui_transition_duration
+            self._init_prop("transition-duration", ui_transition_duration)
         if ui_behavior is not None:
-            self._props["behavior"] = ui_behavior
+            self._init_prop("behavior", ui_behavior)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
         if ui_virtual_scroll_item_size is not None:
-            self._props["virtual-scroll-item-size"] = (
-                ui_virtual_scroll_item_size
+            self._init_prop(
+                "virtual-scroll-item-size", ui_virtual_scroll_item_size
             )
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_stack_label is not None:
-            self._props["stack-label"] = ui_stack_label
+            self._init_prop("stack-label", ui_stack_label)
         if ui_hint is not None:
-            self._props["hint"] = ui_hint
+            self._init_prop("hint", ui_hint)
         if ui_hide_hint is not None:
-            self._props["hide-hint"] = ui_hide_hint
+            self._init_prop("hide-hint", ui_hide_hint)
         if ui_prefix is not None:
-            self._props["prefix"] = ui_prefix
+            self._init_prop("prefix", ui_prefix)
         if ui_suffix is not None:
-            self._props["suffix"] = ui_suffix
+            self._init_prop("suffix", ui_suffix)
         if ui_label_color is not None:
-            self._props["label-color"] = ui_label_color
+            self._init_prop("label-color", ui_label_color)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_bg_color is not None:
-            self._props["bg-color"] = ui_bg_color
+            self._init_prop("bg-color", ui_bg_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_loading is not None:
-            self._props["loading"] = ui_loading
+            self._init_prop("loading", ui_loading)
         if ui_clearable is not None:
-            self._props["clearable"] = ui_clearable
+            self._init_prop("clearable", ui_clearable)
         if ui_clear_icon is not None:
-            self._props["clear-icon"] = ui_clear_icon
+            self._init_prop("clear-icon", ui_clear_icon)
         if ui_filled is not None:
-            self._props["filled"] = ui_filled
+            self._init_prop("filled", ui_filled)
         if ui_outlined is not None:
-            self._props["outlined"] = ui_outlined
+            self._init_prop("outlined", ui_outlined)
         if ui_borderless is not None:
-            self._props["borderless"] = ui_borderless
+            self._init_prop("borderless", ui_borderless)
         if ui_standout is not None:
-            self._props["standout"] = ui_standout
+            self._init_prop("standout", ui_standout)
         if ui_label_slot is not None:
-            self._props["label-slot"] = ui_label_slot
+            self._init_prop("label-slot", ui_label_slot)
         if ui_bottom_slots is not None:
-            self._props["bottom-slots"] = ui_bottom_slots
+            self._init_prop("bottom-slots", ui_bottom_slots)
         if ui_hide_bottom_space is not None:
-            self._props["hide-bottom-space"] = ui_hide_bottom_space
+            self._init_prop("hide-bottom-space", ui_hide_bottom_space)
         if ui_counter is not None:
-            self._props["counter"] = ui_counter
+            self._init_prop("counter", ui_counter)
         if ui_rounded is not None:
-            self._props["rounded"] = ui_rounded
+            self._init_prop("rounded", ui_rounded)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_item_aligned is not None:
-            self._props["item-aligned"] = ui_item_aligned
+            self._init_prop("item-aligned", ui_item_aligned)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_autofocus is not None:
-            self._props["autofocus"] = ui_autofocus
+            self._init_prop("autofocus", ui_autofocus)
         if ui_for is not None:
-            self._props["for"] = ui_for
+            self._init_prop("for", ui_for)
         if ui_error is not None:
-            self._props["error"] = ui_error
+            self._init_prop("error", ui_error)
         if ui_error_message is not None:
-            self._props["error-message"] = ui_error_message
+            self._init_prop("error-message", ui_error_message)
         if ui_no_error_icon is not None:
-            self._props["no-error-icon"] = ui_no_error_icon
+            self._init_prop("no-error-icon", ui_no_error_icon)
 
         self._rules = [] if ui_rules is None else ui_rules
         self._rules_registered = False
@@ -16434,38 +16402,44 @@ class QSelect(Component):
             self.on_update_model_value(self._validate_rules)
 
         if ui_reactive_rules is not None:
-            self._props["reactive-rules"] = ui_reactive_rules
+            self._init_prop("reactive-rules", ui_reactive_rules)
         if ui_lazy_rules is not None:
-            self._props["lazy-rules"] = ui_lazy_rules
+            self._init_prop("lazy-rules", ui_lazy_rules)
         if ui_virtual_scroll_horizontal is not None:
-            self._props["virtual-scroll-horizontal"] = (
-                ui_virtual_scroll_horizontal
+            self._init_prop(
+                "virtual-scroll-horizontal", ui_virtual_scroll_horizontal
             )
         if ui_virtual_scroll_slice_size is not None:
-            self._props["virtual-scroll-slice-size"] = (
-                ui_virtual_scroll_slice_size
+            self._init_prop(
+                "virtual-scroll-slice-size", ui_virtual_scroll_slice_size
             )
         if ui_virtual_scroll_slice_ratio_before is not None:
-            self._props["virtual-scroll-slice-ratio-before"] = (
-                ui_virtual_scroll_slice_ratio_before
+            self._init_prop(
+                "virtual-scroll-slice-ratio-before",
+                ui_virtual_scroll_slice_ratio_before,
             )
         if ui_virtual_scroll_slice_ratio_after is not None:
-            self._props["virtual-scroll-slice-ratio-after"] = (
-                ui_virtual_scroll_slice_ratio_after
+            self._init_prop(
+                "virtual-scroll-slice-ratio-after",
+                ui_virtual_scroll_slice_ratio_after,
             )
         if ui_virtual_scroll_sticky_size_start is not None:
-            self._props["virtual-scroll-sticky-size-start"] = (
-                ui_virtual_scroll_sticky_size_start
+            self._init_prop(
+                "virtual-scroll-sticky-size-start",
+                ui_virtual_scroll_sticky_size_start,
             )
         if ui_virtual_scroll_sticky_size_end is not None:
-            self._props["virtual-scroll-sticky-size-end"] = (
-                ui_virtual_scroll_sticky_size_end
+            self._init_prop(
+                "virtual-scroll-sticky-size-end",
+                ui_virtual_scroll_sticky_size_end,
             )
         if ui_table_colspan is not None:
-            self._props["table-colspan"] = ui_table_colspan
+            self._init_prop("table-colspan", ui_table_colspan)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -16711,7 +16685,7 @@ class QSelect(Component):
 
     @property
     def ui_fill_input(self):
-        """Fills the input with current value; Useful along with 'hide-selected'; Does NOT works along with 'multiple' selection"""
+        """Fills the input with current value; Useful along with 'hide-selected'; Does NOT work along with 'multiple' selection"""
         return self._props.get("fill-input")
 
     @ui_fill_input.setter
@@ -17373,7 +17347,6 @@ class QSelect(Component):
     def on_add(self, handler: Callable, arg: object = None):
         """
         Emitted when an option is added to the selection
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17382,7 +17355,6 @@ class QSelect(Component):
     def on_blur(self, handler: Callable, arg: object = None):
         """
         Emitted when component loses focus
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17391,7 +17363,6 @@ class QSelect(Component):
     def on_clear(self, handler: Callable, arg: object = None):
         """
         When using the 'clearable' property, this event is emitted when the clear icon is clicked
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17400,7 +17371,6 @@ class QSelect(Component):
     def on_filter(self, handler: Callable, arg: object = None):
         """
         Emitted when user wants to filter a value
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17409,7 +17379,6 @@ class QSelect(Component):
     def on_filter_abort(self, handler: Callable, arg: object = None):
         """
         Emitted when a filtering was aborted; Probably a new one was requested?
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17418,7 +17387,6 @@ class QSelect(Component):
     def on_focus(self, handler: Callable, arg: object = None):
         """
         Emitted when component gets focused
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17427,7 +17395,6 @@ class QSelect(Component):
     def on_input_value(self, handler: Callable, arg: object = None):
         """
         Emitted when the value in the text input changes
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17435,7 +17402,6 @@ class QSelect(Component):
 
     def on_keydown(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -17445,7 +17411,6 @@ class QSelect(Component):
     def on_keypress(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17453,7 +17418,6 @@ class QSelect(Component):
 
     def on_keyup(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -17463,7 +17427,6 @@ class QSelect(Component):
     def on_new_value(self, handler: Callable, arg: object = None):
         """
         Enables creation of new values; Emitted when a new value has been created; You can override 'new-value-mode' property with it
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17472,7 +17435,6 @@ class QSelect(Component):
     def on_popup_hide(self, handler: Callable, arg: object = None):
         """
         Emitted when the select options menu or dialog is hidden.
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17481,7 +17443,6 @@ class QSelect(Component):
     def on_popup_show(self, handler: Callable, arg: object = None):
         """
         Emitted when the select options menu or dialog is shown.
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17490,7 +17451,6 @@ class QSelect(Component):
     def on_remove(self, handler: Callable, arg: object = None):
         """
         Emitted when an option is removed from selection
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17498,7 +17458,6 @@ class QSelect(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -17508,7 +17467,6 @@ class QSelect(Component):
     def on_virtual_scroll(self, handler: Callable, arg: object = None):
         """
         Emitted when the virtual scroll occurs
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -17714,17 +17672,17 @@ class QSeparator(Component):
     ):
         super().__init__("QSeparator", *children, **kwargs)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_spaced is not None:
-            self._props["spaced"] = ui_spaced
+            self._init_prop("spaced", ui_spaced)
         if ui_inset is not None:
-            self._props["inset"] = ui_inset
+            self._init_prop("inset", ui_inset)
         if ui_vertical is not None:
-            self._props["vertical"] = ui_vertical
+            self._init_prop("vertical", ui_vertical)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
 
     @property
     def ui_dark(self):
@@ -17814,25 +17772,25 @@ class QSkeleton(Component):
     ):
         super().__init__("QSkeleton", *children, **kwargs)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_type is not None:
-            self._props["type"] = ui_type
+            self._init_prop("type", ui_type)
         if ui_animation is not None:
-            self._props["animation"] = ui_animation
+            self._init_prop("animation", ui_animation)
         if ui_animation_speed is not None:
-            self._props["animation-speed"] = ui_animation_speed
+            self._init_prop("animation-speed", ui_animation_speed)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_width is not None:
-            self._props["width"] = ui_width
+            self._init_prop("width", ui_width)
         if ui_height is not None:
-            self._props["height"] = ui_height
+            self._init_prop("height", ui_height)
         if ui_tag is not None:
-            self._props["tag"] = ui_tag
+            self._init_prop("tag", ui_tag)
 
     @property
     def ui_dark(self):
@@ -17946,15 +17904,15 @@ class QSlideItem(Component):
     ):
         super().__init__("QSlideItem", *children, **kwargs)
         if ui_left_color is not None:
-            self._props["left-color"] = ui_left_color
+            self._init_prop("left-color", ui_left_color)
         if ui_right_color is not None:
-            self._props["right-color"] = ui_right_color
+            self._init_prop("right-color", ui_right_color)
         if ui_top_color is not None:
-            self._props["top-color"] = ui_top_color
+            self._init_prop("top-color", ui_top_color)
         if ui_bottom_color is not None:
-            self._props["bottom-color"] = ui_bottom_color
+            self._init_prop("bottom-color", ui_bottom_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
 
     @property
     def ui_left_color(self):
@@ -18039,7 +17997,6 @@ class QSlideItem(Component):
     def on_action(self, handler: Callable, arg: object = None):
         """
         Emitted when user finished sliding the item to either sides
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -18048,7 +18005,6 @@ class QSlideItem(Component):
     def on_bottom(self, handler: Callable, arg: object = None):
         """
         Emitted when user finished sliding the item down
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -18057,7 +18013,6 @@ class QSlideItem(Component):
     def on_left(self, handler: Callable, arg: object = None):
         """
         Emitted when user finished sliding the item to the left
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -18066,7 +18021,6 @@ class QSlideItem(Component):
     def on_right(self, handler: Callable, arg: object = None):
         """
         Emitted when user finished sliding the item to the right
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -18075,7 +18029,6 @@ class QSlideItem(Component):
     def on_slide(self, handler: Callable, arg: object = None):
         """
         Emitted while user is sliding the item to one of the available sides
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -18084,7 +18037,6 @@ class QSlideItem(Component):
     def on_top(self, handler: Callable, arg: object = None):
         """
         Emitted when user finished sliding the item up
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -18115,9 +18067,9 @@ class QSlideTransition(Component):
     ):
         super().__init__("QSlideTransition", *children, **kwargs)
         if ui_appear is not None:
-            self._props["appear"] = ui_appear
+            self._init_prop("appear", ui_appear)
         if ui_duration is not None:
-            self._props["duration"] = ui_duration
+            self._init_prop("duration", ui_duration)
 
     @property
     def ui_appear(self):
@@ -18140,7 +18092,6 @@ class QSlideTransition(Component):
     def on_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -18148,7 +18099,6 @@ class QSlideTransition(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -18246,82 +18196,84 @@ class QSlider(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_label_value is not None:
-            self._props["label-value"] = ui_label_value
+            self._init_prop("label-value", ui_label_value)
         if ui_min is not None:
-            self._props["min"] = ui_min
+            self._init_prop("min", ui_min)
         if ui_max is not None:
-            self._props["max"] = ui_max
+            self._init_prop("max", ui_max)
         if ui_inner_min is not None:
-            self._props["inner-min"] = ui_inner_min
+            self._init_prop("inner-min", ui_inner_min)
         if ui_inner_max is not None:
-            self._props["inner-max"] = ui_inner_max
+            self._init_prop("inner-max", ui_inner_max)
         if ui_step is not None:
-            self._props["step"] = ui_step
+            self._init_prop("step", ui_step)
         if ui_snap is not None:
-            self._props["snap"] = ui_snap
+            self._init_prop("snap", ui_snap)
         if ui_reverse is not None:
-            self._props["reverse"] = ui_reverse
+            self._init_prop("reverse", ui_reverse)
         if ui_vertical is not None:
-            self._props["vertical"] = ui_vertical
+            self._init_prop("vertical", ui_vertical)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_track_color is not None:
-            self._props["track-color"] = ui_track_color
+            self._init_prop("track-color", ui_track_color)
         if ui_track_img is not None:
-            self._props["track-img"] = ui_track_img
+            self._init_prop("track-img", ui_track_img)
         if ui_inner_track_color is not None:
-            self._props["inner-track-color"] = ui_inner_track_color
+            self._init_prop("inner-track-color", ui_inner_track_color)
         if ui_inner_track_img is not None:
-            self._props["inner-track-img"] = ui_inner_track_img
+            self._init_prop("inner-track-img", ui_inner_track_img)
         if ui_selection_color is not None:
-            self._props["selection-color"] = ui_selection_color
+            self._init_prop("selection-color", ui_selection_color)
         if ui_selection_img is not None:
-            self._props["selection-img"] = ui_selection_img
+            self._init_prop("selection-img", ui_selection_img)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_label_color is not None:
-            self._props["label-color"] = ui_label_color
+            self._init_prop("label-color", ui_label_color)
         if ui_label_text_color is not None:
-            self._props["label-text-color"] = ui_label_text_color
+            self._init_prop("label-text-color", ui_label_text_color)
         if ui_switch_label_side is not None:
-            self._props["switch-label-side"] = ui_switch_label_side
+            self._init_prop("switch-label-side", ui_switch_label_side)
         if ui_label_always is not None:
-            self._props["label-always"] = ui_label_always
+            self._init_prop("label-always", ui_label_always)
         if ui_markers is not None:
-            self._props["markers"] = ui_markers
+            self._init_prop("markers", ui_markers)
         if ui_marker_labels is not None:
-            self._props["marker-labels"] = ui_marker_labels
+            self._init_prop("marker-labels", ui_marker_labels)
         if ui_marker_labels_class is not None:
-            self._props["marker-labels-class"] = ui_marker_labels_class
+            self._init_prop("marker-labels-class", ui_marker_labels_class)
         if ui_switch_marker_labels_side is not None:
-            self._props["switch-marker-labels-side"] = (
-                ui_switch_marker_labels_side
+            self._init_prop(
+                "switch-marker-labels-side", ui_switch_marker_labels_side
             )
         if ui_track_size is not None:
-            self._props["track-size"] = ui_track_size
+            self._init_prop("track-size", ui_track_size)
         if ui_thumb_size is not None:
-            self._props["thumb-size"] = ui_thumb_size
+            self._init_prop("thumb-size", ui_thumb_size)
         if ui_thumb_color is not None:
-            self._props["thumb-color"] = ui_thumb_color
+            self._init_prop("thumb-color", ui_thumb_color)
         if ui_thumb_path is not None:
-            self._props["thumb-path"] = ui_thumb_path
+            self._init_prop("thumb-path", ui_thumb_path)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -18659,7 +18611,6 @@ class QSlider(Component):
     def on_change(self, handler: Callable, arg: object = None):
         """
         Emitted on lazy model value change (after user slides then releases the thumb)
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -18668,7 +18619,6 @@ class QSlider(Component):
     def on_pan(self, handler: Callable, arg: object = None):
         """
         Triggered when user starts panning on the component
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -18676,7 +18626,6 @@ class QSlider(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -18700,48 +18649,6 @@ class QSpace(Component):
         return []
 
 
-class QSpinnerHourglass(Component):
-    """
-    Quasar Component: `QSpinnerHourglass <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerHourglass", *children, **kwargs)
-        if ui_color is not None:
-            self._props["color"] = ui_color
-        if ui_size is not None:
-            self._props["size"] = ui_size
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
 class QSpinnerClock(Component):
     """
     Quasar Component: `QSpinnerClock <https://v2.quasar.dev/vue-components/spinners>`__
@@ -18759,93 +18666,9 @@ class QSpinnerClock(Component):
     ):
         super().__init__("QSpinnerClock", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerAudio(Component):
-    """
-    Quasar Component: `QSpinnerAudio <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerAudio", *children, **kwargs)
-        if ui_color is not None:
-            self._props["color"] = ui_color
-        if ui_size is not None:
-            self._props["size"] = ui_size
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerRadio(Component):
-    """
-    Quasar Component: `QSpinnerRadio <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerRadio", *children, **kwargs)
-        if ui_color is not None:
-            self._props["color"] = ui_color
-        if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_color(self):
@@ -18885,135 +18708,9 @@ class QSpinnerIos(Component):
     ):
         super().__init__("QSpinnerIos", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerBars(Component):
-    """
-    Quasar Component: `QSpinnerBars <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerBars", *children, **kwargs)
-        if ui_color is not None:
-            self._props["color"] = ui_color
-        if ui_size is not None:
-            self._props["size"] = ui_size
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerDots(Component):
-    """
-    Quasar Component: `QSpinnerDots <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerDots", *children, **kwargs)
-        if ui_color is not None:
-            self._props["color"] = ui_color
-        if ui_size is not None:
-            self._props["size"] = ui_size
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerCube(Component):
-    """
-    Quasar Component: `QSpinnerCube <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerCube", *children, **kwargs)
-        if ui_color is not None:
-            self._props["color"] = ui_color
-        if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_color(self):
@@ -19053,135 +18750,9 @@ class QSpinnerBox(Component):
     ):
         super().__init__("QSpinnerBox", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerBall(Component):
-    """
-    Quasar Component: `QSpinnerBall <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerBall", *children, **kwargs)
-        if ui_color is not None:
-            self._props["color"] = ui_color
-        if ui_size is not None:
-            self._props["size"] = ui_size
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerOrbit(Component):
-    """
-    Quasar Component: `QSpinnerOrbit <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerOrbit", *children, **kwargs)
-        if ui_color is not None:
-            self._props["color"] = ui_color
-        if ui_size is not None:
-            self._props["size"] = ui_size
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerComment(Component):
-    """
-    Quasar Component: `QSpinnerComment <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerComment", *children, **kwargs)
-        if ui_color is not None:
-            self._props["color"] = ui_color
-        if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_color(self):
@@ -19221,9 +18792,219 @@ class QSpinnerRings(Component):
     ):
         super().__init__("QSpinnerRings", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerHearts(Component):
+    """
+    Quasar Component: `QSpinnerHearts <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerHearts", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerFacebook(Component):
+    """
+    Quasar Component: `QSpinnerFacebook <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerFacebook", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerGrid(Component):
+    """
+    Quasar Component: `QSpinnerGrid <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerGrid", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerRadio(Component):
+    """
+    Quasar Component: `QSpinnerRadio <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerRadio", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerComment(Component):
+    """
+    Quasar Component: `QSpinnerComment <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerComment", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
 
     @property
     def ui_color(self):
@@ -19265,11 +19046,11 @@ class QSpinner(Component):
     ):
         super().__init__("QSpinner", *children, **kwargs)
         if ui_thickness is not None:
-            self._props["thickness"] = ui_thickness
+            self._init_prop("thickness", ui_thickness)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_thickness(self):
@@ -19318,9 +19099,9 @@ class QSpinnerInfinity(Component):
     ):
         super().__init__("QSpinnerInfinity", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_color(self):
@@ -19343,9 +19124,9 @@ class QSpinnerInfinity(Component):
         return []
 
 
-class QSpinnerGears(Component):
+class QSpinnerBars(Component):
     """
-    Quasar Component: `QSpinnerGears <https://v2.quasar.dev/vue-components/spinners>`__
+    Quasar Component: `QSpinnerBars <https://v2.quasar.dev/vue-components/spinners>`__
 
     :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
@@ -19358,11 +19139,11 @@ class QSpinnerGears(Component):
         ui_size: str | None = None,
         **kwargs,
     ):
-        super().__init__("QSpinnerGears", *children, **kwargs)
+        super().__init__("QSpinnerBars", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_color(self):
@@ -19385,9 +19166,9 @@ class QSpinnerGears(Component):
         return []
 
 
-class QSpinnerHearts(Component):
+class QSpinnerAudio(Component):
     """
-    Quasar Component: `QSpinnerHearts <https://v2.quasar.dev/vue-components/spinners>`__
+    Quasar Component: `QSpinnerAudio <https://v2.quasar.dev/vue-components/spinners>`__
 
     :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
@@ -19400,95 +19181,11 @@ class QSpinnerHearts(Component):
         ui_size: str | None = None,
         **kwargs,
     ):
-        super().__init__("QSpinnerHearts", *children, **kwargs)
+        super().__init__("QSpinnerAudio", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerPuff(Component):
-    """
-    Quasar Component: `QSpinnerPuff <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerPuff", *children, **kwargs)
-        if ui_color is not None:
-            self._props["color"] = ui_color
-        if ui_size is not None:
-            self._props["size"] = ui_size
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerTail(Component):
-    """
-    Quasar Component: `QSpinnerTail <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerTail", *children, **kwargs)
-        if ui_color is not None:
-            self._props["color"] = ui_color
-        if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_color(self):
@@ -19528,9 +19225,51 @@ class QSpinnerOval(Component):
     ):
         super().__init__("QSpinnerOval", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerGears(Component):
+    """
+    Quasar Component: `QSpinnerGears <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerGears", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
 
     @property
     def ui_color(self):
@@ -19570,9 +19309,9 @@ class QSpinnerPie(Component):
     ):
         super().__init__("QSpinnerPie", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_color(self):
@@ -19595,9 +19334,9 @@ class QSpinnerPie(Component):
         return []
 
 
-class QSpinnerGrid(Component):
+class QSpinnerHourglass(Component):
     """
-    Quasar Component: `QSpinnerGrid <https://v2.quasar.dev/vue-components/spinners>`__
+    Quasar Component: `QSpinnerHourglass <https://v2.quasar.dev/vue-components/spinners>`__
 
     :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
@@ -19610,11 +19349,11 @@ class QSpinnerGrid(Component):
         ui_size: str | None = None,
         **kwargs,
     ):
-        super().__init__("QSpinnerGrid", *children, **kwargs)
+        super().__init__("QSpinnerHourglass", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
 
     @property
     def ui_color(self):
@@ -19637,9 +19376,9 @@ class QSpinnerGrid(Component):
         return []
 
 
-class QSpinnerFacebook(Component):
+class QSpinnerDots(Component):
     """
-    Quasar Component: `QSpinnerFacebook <https://v2.quasar.dev/vue-components/spinners>`__
+    Quasar Component: `QSpinnerDots <https://v2.quasar.dev/vue-components/spinners>`__
 
     :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
@@ -19652,11 +19391,221 @@ class QSpinnerFacebook(Component):
         ui_size: str | None = None,
         **kwargs,
     ):
-        super().__init__("QSpinnerFacebook", *children, **kwargs)
+        super().__init__("QSpinnerDots", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerCube(Component):
+    """
+    Quasar Component: `QSpinnerCube <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerCube", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerOrbit(Component):
+    """
+    Quasar Component: `QSpinnerOrbit <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerOrbit", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerBall(Component):
+    """
+    Quasar Component: `QSpinnerBall <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerBall", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerTail(Component):
+    """
+    Quasar Component: `QSpinnerTail <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerTail", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerPuff(Component):
+    """
+    Quasar Component: `QSpinnerPuff <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerPuff", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
 
     @property
     def ui_color(self):
@@ -19718,32 +19667,34 @@ class QSplitter(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_reverse is not None:
-            self._props["reverse"] = ui_reverse
+            self._init_prop("reverse", ui_reverse)
         if ui_unit is not None:
-            self._props["unit"] = ui_unit
+            self._init_prop("unit", ui_unit)
         if ui_emit_immediately is not None:
-            self._props["emit-immediately"] = ui_emit_immediately
+            self._init_prop("emit-immediately", ui_emit_immediately)
         if ui_horizontal is not None:
-            self._props["horizontal"] = ui_horizontal
+            self._init_prop("horizontal", ui_horizontal)
         if ui_limits is not None:
-            self._props["limits"] = ui_limits
+            self._init_prop("limits", ui_limits)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_before_class is not None:
-            self._props["before-class"] = ui_before_class
+            self._init_prop("before-class", ui_before_class)
         if ui_after_class is not None:
-            self._props["after-class"] = ui_after_class
+            self._init_prop("after-class", ui_after_class)
         if ui_separator_class is not None:
-            self._props["separator-class"] = ui_separator_class
+            self._init_prop("separator-class", ui_separator_class)
         if ui_separator_style is not None:
-            self._props["separator-style"] = ui_separator_style
+            self._init_prop("separator-style", ui_separator_style)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -19882,7 +19833,6 @@ class QSplitter(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when component's model value changes; Is also used by v-model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -19890,242 +19840,6 @@ class QSplitter(Component):
 
     def _get_js_methods(self):
         return []
-
-
-class QStep(Component):
-    """
-    Quasar Component: `QStep <https://v2.quasar.dev/vue-components/stepper>`__
-
-    :param ui_icon:
-    :param ui_color:
-    :param ui_title: Step title
-    :param ui_caption: Step’s additional information that appears beneath the title
-    :param ui_prefix: Step's prefix (max 2 characters) which replaces the icon if step does not has error, is being edited or is marked as done
-    :param ui_done_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
-    :param ui_done_color:
-    :param ui_active_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
-    :param ui_active_color:
-    :param ui_error_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
-    :param ui_error_color:
-    :param ui_header_nav: Allow navigation through the header
-    :param ui_done: Mark the step as 'done'
-    :param ui_error: Mark the step as having an error
-    :param ui_name: Panel name
-    :param ui_disable:
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_icon: Any | None = None,
-        ui_color: Any | None = None,
-        ui_title: str | None = None,
-        ui_caption: str | None = None,
-        ui_prefix: str | float | None = None,
-        ui_done_icon: Any | None = None,
-        ui_done_color: Any | None = None,
-        ui_active_icon: Any | None = None,
-        ui_active_color: Any | None = None,
-        ui_error_icon: Any | None = None,
-        ui_error_color: Any | None = None,
-        ui_header_nav: bool | None = None,
-        ui_done: bool | None = None,
-        ui_error: bool | None = None,
-        ui_name: Any | None = None,
-        ui_disable: Any | None = None,
-        **kwargs,
-    ):
-        super().__init__("QStep", *children, **kwargs)
-        if ui_icon is not None:
-            self._props["icon"] = ui_icon
-        if ui_color is not None:
-            self._props["color"] = ui_color
-        if ui_title is not None:
-            self._props["title"] = ui_title
-        if ui_caption is not None:
-            self._props["caption"] = ui_caption
-        if ui_prefix is not None:
-            self._props["prefix"] = ui_prefix
-        if ui_done_icon is not None:
-            self._props["done-icon"] = ui_done_icon
-        if ui_done_color is not None:
-            self._props["done-color"] = ui_done_color
-        if ui_active_icon is not None:
-            self._props["active-icon"] = ui_active_icon
-        if ui_active_color is not None:
-            self._props["active-color"] = ui_active_color
-        if ui_error_icon is not None:
-            self._props["error-icon"] = ui_error_icon
-        if ui_error_color is not None:
-            self._props["error-color"] = ui_error_color
-        if ui_header_nav is not None:
-            self._props["header-nav"] = ui_header_nav
-        if ui_done is not None:
-            self._props["done"] = ui_done
-        if ui_error is not None:
-            self._props["error"] = ui_error
-        if ui_name is not None:
-            self._props["name"] = ui_name
-        if ui_disable is not None:
-            self._props["disable"] = ui_disable
-
-    @property
-    def ui_icon(self):
-        return self._props.get("icon")
-
-    @ui_icon.setter
-    def ui_icon(self, value):
-        self._set_prop("icon", value)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_title(self):
-        """Step title"""
-        return self._props.get("title")
-
-    @ui_title.setter
-    def ui_title(self, value):
-        self._set_prop("title", value)
-
-    @property
-    def ui_caption(self):
-        """Step’s additional information that appears beneath the title"""
-        return self._props.get("caption")
-
-    @ui_caption.setter
-    def ui_caption(self, value):
-        self._set_prop("caption", value)
-
-    @property
-    def ui_prefix(self):
-        """Step's prefix (max 2 characters) which replaces the icon if step does not has error, is being edited or is marked as done"""
-        return self._props.get("prefix")
-
-    @ui_prefix.setter
-    def ui_prefix(self, value):
-        self._set_prop("prefix", value)
-
-    @property
-    def ui_done_icon(self):
-        """Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix"""
-        return self._props.get("done-icon")
-
-    @ui_done_icon.setter
-    def ui_done_icon(self, value):
-        self._set_prop("done-icon", value)
-
-    @property
-    def ui_done_color(self):
-        return self._props.get("done-color")
-
-    @ui_done_color.setter
-    def ui_done_color(self, value):
-        self._set_prop("done-color", value)
-
-    @property
-    def ui_active_icon(self):
-        """Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix"""
-        return self._props.get("active-icon")
-
-    @ui_active_icon.setter
-    def ui_active_icon(self, value):
-        self._set_prop("active-icon", value)
-
-    @property
-    def ui_active_color(self):
-        return self._props.get("active-color")
-
-    @ui_active_color.setter
-    def ui_active_color(self, value):
-        self._set_prop("active-color", value)
-
-    @property
-    def ui_error_icon(self):
-        """Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix"""
-        return self._props.get("error-icon")
-
-    @ui_error_icon.setter
-    def ui_error_icon(self, value):
-        self._set_prop("error-icon", value)
-
-    @property
-    def ui_error_color(self):
-        return self._props.get("error-color")
-
-    @ui_error_color.setter
-    def ui_error_color(self, value):
-        self._set_prop("error-color", value)
-
-    @property
-    def ui_header_nav(self):
-        """Allow navigation through the header"""
-        return self._props.get("header-nav")
-
-    @ui_header_nav.setter
-    def ui_header_nav(self, value):
-        self._set_prop("header-nav", value)
-
-    @property
-    def ui_done(self):
-        """Mark the step as 'done'"""
-        return self._props.get("done")
-
-    @ui_done.setter
-    def ui_done(self, value):
-        self._set_prop("done", value)
-
-    @property
-    def ui_error(self):
-        """Mark the step as having an error"""
-        return self._props.get("error")
-
-    @ui_error.setter
-    def ui_error(self, value):
-        self._set_prop("error", value)
-
-    @property
-    def ui_name(self):
-        """Panel name"""
-        return self._props.get("name")
-
-    @ui_name.setter
-    def ui_name(self, value):
-        self._set_prop("name", value)
-
-    @property
-    def ui_disable(self):
-        return self._props.get("disable")
-
-    @ui_disable.setter
-    def ui_disable(self, value):
-        self._set_prop("disable", value)
-
-    def on_scroll(self, handler: Callable, arg: object = None):
-        """
-
-
-        :param handler: Function to be called on emit event
-        :param arg: Additional argument to be passed to the handler
-        """
-        return self.on("scroll", handler, arg)
-
-    def _get_js_methods(self):
-        return []
-
-    def _get_my_wrapper_props(self):
-        return super()._get_my_wrapper_props() | {
-            "name": self.ui_name,
-            "title": self.ui_title,
-            "error": self.ui_error,
-            "done": self.ui_done,
-        }
 
 
 class QStepperNavigation(Component):
@@ -20210,62 +19924,64 @@ class QStepper(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_vertical is not None:
-            self._props["vertical"] = ui_vertical
+            self._init_prop("vertical", ui_vertical)
         if ui_alternative_labels is not None:
-            self._props["alternative-labels"] = ui_alternative_labels
+            self._init_prop("alternative-labels", ui_alternative_labels)
         if ui_header_nav is not None:
-            self._props["header-nav"] = ui_header_nav
+            self._init_prop("header-nav", ui_header_nav)
         if ui_contracted is not None:
-            self._props["contracted"] = ui_contracted
+            self._init_prop("contracted", ui_contracted)
         if ui_inactive_icon is not None:
-            self._props["inactive-icon"] = ui_inactive_icon
+            self._init_prop("inactive-icon", ui_inactive_icon)
         if ui_inactive_color is not None:
-            self._props["inactive-color"] = ui_inactive_color
+            self._init_prop("inactive-color", ui_inactive_color)
         if ui_done_icon is not None:
-            self._props["done-icon"] = ui_done_icon
+            self._init_prop("done-icon", ui_done_icon)
         if ui_done_color is not None:
-            self._props["done-color"] = ui_done_color
+            self._init_prop("done-color", ui_done_color)
         if ui_active_icon is not None:
-            self._props["active-icon"] = ui_active_icon
+            self._init_prop("active-icon", ui_active_icon)
         if ui_active_color is not None:
-            self._props["active-color"] = ui_active_color
+            self._init_prop("active-color", ui_active_color)
         if ui_error_icon is not None:
-            self._props["error-icon"] = ui_error_icon
+            self._init_prop("error-icon", ui_error_icon)
         if ui_error_color is not None:
-            self._props["error-color"] = ui_error_color
+            self._init_prop("error-color", ui_error_color)
         if ui_header_class is not None:
-            self._props["header-class"] = ui_header_class
+            self._init_prop("header-class", ui_header_class)
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_keep_alive is not None:
-            self._props["keep-alive"] = ui_keep_alive
+            self._init_prop("keep-alive", ui_keep_alive)
         if ui_keep_alive_include is not None:
-            self._props["keep-alive-include"] = ui_keep_alive_include
+            self._init_prop("keep-alive-include", ui_keep_alive_include)
         if ui_keep_alive_exclude is not None:
-            self._props["keep-alive-exclude"] = ui_keep_alive_exclude
+            self._init_prop("keep-alive-exclude", ui_keep_alive_exclude)
         if ui_keep_alive_max is not None:
-            self._props["keep-alive-max"] = ui_keep_alive_max
+            self._init_prop("keep-alive-max", ui_keep_alive_max)
         if ui_animated is not None:
-            self._props["animated"] = ui_animated
+            self._init_prop("animated", ui_animated)
         if ui_infinite is not None:
-            self._props["infinite"] = ui_infinite
+            self._init_prop("infinite", ui_infinite)
         if ui_swipeable is not None:
-            self._props["swipeable"] = ui_swipeable
+            self._init_prop("swipeable", ui_swipeable)
         if ui_transition_prev is not None:
-            self._props["transition-prev"] = ui_transition_prev
+            self._init_prop("transition-prev", ui_transition_prev)
         if ui_transition_next is not None:
-            self._props["transition-next"] = ui_transition_next
+            self._init_prop("transition-next", ui_transition_next)
         if ui_transition_duration is not None:
-            self._props["transition-duration"] = ui_transition_duration
+            self._init_prop("transition-duration", ui_transition_duration)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_dark(self):
@@ -20523,7 +20239,6 @@ class QStepper(Component):
     def on_before_transition(self, handler: Callable, arg: object = None):
         """
         Emitted before transitioning to a new panel
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -20532,7 +20247,6 @@ class QStepper(Component):
     def on_transition(self, handler: Callable, arg: object = None):
         """
         Emitted after component transitioned to a new panel
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -20540,8 +20254,7 @@ class QStepper(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        Emitted when the component changes the model; This event isn't fired if the model is changed externally; Is also used by v-model
-
+        Emitted when the component changes the model; This event _isn't_ fired if the model is changed externally; Is also used by v-model
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -20566,10 +20279,24 @@ class QStepper(Component):
         return ["goTo", "next", "previous"]
 
 
-class QTabPanel(Component):
+class QStep(Component):
     """
-    Quasar Component: `QTabPanel <https://v2.quasar.dev/vue-components/tab-panels>`__
+    Quasar Component: `QStep <https://v2.quasar.dev/vue-components/stepper>`__
 
+    :param ui_icon:
+    :param ui_color:
+    :param ui_title: Step title
+    :param ui_caption: Step’s additional information that appears beneath the title
+    :param ui_prefix: Step's prefix (max 2 characters) which replaces the icon if step does not has error, is being edited or is marked as done
+    :param ui_done_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
+    :param ui_done_color:
+    :param ui_active_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
+    :param ui_active_color:
+    :param ui_error_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
+    :param ui_error_color:
+    :param ui_header_nav: Allow navigation through the header
+    :param ui_done: Mark the step as 'done'
+    :param ui_error: Mark the step as having an error
     :param ui_name: Panel name
     :param ui_disable:
     """
@@ -20577,15 +20304,178 @@ class QTabPanel(Component):
     def __init__(
         self,
         *children,
+        ui_icon: Any | None = None,
+        ui_color: Any | None = None,
+        ui_title: str | None = None,
+        ui_caption: str | None = None,
+        ui_prefix: str | float | None = None,
+        ui_done_icon: Any | None = None,
+        ui_done_color: Any | None = None,
+        ui_active_icon: Any | None = None,
+        ui_active_color: Any | None = None,
+        ui_error_icon: Any | None = None,
+        ui_error_color: Any | None = None,
+        ui_header_nav: bool | None = None,
+        ui_done: bool | None = None,
+        ui_error: bool | None = None,
         ui_name: Any | None = None,
         ui_disable: Any | None = None,
         **kwargs,
     ):
-        super().__init__("QTabPanel", *children, **kwargs)
+        super().__init__("QStep", *children, **kwargs)
+        if ui_icon is not None:
+            self._init_prop("icon", ui_icon)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_title is not None:
+            self._init_prop("title", ui_title)
+        if ui_caption is not None:
+            self._init_prop("caption", ui_caption)
+        if ui_prefix is not None:
+            self._init_prop("prefix", ui_prefix)
+        if ui_done_icon is not None:
+            self._init_prop("done-icon", ui_done_icon)
+        if ui_done_color is not None:
+            self._init_prop("done-color", ui_done_color)
+        if ui_active_icon is not None:
+            self._init_prop("active-icon", ui_active_icon)
+        if ui_active_color is not None:
+            self._init_prop("active-color", ui_active_color)
+        if ui_error_icon is not None:
+            self._init_prop("error-icon", ui_error_icon)
+        if ui_error_color is not None:
+            self._init_prop("error-color", ui_error_color)
+        if ui_header_nav is not None:
+            self._init_prop("header-nav", ui_header_nav)
+        if ui_done is not None:
+            self._init_prop("done", ui_done)
+        if ui_error is not None:
+            self._init_prop("error", ui_error)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
+
+    @property
+    def ui_icon(self):
+        return self._props.get("icon")
+
+    @ui_icon.setter
+    def ui_icon(self, value):
+        self._set_prop("icon", value)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_title(self):
+        """Step title"""
+        return self._props.get("title")
+
+    @ui_title.setter
+    def ui_title(self, value):
+        self._set_prop("title", value)
+
+    @property
+    def ui_caption(self):
+        """Step’s additional information that appears beneath the title"""
+        return self._props.get("caption")
+
+    @ui_caption.setter
+    def ui_caption(self, value):
+        self._set_prop("caption", value)
+
+    @property
+    def ui_prefix(self):
+        """Step's prefix (max 2 characters) which replaces the icon if step does not has error, is being edited or is marked as done"""
+        return self._props.get("prefix")
+
+    @ui_prefix.setter
+    def ui_prefix(self, value):
+        self._set_prop("prefix", value)
+
+    @property
+    def ui_done_icon(self):
+        """Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix"""
+        return self._props.get("done-icon")
+
+    @ui_done_icon.setter
+    def ui_done_icon(self, value):
+        self._set_prop("done-icon", value)
+
+    @property
+    def ui_done_color(self):
+        return self._props.get("done-color")
+
+    @ui_done_color.setter
+    def ui_done_color(self, value):
+        self._set_prop("done-color", value)
+
+    @property
+    def ui_active_icon(self):
+        """Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix"""
+        return self._props.get("active-icon")
+
+    @ui_active_icon.setter
+    def ui_active_icon(self, value):
+        self._set_prop("active-icon", value)
+
+    @property
+    def ui_active_color(self):
+        return self._props.get("active-color")
+
+    @ui_active_color.setter
+    def ui_active_color(self, value):
+        self._set_prop("active-color", value)
+
+    @property
+    def ui_error_icon(self):
+        """Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix"""
+        return self._props.get("error-icon")
+
+    @ui_error_icon.setter
+    def ui_error_icon(self, value):
+        self._set_prop("error-icon", value)
+
+    @property
+    def ui_error_color(self):
+        return self._props.get("error-color")
+
+    @ui_error_color.setter
+    def ui_error_color(self, value):
+        self._set_prop("error-color", value)
+
+    @property
+    def ui_header_nav(self):
+        """Allow navigation through the header"""
+        return self._props.get("header-nav")
+
+    @ui_header_nav.setter
+    def ui_header_nav(self, value):
+        self._set_prop("header-nav", value)
+
+    @property
+    def ui_done(self):
+        """Mark the step as 'done'"""
+        return self._props.get("done")
+
+    @ui_done.setter
+    def ui_done(self, value):
+        self._set_prop("done", value)
+
+    @property
+    def ui_error(self):
+        """Mark the step as having an error"""
+        return self._props.get("error")
+
+    @ui_error.setter
+    def ui_error(self, value):
+        self._set_prop("error", value)
 
     @property
     def ui_name(self):
@@ -20604,11 +20494,24 @@ class QTabPanel(Component):
     def ui_disable(self, value):
         self._set_prop("disable", value)
 
+    def on_scroll(self, handler: Callable, arg: object = None):
+        """
+
+        :param handler: Function to be called on emit event
+        :param arg: Additional argument to be passed to the handler
+        """
+        return self.on("scroll", handler, arg)
+
     def _get_js_methods(self):
         return []
 
     def _get_my_wrapper_props(self):
-        return super()._get_my_wrapper_props() | {"name": self.ui_name}
+        return super()._get_my_wrapper_props() | {
+            "name": self.ui_name,
+            "title": self.ui_title,
+            "error": self.ui_error,
+            "done": self.ui_done,
+        }
 
 
 class QTabPanels(Component):
@@ -20652,34 +20555,36 @@ class QTabPanels(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_keep_alive is not None:
-            self._props["keep-alive"] = ui_keep_alive
+            self._init_prop("keep-alive", ui_keep_alive)
         if ui_keep_alive_include is not None:
-            self._props["keep-alive-include"] = ui_keep_alive_include
+            self._init_prop("keep-alive-include", ui_keep_alive_include)
         if ui_keep_alive_exclude is not None:
-            self._props["keep-alive-exclude"] = ui_keep_alive_exclude
+            self._init_prop("keep-alive-exclude", ui_keep_alive_exclude)
         if ui_keep_alive_max is not None:
-            self._props["keep-alive-max"] = ui_keep_alive_max
+            self._init_prop("keep-alive-max", ui_keep_alive_max)
         if ui_animated is not None:
-            self._props["animated"] = ui_animated
+            self._init_prop("animated", ui_animated)
         if ui_infinite is not None:
-            self._props["infinite"] = ui_infinite
+            self._init_prop("infinite", ui_infinite)
         if ui_swipeable is not None:
-            self._props["swipeable"] = ui_swipeable
+            self._init_prop("swipeable", ui_swipeable)
         if ui_vertical is not None:
-            self._props["vertical"] = ui_vertical
+            self._init_prop("vertical", ui_vertical)
         if ui_transition_prev is not None:
-            self._props["transition-prev"] = ui_transition_prev
+            self._init_prop("transition-prev", ui_transition_prev)
         if ui_transition_next is not None:
-            self._props["transition-next"] = ui_transition_next
+            self._init_prop("transition-next", ui_transition_next)
         if ui_transition_duration is not None:
-            self._props["transition-duration"] = ui_transition_duration
+            self._init_prop("transition-duration", ui_transition_duration)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_dark(self):
@@ -20800,7 +20705,6 @@ class QTabPanels(Component):
     def on_before_transition(self, handler: Callable, arg: object = None):
         """
         Emitted before transitioning to a new panel
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -20809,7 +20713,6 @@ class QTabPanels(Component):
     def on_transition(self, handler: Callable, arg: object = None):
         """
         Emitted after component transitioned to a new panel
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -20817,8 +20720,7 @@ class QTabPanels(Component):
 
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
-        Emitted when the component changes the model; This event isn't fired if the model is changed externally; Is also used by v-model
-
+        Emitted when the component changes the model; This event _isn't_ fired if the model is changed externally; Is also used by v-model
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -20843,6 +20745,51 @@ class QTabPanels(Component):
         return ["goTo", "next", "previous"]
 
 
+class QTabPanel(Component):
+    """
+    Quasar Component: `QTabPanel <https://v2.quasar.dev/vue-components/tab-panels>`__
+
+    :param ui_name: Panel name
+    :param ui_disable:
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_name: Any | None = None,
+        ui_disable: Any | None = None,
+        **kwargs,
+    ):
+        super().__init__("QTabPanel", *children, **kwargs)
+        if ui_name is not None:
+            self._init_prop("name", ui_name)
+        if ui_disable is not None:
+            self._init_prop("disable", ui_disable)
+
+    @property
+    def ui_name(self):
+        """Panel name"""
+        return self._props.get("name")
+
+    @ui_name.setter
+    def ui_name(self, value):
+        self._set_prop("name", value)
+
+    @property
+    def ui_disable(self):
+        return self._props.get("disable")
+
+    @ui_disable.setter
+    def ui_disable(self, value):
+        self._set_prop("disable", value)
+
+    def _get_js_methods(self):
+        return []
+
+    def _get_my_wrapper_props(self):
+        return super()._get_my_wrapper_props() | {"name": self.ui_name}
+
+
 class QTh(Component):
     """
     Quasar Component: `QTh <https://v2.quasar.dev/vue-components/table>`__
@@ -20860,9 +20807,9 @@ class QTh(Component):
     ):
         super().__init__("QTh", *children, **kwargs)
         if ui_props is not None:
-            self._props["props"] = ui_props
+            self._init_prop("props", ui_props)
         if ui_auto_width is not None:
-            self._props["auto-width"] = ui_auto_width
+            self._init_prop("auto-width", ui_auto_width)
 
     @property
     def ui_props(self):
@@ -20885,67 +20832,10 @@ class QTh(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
         return self.on("click.stop", handler, arg)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QTd(Component):
-    """
-    Quasar Component: `QTd <https://v2.quasar.dev/vue-components/table>`__
-
-    :param ui_props: QTable's column scoped slot property
-    :param ui_auto_width: Tries to shrink column width size; Useful for columns with a checkbox/radio/toggle
-    :param ui_no_hover: Disable hover effect
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_props: dict | None = None,
-        ui_auto_width: bool | None = None,
-        ui_no_hover: bool | None = None,
-        **kwargs,
-    ):
-        super().__init__("QTd", *children, **kwargs)
-        if ui_props is not None:
-            self._props["props"] = ui_props
-        if ui_auto_width is not None:
-            self._props["auto-width"] = ui_auto_width
-        if ui_no_hover is not None:
-            self._props["no-hover"] = ui_no_hover
-
-    @property
-    def ui_props(self):
-        """QTable's column scoped slot property"""
-        return self._props.get("props")
-
-    @ui_props.setter
-    def ui_props(self, value):
-        self._set_prop("props", value)
-
-    @property
-    def ui_auto_width(self):
-        """Tries to shrink column width size; Useful for columns with a checkbox/radio/toggle"""
-        return self._props.get("auto-width")
-
-    @ui_auto_width.setter
-    def ui_auto_width(self, value):
-        self._set_prop("auto-width", value)
-
-    @property
-    def ui_no_hover(self):
-        """Disable hover effect"""
-        return self._props.get("no-hover")
-
-    @ui_no_hover.setter
-    def ui_no_hover(self, value):
-        self._set_prop("no-hover", value)
 
     def _get_js_methods(self):
         return []
@@ -21001,10 +20891,14 @@ class QTable(Component):
     :param ui_table_class: CSS classes to apply to native HTML <table> element's wrapper (which is a DIV)
     :param ui_table_header_style: CSS style to apply to header of native HTML <table> (which is a TR)
     :param ui_table_header_class: CSS classes to apply to header of native HTML <table> (which is a TR)
+    :param ui_table_row_style_fn: CSS style to apply to the table rows (which are TR elements); For best performance, reference it from your scope and do not define it inline
+    :param ui_table_row_class_fn: CSS class(es) to apply the table rows (which are TR elements); For best performance, reference it from your scope and do not define it inline
     :param ui_card_container_style: CSS style to apply to the cards container (when in grid mode)
     :param ui_card_container_class: CSS classes to apply to the cards container (when in grid mode)
     :param ui_card_style: CSS style to apply to the card (when in grid mode) or container card (when not in grid mode)
     :param ui_card_class: CSS classes to apply to the card (when in grid mode) or container card (when not in grid mode)
+    :param ui_card_style_fn: (Grid mode only) CSS style to apply to the row/record card; Has no effect when the 'item' slot is used; For best performance, reference it from your scope and do not define it inline
+    :param ui_card_class_fn: (Grid mode only) CSS class(es) to apply the row/record card; Has no effect when the 'item' slot is used; For best performance, reference it from your scope and do not define it inline
     :param ui_title_class: CSS classes to apply to the title (if using 'title' prop)
     :param ui_filter: String/Object to filter table with; When using an Object it requires 'filter-method' to also be specified since it will be a custom filtering
     :param ui_filter_method: The actual filtering mechanism; For best performance, reference it from your scope and do not define it inline
@@ -21067,10 +20961,14 @@ class QTable(Component):
         ui_table_class: str | list | dict | None = None,
         ui_table_header_style: str | list | dict | None = None,
         ui_table_header_class: str | list | dict | None = None,
+        ui_table_row_style_fn: Callable | None = None,
+        ui_table_row_class_fn: Callable | None = None,
         ui_card_container_style: str | list | dict | None = None,
         ui_card_container_class: str | list | dict | None = None,
         ui_card_style: str | list | dict | None = None,
         ui_card_class: str | list | dict | None = None,
+        ui_card_style_fn: Callable | None = None,
+        ui_card_class_fn: Callable | None = None,
         ui_title_class: str | list | dict | None = None,
         ui_filter: str | dict | None = None,
         ui_filter_method: Callable | None = None,
@@ -21086,140 +20984,152 @@ class QTable(Component):
     ):
         super().__init__("QTable", *children, **kwargs)
         if ui_rows is not None:
-            self._props["rows"] = ui_rows
+            self._init_prop("rows", ui_rows)
         if ui_row_key is not None:
-            self._props["row-key"] = ui_row_key
+            self._init_prop("row-key", ui_row_key)
         if ui_virtual_scroll is not None:
-            self._props["virtual-scroll"] = ui_virtual_scroll
+            self._init_prop("virtual-scroll", ui_virtual_scroll)
         if ui_virtual_scroll_target is not None:
-            self._props["virtual-scroll-target"] = ui_virtual_scroll_target
+            self._init_prop("virtual-scroll-target", ui_virtual_scroll_target)
         if ui_virtual_scroll_slice_size is not None:
-            self._props["virtual-scroll-slice-size"] = (
-                ui_virtual_scroll_slice_size
+            self._init_prop(
+                "virtual-scroll-slice-size", ui_virtual_scroll_slice_size
             )
         if ui_virtual_scroll_slice_ratio_before is not None:
-            self._props["virtual-scroll-slice-ratio-before"] = (
-                ui_virtual_scroll_slice_ratio_before
+            self._init_prop(
+                "virtual-scroll-slice-ratio-before",
+                ui_virtual_scroll_slice_ratio_before,
             )
         if ui_virtual_scroll_slice_ratio_after is not None:
-            self._props["virtual-scroll-slice-ratio-after"] = (
-                ui_virtual_scroll_slice_ratio_after
+            self._init_prop(
+                "virtual-scroll-slice-ratio-after",
+                ui_virtual_scroll_slice_ratio_after,
             )
         if ui_virtual_scroll_item_size is not None:
-            self._props["virtual-scroll-item-size"] = (
-                ui_virtual_scroll_item_size
+            self._init_prop(
+                "virtual-scroll-item-size", ui_virtual_scroll_item_size
             )
         if ui_virtual_scroll_sticky_size_start is not None:
-            self._props["virtual-scroll-sticky-size-start"] = (
-                ui_virtual_scroll_sticky_size_start
+            self._init_prop(
+                "virtual-scroll-sticky-size-start",
+                ui_virtual_scroll_sticky_size_start,
             )
         if ui_virtual_scroll_sticky_size_end is not None:
-            self._props["virtual-scroll-sticky-size-end"] = (
-                ui_virtual_scroll_sticky_size_end
+            self._init_prop(
+                "virtual-scroll-sticky-size-end",
+                ui_virtual_scroll_sticky_size_end,
             )
         if ui_table_colspan is not None:
-            self._props["table-colspan"] = ui_table_colspan
+            self._init_prop("table-colspan", ui_table_colspan)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_icon_first_page is not None:
-            self._props["icon-first-page"] = ui_icon_first_page
+            self._init_prop("icon-first-page", ui_icon_first_page)
         if ui_icon_prev_page is not None:
-            self._props["icon-prev-page"] = ui_icon_prev_page
+            self._init_prop("icon-prev-page", ui_icon_prev_page)
         if ui_icon_next_page is not None:
-            self._props["icon-next-page"] = ui_icon_next_page
+            self._init_prop("icon-next-page", ui_icon_next_page)
         if ui_icon_last_page is not None:
-            self._props["icon-last-page"] = ui_icon_last_page
+            self._init_prop("icon-last-page", ui_icon_last_page)
         if ui_grid is not None:
-            self._props["grid"] = ui_grid
+            self._init_prop("grid", ui_grid)
         if ui_grid_header is not None:
-            self._props["grid-header"] = ui_grid_header
+            self._init_prop("grid-header", ui_grid_header)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_columns is not None:
-            self._props["columns"] = ui_columns
+            self._init_prop("columns", ui_columns)
         if ui_visible_columns is not None:
-            self._props["visible-columns"] = ui_visible_columns
+            self._init_prop("visible-columns", ui_visible_columns)
         if ui_loading is not None:
-            self._props["loading"] = ui_loading
+            self._init_prop("loading", ui_loading)
         if ui_title is not None:
-            self._props["title"] = ui_title
+            self._init_prop("title", ui_title)
         if ui_hide_header is not None:
-            self._props["hide-header"] = ui_hide_header
+            self._init_prop("hide-header", ui_hide_header)
         if ui_hide_bottom is not None:
-            self._props["hide-bottom"] = ui_hide_bottom
+            self._init_prop("hide-bottom", ui_hide_bottom)
         if ui_hide_selected_banner is not None:
-            self._props["hide-selected-banner"] = ui_hide_selected_banner
+            self._init_prop("hide-selected-banner", ui_hide_selected_banner)
         if ui_hide_no_data is not None:
-            self._props["hide-no-data"] = ui_hide_no_data
+            self._init_prop("hide-no-data", ui_hide_no_data)
         if ui_hide_pagination is not None:
-            self._props["hide-pagination"] = ui_hide_pagination
+            self._init_prop("hide-pagination", ui_hide_pagination)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_separator is not None:
-            self._props["separator"] = ui_separator
+            self._init_prop("separator", ui_separator)
         if ui_wrap_cells is not None:
-            self._props["wrap-cells"] = ui_wrap_cells
+            self._init_prop("wrap-cells", ui_wrap_cells)
         if ui_binary_state_sort is not None:
-            self._props["binary-state-sort"] = ui_binary_state_sort
+            self._init_prop("binary-state-sort", ui_binary_state_sort)
         if ui_column_sort_order is not None:
-            self._props["column-sort-order"] = ui_column_sort_order
+            self._init_prop("column-sort-order", ui_column_sort_order)
         if ui_no_data_label is not None:
-            self._props["no-data-label"] = ui_no_data_label
+            self._init_prop("no-data-label", ui_no_data_label)
         if ui_no_results_label is not None:
-            self._props["no-results-label"] = ui_no_results_label
+            self._init_prop("no-results-label", ui_no_results_label)
         if ui_loading_label is not None:
-            self._props["loading-label"] = ui_loading_label
+            self._init_prop("loading-label", ui_loading_label)
         if ui_selected_rows_label is not None:
-            self._props["selected-rows-label"] = ui_selected_rows_label
+            self._init_prop("selected-rows-label", ui_selected_rows_label)
         if ui_rows_per_page_label is not None:
-            self._props["rows-per-page-label"] = ui_rows_per_page_label
+            self._init_prop("rows-per-page-label", ui_rows_per_page_label)
         if ui_pagination_label is not None:
-            self._props["pagination-label"] = ui_pagination_label
+            self._init_prop("pagination-label", ui_pagination_label)
         if ui_table_style is not None:
-            self._props["table-style"] = ui_table_style
+            self._init_prop("table-style", ui_table_style)
         if ui_table_class is not None:
-            self._props["table-class"] = ui_table_class
+            self._init_prop("table-class", ui_table_class)
         if ui_table_header_style is not None:
-            self._props["table-header-style"] = ui_table_header_style
+            self._init_prop("table-header-style", ui_table_header_style)
         if ui_table_header_class is not None:
-            self._props["table-header-class"] = ui_table_header_class
+            self._init_prop("table-header-class", ui_table_header_class)
+        if ui_table_row_style_fn is not None:
+            self._init_prop("table-row-style-fn", ui_table_row_style_fn)
+        if ui_table_row_class_fn is not None:
+            self._init_prop("table-row-class-fn", ui_table_row_class_fn)
         if ui_card_container_style is not None:
-            self._props["card-container-style"] = ui_card_container_style
+            self._init_prop("card-container-style", ui_card_container_style)
         if ui_card_container_class is not None:
-            self._props["card-container-class"] = ui_card_container_class
+            self._init_prop("card-container-class", ui_card_container_class)
         if ui_card_style is not None:
-            self._props["card-style"] = ui_card_style
+            self._init_prop("card-style", ui_card_style)
         if ui_card_class is not None:
-            self._props["card-class"] = ui_card_class
+            self._init_prop("card-class", ui_card_class)
+        if ui_card_style_fn is not None:
+            self._init_prop("card-style-fn", ui_card_style_fn)
+        if ui_card_class_fn is not None:
+            self._init_prop("card-class-fn", ui_card_class_fn)
         if ui_title_class is not None:
-            self._props["title-class"] = ui_title_class
+            self._init_prop("title-class", ui_title_class)
         if ui_filter is not None:
-            self._props["filter"] = ui_filter
+            self._init_prop("filter", ui_filter)
         if ui_filter_method is not None:
-            self._props["filter-method"] = ui_filter_method
+            self._init_prop("filter-method", ui_filter_method)
         if ui_pagination is not None:
-            self._props["pagination"] = ui_pagination
+            self._init_prop("pagination", ui_pagination)
         if ui_rows_per_page_options is not None:
-            self._props["rows-per-page-options"] = ui_rows_per_page_options
+            self._init_prop("rows-per-page-options", ui_rows_per_page_options)
         if ui_selection is not None:
-            self._props["selection"] = ui_selection
+            self._init_prop("selection", ui_selection)
         if ui_selected is not None:
-            self._props["selected"] = ui_selected
+            self._init_prop("selected", ui_selected)
         if ui_expanded is not None:
-            self._props["expanded"] = ui_expanded
+            self._init_prop("expanded", ui_expanded)
         if ui_sort_method is not None:
-            self._props["sort-method"] = ui_sort_method
+            self._init_prop("sort-method", ui_sort_method)
         if ui_fullscreen is not None:
-            self._props["fullscreen"] = ui_fullscreen
+            self._init_prop("fullscreen", ui_fullscreen)
         if ui_no_route_fullscreen_exit is not None:
-            self._props["no-route-fullscreen-exit"] = (
-                ui_no_route_fullscreen_exit
+            self._init_prop(
+                "no-route-fullscreen-exit", ui_no_route_fullscreen_exit
             )
 
     @property
@@ -21631,6 +21541,24 @@ class QTable(Component):
         self._set_prop("table-header-class", value)
 
     @property
+    def ui_table_row_style_fn(self):
+        """CSS style to apply to the table rows (which are TR elements); For best performance, reference it from your scope and do not define it inline"""
+        return self._props.get("table-row-style-fn")
+
+    @ui_table_row_style_fn.setter
+    def ui_table_row_style_fn(self, value):
+        self._set_prop("table-row-style-fn", value)
+
+    @property
+    def ui_table_row_class_fn(self):
+        """CSS class(es) to apply the table rows (which are TR elements); For best performance, reference it from your scope and do not define it inline"""
+        return self._props.get("table-row-class-fn")
+
+    @ui_table_row_class_fn.setter
+    def ui_table_row_class_fn(self, value):
+        self._set_prop("table-row-class-fn", value)
+
+    @property
     def ui_card_container_style(self):
         """CSS style to apply to the cards container (when in grid mode)"""
         return self._props.get("card-container-style")
@@ -21665,6 +21593,24 @@ class QTable(Component):
     @ui_card_class.setter
     def ui_card_class(self, value):
         self._set_prop("card-class", value)
+
+    @property
+    def ui_card_style_fn(self):
+        """(Grid mode only) CSS style to apply to the row/record card; Has no effect when the 'item' slot is used; For best performance, reference it from your scope and do not define it inline"""
+        return self._props.get("card-style-fn")
+
+    @ui_card_style_fn.setter
+    def ui_card_style_fn(self, value):
+        self._set_prop("card-style-fn", value)
+
+    @property
+    def ui_card_class_fn(self):
+        """(Grid mode only) CSS class(es) to apply the row/record card; Has no effect when the 'item' slot is used; For best performance, reference it from your scope and do not define it inline"""
+        return self._props.get("card-class-fn")
+
+    @ui_card_class_fn.setter
+    def ui_card_class_fn(self, value):
+        self._set_prop("card-class-fn", value)
 
     @property
     def ui_title_class(self):
@@ -21929,7 +21875,6 @@ class QTable(Component):
     def on_fullscreen(self, handler: Callable, arg: object = None):
         """
         Emitted when fullscreen state changes
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -21938,7 +21883,6 @@ class QTable(Component):
     def on_request(self, handler: Callable, arg: object = None):
         """
         Emitted when a server request is triggered
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -21947,7 +21891,6 @@ class QTable(Component):
     def on_row_click(self, handler: Callable, arg: object = None):
         """
         Emitted when user clicks/taps on a row; Is not emitted when using body/row/item scoped slots
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -21956,7 +21899,6 @@ class QTable(Component):
     def on_row_contextmenu(self, handler: Callable, arg: object = None):
         """
         Emitted when user right clicks/long taps on a row; Is not emitted when using body/row/item scoped slots
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -21965,7 +21907,6 @@ class QTable(Component):
     def on_row_dblclick(self, handler: Callable, arg: object = None):
         """
         Emitted when user quickly double clicks/taps on a row; Is not emitted when using body/row/item scoped slots; Please check JS dblclick event support before using
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -21974,7 +21915,6 @@ class QTable(Component):
     def on_selection(self, handler: Callable, arg: object = None):
         """
         Emitted when user selects/unselects row(s)
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -21983,7 +21923,6 @@ class QTable(Component):
     def on_update_expanded(self, handler: Callable, arg: object = None):
         """
         Used by Vue on 'v-model:expanded' prop for updating its value
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -21992,7 +21931,6 @@ class QTable(Component):
     def on_update_fullscreen(self, handler: Callable, arg: object = None):
         """
         Used by Vue on 'v-model:fullscreen' prop for updating its value
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -22001,7 +21939,6 @@ class QTable(Component):
     def on_update_pagination(self, handler: Callable, arg: object = None):
         """
         Used by Vue on 'v-model:pagination' for updating its value
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -22010,7 +21947,6 @@ class QTable(Component):
     def on_update_selected(self, handler: Callable, arg: object = None):
         """
         Used by Vue on 'v-model:selected' prop for updating its value
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -22019,7 +21955,6 @@ class QTable(Component):
     def on_virtual_scroll(self, handler: Callable, arg: object = None):
         """
         Emitted when the virtual scroll occurs, if using virtual scroll
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -22135,6 +22070,62 @@ class QTable(Component):
         ]
 
 
+class QTd(Component):
+    """
+    Quasar Component: `QTd <https://v2.quasar.dev/vue-components/table>`__
+
+    :param ui_props: QTable's column scoped slot property
+    :param ui_auto_width: Tries to shrink column width size; Useful for columns with a checkbox/radio/toggle
+    :param ui_no_hover: Disable hover effect
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_props: dict | None = None,
+        ui_auto_width: bool | None = None,
+        ui_no_hover: bool | None = None,
+        **kwargs,
+    ):
+        super().__init__("QTd", *children, **kwargs)
+        if ui_props is not None:
+            self._init_prop("props", ui_props)
+        if ui_auto_width is not None:
+            self._init_prop("auto-width", ui_auto_width)
+        if ui_no_hover is not None:
+            self._init_prop("no-hover", ui_no_hover)
+
+    @property
+    def ui_props(self):
+        """QTable's column scoped slot property"""
+        return self._props.get("props")
+
+    @ui_props.setter
+    def ui_props(self, value):
+        self._set_prop("props", value)
+
+    @property
+    def ui_auto_width(self):
+        """Tries to shrink column width size; Useful for columns with a checkbox/radio/toggle"""
+        return self._props.get("auto-width")
+
+    @ui_auto_width.setter
+    def ui_auto_width(self, value):
+        self._set_prop("auto-width", value)
+
+    @property
+    def ui_no_hover(self):
+        """Disable hover effect"""
+        return self._props.get("no-hover")
+
+    @ui_no_hover.setter
+    def ui_no_hover(self, value):
+        self._set_prop("no-hover", value)
+
+    def _get_js_methods(self):
+        return []
+
+
 class QTr(Component):
     """
     Quasar Component: `QTr <https://v2.quasar.dev/vue-components/table>`__
@@ -22152,9 +22143,9 @@ class QTr(Component):
     ):
         super().__init__("QTr", *children, **kwargs)
         if ui_props is not None:
-            self._props["props"] = ui_props
+            self._init_prop("props", ui_props)
         if ui_no_hover is not None:
-            self._props["no-hover"] = ui_no_hover
+            self._init_prop("no-hover", ui_no_hover)
 
     @property
     def ui_props(self):
@@ -22211,25 +22202,25 @@ class QTab(Component):
     ):
         super().__init__("QTab", *children, **kwargs)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_alert is not None:
-            self._props["alert"] = ui_alert
+            self._init_prop("alert", ui_alert)
         if ui_alert_icon is not None:
-            self._props["alert-icon"] = ui_alert_icon
+            self._init_prop("alert-icon", ui_alert_icon)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
         if ui_no_caps is not None:
-            self._props["no-caps"] = ui_no_caps
+            self._init_prop("no-caps", ui_no_caps)
         if ui_content_class is not None:
-            self._props["content-class"] = ui_content_class
+            self._init_prop("content-class", ui_content_class)
         if ui_ripple is not None:
-            self._props["ripple"] = ui_ripple
+            self._init_prop("ripple", ui_ripple)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
 
     @property
     def ui_icon(self):
@@ -22320,7 +22311,6 @@ class QTab(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -22328,7 +22318,6 @@ class QTab(Component):
 
     def on_keydown(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -22386,39 +22375,39 @@ class QRouteTab(Component):
     ):
         super().__init__("QRouteTab", *children, **kwargs)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_alert is not None:
-            self._props["alert"] = ui_alert
+            self._init_prop("alert", ui_alert)
         if ui_alert_icon is not None:
-            self._props["alert-icon"] = ui_alert_icon
+            self._init_prop("alert-icon", ui_alert_icon)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
         if ui_no_caps is not None:
-            self._props["no-caps"] = ui_no_caps
+            self._init_prop("no-caps", ui_no_caps)
         if ui_content_class is not None:
-            self._props["content-class"] = ui_content_class
+            self._init_prop("content-class", ui_content_class)
         if ui_ripple is not None:
-            self._props["ripple"] = ui_ripple
+            self._init_prop("ripple", ui_ripple)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_to is not None:
-            self._props["to"] = ui_to
+            self._init_prop("to", ui_to)
         if ui_exact is not None:
-            self._props["exact"] = ui_exact
+            self._init_prop("exact", ui_exact)
         if ui_replace is not None:
-            self._props["replace"] = ui_replace
+            self._init_prop("replace", ui_replace)
         if ui_active_class is not None:
-            self._props["active-class"] = ui_active_class
+            self._init_prop("active-class", ui_active_class)
         if ui_exact_active_class is not None:
-            self._props["exact-active-class"] = ui_exact_active_class
+            self._init_prop("exact-active-class", ui_exact_active_class)
         if ui_href is not None:
-            self._props["href"] = ui_href
+            self._init_prop("href", ui_href)
         if ui_target is not None:
-            self._props["target"] = ui_target
+            self._init_prop("target", ui_target)
 
     @property
     def ui_icon(self):
@@ -22572,7 +22561,6 @@ class QRouteTab(Component):
     def on_click(self, handler: Callable, arg: object = None):
         """
         Emitted when the component is clicked
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -22580,7 +22568,6 @@ class QRouteTab(Component):
 
     def on_keydown(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -22646,48 +22633,50 @@ class QTabs(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_vertical is not None:
-            self._props["vertical"] = ui_vertical
+            self._init_prop("vertical", ui_vertical)
         if ui_outside_arrows is not None:
-            self._props["outside-arrows"] = ui_outside_arrows
+            self._init_prop("outside-arrows", ui_outside_arrows)
         if ui_mobile_arrows is not None:
-            self._props["mobile-arrows"] = ui_mobile_arrows
+            self._init_prop("mobile-arrows", ui_mobile_arrows)
         if ui_align is not None:
-            self._props["align"] = ui_align
+            self._init_prop("align", ui_align)
         if ui_breakpoint is not None:
-            self._props["breakpoint"] = ui_breakpoint
+            self._init_prop("breakpoint", ui_breakpoint)
         if ui_active_color is not None:
-            self._props["active-color"] = ui_active_color
+            self._init_prop("active-color", ui_active_color)
         if ui_active_bg_color is not None:
-            self._props["active-bg-color"] = ui_active_bg_color
+            self._init_prop("active-bg-color", ui_active_bg_color)
         if ui_indicator_color is not None:
-            self._props["indicator-color"] = ui_indicator_color
+            self._init_prop("indicator-color", ui_indicator_color)
         if ui_content_class is not None:
-            self._props["content-class"] = ui_content_class
+            self._init_prop("content-class", ui_content_class)
         if ui_active_class is not None:
-            self._props["active-class"] = ui_active_class
+            self._init_prop("active-class", ui_active_class)
         if ui_left_icon is not None:
-            self._props["left-icon"] = ui_left_icon
+            self._init_prop("left-icon", ui_left_icon)
         if ui_right_icon is not None:
-            self._props["right-icon"] = ui_right_icon
+            self._init_prop("right-icon", ui_right_icon)
         if ui_stretch is not None:
-            self._props["stretch"] = ui_stretch
+            self._init_prop("stretch", ui_stretch)
         if ui_shrink is not None:
-            self._props["shrink"] = ui_shrink
+            self._init_prop("shrink", ui_shrink)
         if ui_switch_indicator is not None:
-            self._props["switch-indicator"] = ui_switch_indicator
+            self._init_prop("switch-indicator", ui_switch_indicator)
         if ui_narrow_indicator is not None:
-            self._props["narrow-indicator"] = ui_narrow_indicator
+            self._init_prop("narrow-indicator", ui_narrow_indicator)
         if ui_inline_label is not None:
-            self._props["inline-label"] = ui_inline_label
+            self._init_prop("inline-label", ui_inline_label)
         if ui_no_caps is not None:
-            self._props["no-caps"] = ui_no_caps
+            self._init_prop("no-caps", ui_no_caps)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -22871,7 +22860,6 @@ class QTabs(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -22940,52 +22928,54 @@ class QTime(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_format24h is not None:
-            self._props["format24h"] = ui_format24h
+            self._init_prop("format24h", ui_format24h)
         if ui_default_date is not None:
-            self._props["default-date"] = ui_default_date
+            self._init_prop("default-date", ui_default_date)
         if ui_mask is not None:
-            self._props["mask"] = ui_mask
+            self._init_prop("mask", ui_mask)
         if ui_options is not None:
-            self._props["options"] = ui_options
+            self._init_prop("options", ui_options)
         if ui_hour_options is not None:
-            self._props["hour-options"] = ui_hour_options
+            self._init_prop("hour-options", ui_hour_options)
         if ui_minute_options is not None:
-            self._props["minute-options"] = ui_minute_options
+            self._init_prop("minute-options", ui_minute_options)
         if ui_second_options is not None:
-            self._props["second-options"] = ui_second_options
+            self._init_prop("second-options", ui_second_options)
         if ui_with_seconds is not None:
-            self._props["with-seconds"] = ui_with_seconds
+            self._init_prop("with-seconds", ui_with_seconds)
         if ui_now_btn is not None:
-            self._props["now-btn"] = ui_now_btn
+            self._init_prop("now-btn", ui_now_btn)
         if ui_landscape is not None:
-            self._props["landscape"] = ui_landscape
+            self._init_prop("landscape", ui_landscape)
         if ui_locale is not None:
-            self._props["locale"] = ui_locale
+            self._init_prop("locale", ui_locale)
         if ui_calendar is not None:
-            self._props["calendar"] = ui_calendar
+            self._init_prop("calendar", ui_calendar)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -23180,7 +23170,6 @@ class QTime(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -23215,13 +23204,13 @@ class QTimeline(Component):
     ):
         super().__init__("QTimeline", *children, **kwargs)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_side is not None:
-            self._props["side"] = ui_side
+            self._init_prop("side", ui_side)
         if ui_layout is not None:
-            self._props["layout"] = ui_layout
+            self._init_prop("layout", ui_layout)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
 
     @property
     def ui_color(self):
@@ -23292,23 +23281,23 @@ class QTimelineEntry(Component):
     ):
         super().__init__("QTimelineEntry", *children, **kwargs)
         if ui_heading is not None:
-            self._props["heading"] = ui_heading
+            self._init_prop("heading", ui_heading)
         if ui_tag is not None:
-            self._props["tag"] = ui_tag
+            self._init_prop("tag", ui_tag)
         if ui_side is not None:
-            self._props["side"] = ui_side
+            self._init_prop("side", ui_side)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_avatar is not None:
-            self._props["avatar"] = ui_avatar
+            self._init_prop("avatar", ui_avatar)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_title is not None:
-            self._props["title"] = ui_title
+            self._init_prop("title", ui_title)
         if ui_subtitle is not None:
-            self._props["subtitle"] = ui_subtitle
+            self._init_prop("subtitle", ui_subtitle)
         if ui_body is not None:
-            self._props["body"] = ui_body
+            self._init_prop("body", ui_body)
 
     @property
     def ui_heading(self):
@@ -23470,52 +23459,54 @@ class QToggle(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_checked_icon is not None:
-            self._props["checked-icon"] = ui_checked_icon
+            self._init_prop("checked-icon", ui_checked_icon)
         if ui_unchecked_icon is not None:
-            self._props["unchecked-icon"] = ui_unchecked_icon
+            self._init_prop("unchecked-icon", ui_unchecked_icon)
         if ui_indeterminate_icon is not None:
-            self._props["indeterminate-icon"] = ui_indeterminate_icon
+            self._init_prop("indeterminate-icon", ui_indeterminate_icon)
         if ui_icon_color is not None:
-            self._props["icon-color"] = ui_icon_color
+            self._init_prop("icon-color", ui_icon_color)
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_val is not None:
-            self._props["val"] = ui_val
+            self._init_prop("val", ui_val)
         if ui_true_value is not None:
-            self._props["true-value"] = ui_true_value
+            self._init_prop("true-value", ui_true_value)
         if ui_false_value is not None:
-            self._props["false-value"] = ui_false_value
+            self._init_prop("false-value", ui_false_value)
         if ui_indeterminate_value is not None:
-            self._props["indeterminate-value"] = ui_indeterminate_value
+            self._init_prop("indeterminate-value", ui_indeterminate_value)
         if ui_toggle_order is not None:
-            self._props["toggle-order"] = ui_toggle_order
+            self._init_prop("toggle-order", ui_toggle_order)
         if ui_toggle_indeterminate is not None:
-            self._props["toggle-indeterminate"] = ui_toggle_indeterminate
+            self._init_prop("toggle-indeterminate", ui_toggle_indeterminate)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_left_label is not None:
-            self._props["left-label"] = ui_left_label
+            self._init_prop("left-label", ui_left_label)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_keep_color is not None:
-            self._props["keep-color"] = ui_keep_color
+            self._init_prop("keep-color", ui_keep_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_tabindex is not None:
-            self._props["tabindex"] = ui_tabindex
+            self._init_prop("tabindex", ui_tabindex)
         if ui_size is not None:
-            self._props["size"] = ui_size
+            self._init_prop("size", ui_size)
         if ui_name is not None:
-            self._props["name"] = ui_name
+            self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_icon(self):
@@ -23711,7 +23702,6 @@ class QToggle(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when the component needs to change the model; Is also used by v-model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -23725,31 +23715,6 @@ class QToggle(Component):
         return ["toggle"]
 
 
-class QToolbarTitle(Component):
-    """
-    Quasar Component: `QToolbarTitle <https://v2.quasar.dev/vue-components/toolbar>`__
-
-    :param ui_shrink: By default, QToolbarTitle is set to grow to the available space. However, you can reverse that with this prop
-    """
-
-    def __init__(self, *children, ui_shrink: bool | None = None, **kwargs):
-        super().__init__("QToolbarTitle", *children, **kwargs)
-        if ui_shrink is not None:
-            self._props["shrink"] = ui_shrink
-
-    @property
-    def ui_shrink(self):
-        """By default, QToolbarTitle is set to grow to the available space. However, you can reverse that with this prop"""
-        return self._props.get("shrink")
-
-    @ui_shrink.setter
-    def ui_shrink(self, value):
-        self._set_prop("shrink", value)
-
-    def _get_js_methods(self):
-        return []
-
-
 class QToolbar(Component):
     """
     Quasar Component: `QToolbar <https://v2.quasar.dev/vue-components/toolbar>`__
@@ -23760,7 +23725,7 @@ class QToolbar(Component):
     def __init__(self, *children, ui_inset: bool | None = None, **kwargs):
         super().__init__("QToolbar", *children, **kwargs)
         if ui_inset is not None:
-            self._props["inset"] = ui_inset
+            self._init_prop("inset", ui_inset)
 
     @property
     def ui_inset(self):
@@ -23770,6 +23735,31 @@ class QToolbar(Component):
     @ui_inset.setter
     def ui_inset(self, value):
         self._set_prop("inset", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QToolbarTitle(Component):
+    """
+    Quasar Component: `QToolbarTitle <https://v2.quasar.dev/vue-components/toolbar>`__
+
+    :param ui_shrink: By default, QToolbarTitle is set to grow to the available space. However, you can reverse that with this prop
+    """
+
+    def __init__(self, *children, ui_shrink: bool | None = None, **kwargs):
+        super().__init__("QToolbarTitle", *children, **kwargs)
+        if ui_shrink is not None:
+            self._init_prop("shrink", ui_shrink)
+
+    @property
+    def ui_shrink(self):
+        """By default, QToolbarTitle is set to grow to the available space. However, you can reverse that with this prop"""
+        return self._props.get("shrink")
+
+    @ui_shrink.setter
+    def ui_shrink(self, value):
+        self._set_prop("shrink", value)
 
     def _get_js_methods(self):
         return []
@@ -23820,38 +23810,40 @@ class QTooltip(Component):
         self.on("update:model-value", self.__update_model_value)
 
         if ui_max_height is not None:
-            self._props["max-height"] = ui_max_height
+            self._init_prop("max-height", ui_max_height)
         if ui_max_width is not None:
-            self._props["max-width"] = ui_max_width
+            self._init_prop("max-width", ui_max_width)
         if ui_transition_show is not None:
-            self._props["transition-show"] = ui_transition_show
+            self._init_prop("transition-show", ui_transition_show)
         if ui_transition_hide is not None:
-            self._props["transition-hide"] = ui_transition_hide
+            self._init_prop("transition-hide", ui_transition_hide)
         if ui_anchor is not None:
-            self._props["anchor"] = ui_anchor
+            self._init_prop("anchor", ui_anchor)
         if ui_self is not None:
-            self._props["self"] = ui_self
+            self._init_prop("self", ui_self)
         if ui_offset is not None:
-            self._props["offset"] = ui_offset
+            self._init_prop("offset", ui_offset)
         if ui_scroll_target is not None:
-            self._props["scroll-target"] = ui_scroll_target
+            self._init_prop("scroll-target", ui_scroll_target)
         if ui_delay is not None:
-            self._props["delay"] = ui_delay
+            self._init_prop("delay", ui_delay)
         if ui_hide_delay is not None:
-            self._props["hide-delay"] = ui_hide_delay
+            self._init_prop("hide-delay", ui_hide_delay)
         if ui_persistent is not None:
-            self._props["persistent"] = ui_persistent
+            self._init_prop("persistent", ui_persistent)
         if ui_model_value is not None:
-            self._props["model-value"] = ui_model_value
+            self._init_prop("model-value", ui_model_value)
         if ui_target is not None:
-            self._props["target"] = ui_target
+            self._init_prop("target", ui_target)
         if ui_no_parent_event is not None:
-            self._props["no-parent-event"] = ui_no_parent_event
+            self._init_prop("no-parent-event", ui_no_parent_event)
         if ui_transition_duration is not None:
-            self._props["transition-duration"] = ui_transition_duration
+            self._init_prop("transition-duration", ui_transition_duration)
 
     def __update_model_value(self, event: Event):
         self._set_prop("model-value", event.value)
+        if "model-value" in self._observable_bindings:
+            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_max_height(self):
@@ -23988,7 +23980,6 @@ class QTooltip(Component):
     def on_before_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -23996,7 +23987,6 @@ class QTooltip(Component):
 
     def on_before_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -24006,7 +23996,6 @@ class QTooltip(Component):
     def on_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24014,7 +24003,6 @@ class QTooltip(Component):
 
     def on_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -24024,7 +24012,6 @@ class QTooltip(Component):
     def on_update_model_value(self, handler: Callable, arg: object = None):
         """
         Emitted when showing/hidden state changes; Is also used by v-model
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24110,55 +24097,55 @@ class QTree(Component):
     ):
         super().__init__("QTree", *children, **kwargs)
         if ui_nodes is not None:
-            self._props["nodes"] = ui_nodes
+            self._init_prop("nodes", ui_nodes)
         if ui_node_key is not None:
-            self._props["node-key"] = ui_node_key
+            self._init_prop("node-key", ui_node_key)
         if ui_label_key is not None:
-            self._props["label-key"] = ui_label_key
+            self._init_prop("label-key", ui_label_key)
         if ui_children_key is not None:
-            self._props["children-key"] = ui_children_key
+            self._init_prop("children-key", ui_children_key)
         if ui_no_connectors is not None:
-            self._props["no-connectors"] = ui_no_connectors
+            self._init_prop("no-connectors", ui_no_connectors)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_control_color is not None:
-            self._props["control-color"] = ui_control_color
+            self._init_prop("control-color", ui_control_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_selected_color is not None:
-            self._props["selected-color"] = ui_selected_color
+            self._init_prop("selected-color", ui_selected_color)
         if ui_dense is not None:
-            self._props["dense"] = ui_dense
+            self._init_prop("dense", ui_dense)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_icon is not None:
-            self._props["icon"] = ui_icon
+            self._init_prop("icon", ui_icon)
         if ui_tick_strategy is not None:
-            self._props["tick-strategy"] = ui_tick_strategy
+            self._init_prop("tick-strategy", ui_tick_strategy)
         if ui_ticked is not None:
-            self._props["ticked"] = ui_ticked
+            self._init_prop("ticked", ui_ticked)
         if ui_expanded is not None:
-            self._props["expanded"] = ui_expanded
+            self._init_prop("expanded", ui_expanded)
         if ui_selected is not None:
-            self._props["selected"] = ui_selected
+            self._init_prop("selected", ui_selected)
         if ui_no_selection_unset is not None:
-            self._props["no-selection-unset"] = ui_no_selection_unset
+            self._init_prop("no-selection-unset", ui_no_selection_unset)
         if ui_default_expand_all is not None:
-            self._props["default-expand-all"] = ui_default_expand_all
+            self._init_prop("default-expand-all", ui_default_expand_all)
         if ui_accordion is not None:
-            self._props["accordion"] = ui_accordion
+            self._init_prop("accordion", ui_accordion)
         if ui_no_transition is not None:
-            self._props["no-transition"] = ui_no_transition
+            self._init_prop("no-transition", ui_no_transition)
         if ui_filter is not None:
-            self._props["filter"] = ui_filter
+            self._init_prop("filter", ui_filter)
         if ui_filter_method is not None:
-            self._props["filter-method"] = ui_filter_method
+            self._init_prop("filter-method", ui_filter_method)
         if ui_duration is not None:
-            self._props["duration"] = ui_duration
+            self._init_prop("duration", ui_duration)
         if ui_no_nodes_label is not None:
-            self._props["no-nodes-label"] = ui_no_nodes_label
+            self._init_prop("no-nodes-label", ui_no_nodes_label)
         if ui_no_results_label is not None:
-            self._props["no-results-label"] = ui_no_results_label
+            self._init_prop("no-results-label", ui_no_results_label)
 
     @property
     def ui_nodes(self):
@@ -24409,7 +24396,6 @@ class QTree(Component):
     def on_after_hide(self, handler: Callable, arg: object = None):
         """
 
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24417,7 +24403,6 @@ class QTree(Component):
 
     def on_after_show(self, handler: Callable, arg: object = None):
         """
-
 
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
@@ -24427,7 +24412,6 @@ class QTree(Component):
     def on_lazy_load(self, handler: Callable, arg: object = None):
         """
         Emitted when the lazy loading of nodes is finished
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24436,7 +24420,6 @@ class QTree(Component):
     def on_update_expanded(self, handler: Callable, arg: object = None):
         """
         Triggered when nodes are expanded or collapsed; Used by Vue on 'v-model:update' to update its value
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24445,7 +24428,6 @@ class QTree(Component):
     def on_update_selected(self, handler: Callable, arg: object = None):
         """
         Emitted when selected node changes; Used by Vue on 'v-model:selected' to update its value
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24454,7 +24436,6 @@ class QTree(Component):
     def on_update_ticked(self, handler: Callable, arg: object = None):
         """
         Emitted when nodes are ticked/unticked via the checkbox; Used by Vue on 'v-model:ticked' to update its value
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24600,63 +24581,63 @@ class QUploader(Component):
     ):
         super().__init__("QUploader", *children, **kwargs)
         if ui_label is not None:
-            self._props["label"] = ui_label
+            self._init_prop("label", ui_label)
         if ui_color is not None:
-            self._props["color"] = ui_color
+            self._init_prop("color", ui_color)
         if ui_text_color is not None:
-            self._props["text-color"] = ui_text_color
+            self._init_prop("text-color", ui_text_color)
         if ui_dark is not None:
-            self._props["dark"] = ui_dark
+            self._init_prop("dark", ui_dark)
         if ui_square is not None:
-            self._props["square"] = ui_square
+            self._init_prop("square", ui_square)
         if ui_flat is not None:
-            self._props["flat"] = ui_flat
+            self._init_prop("flat", ui_flat)
         if ui_bordered is not None:
-            self._props["bordered"] = ui_bordered
+            self._init_prop("bordered", ui_bordered)
         if ui_no_thumbnails is not None:
-            self._props["no-thumbnails"] = ui_no_thumbnails
+            self._init_prop("no-thumbnails", ui_no_thumbnails)
         if ui_auto_upload is not None:
-            self._props["auto-upload"] = ui_auto_upload
+            self._init_prop("auto-upload", ui_auto_upload)
         if ui_hide_upload_btn is not None:
-            self._props["hide-upload-btn"] = ui_hide_upload_btn
+            self._init_prop("hide-upload-btn", ui_hide_upload_btn)
         if ui_thumbnail_fit is not None:
-            self._props["thumbnail-fit"] = ui_thumbnail_fit
+            self._init_prop("thumbnail-fit", ui_thumbnail_fit)
         if ui_disable is not None:
-            self._props["disable"] = ui_disable
+            self._init_prop("disable", ui_disable)
         if ui_readonly is not None:
-            self._props["readonly"] = ui_readonly
+            self._init_prop("readonly", ui_readonly)
         if ui_multiple is not None:
-            self._props["multiple"] = ui_multiple
+            self._init_prop("multiple", ui_multiple)
         if ui_accept is not None:
-            self._props["accept"] = ui_accept
+            self._init_prop("accept", ui_accept)
         if ui_capture is not None:
-            self._props["capture"] = ui_capture
+            self._init_prop("capture", ui_capture)
         if ui_max_file_size is not None:
-            self._props["max-file-size"] = ui_max_file_size
+            self._init_prop("max-file-size", ui_max_file_size)
         if ui_max_total_size is not None:
-            self._props["max-total-size"] = ui_max_total_size
+            self._init_prop("max-total-size", ui_max_total_size)
         if ui_max_files is not None:
-            self._props["max-files"] = ui_max_files
+            self._init_prop("max-files", ui_max_files)
         if ui_filter is not None:
-            self._props["filter"] = ui_filter
+            self._init_prop("filter", ui_filter)
         if ui_factory is not None:
-            self._props["factory"] = ui_factory
+            self._init_prop("factory", ui_factory)
         if ui_url is not None:
-            self._props["url"] = ui_url
+            self._init_prop("url", ui_url)
         if ui_method is not None:
-            self._props["method"] = ui_method
+            self._init_prop("method", ui_method)
         if ui_field_name is not None:
-            self._props["field-name"] = ui_field_name
+            self._init_prop("field-name", ui_field_name)
         if ui_headers is not None:
-            self._props["headers"] = ui_headers
+            self._init_prop("headers", ui_headers)
         if ui_form_fields is not None:
-            self._props["form-fields"] = ui_form_fields
+            self._init_prop("form-fields", ui_form_fields)
         if ui_with_credentials is not None:
-            self._props["with-credentials"] = ui_with_credentials
+            self._init_prop("with-credentials", ui_with_credentials)
         if ui_send_raw is not None:
-            self._props["send-raw"] = ui_send_raw
+            self._init_prop("send-raw", ui_send_raw)
         if ui_batch is not None:
-            self._props["batch"] = ui_batch
+            self._init_prop("batch", ui_batch)
 
     @property
     def ui_label(self):
@@ -24932,7 +24913,6 @@ class QUploader(Component):
     def on_added(self, handler: Callable, arg: object = None):
         """
         Emitted when files are added into the list
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24941,7 +24921,6 @@ class QUploader(Component):
     def on_factory_failed(self, handler: Callable, arg: object = None):
         """
         Emitted when factory function is supplied with a Promise which is rejected
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24950,7 +24929,6 @@ class QUploader(Component):
     def on_failed(self, handler: Callable, arg: object = None):
         """
         Emitted when file or batch of files has encountered error while uploading
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24959,7 +24937,6 @@ class QUploader(Component):
     def on_finish(self, handler: Callable, arg: object = None):
         """
         Finished working (regardless of success or fail)
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24968,7 +24945,6 @@ class QUploader(Component):
     def on_rejected(self, handler: Callable, arg: object = None):
         """
         Emitted after files are picked and some do not pass the validation props (accept, max-file-size, max-total-size, filter, etc)
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24977,7 +24953,6 @@ class QUploader(Component):
     def on_removed(self, handler: Callable, arg: object = None):
         """
         Emitted when files are removed from the list
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24986,7 +24961,6 @@ class QUploader(Component):
     def on_start(self, handler: Callable, arg: object = None):
         """
         Started working
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -24995,7 +24969,6 @@ class QUploader(Component):
     def on_uploaded(self, handler: Callable, arg: object = None):
         """
         Emitted when file or batch of files is uploaded
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -25004,7 +24977,6 @@ class QUploader(Component):
     def on_uploading(self, handler: Callable, arg: object = None):
         """
         Emitted when file or batch of files started uploading
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """
@@ -25119,17 +25091,17 @@ class QVideo(Component):
     ):
         super().__init__("QVideo", *children, **kwargs)
         if ui_src is not None:
-            self._props["src"] = ui_src
+            self._init_prop("src", ui_src)
         if ui_title is not None:
-            self._props["title"] = ui_title
+            self._init_prop("title", ui_title)
         if ui_fetchpriority is not None:
-            self._props["fetchpriority"] = ui_fetchpriority
+            self._init_prop("fetchpriority", ui_fetchpriority)
         if ui_loading is not None:
-            self._props["loading"] = ui_loading
+            self._init_prop("loading", ui_loading)
         if ui_referrerpolicy is not None:
-            self._props["referrerpolicy"] = ui_referrerpolicy
+            self._init_prop("referrerpolicy", ui_referrerpolicy)
         if ui_ratio is not None:
-            self._props["ratio"] = ui_ratio
+            self._init_prop("ratio", ui_ratio)
 
     @property
     def ui_src(self):
@@ -25228,45 +25200,49 @@ class QVirtualScroll(Component):
     ):
         super().__init__("QVirtualScroll", *children, **kwargs)
         if ui_type is not None:
-            self._props["type"] = ui_type
+            self._init_prop("type", ui_type)
         if ui_items is not None:
-            self._props["items"] = ui_items
+            self._init_prop("items", ui_items)
         if ui_items_size is not None:
-            self._props["items-size"] = ui_items_size
+            self._init_prop("items-size", ui_items_size)
         if ui_items_fn is not None:
-            self._props["items-fn"] = ui_items_fn
+            self._init_prop("items-fn", ui_items_fn)
         if ui_scroll_target is not None:
-            self._props["scroll-target"] = ui_scroll_target
+            self._init_prop("scroll-target", ui_scroll_target)
         if ui_virtual_scroll_horizontal is not None:
-            self._props["virtual-scroll-horizontal"] = (
-                ui_virtual_scroll_horizontal
+            self._init_prop(
+                "virtual-scroll-horizontal", ui_virtual_scroll_horizontal
             )
         if ui_virtual_scroll_slice_size is not None:
-            self._props["virtual-scroll-slice-size"] = (
-                ui_virtual_scroll_slice_size
+            self._init_prop(
+                "virtual-scroll-slice-size", ui_virtual_scroll_slice_size
             )
         if ui_virtual_scroll_slice_ratio_before is not None:
-            self._props["virtual-scroll-slice-ratio-before"] = (
-                ui_virtual_scroll_slice_ratio_before
+            self._init_prop(
+                "virtual-scroll-slice-ratio-before",
+                ui_virtual_scroll_slice_ratio_before,
             )
         if ui_virtual_scroll_slice_ratio_after is not None:
-            self._props["virtual-scroll-slice-ratio-after"] = (
-                ui_virtual_scroll_slice_ratio_after
+            self._init_prop(
+                "virtual-scroll-slice-ratio-after",
+                ui_virtual_scroll_slice_ratio_after,
             )
         if ui_virtual_scroll_item_size is not None:
-            self._props["virtual-scroll-item-size"] = (
-                ui_virtual_scroll_item_size
+            self._init_prop(
+                "virtual-scroll-item-size", ui_virtual_scroll_item_size
             )
         if ui_virtual_scroll_sticky_size_start is not None:
-            self._props["virtual-scroll-sticky-size-start"] = (
-                ui_virtual_scroll_sticky_size_start
+            self._init_prop(
+                "virtual-scroll-sticky-size-start",
+                ui_virtual_scroll_sticky_size_start,
             )
         if ui_virtual_scroll_sticky_size_end is not None:
-            self._props["virtual-scroll-sticky-size-end"] = (
-                ui_virtual_scroll_sticky_size_end
+            self._init_prop(
+                "virtual-scroll-sticky-size-end",
+                ui_virtual_scroll_sticky_size_end,
             )
         if ui_table_colspan is not None:
-            self._props["table-colspan"] = ui_table_colspan
+            self._init_prop("table-colspan", ui_table_colspan)
 
     @property
     def ui_type(self):
@@ -25405,7 +25381,6 @@ class QVirtualScroll(Component):
     def on_virtual_scroll(self, handler: Callable, arg: object = None):
         """
         Emitted when the virtual scroll occurs
-
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """

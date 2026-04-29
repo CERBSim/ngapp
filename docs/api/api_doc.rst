@@ -8,6 +8,9 @@ detail.
 
 The API is organised into the following parts:
 
+* :doc:`../observable` – reactive state management with
+  :class:`~ngapp.observable.Observable`, two-way widget binding, and
+  serialisation helpers.
 * :doc:`components/qcomponents` – auto-generated wrappers for Quasar components
   (buttons, inputs, layouts, dialogs, and more).
 * Component modules – helper components, base component and specialised

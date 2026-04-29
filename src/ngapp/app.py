@@ -301,12 +301,10 @@ class App(QPage):
         if isinstance(env.frontend, utils.BrowserFrontend):
 
             def initialize_quasar_proxy():
-                self.js.eval(
-                    """
+                self.js.eval("""
     document.get_quasar_obj = (name) =>
                 { return document.querySelector('#q-app').__vue_app__.config.globalProperties.$q[name] }
-    """
-                )
+    """)
 
             self.on_mounted(initialize_quasar_proxy)
 

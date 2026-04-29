@@ -55,7 +55,9 @@ def _show_baseline_grid(names: list[str], baseline_dir: Path) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Compare test output vs baselines.")
+    parser = argparse.ArgumentParser(
+        description="Compare test output vs baselines."
+    )
     parser.add_argument(
         "test_dir",
         type=Path,
@@ -111,7 +113,9 @@ def main() -> None:
             continue
 
         if out_img.shape == ref_img.shape:
-            diff = np.clip(np.abs(out_img.astype(int) - ref_img.astype(int)) * 10, 0, 255).astype(np.uint8)
+            diff = np.clip(
+                np.abs(out_img.astype(int) - ref_img.astype(int)) * 10, 0, 255
+            ).astype(np.uint8)
         else:
             diff = np.zeros_like(out_img)
 

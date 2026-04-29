@@ -21,9 +21,9 @@ def _wait_for_scene(page: Page, app, timeout: float = 15) -> None:
     deadline = time.time() + timeout
     while app.canvas.scene is None and time.time() < deadline:
         page.wait_for_timeout(500)
-    assert app.canvas.scene is not None, (
-        f"WebgpuComponent.scene is still None after {timeout}s"
-    )
+    assert (
+        app.canvas.scene is not None
+    ), f"WebgpuComponent.scene is still None after {timeout}s"
 
 
 @app_test("tests.local_app_webgpu_demo")

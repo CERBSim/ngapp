@@ -1,4 +1,5 @@
 from . import file
+from . import keybindings
 from ._version import __version__
 from .app import (
     AccessLevel,
@@ -27,6 +28,7 @@ __all__ = [
     "AccessLevelConfig",
     "BaseModel",
     "file",
+    "keybindings",
     "create_app",
     "load_image",
     "read_file",

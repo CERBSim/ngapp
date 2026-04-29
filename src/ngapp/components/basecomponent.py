@@ -386,6 +386,7 @@ class Component(metaclass=BlockFrontendUpdate):
 
         self._component_name = component
         self._props = {}
+        self._observable_bindings = {}
         self.ui_slots = ui_slots or {}
         self._namespace = namespace
         self._id = id
@@ -668,8 +669,27 @@ class Component(metaclass=BlockFrontendUpdate):
             return self._namespace_id + "." + self._id
         return self._id
 
+    def _init_prop(self, key, value):
+        """Set a prop during __init__, with Observable support."""
+        from ..observable import Observable
+
+        if isinstance(value, Observable):
+            self._props[key] = value.value
+            dispose = value.on_change(lambda new, _: self._set_prop(key, new))
+            self._observable_bindings[key] = (value, dispose)
+        else:
+            self._props[key] = value
+
     @utils._count_calls
     def _set_prop(self, key: str, value):
+        from ..observable import Observable
+
+        if isinstance(value, Observable):
+            if key in self._observable_bindings:
+                self._observable_bindings[key][1]()
+            dispose = value.on_change(lambda new, _: self._set_prop(key, new))
+            self._observable_bindings[key] = (value, dispose)
+            value = value.value
         old_value = self._props.get(key, None)
         self._props[key] = value
         if value != old_value:

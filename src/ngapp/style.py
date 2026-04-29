@@ -67,8 +67,16 @@ class Theme:
     """
 
     _QUASAR_BRANDS = frozenset(
-        ("primary", "secondary", "accent", "dark",
-         "positive", "negative", "info", "warning")
+        (
+            "primary",
+            "secondary",
+            "accent",
+            "dark",
+            "positive",
+            "negative",
+            "info",
+            "warning",
+        )
     )
 
     def __init__(self, **kwargs):
@@ -93,9 +101,7 @@ class Theme:
         passes them to ``app.set_colors()``.
         """
         colors = {
-            k: getattr(self, k)
-            for k in self._QUASAR_BRANDS
-            if hasattr(self, k)
+            k: getattr(self, k) for k in self._QUASAR_BRANDS if hasattr(self, k)
         }
         if colors:
             app.set_colors(**colors)
