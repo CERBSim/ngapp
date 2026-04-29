@@ -14,6 +14,7 @@ with Concepts & Architecture and Components.
    getting_started
    concepts_architecture
    components
+   styling
    visualization
    user_settings
    deployment_environments

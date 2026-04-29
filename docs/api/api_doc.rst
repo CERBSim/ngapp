@@ -32,4 +32,5 @@ the :doc:`../tutorials` first, then return here when you need finer details.
    components/visualization
    components/material
    components/basecomponent
+   style
    utils

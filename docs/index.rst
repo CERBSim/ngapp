@@ -55,6 +55,7 @@ Then explore:
 
 * :doc:`concepts_architecture` – core ideas: apps, components, state, compute
 * :doc:`components` – building interfaces from ngapp and Quasar components
+* :doc:`styling` – composable styles, design tokens, and CSS class injection
 * :doc:`visualization` – interactive Plotly, WebGPU, and VTK-based views
 * :doc:`deployment_environments` – deployment options and compute environments
 * :doc:`tips_and_tricks` – advanced topics and JavaScript/Quasar integration

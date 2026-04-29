@@ -281,31 +281,59 @@ You can also override event handlers or add new methods to encapsulate logic:
 Custom components can be used just like built-in ones, and can be composed, styled, and extended as needed. For more advanced use, see the :class:`~ngapp.components.basecomponent.Component` API and the Quasar component wrappers in `ngapp.components.qcomponents`.
 
 
-Styling Components: `ui_style` and `ui_class`
-===============================================
+Styling Components: ``ui_style`` and ``ui_class``
+==================================================
 
-You can control the appearance of any component using the `ui_style` and `ui_class` keyword arguments:
+You can control the appearance of any component using the ``ui_style`` and
+``ui_class`` keyword arguments:
 
-- **`ui_style`** lets you set inline CSS styles directly on the component. For example, `ui_style="color: red; font-size: 20px;"` will make the text red and larger. This is a string of CSS rules applied only to that element.
-- **`ui_class`** lets you assign one or more CSS classes to the component. For example, `ui_class="q-mt-md text-bold"` will apply Quasar’s margin-top and bold text classes. This is useful for using Quasar’s utility classes or your own custom styles.
+- **``ui_style``** sets inline CSS styles on the component. Accepts a plain
+  string, a ``dict``, or a :class:`~ngapp.style.Style` object.
+- **``ui_class``** assigns CSS classes. Accepts a plain string, a list of
+  strings, or a :class:`~ngapp.style.CssClass` object.
 
-If you’re new to CSS and HTML:
-
-- `ui_style` is like giving direct instructions for how something should look (color, size, spacing, etc.).
-- `ui_class` is like giving the component a label that groups it with other elements that should look the same, using predefined style rules.
-
-**Example:**
+**Plain strings (still work as before):**
 
 .. code-block:: python
 
-   QBtn(ui_label="Styled Button", ui_style="background: orange; color: white;", ui_class="q-mb-lg")
+   QBtn(ui_label="Styled", ui_style="background: orange; color: white;", ui_class="q-mb-lg")
 
-For more about CSS and styling:
+**Using the Style object** (for dynamic or complex inline styles):
 
-- [MDN: CSS Basics](https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/CSS_basics)
-- [Quasar CSS Utility Classes](https://quasar.dev/docs) Part "Style & Identity"
-- [MDN: class attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/class)
-- [MDN: style attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/style)
+.. code-block:: python
+
+   from ngapp.style import Style
+
+   # Dynamic color from runtime value — no Quasar class for arbitrary colors
+   swatch.ui_style = Style(background_color=self.to_hex_string())
+
+**Using CSS classes via StyleSheet** (for shared multi-property styles with no
+Quasar equivalent):
+
+.. code-block:: python
+
+   from ngapp.style import Style, StyleSheet
+
+   css = StyleSheet()
+   overlay = css.add(Style(
+       position="fixed", bottom="20px", left="50%",
+       transform="translateX(-50%)",
+       background="rgba(15,23,42,0.92)",
+       backdrop_filter="blur(4px)",
+       border_radius="8px", z_index=9999,
+   ))
+
+   Div("Processing…", ui_class=overlay)
+
+For a full guide on composable styles, design tokens, and efficient CSS class
+injection, see :doc:`styling`.
+
+For more about CSS and styling in general:
+
+- `MDN: CSS Basics <https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/CSS_basics>`_
+- `Quasar CSS Utility Classes <https://quasar.dev/style/spacing>`_
+- `MDN: class attribute <https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/class>`_
+- `MDN: style attribute <https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/style>`_
 
 Next Steps
 ===========

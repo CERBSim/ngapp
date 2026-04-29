@@ -405,13 +405,18 @@ class Component(metaclass=BlockFrontendUpdate):
             )
         elif isinstance(ui_style, str):
             self._props["style"] = ui_style
+        elif ui_style is not None:
+            self._props["style"] = str(ui_style)
         else:
             self._props["style"] = ""
 
         if ui_class:
-            self._props["class"] = (
-                ui_class if isinstance(ui_class, str) else " ".join(ui_class)
-            )
+            if isinstance(ui_class, str):
+                self._props["class"] = ui_class
+            elif isinstance(ui_class, list):
+                self._props["class"] = " ".join(str(v) for v in ui_class)
+            else:
+                self._props["class"] = str(ui_class)
 
         if ui_hidden is not None:
             self.ui_hidden = ui_hidden
@@ -564,6 +569,8 @@ class Component(metaclass=BlockFrontendUpdate):
 
     @ui_style.setter
     def ui_style(self, value):
+        if not isinstance(value, str):
+            value = str(value)
         self._set_prop("style", value)
 
     @property
@@ -572,6 +579,10 @@ class Component(metaclass=BlockFrontendUpdate):
 
     @ui_class.setter
     def ui_class(self, value):
+        if not isinstance(value, (str, list)):
+            value = str(value)
+        elif isinstance(value, list):
+            value = " ".join(str(v) for v in value)
         self._set_prop("class", value)
 
     @property
