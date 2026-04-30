@@ -144,8 +144,12 @@ def _ensure_scene_ready(page, target, timeout: float = 30) -> None:
         page.wait_for_timeout(_RENDER_SETTLE_MS)
 
 
-def _readback_webgpu_texture(page, target, out_path: Path) -> None:
-    """Read back the GPU texture from a WebgpuComponent via webgpu's read_texture."""
+def _readback_webgpu_texture(page, target, out_path: Path, size: tuple[int, int] = (800, 600)) -> None:
+    """Read back the GPU texture from a WebgpuComponent at a fixed size.
+
+    Forces the canvas to *size* (width, height) before rendering so that
+    screenshots are independent of the actual browser layout.
+    """
     from webgpu.utils import read_texture
 
     scene = target.scene
@@ -153,7 +157,17 @@ def _readback_webgpu_texture(page, target, out_path: Path) -> None:
         scene is not None
     ), "WebgpuComponent.scene is None — draw() hasn't run"
 
-    texture = scene.canvas.target_texture
+    # Force the HTML canvas element to a fixed size and re-create GPU textures
+    canvas = scene.canvas
+    html_canvas = canvas.canvas
+    width, height = size
+    html_canvas.style.width = f"{width}px"
+    html_canvas.style.height = f"{height}px"
+    canvas.resize()
+    scene._render_objects(to_canvas=False)
+    page.wait_for_timeout(200)
+
+    texture = canvas.target_texture
     data = read_texture(texture)
 
     if texture.format == "bgra8unorm":
@@ -167,6 +181,7 @@ def assert_matches_baseline(
     target,
     filename: str,
     *,
+    size: tuple[int, int] = (800, 600),
     threshold: float = 0.01,
     output_dir: Path | str | None = None,
     baseline_dir: Path | str | None = None,
@@ -209,7 +224,7 @@ def assert_matches_baseline(
 
     if isinstance(target, WebgpuComponent):
         _ensure_scene_ready(page, target)
-        _readback_webgpu_texture(page, target, out_path)
+        _readback_webgpu_texture(page, target, out_path, size=size)
     else:
         locator = _locator_for(page, target)
         locator.screenshot(path=str(out_path))
