@@ -308,6 +308,15 @@ class App(QPage):
 
             self.on_mounted(initialize_quasar_proxy)
 
+            def disable_contextmenu():
+                import webgpu.platform as pl
+                pl.js.document.addEventListener(
+                    "contextmenu",
+                    pl.create_event_handler(lambda e: None, prevent_default=True),
+                )
+
+            self.on_mounted(disable_contextmenu)
+
     @property
     def _status(self):
         return self.context
