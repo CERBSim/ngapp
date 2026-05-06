@@ -136,6 +136,11 @@ class Div(Component):
         super().__init__("div", *children, **kwargs)
 
 
+class Span(Component):
+    def __init__(self, *children: Component | str, **kwargs):
+        super().__init__("span", *children, **kwargs)
+
+
 class Br(Component):
     def __init__(self, *children: Component | str, **kwargs):
         super().__init__("br", *children, **kwargs)
