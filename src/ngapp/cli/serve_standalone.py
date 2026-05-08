@@ -215,7 +215,10 @@ def host_local_app(
                 print("Failed to write NGAPP_TEST_URL_FILE:", e)
 
         if start_browser:
-            args = os.environ.get("NGAPP_BROWSER").split() or [None]
+            if os.environ.get("NGAPP_BROWSER"):
+                args = os.environ.get("NGAPP_BROWSER").split()
+            else:
+                args = [None]
             browser = args.pop(0)
             browser_path = None
             if browser:
