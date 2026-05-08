@@ -748,10 +748,7 @@ class WebgpuComponent(Component):
         elif scene is not None:
             self.draw(scene)
 
-        if self.scene is not None:
-            self.scene.options.camera.set_render_functions(
-                self.scene.render, self.scene.get_position
-            )
+
 
     def draw(self, scene, camera=None, light=None):
         """
