@@ -728,8 +728,12 @@ class WebgpuComponent(Component):
             self.draw(scene)
 
     def __on_unmount(self):
+        if self.scene is not None and self.scene.canvas is not None:
+            self.scene.cleanup()
+        self.scene = None
         if self.canvas is not None:
             self.canvas.update_html_canvas(None)
+            self.canvas = None
 
     def connect_webgpu(self):
         from webgpu import canvas, utils
