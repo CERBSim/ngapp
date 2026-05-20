@@ -730,10 +730,8 @@ class WebgpuComponent(Component):
     def __on_unmount(self):
         if self.scene is not None and self.scene.canvas is not None:
             self.scene.cleanup()
-        self.scene = None
         if self.canvas is not None:
             self.canvas.update_html_canvas(None)
-            self.canvas = None
 
     def connect_webgpu(self):
         from webgpu import canvas, utils
@@ -741,7 +739,13 @@ class WebgpuComponent(Component):
         html_canvas = self._js_component
 
         if self.canvas:
-            return self.canvas.update_html_canvas(html_canvas)
+            self.canvas.update_html_canvas(html_canvas)
+            # Lightweight reconnect: re-wire callbacks + reinstall JS engine
+            # without rebuilding render pipelines.
+            if self.scene is not None:
+                self.scene.reconnect(self.canvas)
+                self.scene.render()
+            return
 
         utils.init_device_sync()
         self.canvas = canvas.Canvas(utils.get_device(), html_canvas)

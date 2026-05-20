@@ -16,7 +16,7 @@ from watchdog.observers import Observer
 
 from ngapp.app import create_app
 from ngapp.cli.serve_in_venv import EventHandler
-from ngapp.components.basecomponent import get_component
+from ngapp.components.basecomponent import get_component, unmount_component
 
 from .. import utils
 
@@ -132,7 +132,7 @@ def host_local_app(
 
         server = platform.websocket_server
         server.expose("get_component", get_component)
-        server.expose("unmount_component", lambda _: None)
+        server.expose("unmount_component", unmount_component)
 
         env = utils.set_environment(utils.Environment.LOCAL_APP, False, server)
 
