@@ -21,6 +21,7 @@ class _HTTPServer(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header("Cross-Origin-Opener-Policy", "same-origin")
         self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
+        self.send_header("Cache-Control", "no-cache")
         super().end_headers()
 
     def log_message(self, format, *args):
