@@ -85,6 +85,45 @@ This is especially useful with ``NumberInput`` (or any ``QInput`` with
    inp = NumberInput(ui_model_value=scale, ui_label="Scale")
    # User types "2.5" → observable receives 2.5 as float
 
+Display formatting with ``formatter``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Pass a ``formatter`` function to control how the value is presented in UI
+widgets.  The stored value is **not affected** — only the display
+representation changes.  This is the counterpart to ``converter``:
+
+- ``converter``: Widget → Observable (parse user input)
+- ``formatter``: Observable → Widget (format for display)
+
+.. code-block:: python
+
+   colormap_min = Observable(
+       0.000007957,
+       "colormap_min",
+       converter=float,
+       formatter=lambda v: f"{v:.4g}",
+   )
+
+   colormap_min.value          # 7.957394756115198e-06 (raw float)
+   colormap_min.display_value  # "7.957e-06" (formatted string)
+
+   # Bind to a QInput — the widget shows "7.957e-06"
+   inp = QInput(ui_model_value=colormap_min, ui_type="number")
+
+   # When autoscale updates the value:
+   colormap_min.value = 0.00000000123
+   # Widget automatically shows "1.23e-09" (formatter applied)
+
+   # When the user types "0.5" in the input:
+   # converter parses it → stored as 0.5
+   # formatter presents it → widget shows "0.5"
+
+The ``display_value`` property is also available for manual use:
+
+.. code-block:: python
+
+   label.ui_children = [f"Range: {obs_min.display_value} – {obs_max.display_value}"]
+
 Reading and writing
 ~~~~~~~~~~~~~~~~~~~
 

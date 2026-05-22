@@ -246,6 +246,88 @@ registered rules. It uses ``call_js`` internally, so it's safe to call during
 ``__init__``.
 
 
+Scoped Nested Rules — Targeting Child Components
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When you have a container (like a settings panel) and want to automatically
+style **all** Quasar widgets inside it without touching each child component,
+use :meth:`~ngapp.style.CssClass.rule` on the class handle returned by
+``css.add()``:
+
+.. code-block:: python
+
+   panel = css.add(Style(height="100%", overflow_y="auto"))
+
+   # Every QCheckbox inside panel gets compact sizing
+   panel.rule(".q-checkbox__label", font_size="0.82rem")
+   panel.rule(".q-field--dense .q-field__control", min_height="30px")
+   panel.rule(".q-slider", margin="4px 0")
+
+This generates CSS like:
+
+.. code-block:: css
+
+   .ngs0 .q-checkbox__label { font-size: 0.82rem; }
+   .ngs0 .q-field--dense .q-field__control { min-height: 30px; }
+   .ngs0 .q-slider { margin: 4px 0; }
+
+Any component with ``ui_class=str(panel)`` automatically applies these rules
+to all its descendants — no manual ``ui_style`` needed on each widget.
+
+**Chaining:**
+
+Multiple rules can be chained in a single expression:
+
+.. code-block:: python
+
+   panel.rule(".q-checkbox__label", font_size="0.82rem") \
+        .rule(".q-field--dense", margin_bottom="2px") \
+        .rule(".q-slider", margin="4px 0") \
+        .rule(".q-btn--dense", font_size="0.78rem")
+
+**Passing Style objects:**
+
+You can pass an existing ``Style`` object instead of kwargs:
+
+.. code-block:: python
+
+   compact_input = Style(min_height="30px", font_size="0.82rem")
+   panel.rule(".q-field--dense .q-field__control", compact_input)
+
+**Dict-style subscript:**
+
+An alternative syntax using ``[]``:
+
+.. code-block:: python
+
+   panel[".q-checkbox__label"] = Style(font_size="0.82rem")
+   panel[".q-slider"] = Style(margin="4px 0")
+
+**Real-world example — property panel styling:**
+
+.. code-block:: python
+
+   # In styles.py — one block styles the entire property panel
+   sidebar_props = css.add(Style(height="100%", overflow_y="auto"))
+
+   sidebar_props.rule(".q-checkbox", padding="0", min_height="28px") \
+                .rule(".q-checkbox__label", font_size="0.82rem") \
+                .rule(".q-field--dense .q-field__control", min_height="32px") \
+                .rule(".q-field--dense .q-field__label", font_size="0.72rem") \
+                .rule(".q-slider", margin="4px 0") \
+                .rule(".q-expansion-item .q-item", padding="8px 12px",
+                      min_height="38px", background="rgba(0,0,0,0.02)")
+
+   # Every section added to the panel inherits compact styling automatically
+
+.. note::
+
+   Scoped rules use standard CSS descendant selectors. They work with any
+   valid CSS selector — class names, pseudo-classes, combinators, etc.
+   The rules are injected along with all other StyleSheet rules when
+   ``css.inject(app)`` is called.
+
+
 When to Use What
 -----------------
 

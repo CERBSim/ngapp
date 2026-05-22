@@ -674,8 +674,8 @@ class Component(metaclass=BlockFrontendUpdate):
         from ..observable import Observable
 
         if isinstance(value, Observable):
-            self._props[key] = value.value
-            dispose = value.on_change(lambda new, _: self._set_prop(key, new))
+            self._props[key] = value.display_value
+            dispose = value.on_change(lambda new, _, obs=value: self._set_prop(key, obs.display_value))
             self._observable_bindings[key] = (value, dispose)
         else:
             self._props[key] = value
@@ -687,9 +687,9 @@ class Component(metaclass=BlockFrontendUpdate):
         if isinstance(value, Observable):
             if key in self._observable_bindings:
                 self._observable_bindings[key][1]()
-            dispose = value.on_change(lambda new, _: self._set_prop(key, new))
+            dispose = value.on_change(lambda new, _, obs=value: self._set_prop(key, obs.display_value))
             self._observable_bindings[key] = (value, dispose)
-            value = value.value
+            value = value.display_value
         old_value = self._props.get(key, None)
         self._props[key] = value
         if value != old_value:

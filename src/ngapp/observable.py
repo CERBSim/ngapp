@@ -104,12 +104,20 @@ class Observable(Generic[T]):
         If the converter raises ``ValueError`` or ``TypeError``, the
         assignment is silently ignored (the value stays unchanged).
         Useful for type coercion, e.g. ``converter=float``.
+    formatter : callable, optional
+        A function applied to the stored value when presenting it to
+        UI widgets (via :attr:`display_value`).  The raw :attr:`value`
+        is unaffected.  Useful for number formatting, e.g.
+        ``formatter=lambda v: f"{v:.4g}"``.
 
     Attributes
     ----------
     value : T
         The current value.  Setting this property triggers change
         notification when the new value differs from the old one.
+    display_value
+        The formatted value for display.  If no *formatter* is set,
+        this is identical to :attr:`value`.
 
     Example
     -------
@@ -123,15 +131,22 @@ class Observable(Generic[T]):
         enabled.toggle()       # prints: True -> False
 
         dispose()              # removes the listener
+
+        # Formatter example:
+        temp = Observable(0.000123, "temp", converter=float,
+                          formatter=lambda v: f"{v:.4g}")
+        temp.display_value     # "0.000123" → "0.000123" wait no "1.23e-04"
     """
 
-    __slots__ = ("_name", "_value", "_listeners", "_converter")
+    __slots__ = ("_name", "_value", "_listeners", "_converter", "_formatter")
 
     def __init__(
-        self, default: T, name: str = "", converter: Callable | None = None
+        self, default: T, name: str = "", converter: Callable | None = None,
+        formatter: Callable | None = None,
     ):
         self._name: str = name
         self._converter = converter
+        self._formatter = formatter
         self._value: T = converter(default) if converter else default
         self._listeners: list[Callable[[T, T], None]] = []
 
@@ -140,6 +155,17 @@ class Observable(Generic[T]):
     @property
     def value(self) -> T:
         """The current value."""
+        return self._value
+
+    @property
+    def display_value(self):
+        """The value formatted for display in UI widgets.
+
+        If a *formatter* was provided, returns ``formatter(value)``.
+        Otherwise returns :attr:`value` unchanged.
+        """
+        if self._formatter is not None:
+            return self._formatter(self._value)
         return self._value
 
     @value.setter
@@ -246,7 +272,7 @@ def bind(
             return
         _syncing = True
         try:
-            setattr(widget, widget_attr, val)
+            setattr(widget, widget_attr, prop.display_value)
         finally:
             _syncing = False
 
