@@ -4,9 +4,10 @@ FROM ${BASE_IMAGE}
 WORKDIR /app
 
 # Install ngapp and its e2e/dev dependencies
+COPY .git /tmp/ngapp_build/.git
 COPY pyproject.toml /tmp/ngapp_build/
 COPY src/ /tmp/ngapp_build/src/
-RUN SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0.dev0 pip install --no-cache-dir --break-system-packages "/tmp/ngapp_build[e2e,dev]" \
+RUN pip install --no-cache-dir --break-system-packages "/tmp/ngapp_build[e2e,dev]" \
     && rm -rf /tmp/ngapp_build
 
 # Pre-download the frontend so tests don't need internet at runtime
