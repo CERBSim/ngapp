@@ -78,7 +78,7 @@ class BaseFrontend:
     def __init__(self, link: LinkBase):
         self.link = link
 
-    def update_component(self, comp, data, method):
+    def update_component(self, comp, data, method, blocking=True):
         raise NotImplementedError()
 
     def reset_app(self, app):
@@ -91,7 +91,7 @@ class BaseFrontend:
 
 class BrowserFrontend(BaseFrontend):
     @_count_calls
-    def update_component(self, comp, data, method):
+    def update_component(self, comp, data, method, blocking=True):
         if method not in comp._js_callbacks:
             return
 
@@ -114,7 +114,7 @@ class BrowserFrontend(BaseFrontend):
                 **data,
             )
 
-        comp._js_callbacks[method](data)
+        comp._js_callbacks[method](data, _ignore_result=not blocking)
 
     def reset_app(self, app):
         self.link.call_method_ignore_return(
@@ -156,7 +156,7 @@ class BrowserFrontend(BaseFrontend):
 
 
 class ComputeFrontend(BaseFrontend):
-    def update_component(self, comp, data, method):
+    def update_component(self, comp, data, method, blocking=True):
         try:
             if comp._block_frontend_update:
                 return

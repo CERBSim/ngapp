@@ -765,9 +765,9 @@ class Component(metaclass=BlockFrontendUpdate):
         }
 
     @utils._count_calls
-    def _update_frontend(self, data=None, method="update_frontend"):
+    def _update_frontend(self, data=None, method="update_frontend", blocking=True):
         environment = get_environment()
-        environment.frontend.update_component(self, data, method)
+        environment.frontend.update_component(self, data, method, blocking=blocking)
 
     def download_file(
         self,
