@@ -644,7 +644,6 @@ class PlotlyComponent(Component):
             self._update_frontend(
                 method="draw",
                 data={"id": self._id, "data": to_json_plotly(self.data)},
-                blocking=False,
             )
 
     def _get_markdown(self) -> str:

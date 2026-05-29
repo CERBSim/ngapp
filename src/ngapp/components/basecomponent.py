@@ -765,7 +765,7 @@ class Component(metaclass=BlockFrontendUpdate):
         }
 
     @utils._count_calls
-    def _update_frontend(self, data=None, method="update_frontend", blocking=True):
+    def _update_frontend(self, data=None, method="update_frontend", blocking=False):
         environment = get_environment()
         environment.frontend.update_component(self, data, method, blocking=blocking)
 
