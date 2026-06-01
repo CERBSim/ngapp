@@ -162,6 +162,7 @@ def host_local_app(
         last_checkpoint = now
 
         ws_port = server.port
+        ws_token = server.auth_token
 
         if start_http_server:
             if reuse_frontend and _is_port_open(frontend_port):
@@ -201,7 +202,7 @@ def host_local_app(
         startup_timing_query = "&startupTiming=1" if timing_enabled else ""
         url = (
             f"http://localhost:{http_port}?backendPort={http_port}"
-            f"&websocketPort={ws_port}{startup_timing_query}"
+            f"&websocketPort={ws_port}&wsToken={ws_token}{startup_timing_query}"
         )
 
         # Optional test hook: when running under automated tests, write the
