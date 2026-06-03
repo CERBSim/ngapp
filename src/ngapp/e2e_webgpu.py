@@ -157,12 +157,38 @@ def _readback_webgpu_texture(page, target, out_path: Path, size: tuple[int, int]
         scene is not None
     ), "WebgpuComponent.scene is None — draw() hasn't run"
 
-    # Force the HTML canvas element to a fixed size and re-create GPU textures
     canvas = scene.canvas
     html_canvas = canvas.canvas
     width, height = size
-    html_canvas.style.width = f"{width}px"
-    html_canvas.style.height = f"{height}px"
+    html_canvas.style.setProperty("width", f"{width}px", "important")
+    html_canvas.style.setProperty("height", f"{height}px", "important")
+    from webgpu.webgpu_api import Color
+
+    prev_clear = getattr(canvas, "clear_color", None)
+    if prev_clear is not None:
+        canvas.clear_color = Color(1, 1, 1, 1)
+
+    bg_saved = []
+    text_saved = []
+    try:
+        from webgpu.background import Background
+        from webgpu.labels import Labels
+
+        def _neutralize(ro):
+            if isinstance(ro, Background):
+                bg_saved.append((ro, ro.bg_color))
+                ro.bg_color = (1.0, 1.0, 1.0)
+            elif isinstance(ro, Labels) and ro.colors is None:
+                text_saved.append((ro, ro.text_color))
+                ro.text_color = (0.0, 0.0, 0.0)
+            for sub in getattr(ro, "render_objects", []):
+                _neutralize(sub)
+
+        for ro in getattr(scene, "render_objects", []):
+            _neutralize(ro)
+    except Exception:
+        pass
+
     canvas.resize()
     scene._render_objects(to_canvas=False)
     page.wait_for_timeout(200)
@@ -174,6 +200,13 @@ def _readback_webgpu_texture(page, target, out_path: Path, size: tuple[int, int]
         data = data[:, :, [2, 1, 0, 3]]
 
     Image.fromarray(data[:, :, :3]).save(str(out_path))
+
+    for ro, color in bg_saved:
+        ro.bg_color = color
+    for ro, color in text_saved:
+        ro.text_color = color
+    if prev_clear is not None:
+        canvas.clear_color = prev_clear
 
 
 def assert_matches_baseline(
