@@ -715,6 +715,8 @@ class WebgpuComponent(Component):
         # scene must be set in draw
         self.scene = None
         self.canvas = None
+        # User input handlers (event, callback, modifiers), re-applied in draw().
+        self._event_handlers = []
         self.on("mounted", self.connect_webgpu)
         self.on("unmount", self.__on_unmount)
         self.on_load(self.__on_load)
@@ -758,7 +760,8 @@ class WebgpuComponent(Component):
 
 
 
-    def draw(self, scene, camera=None, light=None):
+    def draw(self, scene, camera=None, light=None, use_js_engine=None,
+             show_gui_controls=False):
         """
         Render a 3D scene on the webgpu canvas. Go to the webgpu documentation for more details on how to create scenes.
 
@@ -766,15 +769,26 @@ class WebgpuComponent(Component):
             scene: A webgpu.scene.Scene, BaseRenderer, or list of renderers.
             camera: Optional camera settings.
             light: Optional lighting settings.
+            use_js_engine: True = JS engine drives rendering/camera; False =
+                legacy Python path (custom camera movement); None = default.
+            show_gui_controls: Show the JS engine's built-in lil-gui panel.
+                Defaults to False in ngapp (apps provide their own UI).
         Returns:
             The active scene object.
         """
         from webgpu import draw
 
         if isinstance(scene, draw.BaseRenderer):
-            scene = draw.Scene([scene], camera=camera, light=light)
+            scene = draw.Scene([scene], camera=camera, light=light,
+                               use_js_engine=use_js_engine, show_gui_controls=show_gui_controls)
         elif isinstance(scene, list):
-            scene = draw.Scene(scene, camera=camera, light=light)
+            scene = draw.Scene(scene, camera=camera, light=light,
+                               use_js_engine=use_js_engine, show_gui_controls=show_gui_controls)
+        else:
+            # An already-built Scene was passed — honor overrides.
+            if use_js_engine is not None:
+                scene._use_js_engine = bool(use_js_engine)
+            scene._show_gui_controls = bool(show_gui_controls)
 
         # env = self.context.env
         env = get_environment()
@@ -796,9 +810,65 @@ class WebgpuComponent(Component):
             self.scene.input_handler.on_mouseup(self.mouseup)
             self.scene.input_handler.on_mouseout(self.mouseout)
             self.scene.input_handler.on_click(self.click)
+            # (Re-)apply user handlers registered via on_click/on_hover/etc.
+            for event, cb, mods in self._event_handlers:
+                self._wire_event(event, cb, mods)
         else:
             self.scene = scene
         return self.scene
+
+    # -- Input event API --
+
+    def _wire_event(self, event, cb, mods):
+        self.scene.input_handler.on(
+            event, cb, mods.get("alt"), mods.get("shift"), mods.get("ctrl")
+        )
+
+    def _add_event_handler(self, event, cb, mods):
+        self._event_handlers.append((event, cb, mods))
+        if self.scene is not None and self.scene.input_handler is not None:
+            self._wire_event(event, cb, mods)
+
+    def on_click(self, callback, *, ctrl=None, shift=None, alt=None):
+        """Call ``callback(event)`` on click (event has button, canvasX/Y, x/y, modifiers)."""
+        self._add_event_handler("click", callback, {"ctrl": ctrl, "shift": shift, "alt": alt})
+
+    def on_dblclick(self, callback, *, ctrl=None, shift=None, alt=None):
+        """Call ``callback(event)`` on double-click."""
+        self._add_event_handler("dblclick", callback, {"ctrl": ctrl, "shift": shift, "alt": alt})
+
+    def on_hover(self, callback):
+        """Call ``callback(event)`` on mouse move with no button pressed."""
+        self._add_event_handler("mousemove", callback, {})
+
+    def on_pick(self, callback):
+        """Call ``callback(world_point, event)`` on left-click; ``world_point``
+        is the 3D point under the cursor or None. For element identity use
+        ``renderer.on_select`` or :meth:`select`."""
+
+        def _handler(event):
+            if event.get("button", 0) != 0:
+                return
+            point = None
+            try:
+                point = self.scene.get_position(event["canvasX"], event["canvasY"])
+            except Exception:
+                point = None
+            callback(point, event)
+
+        self._add_event_handler("click", _handler, {})
+
+    def select(self, x, y):
+        """Run GPU selection at canvas pixel (x, y), dispatching ``on_select``
+        on the renderer under the cursor. See ``renderer.on_select``."""
+        if self.scene is not None:
+            return self.scene.select(x, y)
+
+    def get_position(self, x, y):
+        """Return the 3D world point under canvas pixel (x, y), or None."""
+        if self.scene is not None:
+            return self.scene.get_position(x, y)
+        return None
 
     def click(self, event):
         pass
