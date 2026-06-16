@@ -585,21 +585,21 @@ class SolutionWebgui(Row):
         return await self._get_markdown()
 
 
-class PlotlyComponent(Component):
+class PlotlyComponent(Div):
     """Plotly plot component.
 
-    This component renders Plotly figures inside an ngapp application.
-    It supports two main modes of operation:
+    Loads plotly.js from a CDN once (shared across instances) and renders via
+    ``Plotly.react`` over the JS bridge. The plot themes
+    itself to the active page theme (``<html data-theme>``) and re-renders on
+    theme changes via a self-installed ``MutationObserver``.
 
-    1. **Inline mode** (no ``filename``): the figure data is sent to the
-        browser and rendered directly in the client.
-    2. **File mode** (``filename`` set): the figure is exported as a
-        static ``.png`` image and the Plotly JSON description is written
-        to disk. This is useful for documentation and offline reports.
+    Two modes:
 
-    Basic usage (inline):
+    1. **Inline mode** (no ``filename``): ``draw(fig)`` renders in the browser.
+    2. **File mode** (``filename`` set): ``draw(fig)`` writes ``<filename>.png``
+       and the Plotly JSON to disk (for docs / reports); nothing is rendered live.
 
-    .. code-block:: python
+    Basic usage (inline)::
 
         from ngapp.components.visualization import PlotlyComponent
         import plotly.graph_objects as go
@@ -608,49 +608,191 @@ class PlotlyComponent(Component):
         plot = PlotlyComponent(id="my_plot")
         plot.draw(fig)
 
-    File-based usage (for docs and reports):
-
-    .. code-block:: python
+    File-based usage (for docs and reports)::
 
         plot = PlotlyComponent(filename="results/my_plot")
         plot.draw(fig)
-
-    After calling :meth:`draw`, ``results/my_plot.png`` and
-    ``results/my_plot.json`` will be created.
     """
 
-    def __init__(
-        self,
-        id: str = "",
-        filename: str = "",
-        **kwargs,
-    ):
+    _SRC = "https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"
+    _state = "none"      # shared lib-load state: "none" | "loading" | "ready"
+    _waiting: list = []  # instances queued until the lib has loaded
+    _plotly = None       # cached window.Plotly proxy (resolved once, on load)
+
+    def __init__(self, id: str = "", filename: str = "", **kwargs):
         id = id or filename
-        super().__init__(id=id, component="PlotlyComponent", **kwargs)
+        kwargs.setdefault("ui_style", "width: 100%; height: 480px")
+        super().__init__(id=id, **kwargs)
         self.filename = filename
-        self.data = None
-        self._props["style"] = "width: 100%; height: 480px"
+        self.data = None          # back-compat: last drawn figure as a dict
+        self._figure = None
+        self._dark = False        # cached theme (refreshed on the main thread)
+        self._theme_observer = None
+        self._theme_mql = None
+        self._theme_proxy = None
+        self._onload_proxy = None
+        self.on_mounted(lambda *a: self.call_js(self._setup))
+        self.on("unmount", self._on_unmount)
 
     def draw(self, figure) -> None:
+        """Render *figure* inline, or export it to ``<filename>.png`` + JSON."""
         if self.filename:
             self.data = None
             figure.write_image(f"{self.filename}.png")
             write_file(self.filename, figure.to_json())
-        else:
-            self.data = figure.to_dict()
-            self.data["config"] = {"responsive": False, "displaylogo": False}
-            from plotly.io.json import to_json_plotly
+            return
+        self._figure = figure
+        try:
+            self.data = figure.to_dict() if hasattr(figure, "to_dict") else dict(figure)
+        except Exception:
+            self.data = None
+        self.redraw()
 
-            self._update_frontend(
-                method="draw",
-                data={"id": self._id, "data": to_json_plotly(self.data)},
+    def redraw(self) -> None:
+        """Re-render the current figure.
+
+        Fire-and-forget with no blocking bridge round-trips (uses the cached
+        ``Plotly`` proxy and ``self._dark``), so it is safe to call from worker
+        threads — e.g. a background solve loop — just like the previous
+        component's ``_update_frontend`` was.
+        """
+        if self._figure is None or self._js_component is None:
+            return
+        if PlotlyComponent._state != "ready" or PlotlyComponent._plotly is None:
+            return  # mount / onload renders once the lib is ready
+        try:
+            d = self._themed_dict()
+            PlotlyComponent._plotly._call_method_ignore_return(
+                "react",
+                [self._js_component, d["data"], d["layout"],
+                 {"responsive": True, "displaylogo": False}],
             )
+        except Exception as e:
+            print(f"PlotlyComponent: render failed: {e}")
 
     def _get_markdown(self) -> str:
-        markdown = ""
-        if self._id:
-            markdown += f"![{self._id}]({self._id + '.png'})\n"
-        return markdown
+        return f"![{self._id}]({self._id + '.png'})\n" if self._id else ""
+
+    def _setup(self, js):
+        import webgpu.platform as pl
+
+        self._dark = self._is_dark(js)
+        if self._theme_observer is None:
+            try:
+                self._theme_proxy = pl.create_proxy(self._on_theme_change)
+                observer = js.MutationObserver._new(self._theme_proxy)
+                observer.observe(
+                    js.document.documentElement,
+                    {"attributes": True, "attributeFilter": ["data-theme"]},
+                )
+                self._theme_observer = observer
+                mql = js.window.matchMedia("(prefers-color-scheme: dark)")
+                mql.addEventListener("change", self._theme_proxy)
+                self._theme_mql = mql
+            except Exception as e:
+                print(f"PlotlyComponent: theme observer setup failed: {e}")
+
+        cls = PlotlyComponent
+        if cls._state == "ready":
+            self.redraw()
+            return
+        cls._waiting.append(self)
+        if cls._state == "loading":
+            return
+        cls._state = "loading"
+        self._onload_proxy = pl.create_proxy(self._on_lib_loaded)
+        script = js.document.createElement("script")
+        script.crossOrigin = "anonymous"
+        script.src = cls._SRC
+        script.onload = self._onload_proxy
+        js.document.head.appendChild(script)
+
+    def _on_lib_loaded(self, *_args):
+        import webgpu.platform as pl
+
+        cls = PlotlyComponent
+        try:
+            cls._plotly = pl.js.window.Plotly
+        except Exception as e:
+            print(f"PlotlyComponent: could not resolve Plotly: {e}")
+            return
+        cls._state = "ready"
+        waiting, cls._waiting = cls._waiting, []
+        for comp in waiting:
+            try:
+                comp.redraw()
+            except Exception as e:
+                print(f"PlotlyComponent: render failed: {e}")
+
+    def _on_theme_change(self, *_args):
+        def _apply(js):
+            self._dark = self._is_dark(js)
+            self.redraw()
+
+        try:
+            self.call_js(_apply)
+        except Exception:
+            pass
+
+    def _on_unmount(self):
+        obs, mql, proxy = self._theme_observer, self._theme_mql, self._theme_proxy
+        self._theme_observer = self._theme_mql = None
+        if obs is None and mql is None:
+            return
+
+        def _cleanup(js):
+            if obs is not None:
+                obs.disconnect()
+            if mql is not None and proxy is not None:
+                mql.removeEventListener("change", proxy)
+
+        try:
+            self.call_js(_cleanup)
+        except Exception:
+            pass
+
+    def _themed_dict(self) -> dict:
+        import json
+        import plotly.graph_objects as go
+        import plotly.io as pio
+
+        fig = self._figure
+        figure = fig if isinstance(fig, go.Figure) else go.Figure(fig)
+        d = json.loads(pio.to_json(figure))  # JSON-safe (handles numpy)
+        d["layout"] = self._theme_layout(d.get("layout", {}), self._dark)
+        return d
+
+    @staticmethod
+    def _theme_layout(layout: dict, dark: bool) -> dict:
+        fg = "#d3dae3" if dark else "#1b222d"
+        grid = "#3a4450" if dark else "#dde2e9"
+        line = "#828d9c" if dark else "#6b7689"
+        out = dict(layout or {})
+        out["paper_bgcolor"] = "rgba(0,0,0,0)"
+        out["plot_bgcolor"] = "rgba(0,0,0,0)"
+        out["font"] = {**out.get("font", {}), "color": fg}
+        if "legend" in out:
+            out["legend"] = {**out["legend"], "bgcolor": "rgba(0,0,0,0)", "bordercolor": grid}
+        for k in list(out.keys()):
+            if (k.startswith("xaxis") or k.startswith("yaxis")) and isinstance(out[k], dict):
+                out[k] = {**out[k], "gridcolor": grid, "zerolinecolor": grid, "linecolor": line}
+        return out
+
+    @staticmethod
+    def _is_dark(js) -> bool:
+        try:
+            t = js.document.documentElement.getAttribute("data-theme")
+            t = str(t) if t is not None else None
+        except Exception:
+            t = None
+        if t == "dark":
+            return True
+        if t == "light":
+            return False
+        try:
+            return bool(js.window.matchMedia("(prefers-color-scheme: dark)").matches)
+        except Exception:
+            return False
 
 
 canvas_counter = 0
