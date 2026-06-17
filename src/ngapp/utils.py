@@ -335,7 +335,10 @@ class Environment:
         import pickle
 
         options = {"multiple": False, "accept": ".sav"} | (options or {})
-        pick = self.js.showOpenFilePicker(options)
+        try:
+            pick = self.js.showOpenFilePicker(options)
+        except Exception:
+            return None
         return pickle.loads(pick[0].getFile().arrayBuffer())
 
     def reset_app(self, app):
@@ -344,16 +347,31 @@ class Environment:
     def save_file_local(
         self, data: bytes | str, filename: str, options: dict | None = None
     ) -> None:
-        from webgpu import platform
+        write = self.begin_save_file_local(filename, options)
+        if write is None:
+            return
+        write(data)
 
+    def begin_save_file_local(
+        self, filename: str, options: dict | None = None
+    ):
+        """Open the save file picker and return a writer callback.
+        """
         options = options or {}
         if "suggestedName" not in options:
             options["suggestedName"] = filename
 
-        pick = self.js.showSaveFilePicker(options)
-        stream = pick.createWritable()
-        stream.write(data)
-        stream.close()
+        try:
+            pick = self.js.showSaveFilePicker(options)
+        except Exception:
+            return None
+
+        def write(data: bytes | str) -> None:
+            stream = pick.createWritable()
+            stream.write(data)
+            stream.close()
+
+        return write
 
     def delete(cls, path):
         get_environment().delete(path)

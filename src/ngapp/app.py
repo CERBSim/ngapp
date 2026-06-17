@@ -460,7 +460,18 @@ class App(QPage):
     @classmethod
     def load_local(cls):
         env = get_environment()
-        data = env.load_data_local()
+        try:
+            data = env.load_data_local()
+        except Exception as e:
+            current = getattr(env.frontend, "app", None)
+            msg = ("Could not load: the file is empty or incomplete."
+                   if isinstance(e, EOFError)
+                   else f"Could not load: not a valid project file ({e}).")
+            if current is not None:
+                current._notify(msg, type="negative", timeout=6000)
+            return
+        if data is None:
+            return  # user cancelled the picker
         app = cls()
         app._load_app(data)
         env.reset_app(app)
@@ -521,15 +532,47 @@ class App(QPage):
         get_environment().reset_app(app)
         return app
 
+    def _notify(self, message, **opts):
+        """Best-effort Quasar toast. Never raises (e.g. headless contexts)."""
+        try:
+            self.quasar.notify({"message": message, "position": "top", **opts})
+        except Exception:
+            pass
+
     @final
     def save_local(self):
         import pickle
 
-        self._emit_recursive("before_save")
-        dump = self._dump_app(include_storage_data=True)
         name = self.name + ".sav" if self.name is not None else "untitled.sav"
-        data = pickle.dumps(dump)
-        self.env.save_file_local(data, name)
+        write = self.env.begin_save_file_local(name)
+        if write is None:
+            return  # user cancelled, or no local-file support
+
+        try:
+            dismiss = self.quasar.notify({
+                "message": "Saving project…", "spinner": True,
+                "timeout": 0, "color": "primary", "position": "top",
+            })
+        except Exception:
+            dismiss = lambda *a, **k: None
+
+        def _dismiss():
+            try:
+                dismiss()
+            except Exception:
+                pass
+
+        try:
+            self._emit_recursive("before_save")
+            data = pickle.dumps(self._dump_app(include_storage_data=True))
+            write(data)
+        except Exception as e:
+            _dismiss()
+            self._notify(f"Save failed: {e}", type="negative", timeout=6000)
+            raise
+        _dismiss()
+        self._notify("Project saved.", type="positive",
+                     icon="mdi-content-save-check", timeout=2500)
 
     @final
     def quit(self):
