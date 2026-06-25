@@ -844,7 +844,10 @@ class WebgpuComponent(Component):
     :meth:`mouseout` to react to user input on the canvas.
     """
 
-    def __init__(self, width="800px", height="600px", **kwargs):
+    # canvas background per theme (matches ngsolve_gui's VIEWPORT_CLEAR)
+    _THEME_CLEAR = {"light": (0.933, 0.945, 0.961), "dark": (0.290, 0.333, 0.400)}
+
+    def __init__(self, width="800px", height="600px", auto_theme=True, **kwargs):
         global canvas_counter
         super().__init__("canvas", **kwargs)
         if "ui_style" not in kwargs:
@@ -857,6 +860,9 @@ class WebgpuComponent(Component):
         # scene must be set in draw
         self.scene = None
         self.canvas = None
+        self.auto_theme = auto_theme
+        self._theme_observer = None
+        self._theme_proxy = None
         # User input handlers (event, callback, modifiers), re-applied in draw().
         self._event_handlers = []
         self.on("mounted", self.connect_webgpu)
@@ -876,6 +882,78 @@ class WebgpuComponent(Component):
             self.scene.cleanup()
         if self.canvas is not None:
             self.canvas.update_html_canvas(None)
+        obs = self._theme_observer
+        self._theme_observer = None
+        if obs is not None:
+            def _cleanup(js):
+                try:
+                    obs.disconnect()
+                except Exception:
+                    pass
+            try:
+                self.call_js(_cleanup)
+            except Exception:
+                pass
+
+    @staticmethod
+    def _is_dark(js) -> bool:
+        try:
+            t = js.document.documentElement.getAttribute("data-theme")
+            t = str(t) if t is not None else None
+        except Exception:
+            t = None
+        if t == "dark":
+            return True
+        if t == "light":
+            return False
+        try:
+            return bool(js.window.matchMedia("(prefers-color-scheme: dark)").matches)
+        except Exception:
+            return False
+
+    def _apply_theme_clear(self, js=None):
+        """Tint the canvas background for the active light/dark theme."""
+        from webgpu.webgpu_api import Color
+
+        def _do(jss):
+            if self.canvas is None:
+                return
+            key = "dark" if self._is_dark(jss) else "light"
+            self.canvas.clear_color = Color(*self._THEME_CLEAR[key], 1)
+            if self.scene is not None:
+                try:
+                    self.scene.render()
+                except Exception:
+                    pass
+
+        if js is not None:
+            _do(js)
+        else:
+            try:
+                self.call_js(_do)
+            except Exception:
+                pass
+
+    def _setup_theme_observer(self):
+        if self._theme_observer is not None:
+            return
+
+        def _install(js):
+            import webgpu.platform as pl
+            try:
+                self._theme_proxy = pl.create_proxy(
+                    lambda *a: self._apply_theme_clear())
+                obs = js.MutationObserver._new(self._theme_proxy)
+                obs.observe(js.document.documentElement,
+                            {"attributes": True, "attributeFilter": ["data-theme"]})
+                self._theme_observer = obs
+            except Exception:
+                pass
+
+        try:
+            self.call_js(_install)
+        except Exception:
+            pass
 
     def connect_webgpu(self):
         from webgpu import canvas, utils
@@ -893,6 +971,10 @@ class WebgpuComponent(Component):
 
         utils.init_device_sync()
         self.canvas = canvas.Canvas(utils.get_device(), html_canvas)
+
+        if self.auto_theme:
+            self._apply_theme_clear()       # initial background
+            self._setup_theme_observer()    # follow later theme switches
 
         scene = self.storage.get("scene")
         if self.scene is not None:
