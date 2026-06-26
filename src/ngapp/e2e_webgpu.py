@@ -30,7 +30,6 @@ Then in tests::
 
 from __future__ import annotations
 
-import base64
 import os
 import shutil
 import time
@@ -65,7 +64,7 @@ _NOOP_RAF_JS = """
 window.requestAnimationFrame = function() {};
 """
 
-from webgpu.testing import _READBACK_JS
+from webgpu.testing import _READBACK_JS, readback_scene
 
 # How long to wait (ms) for the scene to finish initialising (GPU pipeline
 # creation, first render, etc.) after it first appears.
@@ -147,69 +146,24 @@ def _ensure_scene_ready(page, target, timeout: float = 30) -> None:
         page.wait_for_timeout(_RENDER_SETTLE_MS)
 
 
-def _readback_webgpu_texture(page, target, out_path: Path, size: tuple[int, int] = (800, 600)) -> None:
-    """Read back the GPU texture from a WebgpuComponent at a fixed size.
+def capture_canvas(page, target) -> "np.ndarray":
+    """Return the rendered frame of a ``WebgpuComponent`` as an HxWx4 array.
 
-    Forces the canvas to *size* (width, height) before rendering so that
-    screenshots are independent of the actual browser layout.
+    Waits for the scene to be ready, then reads it back through the webgpu
+    render engine (see :func:`webgpu.testing.readback_scene`).
     """
-    from webgpu.utils import read_texture
+    _ensure_scene_ready(page, target)
+    return readback_scene(target.scene)
 
+
+def _readback_webgpu_texture(page, target, out_path: Path) -> None:
+    """Read back the rendered frame from a WebgpuComponent and save it as PNG."""
     scene = target.scene
     assert (
         scene is not None
     ), "WebgpuComponent.scene is None — draw() hasn't run"
 
-    canvas = scene.canvas
-    html_canvas = canvas.canvas
-    width, height = size
-    html_canvas.style.setProperty("width", f"{width}px", "important")
-    html_canvas.style.setProperty("height", f"{height}px", "important")
-    from webgpu.webgpu_api import Color
-
-    prev_clear = getattr(canvas, "clear_color", None)
-    if prev_clear is not None:
-        canvas.clear_color = Color(1, 1, 1, 1)
-
-    bg_saved = []
-    text_saved = []
-    try:
-        from webgpu.background import Background
-        from webgpu.labels import Labels
-
-        def _neutralize(ro):
-            if isinstance(ro, Background):
-                bg_saved.append((ro, ro.bg_color))
-                ro.bg_color = (1.0, 1.0, 1.0)
-            elif isinstance(ro, Labels) and ro.colors is None:
-                text_saved.append((ro, ro.text_color))
-                ro.text_color = (0.0, 0.0, 0.0)
-            for sub in getattr(ro, "render_objects", []):
-                _neutralize(sub)
-
-        for ro in getattr(scene, "render_objects", []):
-            _neutralize(ro)
-    except Exception:
-        pass
-
-    canvas.resize()
-    scene._render_objects(to_canvas=False)
-    page.wait_for_timeout(200)
-
-    texture = canvas.target_texture
-    data = read_texture(texture)
-
-    if texture.format == "bgra8unorm":
-        data = data[:, :, [2, 1, 0, 3]]
-
-    Image.fromarray(data[:, :, :3]).save(str(out_path))
-
-    for ro, color in bg_saved:
-        ro.bg_color = color
-    for ro, color in text_saved:
-        ro.text_color = color
-    if prev_clear is not None:
-        canvas.clear_color = prev_clear
+    Image.fromarray(readback_scene(scene)[:, :, :3]).save(str(out_path))
 
 
 def assert_matches_baseline(
@@ -217,7 +171,6 @@ def assert_matches_baseline(
     target,
     filename: str,
     *,
-    size: tuple[int, int] = (800, 600),
     threshold: float = 0.01,
     output_dir: Path | str | None = None,
     baseline_dir: Path | str | None = None,
@@ -260,7 +213,7 @@ def assert_matches_baseline(
 
     if isinstance(target, WebgpuComponent):
         _ensure_scene_ready(page, target)
-        _readback_webgpu_texture(page, target, out_path, size=size)
+        _readback_webgpu_texture(page, target, out_path)
     else:
         locator = _locator_for(page, target)
         locator.screenshot(path=str(out_path))
@@ -337,6 +290,8 @@ def page(browser):
     # Kill requestAnimationFrame before anything loads so the render-to-
     # canvas loop never starts.  This keeps the GPU queue idle for readback.
     p.add_init_script(_NOOP_RAF_JS)
+    # Provide the JS-side GPU readback helper used by the JS render engine path.
+    p.add_init_script(_READBACK_JS)
     yield p
     # Clean up the per-target scene tracking so a fresh page starts clean.
     _initialised_scenes.clear()
