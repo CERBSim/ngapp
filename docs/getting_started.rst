@@ -18,6 +18,11 @@ The ``[dev]`` extras include tools useful while developing ngapp-based apps.
 When distributing your own app to end users, you usually only need a
 dependency on ``ngapp`` itself.
 
+.. tip::
+
+   ``python -m ngapp.tutorial`` launches a guided, in-app workshop that builds a
+   small app step by step. See :doc:`tutorials/interactive_airfoil`.
+
 Creating your first app
 -----------------------
 

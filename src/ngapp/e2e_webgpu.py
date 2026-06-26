@@ -30,6 +30,7 @@ Then in tests::
 
 from __future__ import annotations
 
+import base64
 import os
 import shutil
 import time
@@ -63,6 +64,8 @@ UPDATE_BASELINES = os.environ.get("UPDATE_BASELINES", "") == "1"
 _NOOP_RAF_JS = """
 window.requestAnimationFrame = function() {};
 """
+
+from webgpu.testing import _READBACK_JS
 
 # How long to wait (ms) for the scene to finish initialising (GPU pipeline
 # creation, first render, etc.) after it first appears.
