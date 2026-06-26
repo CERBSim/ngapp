@@ -12,10 +12,7 @@ from collections.abc import Callable
 from pathlib import Path
 from threading import Event
 
-from watchdog.observers import Observer
-
 from ngapp.app import create_app
-from ngapp.cli.serve_in_venv import EventHandler
 from ngapp.components.basecomponent import get_component, unmount_component
 
 from .. import utils
@@ -30,7 +27,22 @@ def dump(data):
         return "could_not_serialize"
 
 
+def wait_until_stopped(stop_event: Event | None = None):
+    """Block until explicitly stopped (tests) or interrupted (CLI usage)."""
+    try:
+        while True:
+            if stop_event is not None and stop_event.is_set():
+                break
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Shutting down")
+
+
 def watch_python_modules(modules, callback, stop_event: Event | None = None):
+    from watchdog.observers import Observer
+
+    from ngapp.cli.serve_in_venv import EventHandler
+
     observers = []
     handler = EventHandler(lambda: callback(modules))
 
@@ -46,13 +58,7 @@ def watch_python_modules(modules, callback, stop_event: Event | None = None):
             observer.schedule(handler, path, recursive=True)
             observers.append(observer)
             observer.start()
-        # Run until explicitly stopped (for tests) or interrupted (CLI usage).
-        while True:
-            if stop_event is not None and stop_event.is_set():
-                break
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print("Shutting down")
+        wait_until_stopped(stop_event)
     except Exception as e:
         utils.print_exception(e)
     finally:
@@ -347,16 +353,14 @@ def host_local_app(
             watch_modules += watch_code
         elif isinstance(watch_code, str):
             watch_modules += [mod.strip() for mod in watch_code.split(",")]
-    else:
-        watch_modules = []
 
-    # this is blocking until a KeyboardInterrupt occurs (CLI) or until
-    # ``stop_event`` is set (tests / embedded usage).
-    watch_python_modules(
-        watch_modules,
-        lambda modules: reload_app(app_module, modules),
-        stop_event=stop_event,
-    )
+        watch_python_modules(
+            watch_modules,
+            lambda modules: reload_app(app_module, modules),
+            stop_event=stop_event,
+        )
+    else:
+        wait_until_stopped(stop_event)
 
     # Gracefully shut down the frontend and backend servers.
     if http_process is not None and not persist_frontend:
@@ -412,4 +416,4 @@ def main(app_module=None):
 
 
 if __name__ == "__main__":
-    main(args.app, not args.dev)
+    main()
