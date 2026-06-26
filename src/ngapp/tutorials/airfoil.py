@@ -852,7 +852,7 @@ _CARD_BASE = (
     # never past the viewport: ``max-height`` caps it and the body scrolls
     # vertically when the code is taller than the screen, so it stays reachable.
     # The header stays pinned; only the body scrolls.  Width is responsive.
-    " width: min(780px, calc(100vw - 48px)); box-sizing: border-box;"
+    " width: min(860px, calc(100vw - 48px)); box-sizing: border-box;"
     " max-height: calc(100vh - 72px);"
     " display: flex; flex-direction: column;"
     " background: var(--panel, #ffffff); color: var(--fg, #1b222d);"
