@@ -3,7 +3,7 @@ description="A Python framework for building engineering and scientific web appl
 license = "LGPL-2.1-or-later"
 dynamic = ["version"]
 name = "ngapp"
-dependencies = ['certifi', 'orjson', 'pint', 'pydantic-pint', 'pydantic == 2.*', 'urllib3', 'webgpu>=1.4.1', 'numpy', 'colorama', 'platformdirs']
+dependencies = ['certifi', 'orjson', 'pint', 'pydantic-pint', 'pydantic == 2.*', 'urllib3', 'webgpu>=1.5.1', 'numpy', 'colorama', 'platformdirs']
 requires-python = ">=3.10"
 
 [build-system]
