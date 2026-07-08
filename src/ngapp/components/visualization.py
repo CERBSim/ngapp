@@ -789,6 +789,16 @@ class PlotlyComponent(Div):
             return True
         if t == "light":
             return False
+        # Fall back to the body class, e.g. <body class="desktop no-touch body--light">
+        try:
+            classes = js.document.body.classList
+            if classes.contains("body--dark"):
+                return True
+            if classes.contains("body--light"):
+                return False
+        except Exception:
+            pass
+        # Last resort: honor the OS/browser color-scheme preference.
         try:
             return bool(js.window.matchMedia("(prefers-color-scheme: dark)").matches)
         except Exception:
