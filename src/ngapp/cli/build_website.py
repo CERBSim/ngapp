@@ -42,6 +42,7 @@ def build_app(app: str, app_id: int, output_dir: Path):
 
     return {
         "id": app_id,
+        "version": config.version,
         "name": config.name,
         "python_class": config.python_class,
         "frontend_pip_dependencies": config.frontend_pip_dependencies,
