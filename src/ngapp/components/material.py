@@ -1,18 +1,42 @@
 """Material model and parameter"""
 
-import dataclasses
-from typing import Optional
+from __future__ import annotations
 
-import pint
-from pydantic_pint.registry import get_registry
+from typing import Optional
 
 from .helper_components import NumberInput
 from .qcomponents import QSelect
 
-ureg = get_registry()
-pint.set_application_registry(ureg)
-Unit = ureg.Unit
-Quantity = ureg.Quantity
+_ureg = None
+
+
+def _registry():
+    """Lazily build (once) and return the shared pint UnitRegistry."""
+    global _ureg
+    if _ureg is None:
+        import pint
+        from pydantic_pint.registry import get_registry
+
+        _ureg = get_registry()
+        pint.set_application_registry(_ureg)
+    return _ureg
+
+
+def Unit(*args, **kwargs):
+    """Thin lazy wrapper around ``ureg.Unit`` (builds the registry on first use)."""
+    return _registry().Unit(*args, **kwargs)
+
+
+def Quantity(*args, **kwargs):
+    """Thin lazy wrapper around ``ureg.Quantity`` (builds the registry on first use)."""
+    return _registry().Quantity(*args, **kwargs)
+
+
+def __getattr__(name):
+    # Expose ``material.ureg`` lazily without forcing the registry at import.
+    if name == "ureg":
+        return _registry()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def parse_quantity(quantity: str) -> Quantity:
@@ -146,10 +170,19 @@ class QuantityInput(NumberInput):
         self._set_prop("label", value)
 
 
-@dataclasses.dataclass
-class Constants:
-    """Physical constants"""
+class _ConstantsMeta(type):
+    """Compute physical constants lazily so importing this module does not
+    force the pint registry to be built."""
 
-    eps0 = 8.8541878128e-12 * Unit("A s / (V m)")
-    mu0 = 1.25663706212e-6 * Unit("N / (A A)")
-    c = 299792458 * Unit("m/s")
+    def __getattr__(cls, name):
+        if name == "eps0":
+            return 8.8541878128e-12 * Unit("A s / (V m)")
+        if name == "mu0":
+            return 1.25663706212e-6 * Unit("N / (A A)")
+        if name == "c":
+            return 299792458 * Unit("m/s")
+        raise AttributeError(name)
+
+
+class Constants(metaclass=_ConstantsMeta):
+    """Physical constants"""
