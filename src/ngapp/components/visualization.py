@@ -585,6 +585,18 @@ class SolutionWebgui(Row):
         return await self._get_markdown()
 
 
+
+def _json_fallback(obj):
+    """Make numpy arrays/scalars JSON-serializable for plain dict figures."""
+    tolist = getattr(obj, "tolist", None)
+    if tolist is not None:
+        return tolist()
+    item = getattr(obj, "item", None)
+    if item is not None:
+        return item()
+    raise TypeError(f"not JSON serializable: {type(obj)!r}")
+
+
 class PlotlyComponent(Div):
     """Plotly plot component.
 
@@ -753,12 +765,16 @@ class PlotlyComponent(Div):
 
     def _themed_dict(self) -> dict:
         import json
-        import plotly.graph_objects as go
-        import plotly.io as pio
 
         fig = self._figure
-        figure = fig if isinstance(fig, go.Figure) else go.Figure(fig)
-        d = json.loads(pio.to_json(figure))  # JSON-safe (handles numpy)
+        if isinstance(fig, dict):
+            d = json.loads(json.dumps(fig, default=_json_fallback))
+        else:
+            import plotly.graph_objects as go
+            import plotly.io as pio
+
+            figure = fig if isinstance(fig, go.Figure) else go.Figure(fig)
+            d = json.loads(pio.to_json(figure))  # JSON-safe (handles numpy)
         d["layout"] = self._theme_layout(d.get("layout", {}), self._dark)
         return d
 
