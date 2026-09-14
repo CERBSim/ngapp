@@ -1,6 +1,7 @@
 """Utility functions for the ngapp module"""
 
 import base64
+import contextvars
 import dataclasses
 import datetime
 import functools
@@ -11,6 +12,7 @@ import os
 import shutil
 import sys
 import tempfile
+import threading
 import traceback
 import typing
 from contextlib import contextmanager
@@ -812,6 +814,115 @@ class Job(pydantic.BaseModel):
         return api.get(f"/job/status/{self.id}")
 
 
+class LocalJob:
+    """Handle for a compute function running on the local machine.
+
+    Mirrors the interface of :class:`Job` (the handle returned in the browser)
+    so app code can treat both the same. In ``LOCAL_APP`` the function runs in
+    a background thread, in ``STANDALONE`` it runs synchronously.
+    """
+
+    id = None
+
+    def __init__(self, func, instance, args, kwargs, job_component=None):
+        self._func = func
+        self._instance = instance
+        self._args = args
+        self._kwargs = kwargs
+        self._job_component = job_component
+        self._cancel = threading.Event()
+        self._thread: threading.Thread | None = None
+        self._status = "queued"
+        self._exception: BaseException | None = None
+
+    def _run(self, depends_on=None):
+        global _job_component
+        for job in depends_on or []:
+            if isinstance(job, LocalJob):
+                job.wait()
+        if self._cancel.is_set():
+            self._status = "stopped"
+            return
+        self._status = "started"
+        token = _current_job.set(self)
+        _job_component = self._job_component
+        try:
+            self._func(self._instance, *self._args, **self._kwargs)
+            self._status = "stopped" if self._cancel.is_set() else "finished"
+        except BaseException as e:  # noqa: BLE001 - reported via get_status
+            self._exception = e
+            self._status = "stopped" if self._cancel.is_set() else "failed"
+            print_exception(e)
+        finally:
+            _current_job.reset(token)
+            _job_component = None
+            if self._job_component is not None:
+                self._job_component._reset_button()
+
+    def start(self, threaded=True, depends_on=None):
+        if threaded:
+            self._thread = threading.Thread(
+                target=self._run, args=(depends_on,), daemon=True
+            )
+            self._thread.start()
+        else:
+            self._run(depends_on)
+        return self
+
+    def abort(self):
+        """Request cancellation. The compute function must poll `is_cancelled`."""
+        self._cancel.set()
+
+    def wait(self, timeout=None):
+        if self._thread is not None:
+            self._thread.join(timeout)
+
+    @property
+    def cancelled(self) -> bool:
+        return self._cancel.is_set()
+
+    def get_status(self) -> dict:
+        return {
+            "status": self._status,
+            "exc_info": (
+                "".join(
+                    traceback.format_exception(
+                        type(self._exception),
+                        self._exception,
+                        self._exception.__traceback__,
+                    )
+                )
+                if self._exception is not None
+                else None
+            ),
+        }
+
+
+_current_job: contextvars.ContextVar[LocalJob | None] = contextvars.ContextVar(
+    "ngapp_current_job", default=None
+)
+
+
+def get_current_job() -> LocalJob | None:
+    """Get the handle of the compute function running in this thread, if any.
+
+    Only local jobs have a handle; on a compute node the job runs in its own
+    process and is stopped by killing it.
+    """
+    return _current_job.get()
+
+
+def is_cancelled() -> bool:
+    """Whether the running compute function was asked to stop.
+
+    Long running compute functions should poll this and return early (saving
+    what they have) when it turns true. On a compute node the process is killed
+    instead, so this always returns False there.
+    """
+    job = _current_job.get()
+    return job is not None and job.cancelled
+
+
 _job_component = None
 
 
@@ -888,11 +999,25 @@ def compute_node(
         except RuntimeError:
             return f
         match environment.type:
-            case Environment.STANDALONE:
-                return f
+            case Environment.STANDALONE | Environment.LOCAL_APP:
+                threaded = environment.type == Environment.LOCAL_APP
 
-            case Environment.LOCAL_APP:
-                return f
+                @functools.wraps(f)
+                def wrapper_local(
+                    self: App | Component,
+                    _job_component=None,
+                    depends_on: list["Job | LocalJob"] | None = None,
+                    *args,
+                    **kwargs,
+                ):
+                    job = LocalJob(f, self, args, kwargs, _job_component)
+                    if _job_component is not None:
+                        _job_component.job = job
+                    return job.start(threaded=threaded, depends_on=depends_on)
+
+                wrapper_local.__is_compute_node_function = True
+                wrapper_local.__compute_env = compute_env
+                return wrapper_local
 
             case Environment.PYODIDE:
 
