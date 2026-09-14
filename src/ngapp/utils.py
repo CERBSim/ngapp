@@ -857,6 +857,7 @@ class ComputeEnvironment(pydantic.BaseModel):
     memory: str = "1G"
     env_type: typing.Literal["venv", "docker", "local"] = "venv"
     dockerfile: str = DEFAULT_DOCKERFILE
+    pip_dependencies: list[str] = []
 
     def __call__(self, *args, **kwargs):
         return compute_node(*args, **kwargs, compute_env=self)
@@ -874,8 +875,18 @@ webgui_compute_env = pdf_compute_env
 
 
 def compute_node(
-    _func=None, *, compute_env: str | ComputeEnvironment = "default"
+    _func=None,
+    *,
+    compute_env: str | ComputeEnvironment = "default",
+    job_timeout: int | None = None,
 ):
+    """Run the decorated method on a compute node.
+
+    :param compute_env: name of the compute environment to run in
+    :param job_timeout: how long the job may run (seconds) before the backend
+        stops it. Defaults to the backend default (one hour). Only queued jobs
+        are limited, a run on the local machine is never stopped by a timeout.
+    """
     from .app import App
     from .components.basecomponent import Component
 
@@ -933,6 +944,7 @@ def compute_node(
                                 "compute_env": compute_env,
                                 "comp_id": comp_id,
                                 "func": f.__name__,
+                                "job_timeout": job_timeout,
                                 "status": {
                                     "capture_events": app.context.capture_events,
                                     "capture_call_stack": app.context.capture_call_stack,
