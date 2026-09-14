@@ -9,6 +9,7 @@ from .. import api
 from ..utils import (
     JSFile,
     Job,
+    LocalJob,
     is_pyodide,
     load_file_backend,
     new_file,
@@ -574,7 +575,7 @@ class JobComponent(QBtn):
         super().__init__(self.tooltip, id=id, **kwargs)
         self._set_prop("icon", "mdi-play")
         self.job_status: dict = {}
-        self.job: Job | None = None
+        self.job: Job | LocalJob | None = None
         self.on("click", self._on_click)
         self.on("load", self.update_job_status)
 
@@ -653,7 +654,7 @@ class JobComponent(QBtn):
         if not self._id:
             return None
         data = (super()._dump() or {}) | {"job_status": self.job_status}
-        if self.job is not None:
+        if isinstance(self.job, Job):
             data["job"] = self.job.model_dump()
         return data
 

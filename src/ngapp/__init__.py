@@ -14,6 +14,11 @@ from .app import (
     register_application,
 )
 from .utils import (
+    Job,
+    LocalJob,
+    compute_node,
+    get_current_job,
+    is_cancelled,
     load_image,
     read_file,
     read_file_binary,
@@ -27,6 +32,11 @@ __all__ = [
     "AccessLevel",
     "AccessLevelConfig",
     "BaseModel",
+    "Job",
+    "LocalJob",
+    "compute_node",
+    "get_current_job",
+    "is_cancelled",
     "file",
     "keybindings",
     "create_app",
