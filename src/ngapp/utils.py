@@ -184,6 +184,8 @@ class ComputeFrontend(BaseFrontend):
                 )
 
             file_id = comp.context.app.metadata["id"]
+            if file_id is None:
+                return
             component_id = comp._fullid
             if component_id:
                 api.post(

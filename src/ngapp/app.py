@@ -514,9 +514,9 @@ class App(QPage):
                 )
             )
 
-        api.put(f"/model/{status.file_id}", self._dump_app())
-        self._emit_recursive("save")
         self.storage.save()
+        self._emit_recursive("save")
+        api.put(f"/model/{status.file_id}", self._dump_app())
 
         if env.type == EnvironmentType.PYODIDE:
             env.frontend.set_query_parameter("fileId", status.file_id)

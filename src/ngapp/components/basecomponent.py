@@ -190,7 +190,14 @@ class Storage:
         return metadata
 
     def _load_metadata(self, data):
-        self._metadata = _StorageMetadata(entries=data)
+        metadata = _StorageMetadata(entries=data)
+        for key in list(self._data):
+            entry = metadata.get(key)
+            old = self._metadata.get(key)
+            if entry is None or old is None or entry.hash != old.hash:
+                del self._data[key]
+                self._needs_save.discard(key)
+        self._metadata = metadata
 
     def _load_local(self):
         for key, mdata in self._metadata.entries.items():
@@ -240,6 +247,7 @@ class Storage:
         file_id = self._component.context.file_id
         if self._needs_deletion:
             api.delete(f"/files/{file_id}/files", data=self._needs_deletion)
+            self._needs_deletion.clear()
         for key in self._needs_save:
             mdata = self._metadata.get(key)
             api.post(
@@ -299,7 +307,7 @@ class Storage:
             id=self._encode(fullid),
         )
         self._needs_save.add(key)
-        if old_hash and old_hash != self._metadata.get(key):
+        if old_hash and old_hash != self._metadata.get(key).hash:
             self._needs_deletion.append(old_hash)
 
     def delete(self, key: str):
