@@ -157,6 +157,7 @@ class Storage:
     _needs_deletion: list[str]
     _needs_save: set[str]
     _component: C
+    _saved_file_id: object
 
     def __init__(self, component: C | "ngapp.App"):
         self._component = component
@@ -164,6 +165,7 @@ class Storage:
         self._metadata = _StorageMetadata(entries={})
         self._needs_deletion = []
         self._needs_save = set()
+        self._saved_file_id = None
 
     def _encode(self, value: str | dict | list | bytes) -> bytes:
         if isinstance(value, bytes):
@@ -196,6 +198,7 @@ class Storage:
         return metadata
 
     def _load_metadata(self, data):
+        self._saved_file_id = self._component.context.file_id
         metadata = _StorageMetadata(entries=data)
         for key in list(self._data):
             entry = metadata.get(key)
@@ -263,14 +266,28 @@ class Storage:
             )
 
     def save(self):
-        if not self._needs_save:
-            return
         if not get_environment().have_backend:
-            self._save_local()
+            if self._needs_save:
+                self._save_local()
             return
         file_id = self._component.context.file_id
+        if file_id != self._saved_file_id:
+            self._needs_save.update(
+                key for key in self._metadata.entries if key in self._data
+            )
+            self._needs_deletion.clear()
+            self._saved_file_id = file_id
+        if not self._needs_save and not self._needs_deletion:
+            return
         if self._needs_deletion:
-            api.delete(f"/files/{file_id}/files", data=self._needs_deletion)
+            referenced = {e.hash for e in self._metadata.entries.values()}
+            stale = [
+                h
+                for h in dict.fromkeys(self._needs_deletion)
+                if h not in referenced
+            ]
+            if stale:
+                api.delete(f"/files/{file_id}/files", data=stale)
             self._needs_deletion.clear()
         for key in self._needs_save:
             mdata = self._metadata.get(key)

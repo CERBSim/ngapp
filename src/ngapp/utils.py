@@ -262,6 +262,8 @@ class Environment:
     backend_api_token: str = ""
     backend_api_client_id: str = ""
 
+    loaded_file_name: str = ""
+
     def __init__(self, type: EnvironmentType, have_backend: bool, link=None):
         self.type = type
         self.have_backend = have_backend
@@ -343,7 +345,12 @@ class Environment:
             pick = self.js.showOpenFilePicker(options)
         except Exception:
             return None
-        return pickle.loads(pick[0].getFile().arrayBuffer())
+        handle = pick[0]
+        try:
+            Environment.loaded_file_name = str(handle.name)
+        except Exception:
+            Environment.loaded_file_name = ""
+        return pickle.loads(handle.getFile().arrayBuffer())
 
     def reset_app(self, app):
         self.frontend.reset_app(app)
