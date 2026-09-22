@@ -143,6 +143,12 @@ class _StorageMetadata(pydantic.BaseModel):
         )
 
 
+# Largest body sent in one request when uploading a storage entry. The proxy in
+# front of the backend rejects bodies above 100 MB, so bigger entries are split
+# into several appending requests (see Storage._upload).
+_UPLOAD_CHUNK_BYTES = 32 * 1024 * 1024
+
+
 class Storage:
     """Storage class for components, use it to store large chunks of data on the backend"""
 
@@ -238,6 +244,24 @@ class Storage:
         if key in self._needs_save:
             self._needs_save.remove(key)
 
+    def _upload(self, url: str, data: bytes):
+        """Upload one storage entry, in chunks if it is large.
+
+        Proxies in front of the backend limit the size of a single request
+        body, so anything above `_UPLOAD_CHUNK_BYTES` is sent as several
+        requests: the first writes the file, the rest are appended to it. A
+        backend without the append route answers those with an error rather
+        than silently keeping only the last chunk.
+        """
+        if len(data) <= _UPLOAD_CHUNK_BYTES:
+            api.post(url, data)
+            return
+        for i, start in enumerate(range(0, len(data), _UPLOAD_CHUNK_BYTES)):
+            api.post(
+                url if i == 0 else url + "/append",
+                data[start : start + _UPLOAD_CHUNK_BYTES],
+            )
+
     def save(self):
         if not self._needs_save:
             return
@@ -250,7 +274,7 @@ class Storage:
             self._needs_deletion.clear()
         for key in self._needs_save:
             mdata = self._metadata.get(key)
-            api.post(
+            self._upload(
                 f"/files/{file_id}/files/{mdata.hash}",
                 self._encode(self._data[key]),
             )
