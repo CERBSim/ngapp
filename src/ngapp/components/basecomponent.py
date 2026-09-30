@@ -7,6 +7,7 @@ import itertools
 import pickle
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Callable, List, Optional, Tuple, TypeVar
 import datetime
 
@@ -509,9 +510,26 @@ class Component(metaclass=BlockFrontendUpdate):
         split_key: str = "+",
         capture: bool = False,
         single: bool = False,
+        prevent_default: bool = False,
+        match: str | None = None,
     ):
-        """Add key binding to component"""
+        """Add key binding to component.
 
+        ``callback(ev)`` gets the key event with attributes ``combo``,
+        ``type``, ``key``, ``code``, ``ctrlKey``, ``shiftKey``, ``altKey``,
+        ``metaKey``, ``repeat``, ``timeStamp``, ``target`` (tag name) and
+        ``isContentEditable``.
+
+        Args:
+            prevent_default: call ``preventDefault()`` on the event in the
+                browser listener (e.g. ``"ctrl+s"``, ``"tab"``).
+            match: ``"code"`` matches with hotkeys-js (key codes, symbols on
+                US layout only), ``"key"`` matches ``KeyboardEvent.key`` (any
+                layout, ``"?"``, ``"["``, ``"+"``; shift / alt producing a
+                symbol are ignored unless listed). ``None`` picks ``"key"``
+                for symbols hotkeys-js does not know (``"?"``, ``"+"``, ...).
+                ``single`` has no effect with ``"key"``.
+        """
         import webgpu.platform as pl
 
         options = {
@@ -521,10 +539,18 @@ class Component(metaclass=BlockFrontendUpdate):
             "split_key": split_key,
             "capture": capture,
             "single": single,
+            "prevent_default": prevent_default,
+            "match": match,
         }
 
         if f := self._js_callbacks.get("add_keybinding", None):
-            f(key, pl.create_proxy(callback), options, _ignore_result=True)
+
+            def on_key(ev):
+                if hasattr(ev, "to_py"):
+                    ev = ev.to_py()
+                callback(SimpleNamespace(**ev))
+
+            f(key, pl.create_proxy(on_key, True), options, _ignore_result=True)
             return
         # store keybindings until component is mounted
         if not self._keybindings:
@@ -537,6 +563,12 @@ class Component(metaclass=BlockFrontendUpdate):
             self.on_mounted(add_keybinding_later)
 
         self._keybindings.append((key, callback, options))
+
+    def remove_keybinding(self, key: str):
+        """Remove the key bindings of this component for ``key``."""
+        self._keybindings = [b for b in self._keybindings if b[0] != key]
+        if f := self._js_callbacks.get("remove_keybinding", None):
+            f(key, _ignore_result=True)
 
     @property
     def js(self):

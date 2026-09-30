@@ -238,6 +238,15 @@ class HelpOverlay(Div):
 # ---------------------------------------------------------------------------
 
 
+def _options(opts=None, **kwargs):
+    """Non-default ``add_keybinding`` options.
+
+    Empty for plain keys, so ``_ensure_key(key)`` overrides keep working.
+    """
+    opts = dict(opts or {}, **kwargs)
+    return {k: v for k, v in opts.items() if v not in (None, False)}
+
+
 class KeybindingManager:
     """Two-layer keybinding manager with floating indicator and help overlay.
 
@@ -251,6 +260,12 @@ class KeybindingManager:
             "flat": [(key, callback, description, group), ...],
             "modes": [(trigger_key, mode_name, [(key, cb, desc), ...]), ...],
         }
+
+    Every tuple may end with an options dict passed to
+    :meth:`Component.add_keybinding`, e.g. ``{"prevent_default": True}`` or
+    ``{"match": "key"}``. Options of the first registration of a key win.
+    Handlers run one at a time in the order of the key events; the event of
+    the key being handled is ``manager.last_event``.
 
     Parameters
     ----------
@@ -283,6 +298,7 @@ class KeybindingManager:
         self._mode_triggers = {}  # trigger_key -> mode_name
 
         self._registered_keys = set()
+        self.last_event = None
         self._mode = None
         self._help_visible = False
         self.indicator = ModeIndicator(theme=theme)
@@ -294,13 +310,27 @@ class KeybindingManager:
 
     # -- Global bindings ------------------------------------------------
 
-    def add(self, key, callback, description, group="General"):
-        """Register a global keybinding (always active)."""
+    def add(
+        self,
+        key,
+        callback,
+        description,
+        group="General",
+        prevent_default=False,
+        match=None,
+    ):
+        """Register a global keybinding (always active).
+
+        ``prevent_default`` and ``match`` are passed to
+        :meth:`Component.add_keybinding`.
+        """
         self._global_entries.append((key, description, group))
         self._global_key_callbacks[key] = callback
         self._entries.append((key, description, group))
         self._key_callbacks[key] = callback
-        self._ensure_key(key)
+        self._ensure_key(
+            key, **_options(prevent_default=prevent_default, match=match)
+        )
 
     # -- Component bindings ---------------------------------------------
 
@@ -369,23 +399,23 @@ class KeybindingManager:
 
     def _apply_spec(self, spec):
         """Apply a single keybinding spec to the active set."""
-        for key, cb, desc, group in spec.get("flat", []):
+        for key, cb, desc, group, *opts in spec.get("flat", []):
             self._entries.append((key, desc, group))
             self._key_callbacks[key] = self._wrap(cb)
-            self._ensure_key(key)
+            self._ensure_key(key, **_options(*opts))
 
-        for trigger, name, bindings in spec.get("modes", []):
+        for trigger, name, bindings, *topts in spec.get("modes", []):
             self._modes[name] = {}
             self._mode_entries[name] = []
-            for key, cb, desc in bindings:
+            for key, cb, desc, *opts in bindings:
                 self._modes[name][key] = self._wrap(cb)
                 self._mode_entries[name].append((key, desc))
                 self._entries.append((f"{trigger} \u2192 {key}", desc, name))
-                self._ensure_key(key)
+                self._ensure_key(key, **_options(*opts))
             self._entries.append((trigger, f"{name}\u2026", name))
             self._mode_triggers[trigger] = name
             self._key_callbacks[trigger] = lambda n=name: self._enter_mode(n)
-            self._ensure_key(trigger)
+            self._ensure_key(trigger, **_options(*topts))
 
     # -- Internals ------------------------------------------------------
 
@@ -397,10 +427,16 @@ class KeybindingManager:
 
         return wrapped
 
-    def _ensure_key(self, key):
+    def _ensure_key(self, key, **options):
         if key not in self._registered_keys:
             self._registered_keys.add(key)
-            self._app.add_keybinding(key, lambda e, k=key: self._dispatch(k))
+            self._app.add_keybinding(
+                key, lambda e, k=key: self._on_key(k, e), **options
+            )
+
+    def _on_key(self, key, event):
+        self.last_event = event
+        self._dispatch(key)
 
     def _dispatch(self, key):
         if self._help_visible and key == "h":
