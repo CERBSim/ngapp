@@ -512,6 +512,7 @@ class Component(metaclass=BlockFrontendUpdate):
         single: bool = False,
         prevent_default: bool = False,
         match: str | None = None,
+        allow_typing: bool = False,
     ):
         """Add key binding to component.
 
@@ -529,6 +530,9 @@ class Component(metaclass=BlockFrontendUpdate):
                 symbol are ignored unless listed). ``None`` picks ``"key"``
                 for symbols hotkeys-js does not know (``"?"``, ``"+"``, ...).
                 ``single`` has no effect with ``"key"``.
+            allow_typing: also fire while an input, textarea or select has the
+                focus (filtered by default so shortcuts do not fire while
+                typing). Uses ``"key"`` matching.
         """
         import webgpu.platform as pl
 
@@ -541,6 +545,7 @@ class Component(metaclass=BlockFrontendUpdate):
             "single": single,
             "prevent_default": prevent_default,
             "match": match,
+            "allow_typing": allow_typing,
         }
 
         if f := self._js_callbacks.get("add_keybinding", None):
