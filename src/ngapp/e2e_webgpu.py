@@ -55,13 +55,43 @@ _baseline_dir: Path | None = None
 
 UPDATE_BASELINES = os.environ.get("UPDATE_BASELINES", "") == "1"
 
-# Replace requestAnimationFrame with a no-op.  The scene's render() method
-# calls _render_objects(to_canvas=False) which writes into target_texture
-# *before* calling patchedRequestAnimationFrame (which only copies to the
-# on-screen canvas).  Tests read target_texture directly, so the canvas
-# copy is unnecessary.
-_NOOP_RAF_JS = """
-window.requestAnimationFrame = function() {};
+_OFFSCREEN_CANVAS_JS = """
+(() => {
+  if (typeof GPUCanvasContext === 'undefined') return;
+  const proto = GPUCanvasContext.prototype;
+  const configure = proto.configure;
+  const unconfigure = proto.unconfigure;
+  proto.configure = function (config) {
+    this.__offscreenConfig = config;
+    if (this.__offscreenTex) this.__offscreenTex.destroy();
+    this.__offscreenTex = null;
+    return configure.call(this, config);
+  };
+  proto.unconfigure = function () {
+    if (this.__offscreenTex) this.__offscreenTex.destroy();
+    this.__offscreenTex = null;
+    this.__offscreenConfig = null;
+    return unconfigure.call(this);
+  };
+  proto.getCurrentTexture = function () {
+    const config = this.__offscreenConfig;
+    if (!config) throw new DOMException('context is not configured', 'InvalidStateError');
+    const w = Math.max(1, this.canvas.width), h = Math.max(1, this.canvas.height);
+    let tex = this.__offscreenTex;
+    if (!tex || tex.width !== w || tex.height !== h) {
+      if (tex) tex.destroy();
+      tex = this.__offscreenTex = config.device.createTexture({
+        size: [w, h],
+        format: config.format,
+        usage: (config.usage ?? GPUTextureUsage.RENDER_ATTACHMENT)
+          | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC
+          | GPUTextureUsage.COPY_DST,
+        label: 'offscreen-canvas',
+      });
+    }
+    return tex;
+  };
+})();
 """
 
 from webgpu.testing import _READBACK_JS, readback_scene
@@ -146,6 +176,26 @@ def _ensure_scene_ready(page, target, timeout: float = 30) -> None:
         page.wait_for_timeout(_RENDER_SETTLE_MS)
 
 
+def _wait_for_canvas(page, target, timeout: float = 30) -> None:
+    """Poll until the scene has a render engine or a configured canvas.
+
+    The canvas is detached while the component re-mounts; a readback in that
+    window would find neither and fail.
+    """
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        scene = target.scene
+        if scene is not None and (
+            getattr(scene, "_js_engine", None) is not None
+            or (scene.canvas is not None and scene.canvas.context is not None)
+        ):
+            return
+        page.wait_for_timeout(200)
+    raise AssertionError(
+        f"WebgpuComponent canvas not attached after {timeout}s"
+    )
+
+
 def capture_canvas(page, target) -> "np.ndarray":
     """Return the rendered frame of a ``WebgpuComponent`` as an HxWx4 array.
 
@@ -153,6 +203,7 @@ def capture_canvas(page, target) -> "np.ndarray":
     render engine (see :func:`webgpu.testing.readback_scene`).
     """
     _ensure_scene_ready(page, target)
+    _wait_for_canvas(page, target)
     return readback_scene(target.scene)
 
 
@@ -213,6 +264,7 @@ def assert_matches_baseline(
 
     if isinstance(target, WebgpuComponent):
         _ensure_scene_ready(page, target)
+        _wait_for_canvas(page, target)
         _readback_webgpu_texture(page, target, out_path)
     else:
         locator = _locator_for(page, target)
@@ -282,14 +334,11 @@ def browser(_playwright):
 def page(browser):
     """Fresh browser page from the WebGPU-capable Chrome.
 
-    ``requestAnimationFrame`` is patched to a no-op so the render loop
-    never copies to the on-screen canvas.  Tests only need the off-screen
-    ``target_texture`` which is read back via ``read_texture``.
+    WebGPU canvases render into offscreen textures (see
+    ``_OFFSCREEN_CANVAS_JS``), the frame is read back via the render engine.
     """
     p = browser.new_page(viewport={"width": 1280, "height": 720})
-    # Kill requestAnimationFrame before anything loads so the render-to-
-    # canvas loop never starts.  This keeps the GPU queue idle for readback.
-    p.add_init_script(_NOOP_RAF_JS)
+    p.add_init_script(_OFFSCREEN_CANVAS_JS)
     # Provide the JS-side GPU readback helper used by the JS render engine path.
     p.add_init_script(_READBACK_JS)
     yield p
