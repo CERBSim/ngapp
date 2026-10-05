@@ -326,16 +326,20 @@ class Environment:
         if not data:
             return
 
+        changed = None
         if method == "update_frontend":
             if "data" in data:
                 comp._load(data["data"])
             if "props" in data:
                 comp._props.update(data["props"])
             if "storage" in data:
-                comp.storage._load_metadata(data["storage"])
+                changed = comp.storage._load_metadata(data["storage"])
 
         if method in comp._js_callbacks:
             comp._js_callbacks[method](data)
+
+        if changed:
+            comp.storage._notify(changed)
 
     def load_data_local(self, options: dict | None = None):
         import pickle

@@ -167,6 +167,8 @@ class Storage:
         self._needs_deletion = []
         self._needs_save = set()
         self._saved_file_id = None
+        self._unpublished = set()
+        self._on_change = []
 
     def _encode(self, value: str | dict | list | bytes) -> bytes:
         if isinstance(value, bytes):
@@ -199,6 +201,8 @@ class Storage:
         return metadata
 
     def _load_metadata(self, data):
+        """Replace the metadata, dropping cached data of changed entries.
+        Returns the keys that were added, changed or removed."""
         self._saved_file_id = self._component.context.file_id
         metadata = _StorageMetadata(entries=data)
         for key in list(self._data):
@@ -207,7 +211,11 @@ class Storage:
             if entry is None or old is None or entry.hash != old.hash:
                 del self._data[key]
                 self._needs_save.discard(key)
+        old, new = self._metadata.entries, metadata.entries
+        changed = {k for k in old.keys() | new.keys()
+                   if k not in old or k not in new or old[k].hash != new[k].hash}
         self._metadata = metadata
+        return changed
 
     def _load_local(self):
         for key, mdata in self._metadata.entries.items():
@@ -233,20 +241,35 @@ class Storage:
         else:
             self._load_metadata(data)
 
+    def _fetch(self, key: str):
+        """Download (or read locally) the decoded value of *key*, or None."""
+        mdata = self._metadata.get(key)
+        if mdata is None:
+            return None
+        if not get_environment().have_backend:
+            local_path = _local_storage_path / mdata.hash
+            if not local_path.exists():
+                return None
+            return self._decode(local_path.read_bytes(), mdata.type_)
+        file_id = self._component.context.file_id
+        if file_id is None:
+            return None
+        return self._decode(api.get(f"/files/{file_id}/files/{mdata.hash}"),
+                            mdata.type_)
+
     def load(self, key: str):
         if not get_environment().have_backend:
             self._load_local()
             return
-        file_id = self._component.context.file_id
-        if file_id is None:
+        value = self._fetch(key)
+        if value is None:
             return
-        mdata = self._metadata.get(key)
-        if mdata is None:
-            return
-        data = api.get(f"/files/{file_id}/files/{mdata.hash}")
-        self._data[key] = self._decode(data, mdata.type_)
+        self._data[key] = value
         if key in self._needs_save:
             self._needs_save.remove(key)
+
+    def __contains__(self, key: str) -> bool:
+        return key in self._metadata.entries
 
     def _upload(self, url: str, data: bytes):
         """Upload one storage entry, in chunks if it is large.
@@ -298,12 +321,19 @@ class Storage:
             )
         self._needs_save.clear()
 
-    def get(self, key: str, default=None):
-        """Get data from storage"""
-        if key not in self._data:
+    def get(self, key: str, default=None, cache=True):
+        """Get data from storage. With ``cache=False`` a value that is not in
+        memory yet is downloaded without being kept (for large entries that
+        are only needed once)."""
+        if key in self._data:
+            value = self._data[key]
+        elif cache:
             self.load(key)
-
-        value = self._data.get(key, default)
+            value = self._data.get(key, default)
+        else:
+            value = self._fetch(key)
+            if value is None:
+                value = default
 
         if (
             value is not None
@@ -349,6 +379,7 @@ class Storage:
             id=self._encode(fullid),
         )
         self._needs_save.add(key)
+        self._unpublished.add(key)
         if old_hash and old_hash != self._metadata.get(key).hash:
             self._needs_deletion.append(old_hash)
 
@@ -361,6 +392,78 @@ class Storage:
             del self._metadata.entries[key]
         if key in self._needs_save:
             self._needs_save.remove(key)
+        self._unpublished.add(key)
+
+    # -- append-only lists, stored as one entry per item ("key#0", "key#1", ...)
+    # so that appending uploads (and a client downloads) only the new items.
+
+    @staticmethod
+    def _list_key(key: str, i: int) -> str:
+        return f"{key}#{i}"
+
+    def list_len(self, key: str) -> int:
+        """Number of items in the list stored under *key*."""
+        n = 0
+        while self._list_key(key, n) in self._metadata.entries:
+            n += 1
+        return n
+
+    def append(self, key: str, value, use_pickle=False):
+        """Append *value* to the list stored under *key*."""
+        self.set(self._list_key(key, self.list_len(key)), value, use_pickle)
+
+    def get_list(self, key: str, start: int = 0, stop: int | None = None,
+                 cache=True) -> list:
+        """Items ``start:stop`` of the list stored under *key*."""
+        n = self.list_len(key)
+        stop = n if stop is None else min(stop, n)
+        return [self.get(self._list_key(key, i), cache=cache)
+                for i in range(start, stop)]
+
+    def delete_list(self, key: str):
+        for i in range(self.list_len(key)):
+            self.delete(self._list_key(key, i))
+
+    @staticmethod
+    def list_keys(changed) -> set[str]:
+        """The list names among the *changed* keys of an on_change callback."""
+        return {k.rsplit("#", 1)[0] for k in changed
+                if "#" in k and k.rsplit("#", 1)[1].isdigit()}
+
+    # -- change notification --
+
+    def on_change(self, callback):
+        """Call ``callback(changed_keys)`` when published changes arrive.
+
+        In a local app this happens on :meth:`publish` itself; when the
+        changes come from a compute node, once the client received them (the
+        data of changed entries is fetched lazily on ``get``). A full load of
+        the app does not trigger it, use the app's ``load`` event for that.
+        Returns a function that removes the callback.
+        """
+        self._on_change.append(callback)
+        return lambda: self._on_change.remove(callback)
+
+    def _notify(self, changed):
+        for cb in list(self._on_change):
+            try:
+                cb(set(changed))
+            except Exception as e:
+                print_exception(e, file=sys.stdout)
+
+    def publish(self):
+        """Make the changes since the last publish visible to the on_change
+        callbacks: directly in a local app, on a compute node by uploading them
+        and pushing the metadata through the backend, which also stores it in
+        the file (a later load of the file sees the same state)."""
+        changed, self._unpublished = self._unpublished, set()
+        if not changed:
+            return
+        if get_environment().type == utils.EnvironmentType.COMPUTE:
+            self.save()
+            self._component._update_frontend({"storage": self._dump_metadata()})
+        else:
+            self._notify(changed)
 
 
 class BlockFrontendUpdate(type):
