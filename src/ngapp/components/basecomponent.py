@@ -425,7 +425,7 @@ class Storage:
             self.delete(self._list_key(key, i))
 
     @staticmethod
-    def list_keys(changed) -> set[str]:
+    def list_keys(changed) -> "set[str]":
         """The list names among the *changed* keys of an on_change callback."""
         return {k.rsplit("#", 1)[0] for k in changed
                 if "#" in k and k.rsplit("#", 1)[1].isdigit()}
