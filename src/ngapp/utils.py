@@ -415,8 +415,9 @@ def get_environment() -> Environment:
     return _environment
 
 
+@functools.cache
 def is_pyodide() -> bool:
-    """Check if the code is executed in pyodide"""
+    """Check if the code is executed in pyodide (cached, a failed import is not)"""
     try:
         import pyodide.ffi
     except ImportError:
@@ -426,9 +427,7 @@ def is_pyodide() -> bool:
 
 def is_production() -> bool:
     """Check if the code is executed in pyodide"""
-    try:
-        import pyodide.ffi
-    except ImportError:
+    if not is_pyodide():
         return False
     return webapp_frontend.prod
 
