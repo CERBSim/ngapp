@@ -824,6 +824,12 @@ class PlotlyComponent(Div):
 canvas_counter = 0
 
 
+_LOADING_BACKGROUND = (
+    "background: center / 160px 90px no-repeat "
+    "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'><circle cx='80' cy='30' r='18' fill='none' stroke='%23888' stroke-opacity='0.3' stroke-width='4'/><path d='M80 12 a18 18 0 0 1 18 18' fill='none' stroke='%23888' stroke-width='4' stroke-linecap='round'><animateTransform attributeName='transform' type='rotate' from='0 80 30' to='360 80 30' dur='0.8s' repeatCount='indefinite'/></path><text x='80' y='78' text-anchor='middle' font-family='sans-serif' font-size='14' fill='%23888'>Loading...</text></svg>\")"
+)
+
+
 class WebgpuComponent(Component):
     """GPU-accelerated 3D canvas for interactive scientific visualization.
 
@@ -882,6 +888,8 @@ class WebgpuComponent(Component):
             self.ui_style = f"width:{width};" + kwargs["ui_style"]
         if "height" not in self.ui_style:
             self.ui_style = f"height:{height};" + kwargs["ui_style"]
+        # loading spinner, the canvas is transparent until the first frame covers it
+        self.ui_style = self.ui_style.rstrip("; ") + "; " + _LOADING_BACKGROUND
         canvas_counter += 1
         # scene must be set in draw
         self.scene = None
