@@ -472,9 +472,15 @@ class App(QPage):
             return
         if data is None:
             return  # user cancelled the picker
+        # a local file is a copy: saving it to the server must create a new
+        # case, not overwrite (or fail on) the one it was exported from
+        if isinstance(data.get("metadata"), dict):
+            data["metadata"].pop("id", None)
         app = cls()
         app._load_app(data)
         env.reset_app(app)
+        if env.type == EnvironmentType.PYODIDE:
+            env.frontend.set_query_parameter("fileId", None)
 
     @final
     def save_as(self, name: str):
