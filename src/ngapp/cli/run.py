@@ -141,6 +141,10 @@ def run_compute_function(
         env.set_backend(data.api_url, data.api_token)
 
         api_url = f"/job/{data.job_id}"
+        status = api.get(f"/job/status/{data.job_id}").get("status")
+        if status in ("stopped", "canceled", "failed", "finished"):
+            print(f"job {data.job_id} is {status} already, skipped", flush=True)
+            return
         api.post(f"{api_url}/stdout", "\nSTATUS: Job started on compute node\n")
         api.post(f"{api_url}/stderr", "")
         api.put(api_url, {"status": "Running"})
