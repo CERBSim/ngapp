@@ -165,6 +165,7 @@ class Storage:
         self._data = {}
         self._metadata = _StorageMetadata(entries={})
         self._needs_deletion = []
+        self._deferred_deletion = []
         self._needs_save = set()
         self._saved_file_id = None
         self._unpublished = set()
@@ -300,19 +301,19 @@ class Storage:
                 key for key in self._metadata.entries if key in self._data
             )
             self._needs_deletion.clear()
+            self._deferred_deletion = []
             self._saved_file_id = file_id
-        if not self._needs_save and not self._needs_deletion:
-            return
-        if self._needs_deletion:
-            referenced = {e.hash for e in self._metadata.entries.values()}
-            stale = [
-                h
-                for h in dict.fromkeys(self._needs_deletion)
-                if h not in referenced
-            ]
-            if stale:
-                api.delete(f"/files/{file_id}/files", data=stale)
-            self._needs_deletion.clear()
+        referenced = {e.hash for e in self._metadata.entries.values()}
+        # Entries replaced by the previous save: the stored model refers to the
+        # new ones by now. Deleting them only then keeps a save that is cut off
+        # (reload, closed tab) from leaving the model pointing at deleted data.
+        stale = [h for h in self._deferred_deletion if h not in referenced]
+        if stale:
+            api.delete(f"/files/{file_id}/files", data=stale)
+        self._deferred_deletion = [
+            h for h in dict.fromkeys(self._needs_deletion) if h not in referenced
+        ]
+        self._needs_deletion.clear()
         for key in self._needs_save:
             mdata = self._metadata.get(key)
             self._upload(
