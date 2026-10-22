@@ -314,13 +314,16 @@ class Storage:
             h for h in dict.fromkeys(self._needs_deletion) if h not in referenced
         ]
         self._needs_deletion.clear()
-        for key in self._needs_save:
+        # a copy: a second save (double click) may start while this one uploads
+        for key in list(self._needs_save):
             mdata = self._metadata.get(key)
             self._upload(
                 f"/files/{file_id}/files/{mdata.hash}",
                 self._encode(self._data[key]),
             )
-        self._needs_save.clear()
+            # set again meanwhile: the new value still needs an upload
+            if self._metadata.get(key) is mdata:
+                self._needs_save.discard(key)
 
     def get(self, key: str, default=None, cache=True):
         """Get data from storage. With ``cache=False`` a value that is not in
