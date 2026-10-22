@@ -75,6 +75,7 @@ async def main(arg):
             break
         except Exception as e:
             print("Error", e)
+            await asyncio.sleep(2)
 
 
 if __name__ == "__main__":
