@@ -2,7 +2,6 @@
 
 import asyncio
 import ssl
-import threading
 
 import certifi
 import orjson
@@ -53,9 +52,7 @@ async def main(arg):
                     msg = await websocket.recv()
                     while isinstance(msg, str):  # not a job (e.g. a cancel)
                         msg = await websocket.recv()
-                    thread = threading.Thread(target=handle_task, args=(msg,))
-                    thread.start()
-                    thread.join()
+                    await asyncio.to_thread(handle_task, msg)
         except KeyboardInterrupt:
             break
         except Exception as e:
