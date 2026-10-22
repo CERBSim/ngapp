@@ -8,7 +8,7 @@ import orjson
 import websockets
 
 from ..utils import EnvironmentType, get_environment, set_environment
-from .run import RunData, run_compute_function
+from .run import RunData, cancel_job, run_compute_function
 from .serve_in_venv import get_args_parser
 
 set_environment(EnvironmentType.COMPUTE, True)
@@ -52,7 +52,25 @@ async def main(arg):
                     msg = await websocket.recv()
                     while isinstance(msg, str):  # not a job (e.g. a cancel)
                         msg = await websocket.recv()
-                    await asyncio.to_thread(handle_task, msg)
+                    # in a thread the loop keeps answering keepalive pings and
+                    # receives cancel messages meanwhile
+                    task = asyncio.ensure_future(asyncio.to_thread(handle_task, msg))
+                    while not task.done():
+                        recv = asyncio.ensure_future(websocket.recv())
+                        await asyncio.wait(
+                            {task, recv}, return_when=asyncio.FIRST_COMPLETED
+                        )
+                        if not recv.done():
+                            recv.cancel()
+                            try:
+                                await recv
+                            except asyncio.CancelledError:
+                                pass
+                            continue
+                        cmd = recv.result()
+                        if isinstance(cmd, str) and cmd.startswith("cancel "):
+                            cancel_job(int(cmd.split()[1]))
+                    task.result()
         except KeyboardInterrupt:
             break
         except Exception as e:

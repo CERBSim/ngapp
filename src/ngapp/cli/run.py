@@ -2,6 +2,7 @@ import base64
 import glob
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -130,6 +131,23 @@ def create_app_venv(app: dict):
     return venv_path
 
 
+# jobs started by run_compute_function in this process, by id
+running: dict[int, subprocess.Popen] = {}
+cancelled: set[int] = set()
+
+
+def cancel_job(job_id: int):
+    """Kill a job started by run_compute_function (local compute env)."""
+    p = running.get(job_id)
+    if p is None:
+        return
+    cancelled.add(job_id)
+    try:
+        os.killpg(p.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+
+
 def run_compute_function(
     data: RunData | str,
 ):
@@ -190,8 +208,14 @@ def run_compute_function(
                 text=False,
                 cwd=temp_dir,
                 env=env,
+                # own process group: a cancel kills the job with its children
+                start_new_session=True,
             )
-            p.communicate(input=data.dump_bytes())[0]
+            running[data.job_id] = p
+            try:
+                p.communicate(input=data.dump_bytes())[0]
+            finally:
+                running.pop(data.job_id, None)
             api.put(f"{api_url}/stdout", (tmp / "stdout").read_text("utf-8"))
             api.post(f"{api_url}/stderr", (tmp / "stderr").read_text("utf-8"))
             print("stdout\n", (tmp / "stdout").read_text("utf-8"), "\n")
@@ -201,9 +225,13 @@ def run_compute_function(
             f"\nSTATUS: Job finished on compute node with exit code {p.returncode}",
         )
         print("return code", p.returncode)
-        api.put(
-            api_url, {"status": "Finished" if p.returncode == 0 else "Failed"}
-        )
+        if data.job_id in cancelled:
+            cancelled.discard(data.job_id)  # the backend set it to stopped
+        else:
+            api.put(
+                api_url,
+                {"status": "Finished" if p.returncode == 0 else "Failed"},
+            )
     except Exception as e:
         print("error", e, flush=True)
         print_exception(e)
