@@ -6,6 +6,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+import threading
 from pathlib import Path
 
 import orjson
@@ -212,9 +213,23 @@ def run_compute_function(
                 start_new_session=True,
             )
             running[data.job_id] = p
+            # the backend takes a job without heartbeat for lost (dead node)
+            alive = threading.Event()
+
+            def heartbeat():
+                while True:
+                    try:
+                        api.post(f"{api_url}/heartbeat", "")
+                    except Exception:
+                        pass
+                    if alive.wait(30):
+                        return
+
+            threading.Thread(target=heartbeat, daemon=True).start()
             try:
                 p.communicate(input=data.dump_bytes())[0]
             finally:
+                alive.set()
                 running.pop(data.job_id, None)
             api.put(f"{api_url}/stdout", (tmp / "stdout").read_text("utf-8"))
             api.post(f"{api_url}/stderr", (tmp / "stderr").read_text("utf-8"))
