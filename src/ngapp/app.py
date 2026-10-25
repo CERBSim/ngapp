@@ -597,6 +597,8 @@ class App(QPage):
         if metadata:
             self.file_data.app_id = metadata.get("app_id", None)
             self.file_data.id = metadata.get("id", None)
+            if metadata.get("name"):
+                self.file_data.name = metadata["name"]
 
         self._emit_recursive("before_load")
 
