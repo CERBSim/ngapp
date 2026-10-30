@@ -2,9 +2,8 @@
 
 import asyncio
 import importlib
+import platform
 import sys
-
-import jwt
 
 from .. import __version__, api
 from ..utils import EnvironmentType, set_environment
@@ -83,35 +82,26 @@ async def main():
 
     tasks = [run_serve_process("ngapp.cli.serve_in_venv", args)]
 
-    if args.rq:
-        compute_envs = api.post(
-            f"/app_admin/app_compute_environments/{args.app_id}", {}
+    if config.compute_environments and args.local_compute_env and not args.deploy:
+        # run this app's compute jobs on this machine
+        try:
+            import httpx  # noqa: F401
+        except ImportError:
+            raise RuntimeError("the local runner needs httpx: pip install httpx")
+        runner = api.post(
+            f"/app_admin/dev_runner_token/{args.app_id}", {"name": platform.node()}
         )
-        for compute_env in compute_envs:
-            compute_env_id = compute_env["id"]
-            data = jwt.decode(args.token, verify=False, algorithms=["HS256"])
-            redis_data = data["redis"][str(compute_env_id)]
-            cmd = [
-                sys.executable,
-                "-m",
-                "ngapp.cli.worker",
-                f"compute_env_{compute_env_id}",
-                "--redis",
-                "localhost:6379",
-                "--redis-user",
-                redis_data["user"],
-                "--redis-pass",
-                redis_data["pass"],
-            ]
-            args.local_compute_env = False
-            tasks.append(run_process(cmd))
-    elif (
-        config.compute_environments
-        and args.local_compute_env
-        and not args.deploy
-    ):
-        print("Serve local compute environment")
-        tasks.append(run_serve_process("ngapp.cli.serve_compute_env", args))
+        print(f"Starting local runner '{runner['name']}' for compute jobs of this app")
+        tasks.append(
+            run_process(
+                [
+                    sys.executable, "-m", "ngapp.runner",
+                    "--host", args.backend_url, "--token", runner["token"],
+                    "--name", runner["name"], "--sandbox", "none",
+                    "--no-self-update", "--poll", "5",
+                ]
+            )
+        )
     await asyncio.gather(*tasks)
 
 
