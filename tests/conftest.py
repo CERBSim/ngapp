@@ -1,6 +1,9 @@
 from pathlib import Path
 
+import pytest
+from helpers import ManualScheduler
 import ngapp.e2e_webgpu as e2e_webgpu
+from ngapp.store.sqlite import SQLiteServer
 
 pytest_plugins = ["ngapp.e2e_webgpu"]
 
@@ -10,3 +13,20 @@ e2e_webgpu.configure(
     output_dir=TESTS_DIR / "output",
     baseline_dir=TESTS_DIR / "baselines",
 )
+
+
+@pytest.fixture
+def server(tmp_path):
+    server = SQLiteServer(tmp_path / "cases.sqlite", poll_interval=None)
+    yield server
+    server.close()
+
+
+@pytest.fixture
+def sched():
+    return ManualScheduler()
+
+
+@pytest.fixture
+def job_sched():
+    return ManualScheduler()
