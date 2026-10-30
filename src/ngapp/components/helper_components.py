@@ -16,11 +16,14 @@ from ..utils import (
     set_directory,
     temp_dir_with_files,
 )
+from ..jobs import JobHandle
+from ..state import data_layer_enabled
 from .basecomponent import (
     Component,
     Event,
     get_component,
 )  # needed from frontend:
+from .job_components import JobFollower
 from .qcomponents import (
     QBtn,
     QCard,
@@ -559,6 +562,14 @@ class JobComponent(QBtn):
     """
     A button to start and stop a job and monitor its status.
 
+    Compatibility component of apps written for ``compute_node``; new apps
+    use :class:`JobControl` (status, queue position, progress, cancel) and
+    :class:`RunsView`. In a case session the button follows the job through
+    its JobHandle and the case's events, finds an unfinished job of the
+    function again when the case is opened and stores nothing of the job in
+    the case (``job_status`` and ``progress`` are views of the JobHandle).
+    Without a case store the legacy behaviour applies.
+
     :param id: Compoent id
     :param compute_function: Function that is called with compute_node
     """
@@ -575,9 +586,17 @@ class JobComponent(QBtn):
         super().__init__(self.tooltip, id=id, **kwargs)
         self._set_prop("icon", "mdi-play")
         self.job_status: dict = {}
-        self.job: Job | LocalJob | None = None
+        self.job: Job | LocalJob | JobHandle | None = None
         self.on("click", self._on_click)
         self.on("load", self.update_job_status)
+        self._follower = JobFollower(self, compute_function, self._on_job)
+
+    @property
+    def _data_layer(self) -> bool:
+        follower = self.__dict__.get("_follower")
+        if follower is not None and follower.session is not None:
+            return True
+        return data_layer_enabled()
 
     @property
     def job_id(self):
@@ -587,6 +606,14 @@ class JobComponent(QBtn):
 
     def set_job_from_id(self, job_id: int):
         self.job = Job(**{"id": job_id})
+
+    def _on_job(self, kind):
+        if self._follower.session is None:
+            return
+        self.job = self._follower.job
+        self.update_job_status()
+        if kind == "status" and self.job is not None and self.job.done:
+            self._handle("finish", self.job.status)
 
     def _on_click(self):
         if not self.job_status.get("status") in ["started", "queued"]:
@@ -601,7 +628,7 @@ class JobComponent(QBtn):
 
     def _start_job(self):
         self.progress = 0.0
-        self.job = self.compute_function(_job_component=self)
+        self.job = self._follower.submit(_job_component=self)
         self.update_job_status()
         self._handle("start")
 
@@ -609,9 +636,13 @@ class JobComponent(QBtn):
         self.update_job_status()
         if self.job_status.get("status") in ["started", "queued"]:
             try:
-                self.job.abort()
-                self.update_job_status()
-                self._reset_button()
+                if isinstance(self.job, JobHandle):
+                    self._follower.cancel()
+                    self.update_job_status()
+                else:
+                    self.job.abort()
+                    self.update_job_status()
+                    self._reset_button()
                 print("stop")
                 self._handle("stop")
             except Exception as e:
@@ -621,17 +652,27 @@ class JobComponent(QBtn):
             # https://github.com/rq/rq/issues/1631 is fixed
             self._start_job()
 
+    def _set_tooltip(self, text: str):
+        if self._data_layer:
+            # a component child: the text is not stored in the case
+            self.tooltip.ui_children = [Span(text)]
+        else:
+            self.tooltip.ui_children = [text]
+
     def _update_button(self):
         if self.job_status.get("status") in ["started", "queued"]:
-            self.tooltip.ui_children = [f"Abort"]
+            self._set_tooltip("Abort")
             self._set_prop("icon", "mdi-stop")
         else:
-            self.tooltip.ui_children = ["Run"]
+            self._set_tooltip("Run")
             self._set_prop("icon", "mdi-play")
-        self.tooltip.ui_model_value = False
+        if not self._data_layer:
+            self.tooltip.ui_model_value = False
 
     @property
     def progress(self):
+        if isinstance(self.job, JobHandle):
+            return self.job.progress[0] or 0.0
         return self.job_status.get("progress", 0.0)
 
     @progress.setter
@@ -643,22 +684,35 @@ class JobComponent(QBtn):
         if self.job is not None:
             self.job_status.update(self.job.get_status())
             self._update_button()
+        elif self._follower.session is not None:
+            self.job_status.clear()
+            self._update_button()
 
     def _reset_button(self):
         self.job = None
         self.job_status.clear()
-        self.tooltip.ui_children = ["Start job"]
+        self._set_tooltip("Start job")
         self._set_prop("icon", "mdi-play")
 
     def _dump(self):
         if not self._id:
             return None
+        if self._data_layer:
+            # the icon shows the job's status, which is not case data
+            props = super()._dump() or {}
+            return {k: v for k, v in props.items() if k != "icon"}
         data = (super()._dump() or {}) | {"job_status": self.job_status}
         if isinstance(self.job, Job):
             data["job"] = self.job.model_dump()
         return data
 
     def _load(self, data):
+        if self._data_layer:
+            data = dict(data or {})
+            data.pop("job_status", None)
+            data.pop("job", None)
+            data["icon"] = self._props.get("icon", "mdi-play")
+            return super()._load(data)
         self.job_status = data.pop("job_status", {})
         job = data.pop("job", None)
         if job is not None:
@@ -672,6 +726,11 @@ class JobComponent(QBtn):
     def on_start(self, handler: Callable):
         """Set the function to be called when the job is started."""
         self.on("start", handler)
+
+    def on_finish(self, handler: Callable):
+        """Set the function to be called with the final status when a job
+        ended (case store only)."""
+        self.on("finish", handler)
 
 
 class SimulationTable(QTable):
