@@ -12,6 +12,7 @@ build-backend = "setuptools.build_meta"
 
 [project.optional-dependencies]
 dev = ['websockets', 'watchdog', 'wheel', 'setuptools', 'cookiecutter', 'deepdiff']
+zstd = ['zstandard']
 e2e = ['pytest', 'pytest-playwright', 'pytest-check', 'playwright', 'pytest-base-url', 'Pillow']
 
 [tool.setuptools_scm]
