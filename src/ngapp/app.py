@@ -465,6 +465,9 @@ class App(QPage):
     @classmethod
     def load_local(cls):
         env = get_environment()
+        if env.local_cases is not None:
+            env.local_cases.load_file()
+            return
         try:
             data = env.load_data_local()
         except Exception as e:
@@ -605,7 +608,10 @@ class App(QPage):
     def reset(cls):
         """
         Reset the app in the user interface to clean initial state. Only available in frontend and local environment. Return value is the new app instance.
+        In the local app mode a new case is shown.
         """
+        if get_environment().local_cases is not None:
+            return get_environment().local_cases.new()
         app = cls()
         app._load_app({})
         get_environment().reset_app(app)
@@ -621,6 +627,10 @@ class App(QPage):
     @final
     def save_local(self):
         import pickle
+
+        if self.env.local_cases is not None:
+            self.env.local_cases.save_file(self)
+            return
 
         name = self.name + ".sav" if self.name is not None else "untitled.sav"
         write = self.env.begin_save_file_local(name)

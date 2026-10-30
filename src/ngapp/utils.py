@@ -260,6 +260,8 @@ class Environment:
     # Storage maps onto component state and props are persisted through a
     # case store (ngapp.state.CaseSession)
     data_layer: bool = False
+    # cases of the local app mode (ngapp.local_cases.LocalCases)
+    local_cases = None
 
     frontend: BaseFrontend
     backend_api_url: str = ""
@@ -345,9 +347,8 @@ class Environment:
         if changed:
             comp.storage._notify(changed)
 
-    def load_data_local(self, options: dict | None = None):
-        import pickle
-
+    def load_file_local(self, options: dict | None = None):
+        """(name, bytes) of a file chosen in the browser, None if cancelled"""
         options = {"multiple": False, "accept": ".sav"} | (options or {})
         try:
             pick = self.js.showOpenFilePicker(options)
@@ -358,7 +359,13 @@ class Environment:
             Environment.loaded_file_name = str(handle.name)
         except Exception:
             Environment.loaded_file_name = ""
-        return pickle.loads(handle.getFile().arrayBuffer())
+        return Environment.loaded_file_name, handle.getFile().arrayBuffer()
+
+    def load_data_local(self, options: dict | None = None):
+        import pickle
+
+        picked = self.load_file_local(options)
+        return None if picked is None else pickle.loads(picked[1])
 
     def reset_app(self, app):
         self.frontend.reset_app(app)

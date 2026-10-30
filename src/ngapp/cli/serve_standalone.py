@@ -10,7 +10,9 @@ import time
 import webbrowser
 from collections.abc import Callable
 from pathlib import Path
-from threading import Event
+from threading import Event, Thread
+
+from webgpu.link.websocket import WebsocketLinkServer
 
 from ngapp.app import create_app
 from ngapp.components.basecomponent import get_component, unmount_component
@@ -69,9 +71,81 @@ def watch_python_modules(modules, callback, stop_event: Event | None = None):
 
 app = None
 
+# seconds the local app waits for a page to connect again after the last
+# one was closed (a reload) before it exits
+_EXIT_GRACE = float(os.environ.get("NGAPP_EXIT_GRACE", "10"))
+
+
+class _PageLinkServer(WebsocketLinkServer):
+    """Link of the local app: a new page (a reload, another window) takes
+    over the connection of the previous one; on_page() runs for each page
+    after the first"""
+
+    on_page = None
+
+    async def _websocket_handler(self, websocket, path=""):
+        old = self._connection
+        first = not self._event_is_connected.is_set()
+        self._connection = websocket
+        self._event_is_connected.set()
+        if old is not None:
+            await old.close(4000, "The app was opened in another window")
+        if not first and self.on_page is not None:
+            Thread(target=self.on_page, daemon=True).start()
+        try:
+            async for message in websocket:
+                if websocket is not self._connection:
+                    break
+                if self._is_chunk(message):
+                    full = self._reassemble_chunk(message)
+                    if full is not None:
+                        self._dispatch(full)
+                else:
+                    self._dispatch(message)
+        finally:
+            if self._connection is websocket:
+                self._connection = None
+                self._chunk_buffers.clear()
+
+
+def _reset_page_state(platform):
+    """Forget the objects of the previous page: JavaScript ids restart in a
+    new page, so proxies of the old one must not release or reach objects of
+    the new one; calls waiting for the old page end"""
+    import gc
+
+    from webgpu.link.proxy import Proxy
+
+    server = platform.websocket_server
+    for obj in gc.get_objects():
+        if issubclass(type(obj), Proxy) and obj.__dict__.get("_link") is server:
+            obj.__dict__["_link"] = None
+    with server._refcount_lock:
+        server._cache.clear()
+        server._js_id_refcount.clear()
+        server._release_queue.clear()
+    for value in list(server._requests.values()):
+        if isinstance(value, tuple) and hasattr(value[0], "set"):
+            value[0].set()
+    platform.js = server.get(None, None)
+    try:
+        from webgpu import font
+        from webgpu import utils as wutils
+
+        wutils._device = None
+        wutils._device_failure = None
+        font._default_font_atlas = None
+    except Exception as e:
+        utils.print_exception(e)
+
 
 def reload_app(app_module, reload_modules):
     global app
+    cases = utils.get_environment().local_cases
+    if cases is not None:
+        print("Reloading app")
+        cases.reload(reload_modules)
+        return
     old_app = app
     old_app._emit_recursive("before_save")
     data = old_app._dump_app(
@@ -93,10 +167,29 @@ def host_local_app(
     exit_on_unload: bool = True,
     stop_event: Event | None = None,
     url_callback: Callable[[str], None] | None = None,
+    store: str | os.PathLike | None = None,
+    import_files: list | None = None,
 ):
+    """Serve the app locally; its cases live in a local SQLite store (store,
+    default ngapp.local_cases.store_path), the last opened one is shown and
+    import_files (case files or .sav files of the previous local mode) are
+    imported first"""
     from webgpu import platform
 
+    from ..local_cases import LocalCases
+
+    # the local app's link accepts reloads and new pages
+    platform.WebsocketLinkServer = _PageLinkServer
+
     global app
+    cases: LocalCases | None = None
+    shown = Event()
+
+    def show_app(new_app):
+        global app
+        app = new_app
+        if shown.is_set():
+            utils.get_environment().frontend.reset_app(new_app)
 
     timing_enabled = os.environ.get("NGAPP_STARTUP_TIMING", "0") in (
         "1",
@@ -133,7 +226,7 @@ def host_local_app(
     env: Environment = None
 
     def before_wait_for_connection(server):
-        nonlocal http_process, env, last_checkpoint, startup_t0
+        nonlocal http_process, env, last_checkpoint, startup_t0, cases
         global app
 
         server = platform.websocket_server
@@ -141,31 +234,16 @@ def host_local_app(
         server.expose("unmount_component", unmount_component)
 
         env = utils.set_environment(utils.Environment.LOCAL_APP, False, server)
+        env.data_layer = True
 
         app_config = importlib.import_module(app_module).config
-        app = create_app(app_config, {}, app_args=app_args)
-        now = time.perf_counter()
-        if timing_enabled:
-            print(
-                f"Standalone startup: create_app={now - last_checkpoint:.3f}s "
-                f"(total={now - startup_t0:.3f}s)"
-            )
-
-            def _log_js_ready(js):
-                js_now = time.perf_counter()
-                print(
-                    f"Standalone startup: js_ready={js_now - startup_t0:.3f}s"
-                )
-
-            def _log_app_mounted(_=None):
-                mounted_now = time.perf_counter()
-                print(
-                    f"Standalone startup: app_mounted={mounted_now - startup_t0:.3f}s"
-                )
-
-            app.call_js(_log_js_ready)
-            app.on_mounted(_log_app_mounted)
-        last_checkpoint = now
+        cases = LocalCases(
+            app_config, store, app_args=app_args, on_app=show_app
+        )
+        env.local_cases = cases
+        server.expose("ngapp_cases", cases)
+        server.on_page = on_page
+        last_checkpoint = time.perf_counter()
 
         ws_port = server.port
         ws_token = server.auth_token
@@ -326,26 +404,75 @@ def host_local_app(
             except Exception as e:  # pragma: no cover - best effort only
                 print("Failed to call url_callback:", e)
 
-    platform.init(before_wait_for_connection)
-    from webgpu import platform
+    pages = [0]
 
-    def stop_app(event):
+    def exit_app():
         for on_exit_handler in app._on_exit_handlers:
             try:
                 on_exit_handler()
             except Exception as e:
                 print("Error in on_exit handler:", e)
-        # In normal CLI usage we exit the whole process. For tests or
-        # embedded usage, ``exit_on_unload`` can be set to ``False`` so
-        # that the caller controls shutdown.
-        if exit_on_unload:
-            os._exit(0)
+        os._exit(0)
 
-    platform.js.addEventListener(
-        "unload",
-        platform.create_event_handler(stop_app, prevent_default=False),
-    )
-    env.frontend.reset_app(app)
+    def stop_app(event):
+        cases.save()
+        # In normal CLI usage we exit the whole process, unless a page
+        # connects again soon (a reload). For tests or embedded usage,
+        # ``exit_on_unload`` can be set to ``False`` so that the caller
+        # controls shutdown.
+        if exit_on_unload:
+            page = pages[0]
+
+            def later():
+                time.sleep(_EXIT_GRACE)
+                if pages[0] == page:
+                    exit_app()
+
+            Thread(target=later, daemon=True).start()
+
+    def show_page():
+        """The case in the connected page: opened after the connection, so
+        that on_load can create views that need the browser (WebGPU)"""
+        platform.js.addEventListener(
+            "unload",
+            platform.create_event_handler(stop_app, prevent_default=False),
+        )
+        if not shown.is_set():
+            imported = None
+            for path in import_files or []:
+                imported = cases.import_file(path)
+                print(f"Imported {path} as case {imported}")
+            if imported is not None and imported != cases.case_id:
+                cases.open(imported)
+            elif cases.app is None:
+                cases.start()
+            shown.set()
+            env.frontend.reset_app(app)
+        elif cases.case_id is not None:
+            # a fresh app instance for the new page
+            cases.open(cases.case_id)
+        else:
+            cases.start()
+
+    def on_page():
+        """Another page connected (a reload or a new window): it shows the
+        app, the previous page was disconnected"""
+        pages[0] += 1
+        _reset_page_state(platform)
+        try:
+            show_page()
+        except Exception as e:
+            utils.print_exception(e)
+
+    platform.init(before_wait_for_connection)
+    from webgpu import platform
+
+    show_page()
+    if timing_enabled:
+        print(
+            "Standalone startup: app_shown="
+            f"{time.perf_counter() - startup_t0:.3f}s"
+        )
 
     if watch_code:
         watch_modules = [app_module.split(".")[0]]
@@ -370,6 +497,8 @@ def host_local_app(
         except subprocess.TimeoutExpired:
             http_process.kill()
 
+    cases.close()
+    env.local_cases = None
     try:
         platform.js.close()
     except Exception:
@@ -402,6 +531,17 @@ def main(app_module=None):
         default=False,
         metavar="MODULES",
     )
+    args.add_argument(
+        "--store",
+        help="Case database (default ~/.local/share/ngapp/<app>/cases.sqlite)",
+    )
+    args.add_argument(
+        "--import",
+        dest="import_files",
+        nargs="+",
+        metavar="FILE",
+        help="Import case files (.ngcase) or saved files of the previous local mode (.sav)",
+    )
     args = args.parse_args()
 
     if not app_module:
@@ -412,6 +552,8 @@ def main(app_module=None):
         start_browser=not args.no_browser,
         watch_code=args.dev,
         dev_frontend=args.dev_frontend,
+        store=args.store,
+        import_files=args.import_files,
     )
 
 

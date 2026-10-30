@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from playwright.sync_api import Page
 
-from ngapp.app import App
 from ngapp.e2e import app_test
 
 
@@ -57,3 +56,28 @@ def test_local_app_usersettings_persists_length(page: Page) -> None:
     # After reload, the length input should still show the value we set
     reloaded_length_input = page.get_by_label("Length (m)")
     assert reloaded_length_input.input_value() == "7"
+
+
+@app_test("tests.local_app_pages")
+def test_local_app_case_opens_after_the_page_connected(page: Page) -> None:
+    """The last case is opened once the browser is connected, so
+    on_load can create views that need the browser (WebGPU)"""
+    page.get_by_text("browser connected: True").wait_for(timeout=30_000)
+
+
+@app_test("tests.local_app_pages")
+def test_local_app_accepts_reloads_and_new_pages(page: Page) -> None:
+    """A reload and a second window connect to the running app (the
+    newest page shows it), edits of the case survive"""
+    page.get_by_text("browser connected: True").wait_for(timeout=30_000)
+    page.get_by_label("Text").fill("kept")
+    page.wait_for_timeout(1500)  # autosave
+    page.reload()
+    page.get_by_text("browser connected: True").wait_for(timeout=30_000)
+    assert page.get_by_label("Text").input_value() == "kept"
+    ctx = page.context.browser.new_context()
+    second = ctx.new_page()
+    second.goto(page.url)
+    second.get_by_text("browser connected: True").wait_for(timeout=30_000)
+    assert second.get_by_label("Text").input_value() == "kept"
+    ctx.close()

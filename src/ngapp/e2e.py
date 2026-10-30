@@ -166,6 +166,8 @@ class LocalAppRunner:
         if in_process:
             from ngapp.cli import serve_standalone
 
+            # the app is created once the page connected (wait_for_app)
+            serve_standalone.app = None
             url_ready = threading.Event()
             url_holder: list[str] = []
 
@@ -255,6 +257,19 @@ class LocalAppRunner:
 
         self.url = url
         return url
+
+    def wait_for_app(self, timeout: float | None = None) -> Any:
+        """The App instance of an in-process app, created once a page
+        connected"""
+        from ngapp.cli import serve_standalone
+
+        end = time.time() + (self.timeout if timeout is None else timeout)
+        while serve_standalone.app is None:
+            if time.time() > end:
+                raise TimeoutError("Timed out waiting for the app")
+            time.sleep(0.05)
+        self.app = serve_standalone.app
+        return self.app
 
     def stop(self) -> None:
         """Terminate the app process if it is still running."""
@@ -372,12 +387,8 @@ def app_test(
             try:
                 page.goto(url)  # type: ignore[call-arg]
                 call_kwargs = dict(kwargs)
-                if (
-                    wants_app_arg
-                    and "app" not in call_kwargs
-                    and getattr(runner, "app", None) is not None
-                ):
-                    call_kwargs["app"] = runner.app
+                if wants_app_arg and "app" not in call_kwargs:
+                    call_kwargs["app"] = runner.wait_for_app()
                 return func(*args, **call_kwargs)
             finally:
                 runner.stop()
