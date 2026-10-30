@@ -1,8 +1,6 @@
 """command line interface for webapp to update a running job"""
 
 import argparse
-import base64
-import datetime
 import importlib
 import importlib.util
 import os
@@ -13,9 +11,9 @@ import pydantic
 import watchdog.events
 from watchdog.observers import Observer
 
-from .. import api
 from ..app import AppConfig
-from ..utils import EnvironmentType, calc_hash, print_exception, set_environment
+from ..utils import EnvironmentType, print_exception, set_environment
+from .deploy import upload_app
 
 
 class WatchSpec(pydantic.BaseModel):
@@ -62,12 +60,6 @@ def get_args_parser(description):
     parser.add_argument(
         "--deploy",
         help="Just deploy the package and quit, implies --build_backend_packages",
-        action="store_true",
-        required=False,
-    )
-    parser.add_argument(
-        "--rq",
-        help="Use rq worker",
         action="store_true",
         required=False,
     )
@@ -123,57 +115,13 @@ class UpdateAppHandler(EventHandler):
         super().__init__(self.handle_debounced)
 
     def handle_debounced(self):
-        """Registers/updates the app on the backend"""
-        # triggers hot-reloading of app in frontend
+        """Registers/updates the app on the backend (triggers hot reload in the frontend)"""
         config = self.spec.update_config()
-        t = str(datetime.datetime.now()).split(".")[0].split(" ")[1]
-        print(f"{t} Update app '{config.name}', id = {self.spec.app_id}")
-        config_dump = config.model_dump(exclude_defaults=True)
-        config.create_frontend_package()
-        config_dump["frontend_package"] = base64.b64encode(
-            config.frontend_package
-        ).decode("utf-8")
-
-        if self.spec.build_backend_packages:
-            print("Creating backend packages")
-            md = api.post(
-                f"/get_app_python_packages_metadata",
-                data={
-                    "app_id": self.spec.app_id,
-                },
-            )
-            old_packages = {p["name"]: p for p in md}
-
-            config.create_backend_packages()
-            packages = []
-            for pkg in config.python_packages:
-                pkg_dump = {
-                    "file_name": pkg.file_name,
-                    "package": "",
-                }
-                hash = calc_hash(pkg.package)
-                if (
-                    pkg.file_name not in old_packages
-                    or old_packages[pkg.file_name]["hash"] != hash
-                ):
-                    # upload only if it's different from the current package in the database
-                    pkg_dump["package"] = base64.b64encode(pkg.package).decode(
-                        "utf-8"
-                    )
-                packages.append(pkg_dump)
-            config_dump["python_packages"] = packages
-            config_dump["python_packages_hash"] = config.python_packages_hash
-
-        api.post(
-            f"/app_admin/update_app/{self.spec.app_id}",
-            data={
-                "app_config": config_dump,
-                "reload_dependencies": (
-                    config.frontend_dependencies
-                    if self.spec.reload_config
-                    else []
-                ),
-            },
+        upload_app(
+            config,
+            self.spec.app_id,
+            build_backend_packages=self.spec.build_backend_packages,
+            reload_dependencies=config.frontend_dependencies if self.spec.reload_config else [],
         )
 
 
