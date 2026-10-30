@@ -70,6 +70,11 @@ def get_parser():
     )
     parser.add_argument("--work", type=Path, default=None, help="work directory for running jobs (default <cache>/work)")
     parser.add_argument("--poll", type=int, default=30, help="long-poll seconds per request")
+    parser.add_argument(
+        "--services-dir", type=Path, default=None,
+        help="host api services (compute envs with api=True) with their unix sockets in this directory; "
+        "must be the backend's WEBAPP_SERVICES_DIR (runner on the backend host only)",
+    )
     parser.add_argument("--no-self-update", action="store_true")
     return parser
 
@@ -146,6 +151,7 @@ def main(argv=None):
         poll_wait=args.poll,
         self_update=not args.no_self_update,
         cache_size=parse_memory(args.cache_size) * 1024 * 1024,
+        services_dir=args.services_dir,
         log=log,
         gpus=args.gpus,
         gpu_type=args.gpu_type,

@@ -14,6 +14,7 @@ from ngapp.runner.client import (
     BackendUnavailable,
 )
 from ngapp.runner.execute import JobExecution, LogPump
+from ngapp.runner.runner import Runner
 from ngapp.store import (
     BaseGoneError,
     ConflictError,
@@ -280,6 +281,39 @@ class _Client:
 
     def heartbeat(self, state, running, stopping=False, timeout=None):
         return {}
+
+
+def test_reported_capacity(tmp_path):
+    """The report: totals offered to jobs (without the reservations of services)
+    and the capacity free of running processes; a job whose process ended does
+    not count, the backend counts it until its finish"""
+    runner = Runner(
+        None,
+        None,
+        None,
+        cpus=8,
+        memory=1000,
+        name="t",
+        work_root=tmp_path,
+        gpus=2,
+        scratch_gb=10,
+    )
+    runner.cache = type("C", (), {"cached_envs": lambda self: []})()
+    runner.sandbox = type("S", (), {"name": "none"})()
+    runner.services = type("V", (), {"reserved": lambda self: (1, 200)})()
+
+    def job(cpus, memory, gpus, scratch_gb):
+        fields = {"cpus": cpus, "memory": memory, "gpus": gpus}
+        return type("J", (), {**fields, "scratch_gb": scratch_gb})()
+
+    runner.jobs[6] = job(2, 100, [0], 3)
+    runner.reporting[7] = job(1, 50, [1], 2)
+    state = runner.state()
+    assert (state["cpus"], state["memory"]) == (7, 800)
+    assert (state["free_cpus"], state["free_memory"]) == (5, 700)
+    assert (state["free_gpus"], state["free_scratch_gb"]) == (1, 7)
+    assert runner.free() == (5, 700) and runner.free_gpus() == [1]
+    assert sorted(runner.running_jobs()) == [6, 7]
 
 
 def test_new_error_codes(fake, monkeypatch):

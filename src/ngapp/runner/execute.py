@@ -58,6 +58,11 @@ class Sandbox:
     ) -> list[str]:
         raise NotImplementedError
 
+    def service_command(
+        self, image: Path | None, directory: Path, layer: Path, cpus: int, memory: int, workers: int
+    ) -> list[str]:
+        raise NotImplementedError
+
     def environment(self, layer: Path, job_env: dict | None = None) -> dict:
         return {**os.environ, **(job_env or {})}
 
@@ -69,6 +74,12 @@ class NoSandbox(Sandbox):
 
     def command(self, image, work, layer, cpus, memory, job_env, gpus):
         return [sys.executable, "-m", "ngapp.cli.run_job", str(work / "job.json")]
+
+    def service_command(self, image, directory, layer, cpus, memory, workers):
+        return [
+            sys.executable, "-m", "ngapp.cli.serve_api",
+            "--socket", str(directory / "api.sock"), "--workers", str(workers),
+        ]
 
     def environment(self, layer, job_env=None):
         env = {**os.environ, **(job_env or {})}
@@ -107,6 +118,24 @@ class ApptainerSandbox(Sandbox):
         if self.limits:
             cmd += ["--cpus", str(cpus), "--memory", f"{memory}M"]
         cmd += [str(image), "python", "-m", "ngapp.cli.run_job", "/work/job.json"]
+        return cmd
+
+    def service_command(self, image, directory, layer, cpus, memory, workers):
+        if image is None:
+            raise RuntimeError("compute environment has no image")
+        cmd = [
+            "apptainer", "exec", "--containall", "--cleanenv",
+            "--pwd", "/run/service",
+            "--home", f"{directory}:/run/service",
+            "--bind", f"{layer}:/apps:ro",
+            "--env", "PYTHONPATH=/apps",
+        ]
+        if self.limits:
+            cmd += ["--cpus", str(cpus), "--memory", f"{memory}M"]
+        cmd += [
+            str(image), "python", "-m", "ngapp.cli.serve_api",
+            "--socket", "/run/service/api.sock", "--workers", str(workers),
+        ]
         return cmd
 
 

@@ -14,6 +14,7 @@ from .. import __version__
 from .cache import Cache
 from .client import BackendClient, BackendUnavailable, Unauthorized
 from .execute import JobExecution, Sandbox, StateLog, failure_kind
+from .services import ServiceManager
 
 HEARTBEAT_INTERVAL = 30
 BACKOFF_MAX = 10
@@ -45,6 +46,7 @@ class Runner:
         poll_wait: int = 30,
         self_update: bool = True,
         cache_size: int = 0,
+        services_dir: Path | None = None,
         log=print,
         gpus: int = 0,
         gpu_type: str = "",
@@ -75,6 +77,8 @@ class Runner:
         self.announced = threading.Event()
         self.update_to: str | None = None
         self.last_prune = time.monotonic()
+        # api services are only hosted when a services dir is given (backend host)
+        self.services = ServiceManager(client, cache, sandbox, services_dir, log) if services_dir else None
 
     # capacity: the backend claims from the reported totals minus the runner's jobs it knows;
     # free counts the processes that still run (a job whose finish is not answered yet still
@@ -84,10 +88,15 @@ class Runner:
         with self.lock:
             return list(self.jobs.values())
 
+    def _reserved(self) -> tuple[int, int]:
+        """cpus and memory of the api services, not offered to jobs"""
+        return self.services.reserved() if self.services else (0, 0)
+
     def free(self) -> tuple[int, int]:
         jobs = self._holding()
-        cpus = self.cpus - sum(j.cpus for j in jobs)
-        memory = self.memory - sum(j.memory for j in jobs)
+        r_cpus, r_memory = self._reserved()
+        cpus = self.cpus - r_cpus - sum(j.cpus for j in jobs)
+        memory = self.memory - r_memory - sum(j.memory for j in jobs)
         return cpus, memory
 
     def free_gpus(self) -> list[int]:
@@ -98,10 +107,11 @@ class Runner:
         return self.scratch_gb - sum(j.scratch_gb for j in self._holding())
 
     def state(self) -> dict:
+        r_cpus, r_memory = self._reserved()
         free_cpus, free_memory = self.free()
         return {
-            "cpus": self.cpus,
-            "memory": self.memory,
+            "cpus": self.cpus - r_cpus,
+            "memory": self.memory - r_memory,
             "free_cpus": free_cpus,
             "free_memory": free_memory,
             "gpus": self.gpus,
@@ -223,7 +233,8 @@ class Runner:
     def _stop_jobs(self):
         """After the long poll ended: the shutdown is announced first (the backend claims nothing
         more for the runner), then the jobs end. Jobs that have not started are given back,
-        running ones are killed and reported (the backend requeues them if their policy allows)"""
+        running ones are killed and reported (the backend requeues them if their policy allows);
+        services stop."""
         self.stop.set()
         self.stopping.set()
         self.announced.wait(ANNOUNCE_TIMEOUT + 1)
@@ -236,6 +247,8 @@ class Runner:
             job.join(max(0.0, deadline - time.monotonic()))
         if any(job.is_alive() for job in jobs):
             self.log("jobs still reporting, the backend handles them as lost")
+        if self.services:
+            self.services.stop_all()
 
     def _give_back(self, assignment: dict, reason: str):
         """An assignment the runner does not start goes back to the queue; the backend counts it as
@@ -281,7 +294,12 @@ class Runner:
         beat = StateLog(self.log, "runner heartbeat")
         while not self.stop.is_set():
             try:
-                response = self.client.heartbeat(self.state(), self.running_jobs())
+                state = self.state()
+                if self.services:
+                    state["services"] = self.services.reconcile_reports()
+                response = self.client.heartbeat(state, self.running_jobs())
+                if self.services:
+                    state["services"] = self.services.reconcile(response.get("services", []))
                 required = response.get("required_version") or ""
                 if required and version_tuple(required) > version_tuple(__version__) and self.self_update:
                     self.update_to = required
@@ -293,7 +311,9 @@ class Runner:
                 beat.failed(failure_kind(e), f"heartbeat failed: {e}")
             if time.monotonic() - self.last_prune > PRUNE_INTERVAL:
                 self._prune()
-            self.stop.wait(self.heartbeat_interval)
+            # report quickly while services are starting or failing
+            settling = self.services is not None and not self.services.all_ready()
+            self.stop.wait(5 if settling else self.heartbeat_interval)
 
     def _maybe_update(self):
         if not self.update_to or self.running_jobs():

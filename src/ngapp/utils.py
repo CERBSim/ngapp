@@ -13,6 +13,7 @@ import shutil
 import sys
 import tempfile
 import threading
+import time
 import traceback
 import typing
 from contextlib import contextmanager
@@ -981,6 +982,11 @@ class ComputeEnvironment(pydantic.BaseModel):
     env_type: typing.Literal["venv", "docker", "local"] = "venv"
     dockerfile: str = DEFAULT_DOCKERFILE
     pip_dependencies: list[str] = []
+    # api = True: a persistent service answers compute_node calls synchronously
+    # (frontend -> backend -> service), for frequent short computations
+    api: bool = False
+    api_workers: int = 1
+    api_timeout: int = 30  # seconds per call
 
     def __call__(self, *args, **kwargs):
         return compute_node(*args, **kwargs, compute_env=self)
@@ -1002,6 +1008,7 @@ def compute_node(
     *,
     compute_env: str | ComputeEnvironment = "default",
     job_timeout: int | None = None,
+    background: bool = False,
 ):
     """Run the decorated method on a compute node.
 
@@ -1009,6 +1016,9 @@ def compute_node(
     :param job_timeout: how long the job may run (seconds) before the backend
         stops it. Defaults to the backend default (one hour). Only queued jobs
         are limited, a run on the local machine is never stopped by a timeout.
+    :param background: in a compute environment with ``api = True`` calls are
+        synchronous and return the result; set True to queue a job instead
+        (long running functions).
     """
     from .app import App
     from .components.basecomponent import Component
@@ -1066,6 +1076,19 @@ def compute_node(
                             )
                     app.save()
 
+                    if not background and _env_has_api(app, compute_env):
+                        # synchronous call to the environment's service
+                        return _call_api_service(
+                            f"/app/{app._config.id}/call/{f.__name__}",
+                            {
+                                "file_id": app.context.file_id,
+                                "compute_env": compute_env,
+                                "comp_id": comp_id,
+                                "args": args,
+                                "kwargs": kwargs,
+                            },
+                        )
+
                     if depends_on:
                         for i, job in enumerate(depends_on):
                             if isinstance(job, Job):
@@ -1101,16 +1124,19 @@ def compute_node(
                 @functools.wraps(f)
                 def wrap(
                     self: App | Component,
-                    job_id: int,
-                    job_component_id: str = "",
                     *args,
+                    job_id: int | None = None,
+                    job_component_id: str = "",
                     **kwargs,
                 ):
                     global _job_component
 
                     app = self.context.app
+                    # job_id is None for synchronous api calls (no job, no job component)
                     _job_component = (
-                        app[job_component_id] if job_component_id else None
+                        app[job_component_id]
+                        if job_component_id and job_id is not None
+                        else None
                     )
                     if _job_component:
                         _job_component.set_job_from_id(job_id=job_id)
@@ -1136,6 +1162,24 @@ def compute_node(
         return decorator
     else:
         return decorator(_func)
+
+
+def _call_api_service(url: str, body: dict, retries: int = 10):
+    """POST to the backend, waiting while the service is (re)starting (503)"""
+    for attempt in range(retries):
+        try:
+            return api.post(url, body)
+        except RuntimeError as e:
+            if "503" not in str(e.args[0]) or attempt == retries - 1:
+                raise
+            time.sleep(1)
+
+
+def _env_has_api(app, env_name: str) -> bool:
+    for env in getattr(app._config, "compute_environments", []):
+        if env.name == env_name:
+            return env.api
+    return False
 
 
 def replace_app(new_app):
