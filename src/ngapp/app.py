@@ -13,6 +13,7 @@ import sys
 import tempfile
 import time
 import types
+import weakref
 from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import IntEnum
@@ -274,6 +275,10 @@ class App(QPage):
     _config: AppConfigWithAccess
     file_data: FileData
 
+    autosave: bool = True
+    """Commit changes automatically (debounced) when a case store is attached"""
+    case_session = None
+
     def __init__(
         self, *ui_children: Component | str, name: str | None = None, **kwargs
     ):
@@ -483,6 +488,69 @@ class App(QPage):
             env.frontend.set_query_parameter("fileId", None)
 
     @final
+    def commit(self, name: str | None = None) -> int:
+        """Commit pending changes to the case store and return the revision;
+        with a name, the revision is stored as named version"""
+        if self._case_session() is None:
+            raise RuntimeError("App is not attached to a case store")
+        kind = "autosave" if name is None else "named_version"
+        return self.case_session.commit(kind=kind, name=name)
+
+    def _open_case(
+        self, case_id: int | None, release_id=None, store=None, pending=()
+    ):
+        """Attach the app to a case of the backend (FULL mode); without a
+        case id the first save after an edit creates one. pending: exports
+        of CaseSession.export_pending to re-apply (a reload of the tab)."""
+        global _case_app
+        from .state import CaseSession
+        from .store.http import HTTPStore
+
+        previous = _case_app() if _case_app is not None else None
+        if previous is not None and previous.case_session is not None:
+            previous.case_session.close()  # one open case per worker
+        _case_app = weakref.ref(self)
+        self.env.data_layer = True
+        self._release_id = release_id
+        if store is None:
+            store = HTTPStore.from_environment(release_id=release_id)
+        session = CaseSession.open(self, store, case_id)
+        if isinstance(pending, str):
+            pending = json.loads(pending)
+        if isinstance(pending, dict):
+            pending = [pending]
+        for data in pending or ():
+            try:
+                session.import_pending(data)
+            except Exception as e:
+                utils.print_exception(e)
+        return session
+
+    def _case_session(self):
+        """The case session; in FULL mode the first save creates the case"""
+        env = self.env
+        if self.case_session is None and env.have_backend and env.data_layer:
+            from .state import CaseSession
+            from .store.http import HTTPStore
+
+            store = HTTPStore.from_environment(
+                release_id=getattr(self, "_release_id", None)
+            )
+            CaseSession.create(self, store, name=self.name or "untitled")
+            if env.type == EnvironmentType.PYODIDE:
+                env.frontend.set_query_parameter(
+                    "fileId", self.case_session.case_id
+                )
+        return self.case_session
+
+    def runs(self, function) -> "RunList":
+        """Runs of a compute function (bound method or qualified name) of the
+        case, oldest first; latest is the run of the latest succeeded job"""
+        from .jobs import runs
+
+        return runs(self, function)
+
+    @final
     def save_as(self, name: str):
         self.env.save_as(self, name)
 
@@ -493,7 +561,9 @@ class App(QPage):
 
     @final
     def save(self):
-        if self.env.have_backend:
+        if self._case_session() is not None:
+            self.case_session.save()
+        elif self.env.have_backend:
             self.save_backend()
         else:
             self.save_local()
@@ -501,6 +571,9 @@ class App(QPage):
     @final
     def save_backend(self):
         """Save data to backend"""
+        if self._case_session() is not None:
+            self.case_session.commit()
+            return
         env = self.env
         if not env.have_backend:
             raise RuntimeError("No backend available")
@@ -734,6 +807,7 @@ class App(QPage):
 BaseModel = App
 
 _app_cache = {}
+_case_app = None
 
 
 def _get_app_config(
@@ -811,10 +885,32 @@ def create_app(
     load_local_storage=False,
     app_args={},
 ):
-    """Load model from data"""
+    """Load model from data; data {"case_id": id, "release_id": id} opens a
+    case of the backend (FULL mode), None as id creates one at the first
+    save; data["pending"] (optional) holds exports of pending edits to
+    re-apply"""
+    from .store.http import held_events
+
+    # events of the backend wait until the app is complete
+    with held_events():
+        return _create_app(
+            app_config,
+            data,
+            reload_python_modules,
+            load_local_storage,
+            app_args,
+        )
+
+
+def _create_app(
+    app_config, data, reload_python_modules, load_local_storage, app_args
+):
     utils._print_counts()
     utils._reset_counts()
 
+    release_id = None
+    if isinstance(app_config, dict):
+        release_id = app_config.get("release_id")
     app_config = _get_app_config(app_config)
 
     reloaded_modules = {}
@@ -836,7 +932,15 @@ def create_app(
     reset_components()
     app = cls(**app_args)
     app._default_data = copy.deepcopy(app._dump_app()["component"])
-    app._load_app(data=data, load_local_storage=load_local_storage)
+    if isinstance(data, dict) and "case_id" in data:
+        release_id = data.get("release_id", release_id)
+        app._open_case(
+            data["case_id"], release_id, pending=data.get("pending") or ()
+        )
+    else:
+        if app.env.type == EnvironmentType.PYODIDE:
+            app.env.data_layer = False  # a model of the old API
+        app._load_app(data=data, load_local_storage=load_local_storage)
     utils._print_counts()
     utils._reset_counts()
     return app

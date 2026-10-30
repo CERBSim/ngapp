@@ -4,6 +4,7 @@ import dataclasses
 import functools
 import inspect
 import itertools
+import logging
 import pickle
 import sys
 from pathlib import Path
@@ -26,6 +27,10 @@ from ..utils import (
 )
 
 from .. import utils
+from .. import state as state_module
+from ..store.types import CaseDeletedError, ForbiddenError
+
+logger = logging.getLogger("ngapp.components")
 
 _component_counter = itertools.count(1)
 _components = {}
@@ -171,6 +176,12 @@ class Storage:
         self._unpublished = set()
         self._on_change = []
 
+    def _state(self):
+        """The component state when the data layer is active, else None"""
+        if not state_module.data_layer_enabled():
+            return None
+        return self._component._get_state()
+
     def _encode(self, value: str | dict | list | bytes) -> bytes:
         if isinstance(value, bytes):
             return value
@@ -259,6 +270,9 @@ class Storage:
                             mdata.type_)
 
     def load(self, key: str):
+        if (state := self._state()) is not None:
+            state_module.storage_get(state, key)
+            return
         if not get_environment().have_backend:
             self._load_local()
             return
@@ -270,6 +284,8 @@ class Storage:
             self._needs_save.remove(key)
 
     def __contains__(self, key: str) -> bool:
+        if (state := self._state()) is not None:
+            return key in state
         return key in self._metadata.entries
 
     def _upload(self, url: str, data: bytes):
@@ -291,6 +307,8 @@ class Storage:
             )
 
     def save(self):
+        if self._state() is not None:
+            return
         if not get_environment().have_backend:
             if self._needs_save:
                 self._save_local()
@@ -329,6 +347,8 @@ class Storage:
         """Get data from storage. With ``cache=False`` a value that is not in
         memory yet is downloaded without being kept (for large entries that
         are only needed once)."""
+        if (state := self._state()) is not None:
+            return state_module.storage_get(state, key, default, cache)
         if key in self._data:
             value = self._data[key]
         elif cache:
@@ -356,6 +376,10 @@ class Storage:
     ):
         """Set data in storage"""
         from ..app import App
+
+        if (state := self._state()) is not None:
+            state_module.storage_set(state, key, value, use_pickle)
+            return
 
         if use_pickle:
             value = pickle.dumps(value)
@@ -389,6 +413,9 @@ class Storage:
 
     def delete(self, key: str):
         """Delete data from storage"""
+        if (state := self._state()) is not None:
+            state_module.storage_delete(state, key)
+            return
         if key in self._data:
             del self._data[key]
         if key in self._metadata.entries:
@@ -407,6 +434,8 @@ class Storage:
 
     def list_len(self, key: str) -> int:
         """Number of items in the list stored under *key*."""
+        if (state := self._state()) is not None:
+            return state_module.storage_list_len(state, key)
         n = 0
         while self._list_key(key, n) in self._metadata.entries:
             n += 1
@@ -414,17 +443,25 @@ class Storage:
 
     def append(self, key: str, value, use_pickle=False):
         """Append *value* to the list stored under *key*."""
+        if (state := self._state()) is not None:
+            state.list(key).append(value, pickle=use_pickle)
+            return
         self.set(self._list_key(key, self.list_len(key)), value, use_pickle)
 
     def get_list(self, key: str, start: int = 0, stop: int | None = None,
                  cache=True) -> list:
         """Items ``start:stop`` of the list stored under *key*."""
+        if (state := self._state()) is not None:
+            return state_module.storage_list(state, key)[start:stop]
         n = self.list_len(key)
         stop = n if stop is None else min(stop, n)
         return [self.get(self._list_key(key, i), cache=cache)
                 for i in range(start, stop)]
 
     def delete_list(self, key: str):
+        if (state := self._state()) is not None:
+            state_module.storage_delete(state, key)
+            return
         for i in range(self.list_len(key)):
             self.delete(self._list_key(key, i))
 
@@ -445,6 +482,8 @@ class Storage:
         the app does not trigger it, use the app's ``load`` event for that.
         Returns a function that removes the callback.
         """
+        if (state := self._state()) is not None:
+            return state_module.storage_on_change(state, callback)
         self._on_change.append(callback)
         return lambda: self._on_change.remove(callback)
 
@@ -459,7 +498,10 @@ class Storage:
         """Make the changes since the last publish visible to the on_change
         callbacks: directly in a local app, on a compute node by uploading them
         and pushing the metadata through the backend, which also stores it in
-        the file (a later load of the file sees the same state)."""
+        the file (a later load of the file sees the same state). With the
+        data layer, changes are committed automatically and this is a no-op."""
+        if self._state() is not None:
+            return
         changed, self._unpublished = self._unpublished, set()
         if not changed:
             return
@@ -477,9 +519,14 @@ class BlockFrontendUpdate(type):
 
             @functools.wraps(init_method)
             def wrapped_init(self, *args, **kwargs):
+                depth = self.__dict__.get("_init_depth", 0)
+                self._init_depth = depth + 1
                 self._block_frontend_update = True
                 init_method(self, *args, **kwargs)
                 self._block_frontend_update = False
+                self._init_depth = depth
+                if depth == 0:
+                    self._after_init()
 
             dct["__init__"] = wrapped_init
         return super().__new__(cls, name, bases, dct)
@@ -518,6 +565,7 @@ class Component(metaclass=BlockFrontendUpdate):
     _component_name: str
     _keybindings: List[Tuple[str, Callable, dict]]
     storage: Storage
+    _two_way_props: tuple[str, ...] = ()
 
     @utils._count_calls
     def __init__(
@@ -578,6 +626,52 @@ class Component(metaclass=BlockFrontendUpdate):
 
         if ui_hidden is not None:
             self.ui_hidden = ui_hidden
+
+    def _after_init(self):
+        if self._id and state_module.data_layer_enabled():
+            state_module.snapshot_defaults(self)
+
+    def _get_state(self) -> "state_module.State":
+        state = self.__dict__.get("_state")
+        if state is None:
+            state = self._state = state_module.State(self)
+        return state
+
+    @property
+    def state(self) -> "state_module.State":
+        """Values of the component that are stored in the case but not sent
+        to the browser (requires a component id)"""
+        override = self.__dict__.get("_state_override", None)
+        return self._get_state() if override is None else override
+
+    @state.setter
+    def state(self, value):
+        # apps that use an own attribute named state keep working
+        self._state_override = value
+
+    @property
+    def app(self):
+        override = self.__dict__.get("_app_override", None)
+        if override is not None:
+            return override
+        return self.context.app if self.context is not None else None
+
+    @app.setter
+    def app(self, value):
+        self._app_override = value
+
+    def _mark_dirty(self):
+        ctx = self.context
+        if ctx is not None and ctx.app is not None:
+            session = getattr(ctx.app, "case_session", None)
+            if session is not None:
+                session.schedule_autosave()
+
+    def _update_two_way_prop(self, prop: str, value):
+        """Back-sync of a two-way prop (update:<prop> event of the browser)"""
+        self._set_prop(prop, value)
+        if prop in self._observable_bindings:
+            self._observable_bindings[prop][0].value = value
 
     def create_event_handler(
         self,
@@ -887,6 +981,7 @@ class Component(metaclass=BlockFrontendUpdate):
         self._props[key] = value
         if value != old_value:
             self._update_frontend({"props": {key: value}})
+        self._mark_dirty()
 
     @utils._count_calls
     def _set_slot(self, key: str, value):
@@ -915,6 +1010,7 @@ class Component(metaclass=BlockFrontendUpdate):
                 }
             }
         )
+        self._mark_dirty()
 
     def _get_debug_data(self, **kwargs):
         stack_trace = ""
@@ -1316,6 +1412,9 @@ class Component(metaclass=BlockFrontendUpdate):
                 for func in self._callbacks[event]:
                     ret = func(ev)
 
+        except (ForbiddenError, CaseDeletedError) as e:
+            # refusals of the case store (read only, deleted): no traceback
+            logger.warning("Refused (%s): %s", event, e)
         except Exception as e:
             print("have exception in _handle", str(e))
             print_exception(e, file=sys.stdout)

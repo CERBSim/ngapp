@@ -13,6 +13,7 @@ from .app import (
     create_app,
     register_application,
 )
+from .jobs import JobHandle, Run, compute, progress
 from .utils import (
     Job,
     LocalJob,
@@ -33,6 +34,10 @@ __all__ = [
     "AccessLevelConfig",
     "BaseModel",
     "Job",
+    "JobHandle",
+    "Run",
+    "compute",
+    "progress",
     "LocalJob",
     "compute_node",
     "get_current_job",

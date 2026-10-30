@@ -492,6 +492,97 @@ class QBar(Component):
         return []
 
 
+class QBreadcrumbs(Component):
+    """
+    Quasar Component: `QBreadcrumbs <https://v2.quasar.dev/vue-components/breadcrumbs>`__
+
+    :param ui_separator: The string used to separate the breadcrumbs
+    :param ui_active_color: The color of the active breadcrumb, which can be any color from the Quasar Color Palette
+    :param ui_gutter: The gutter value allows you control over the space between the breadcrumb elements.
+    :param ui_separator_color: The color used to color the separator, which can be any color from the Quasar Color Palette
+    :param ui_align: Specify how to align the breadcrumbs horizontally
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_separator: str | None = None,
+        ui_active_color: Any | None = None,
+        ui_gutter: str | None = None,
+        ui_separator_color: Any | None = None,
+        ui_align: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QBreadcrumbs", *children, **kwargs)
+        if ui_separator is not None:
+            self._init_prop("separator", ui_separator)
+        if ui_active_color is not None:
+            self._init_prop("active-color", ui_active_color)
+        if ui_gutter is not None:
+            self._init_prop("gutter", ui_gutter)
+        if ui_separator_color is not None:
+            self._init_prop("separator-color", ui_separator_color)
+        if ui_align is not None:
+            self._init_prop("align", ui_align)
+
+    @property
+    def ui_separator(self):
+        """The string used to separate the breadcrumbs"""
+        return self._props.get("separator")
+
+    @ui_separator.setter
+    def ui_separator(self, value):
+        self._set_prop("separator", value)
+
+    @property
+    def ui_active_color(self):
+        """The color of the active breadcrumb, which can be any color from the Quasar Color Palette"""
+        return self._props.get("active-color")
+
+    @ui_active_color.setter
+    def ui_active_color(self, value):
+        self._set_prop("active-color", value)
+
+    @property
+    def ui_gutter(self):
+        """The gutter value allows you control over the space between the breadcrumb elements."""
+        return self._props.get("gutter")
+
+    @ui_gutter.setter
+    def ui_gutter(self, value):
+        self._set_prop("gutter", value)
+
+    @property
+    def ui_separator_color(self):
+        """The color used to color the separator, which can be any color from the Quasar Color Palette"""
+        return self._props.get("separator-color")
+
+    @ui_separator_color.setter
+    def ui_separator_color(self, value):
+        self._set_prop("separator-color", value)
+
+    @property
+    def ui_align(self):
+        """Specify how to align the breadcrumbs horizontally"""
+        return self._props.get("align")
+
+    @ui_align.setter
+    def ui_align(self, value):
+        self._set_prop("align", value)
+
+    @property
+    def ui_slot_separator(self):
+        """HTML or component you can slot in to separate the breadcrumbs"""
+        return self.ui_slots.get("separator", [])
+
+    @ui_slot_separator.setter
+    def ui_slot_separator(self, value):
+        self._set_slot("separator", value)
+
+    def _get_js_methods(self):
+        return []
+
+
 class QBreadcrumbsEl(Component):
     """
     Quasar Component: `QBreadcrumbsEl <https://v2.quasar.dev/vue-components/breadcrumbs>`__
@@ -652,97 +743,6 @@ class QBreadcrumbsEl(Component):
         :param arg: Additional argument to be passed to the handler
         """
         return self.on("click.stop", handler, arg)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QBreadcrumbs(Component):
-    """
-    Quasar Component: `QBreadcrumbs <https://v2.quasar.dev/vue-components/breadcrumbs>`__
-
-    :param ui_separator: The string used to separate the breadcrumbs
-    :param ui_active_color: The color of the active breadcrumb, which can be any color from the Quasar Color Palette
-    :param ui_gutter: The gutter value allows you control over the space between the breadcrumb elements.
-    :param ui_separator_color: The color used to color the separator, which can be any color from the Quasar Color Palette
-    :param ui_align: Specify how to align the breadcrumbs horizontally
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_separator: str | None = None,
-        ui_active_color: Any | None = None,
-        ui_gutter: str | None = None,
-        ui_separator_color: Any | None = None,
-        ui_align: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QBreadcrumbs", *children, **kwargs)
-        if ui_separator is not None:
-            self._init_prop("separator", ui_separator)
-        if ui_active_color is not None:
-            self._init_prop("active-color", ui_active_color)
-        if ui_gutter is not None:
-            self._init_prop("gutter", ui_gutter)
-        if ui_separator_color is not None:
-            self._init_prop("separator-color", ui_separator_color)
-        if ui_align is not None:
-            self._init_prop("align", ui_align)
-
-    @property
-    def ui_separator(self):
-        """The string used to separate the breadcrumbs"""
-        return self._props.get("separator")
-
-    @ui_separator.setter
-    def ui_separator(self, value):
-        self._set_prop("separator", value)
-
-    @property
-    def ui_active_color(self):
-        """The color of the active breadcrumb, which can be any color from the Quasar Color Palette"""
-        return self._props.get("active-color")
-
-    @ui_active_color.setter
-    def ui_active_color(self, value):
-        self._set_prop("active-color", value)
-
-    @property
-    def ui_gutter(self):
-        """The gutter value allows you control over the space between the breadcrumb elements."""
-        return self._props.get("gutter")
-
-    @ui_gutter.setter
-    def ui_gutter(self, value):
-        self._set_prop("gutter", value)
-
-    @property
-    def ui_separator_color(self):
-        """The color used to color the separator, which can be any color from the Quasar Color Palette"""
-        return self._props.get("separator-color")
-
-    @ui_separator_color.setter
-    def ui_separator_color(self, value):
-        self._set_prop("separator-color", value)
-
-    @property
-    def ui_align(self):
-        """Specify how to align the breadcrumbs horizontally"""
-        return self._props.get("align")
-
-    @ui_align.setter
-    def ui_align(self, value):
-        self._set_prop("align", value)
-
-    @property
-    def ui_slot_separator(self):
-        """HTML or component you can slot in to separate the breadcrumbs"""
-        return self.ui_slots.get("separator", [])
-
-    @ui_slot_separator.setter
-    def ui_slot_separator(self, value):
-        self._set_slot("separator", value)
 
     def _get_js_methods(self):
         return []
@@ -1266,7 +1266,7 @@ class QBtnDropdown(Component):
     :param ui_no_icon_animation: Disables the rotation of the dropdown icon when state is toggled
     :param ui_content_style: Style definitions to be attributed to the menu
     :param ui_content_class: Class definitions to be attributed to the menu
-    :param ui_cover: Allows the menu to cover the button. When used, the 'menu-self' and 'menu-fit' props are no longer effective
+    :param ui_cover: Allows the menu to cover the button. When used, the 'menu-self' prop is no longer effective
     :param ui_persistent: Allows the menu to not be dismissed by a click/tap outside of the menu or by hitting the ESC key; Also, an app route change won't dismiss it
     :param ui_no_esc_dismiss: User cannot dismiss the popup by hitting ESC key; No need to set it if 'persistent' prop is also set
     :param ui_no_route_dismiss: Changing route app won't dismiss the popup; No need to set it if 'persistent' prop is also set
@@ -1312,6 +1312,8 @@ class QBtnDropdown(Component):
     :param ui_transition_hide:
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
+
+    _two_way_props = ("model-value",)
 
     def __init__(
         self,
@@ -1482,9 +1484,7 @@ class QBtnDropdown(Component):
             self._init_prop("transition-duration", ui_transition_duration)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -1559,7 +1559,7 @@ class QBtnDropdown(Component):
 
     @property
     def ui_cover(self):
-        """Allows the menu to cover the button. When used, the 'menu-self' and 'menu-fit' props are no longer effective"""
+        """Allows the menu to cover the button. When used, the 'menu-self' prop is no longer effective"""
         return self._props.get("cover")
 
     @ui_cover.setter
@@ -2194,6 +2194,8 @@ class QBtnToggle(Component):
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -2279,9 +2281,7 @@ class QBtnToggle(Component):
             self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -2532,6 +2532,83 @@ class QBtnToggle(Component):
         return []
 
 
+class QCard(Component):
+    """
+    Quasar Component: `QCard <https://v2.quasar.dev/vue-components/card>`__
+
+    :param ui_dark:
+    :param ui_square:
+    :param ui_flat:
+    :param ui_bordered:
+    :param ui_tag:
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_dark: Any | None = None,
+        ui_square: Any | None = None,
+        ui_flat: Any | None = None,
+        ui_bordered: Any | None = None,
+        ui_tag: Any | None = None,
+        **kwargs,
+    ):
+        super().__init__("QCard", *children, **kwargs)
+        if ui_dark is not None:
+            self._init_prop("dark", ui_dark)
+        if ui_square is not None:
+            self._init_prop("square", ui_square)
+        if ui_flat is not None:
+            self._init_prop("flat", ui_flat)
+        if ui_bordered is not None:
+            self._init_prop("bordered", ui_bordered)
+        if ui_tag is not None:
+            self._init_prop("tag", ui_tag)
+
+    @property
+    def ui_dark(self):
+        return self._props.get("dark")
+
+    @ui_dark.setter
+    def ui_dark(self, value):
+        self._set_prop("dark", value)
+
+    @property
+    def ui_square(self):
+        return self._props.get("square")
+
+    @ui_square.setter
+    def ui_square(self, value):
+        self._set_prop("square", value)
+
+    @property
+    def ui_flat(self):
+        return self._props.get("flat")
+
+    @ui_flat.setter
+    def ui_flat(self, value):
+        self._set_prop("flat", value)
+
+    @property
+    def ui_bordered(self):
+        return self._props.get("bordered")
+
+    @ui_bordered.setter
+    def ui_bordered(self, value):
+        self._set_prop("bordered", value)
+
+    @property
+    def ui_tag(self):
+        return self._props.get("tag")
+
+    @ui_tag.setter
+    def ui_tag(self, value):
+        self._set_prop("tag", value)
+
+    def _get_js_methods(self):
+        return []
+
+
 class QCardActions(Component):
     """
     Quasar Component: `QCardActions <https://v2.quasar.dev/vue-components/card>`__
@@ -2617,83 +2694,6 @@ class QCardSection(Component):
         return []
 
 
-class QCard(Component):
-    """
-    Quasar Component: `QCard <https://v2.quasar.dev/vue-components/card>`__
-
-    :param ui_dark:
-    :param ui_square:
-    :param ui_flat:
-    :param ui_bordered:
-    :param ui_tag:
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_dark: Any | None = None,
-        ui_square: Any | None = None,
-        ui_flat: Any | None = None,
-        ui_bordered: Any | None = None,
-        ui_tag: Any | None = None,
-        **kwargs,
-    ):
-        super().__init__("QCard", *children, **kwargs)
-        if ui_dark is not None:
-            self._init_prop("dark", ui_dark)
-        if ui_square is not None:
-            self._init_prop("square", ui_square)
-        if ui_flat is not None:
-            self._init_prop("flat", ui_flat)
-        if ui_bordered is not None:
-            self._init_prop("bordered", ui_bordered)
-        if ui_tag is not None:
-            self._init_prop("tag", ui_tag)
-
-    @property
-    def ui_dark(self):
-        return self._props.get("dark")
-
-    @ui_dark.setter
-    def ui_dark(self, value):
-        self._set_prop("dark", value)
-
-    @property
-    def ui_square(self):
-        return self._props.get("square")
-
-    @ui_square.setter
-    def ui_square(self, value):
-        self._set_prop("square", value)
-
-    @property
-    def ui_flat(self):
-        return self._props.get("flat")
-
-    @ui_flat.setter
-    def ui_flat(self, value):
-        self._set_prop("flat", value)
-
-    @property
-    def ui_bordered(self):
-        return self._props.get("bordered")
-
-    @ui_bordered.setter
-    def ui_bordered(self, value):
-        self._set_prop("bordered", value)
-
-    @property
-    def ui_tag(self):
-        return self._props.get("tag")
-
-    @ui_tag.setter
-    def ui_tag(self, value):
-        self._set_prop("tag", value)
-
-    def _get_js_methods(self):
-        return []
-
-
 class QCarousel(Component):
     """
     Quasar Component: `QCarousel <https://v2.quasar.dev/vue-components/carousel>`__
@@ -2728,6 +2728,11 @@ class QCarousel(Component):
     :param ui_fullscreen: Fullscreen mode
     :param ui_no_route_fullscreen_exit: Changing route app won't exit fullscreen
     """
+
+    _two_way_props = (
+        "fullscreen",
+        "model-value",
+    )
 
     def __init__(
         self,
@@ -2764,6 +2769,7 @@ class QCarousel(Component):
         **kwargs,
     ):
         super().__init__("QCarousel", *children, **kwargs)
+        self.on("update:fullscreen", self.__update_fullscreen)
         self.on("update:model-value", self.__update_model_value)
 
         if ui_dark is not None:
@@ -2827,10 +2833,11 @@ class QCarousel(Component):
                 "no-route-fullscreen-exit", ui_no_route_fullscreen_exit
             )
 
+    def __update_fullscreen(self, event: Event):
+        self._update_two_way_prop("fullscreen", event.value)
+
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_dark(self):
@@ -3185,6 +3192,49 @@ class QCarousel(Component):
         ]
 
 
+class QCarouselControl(Component):
+    """
+    Quasar Component: `QCarouselControl <https://v2.quasar.dev/vue-components/carousel>`__
+
+    :param ui_position: Side/corner to stick to
+    :param ui_offset: An array of two numbers to offset the component horizontally and vertically (in pixels)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_position: str | None = None,
+        ui_offset: list | None = None,
+        **kwargs,
+    ):
+        super().__init__("QCarouselControl", *children, **kwargs)
+        if ui_position is not None:
+            self._init_prop("position", ui_position)
+        if ui_offset is not None:
+            self._init_prop("offset", ui_offset)
+
+    @property
+    def ui_position(self):
+        """Side/corner to stick to"""
+        return self._props.get("position")
+
+    @ui_position.setter
+    def ui_position(self, value):
+        self._set_prop("position", value)
+
+    @property
+    def ui_offset(self):
+        """An array of two numbers to offset the component horizontally and vertically (in pixels)"""
+        return self._props.get("offset")
+
+    @ui_offset.setter
+    def ui_offset(self, value):
+        self._set_prop("offset", value)
+
+    def _get_js_methods(self):
+        return []
+
+
 class QCarouselSlide(Component):
     """
     Quasar Component: `QCarouselSlide <https://v2.quasar.dev/vue-components/carousel>`__
@@ -3235,49 +3285,6 @@ class QCarouselSlide(Component):
     @ui_disable.setter
     def ui_disable(self, value):
         self._set_prop("disable", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QCarouselControl(Component):
-    """
-    Quasar Component: `QCarouselControl <https://v2.quasar.dev/vue-components/carousel>`__
-
-    :param ui_position: Side/corner to stick to
-    :param ui_offset: An array of two numbers to offset the component horizontally and vertically (in pixels)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_position: str | None = None,
-        ui_offset: list | None = None,
-        **kwargs,
-    ):
-        super().__init__("QCarouselControl", *children, **kwargs)
-        if ui_position is not None:
-            self._init_prop("position", ui_position)
-        if ui_offset is not None:
-            self._init_prop("offset", ui_offset)
-
-    @property
-    def ui_position(self):
-        """Side/corner to stick to"""
-        return self._props.get("position")
-
-    @ui_position.setter
-    def ui_position(self, value):
-        self._set_prop("position", value)
-
-    @property
-    def ui_offset(self):
-        """An array of two numbers to offset the component horizontally and vertically (in pixels)"""
-        return self._props.get("offset")
-
-    @ui_offset.setter
-    def ui_offset(self, value):
-        self._set_prop("offset", value)
 
     def _get_js_methods(self):
         return []
@@ -3531,6 +3538,8 @@ class QCheckbox(Component):
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -3601,9 +3610,7 @@ class QCheckbox(Component):
             self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_checked_icon(self):
@@ -3821,6 +3828,11 @@ class QChip(Component):
     :param ui_disable:
     """
 
+    _two_way_props = (
+        "model-value",
+        "selected",
+    )
+
     def __init__(
         self,
         *children,
@@ -3848,6 +3860,7 @@ class QChip(Component):
     ):
         super().__init__("QChip", *children, **kwargs)
         self.on("update:model-value", self.__update_model_value)
+        self.on("update:selected", self.__update_selected)
 
         if ui_dense is not None:
             self._init_prop("dense", ui_dense)
@@ -3891,9 +3904,10 @@ class QChip(Component):
             self._init_prop("disable", ui_disable)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
+
+    def __update_selected(self, event: Event):
+        self._update_two_way_prop("selected", event.value)
 
     @property
     def ui_dense(self):
@@ -4354,6 +4368,8 @@ class QColor(Component):
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -4409,9 +4425,7 @@ class QColor(Component):
             self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -4598,6 +4612,8 @@ class QDate(Component):
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -4705,9 +4721,7 @@ class QDate(Component):
             self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -5086,6 +5100,8 @@ class QDialog(Component):
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -5156,9 +5172,7 @@ class QDialog(Component):
             self._init_prop("transition-duration", ui_transition_duration)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_persistent(self):
@@ -5446,12 +5460,14 @@ class QDrawer(Component):
     :param ui_bordered:
     :param ui_elevated: Adds a default shadow to the header
     :param ui_persistent: Prevents drawer from auto-closing when app's route changes; Also, an app route change won't hide it
-    :param ui_show_if_above: Forces drawer to be shown on screen on initial render if the layout width is above breakpoint, regardless of v-model; This is the default behavior when SSR is taken over by client on initial render
+    :param ui_show_if_above: Forces drawer to be shown on screen on initial render if the layout width is above breakpoint, regardless of v-model; This is the default behavior when SSR/SSG is taken over by client on initial render
     :param ui_no_swipe_open: Disables the default behavior where drawer can be swiped into view; Useful for iOS platforms where it might interfere with Safari's 'swipe to go to previous/next page' feature
     :param ui_no_swipe_close: Disables the default behavior where drawer can be swiped out of view (applies to drawer content only); Useful for iOS platforms where it might interfere with Safari's 'swipe to go to previous/next page' feature
     :param ui_no_swipe_backdrop: Disables the default behavior where drawer backdrop can be swiped
     :param ui_model_value: Model of the component defining shown/hidden state; Either use this property (along with a listener for 'update:model-value' event) OR use v-model directive
     """
+
+    _two_way_props = ("model-value",)
 
     def __init__(
         self,
@@ -5517,9 +5533,7 @@ class QDrawer(Component):
             self._init_prop("model-value", ui_model_value)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_side(self):
@@ -5638,7 +5652,7 @@ class QDrawer(Component):
 
     @property
     def ui_show_if_above(self):
-        """Forces drawer to be shown on screen on initial render if the layout width is above breakpoint, regardless of v-model; This is the default behavior when SSR is taken over by client on initial render"""
+        """Forces drawer to be shown on screen on initial render if the layout width is above breakpoint, regardless of v-model; This is the default behavior when SSR/SSG is taken over by client on initial render"""
         return self._props.get("show-if-above")
 
     @ui_show_if_above.setter
@@ -5815,6 +5829,11 @@ class QEditor(Component):
     :param ui_no_route_fullscreen_exit: Changing route app won't exit fullscreen
     """
 
+    _two_way_props = (
+        "fullscreen",
+        "model-value",
+    )
+
     def __init__(
         self,
         *children,
@@ -5847,6 +5866,7 @@ class QEditor(Component):
         **kwargs,
     ):
         super().__init__("QEditor", *children, **kwargs)
+        self.on("update:fullscreen", self.__update_fullscreen)
         self.on("update:model-value", self.__update_model_value)
 
         if ui_model_value is not None:
@@ -5904,10 +5924,11 @@ class QEditor(Component):
                 "no-route-fullscreen-exit", ui_no_route_fullscreen_exit
             )
 
+    def __update_fullscreen(self, event: Event):
+        self._update_two_way_prop("fullscreen", event.value)
+
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -6333,6 +6354,8 @@ class QExpansionItem(Component):
     :param ui_disable:
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -6442,9 +6465,7 @@ class QExpansionItem(Component):
             self._init_prop("disable", ui_disable)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_icon(self):
@@ -6855,6 +6876,8 @@ class QFab(Component):
     :param ui_tabindex:
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -6940,9 +6963,7 @@ class QFab(Component):
             self._init_prop("tabindex", ui_tabindex)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -7629,6 +7650,8 @@ class QField(Component):
     :param ui_lazy_rules: If set to boolean true then it checks validation status against the 'rules' only after field loses focus for first time; If set to 'ondemand' then it will trigger only when component's validate() method is manually called or when the wrapper QForm submits itself
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -7758,9 +7781,7 @@ class QField(Component):
             self._init_prop("lazy-rules", ui_lazy_rules)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_maxlength(self):
@@ -8318,6 +8339,8 @@ class QFile(Component):
     :param ui_filter: Custom filter for added files; Only files that pass this filter will be added to the queue and uploaded; For best performance, reference it from your scope and do not define it inline
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -8486,9 +8509,7 @@ class QFile(Component):
             self._init_prop("filter", ui_filter)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -9165,7 +9186,7 @@ class QFooter(Component):
     :param ui_reveal: Enable 'reveal' mode; Takes into account user scroll to temporarily show/hide footer
     :param ui_bordered:
     :param ui_elevated: Adds a default shadow to the footer
-    :param ui_height_hint: When using SSR, you can optionally hint of the height (in pixels) of the QFooter
+    :param ui_height_hint: When using SSR/SSG, you can optionally hint of the height (in pixels) of the QFooter
     """
 
     def __init__(
@@ -9179,8 +9200,6 @@ class QFooter(Component):
         **kwargs,
     ):
         super().__init__("QFooter", *children, **kwargs)
-        self.on("update:model-value", self.__update_model_value)
-
         if ui_model_value is not None:
             self._init_prop("model-value", ui_model_value)
         if ui_reveal is not None:
@@ -9191,11 +9210,6 @@ class QFooter(Component):
             self._init_prop("elevated", ui_elevated)
         if ui_height_hint is not None:
             self._init_prop("height-hint", ui_height_hint)
-
-    def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -9234,7 +9248,7 @@ class QFooter(Component):
 
     @property
     def ui_height_hint(self):
-        """When using SSR, you can optionally hint of the height (in pixels) of the QFooter"""
+        """When using SSR/SSG, you can optionally hint of the height (in pixels) of the QFooter"""
         return self._props.get("height-hint")
 
     @ui_height_hint.setter
@@ -9432,7 +9446,7 @@ class QHeader(Component):
     :param ui_reveal_offset: Amount of scroll (in pixels) that should trigger a 'reveal' state change
     :param ui_bordered:
     :param ui_elevated: Adds a default shadow to the header
-    :param ui_height_hint: When using SSR, you can optionally hint of the height (in pixels) of the QHeader
+    :param ui_height_hint: When using SSR/SSG, you can optionally hint of the height (in pixels) of the QHeader
     """
 
     def __init__(
@@ -9447,8 +9461,6 @@ class QHeader(Component):
         **kwargs,
     ):
         super().__init__("QHeader", *children, **kwargs)
-        self.on("update:model-value", self.__update_model_value)
-
         if ui_model_value is not None:
             self._init_prop("model-value", ui_model_value)
         if ui_reveal is not None:
@@ -9461,11 +9473,6 @@ class QHeader(Component):
             self._init_prop("elevated", ui_elevated)
         if ui_height_hint is not None:
             self._init_prop("height-hint", ui_height_hint)
-
-    def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
 
     @property
     def ui_model_value(self):
@@ -9513,7 +9520,7 @@ class QHeader(Component):
 
     @property
     def ui_height_hint(self):
-        """When using SSR, you can optionally hint of the height (in pixels) of the QHeader"""
+        """When using SSR/SSG, you can optionally hint of the height (in pixels) of the QHeader"""
         return self._props.get("height-hint")
 
     @ui_height_hint.setter
@@ -10320,6 +10327,7 @@ class QInput(Component):
     Quasar Component: `QInput <https://v2.quasar.dev/vue-components/input>`__
 
     :param ui_model_value: Model of the component; Either use this property (along with a listener for 'update:model-value' event) OR use v-model directive
+    :param ui_model_modifiers: Modifiers supplied by Vue for the component's v-model binding
     :param ui_shadow_text: Text to be displayed as shadow at the end of the text in the control; Does NOT applies to type=file
     :param ui_type: Input type
     :param ui_debounce: Debounce amount (in milliseconds) when updating model
@@ -10370,10 +10378,13 @@ class QInput(Component):
     :param ui_mask_tokens: Object of custom mask tokens to be added on top of the default ones; Can also override any of the default ones
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
         ui_model_value: Any | None = None,
+        ui_model_modifiers: dict | None = None,
         ui_shadow_text: str | None = None,
         ui_type: str | None = None,
         ui_debounce: str | float | None = None,
@@ -10429,6 +10440,8 @@ class QInput(Component):
 
         if ui_model_value is not None:
             self._init_prop("model-value", ui_model_value)
+        if ui_model_modifiers is not None:
+            self._init_prop("model-modifiers", ui_model_modifiers)
         if ui_shadow_text is not None:
             self._init_prop("shadow-text", ui_shadow_text)
         if ui_type is not None:
@@ -10532,9 +10545,7 @@ class QInput(Component):
             self._init_prop("mask-tokens", ui_mask_tokens)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -10544,6 +10555,15 @@ class QInput(Component):
     @ui_model_value.setter
     def ui_model_value(self, value):
         self._set_prop("model-value", value)
+
+    @property
+    def ui_model_modifiers(self):
+        """Modifiers supplied by Vue for the component's v-model binding"""
+        return self._props.get("model-modifiers")
+
+    @ui_model_modifiers.setter
+    def ui_model_modifiers(self, value):
+        self._set_prop("model-modifiers", value)
 
     @property
     def ui_shadow_text(self):
@@ -11179,7 +11199,7 @@ class QIntersection(Component):
 
     :param ui_tag:
     :param ui_once: Get triggered only once
-    :param ui_ssr_prerender: Pre-render content on server side if using SSR (use it to pre-render above the fold content)
+    :param ui_ssr_prerender: Pre-render content on server side if using SSR/SSG (use it to pre-render above the fold content)
     :param ui_root: [Intersection API root prop] Lets you define an alternative to the viewport as your root (through its DOM element); It is important to keep in mind that root needs to be an ancestor of the observed element
     :param ui_margin: [Intersection API rootMargin prop] Allows you to specify the margins for the root, effectively allowing you to either grow or shrink the area used for intersections
     :param ui_threshold: [Intersection API threshold prop] Threshold(s) at which to trigger, specified as a ratio, or list of ratios, of (visible area / total area) of the observed element
@@ -11241,7 +11261,7 @@ class QIntersection(Component):
 
     @property
     def ui_ssr_prerender(self):
-        """Pre-render content on server side if using SSR (use it to pre-render above the fold content)"""
+        """Pre-render content on server side if using SSR/SSG (use it to pre-render above the fold content)"""
         return self._props.get("ssr-prerender")
 
     @ui_ssr_prerender.setter
@@ -11317,248 +11337,6 @@ class QIntersection(Component):
         :param arg: Additional argument to be passed to the handler
         """
         return self.on("visibility", handler, arg)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QList(Component):
-    """
-    Quasar Component: `QList <https://v2.quasar.dev/vue-components/list-and-list-items>`__
-
-    :param ui_bordered:
-    :param ui_dense:
-    :param ui_separator: Applies a separator between contained items
-    :param ui_dark:
-    :param ui_padding: Applies a material design-like padding on top and bottom
-    :param ui_tag:
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_bordered: Any | None = None,
-        ui_dense: Any | None = None,
-        ui_separator: bool | None = None,
-        ui_dark: Any | None = None,
-        ui_padding: bool | None = None,
-        ui_tag: Any | None = None,
-        **kwargs,
-    ):
-        super().__init__("QList", *children, **kwargs)
-        if ui_bordered is not None:
-            self._init_prop("bordered", ui_bordered)
-        if ui_dense is not None:
-            self._init_prop("dense", ui_dense)
-        if ui_separator is not None:
-            self._init_prop("separator", ui_separator)
-        if ui_dark is not None:
-            self._init_prop("dark", ui_dark)
-        if ui_padding is not None:
-            self._init_prop("padding", ui_padding)
-        if ui_tag is not None:
-            self._init_prop("tag", ui_tag)
-
-    @property
-    def ui_bordered(self):
-        return self._props.get("bordered")
-
-    @ui_bordered.setter
-    def ui_bordered(self, value):
-        self._set_prop("bordered", value)
-
-    @property
-    def ui_dense(self):
-        return self._props.get("dense")
-
-    @ui_dense.setter
-    def ui_dense(self, value):
-        self._set_prop("dense", value)
-
-    @property
-    def ui_separator(self):
-        """Applies a separator between contained items"""
-        return self._props.get("separator")
-
-    @ui_separator.setter
-    def ui_separator(self, value):
-        self._set_prop("separator", value)
-
-    @property
-    def ui_dark(self):
-        return self._props.get("dark")
-
-    @ui_dark.setter
-    def ui_dark(self, value):
-        self._set_prop("dark", value)
-
-    @property
-    def ui_padding(self):
-        """Applies a material design-like padding on top and bottom"""
-        return self._props.get("padding")
-
-    @ui_padding.setter
-    def ui_padding(self, value):
-        self._set_prop("padding", value)
-
-    @property
-    def ui_tag(self):
-        return self._props.get("tag")
-
-    @ui_tag.setter
-    def ui_tag(self, value):
-        self._set_prop("tag", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QItemLabel(Component):
-    """
-    Quasar Component: `QItemLabel <https://v2.quasar.dev/vue-components/list-and-list-items>`__
-
-    :param ui_overline: Renders an overline label
-    :param ui_caption: Renders a caption label
-    :param ui_header: Renders a header label
-    :param ui_lines: Apply ellipsis when there's not enough space to render on the specified number of lines;
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_overline: bool | None = None,
-        ui_caption: bool | None = None,
-        ui_header: bool | None = None,
-        ui_lines: float | str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QItemLabel", *children, **kwargs)
-        if ui_overline is not None:
-            self._init_prop("overline", ui_overline)
-        if ui_caption is not None:
-            self._init_prop("caption", ui_caption)
-        if ui_header is not None:
-            self._init_prop("header", ui_header)
-        if ui_lines is not None:
-            self._init_prop("lines", ui_lines)
-
-    @property
-    def ui_overline(self):
-        """Renders an overline label"""
-        return self._props.get("overline")
-
-    @ui_overline.setter
-    def ui_overline(self, value):
-        self._set_prop("overline", value)
-
-    @property
-    def ui_caption(self):
-        """Renders a caption label"""
-        return self._props.get("caption")
-
-    @ui_caption.setter
-    def ui_caption(self, value):
-        self._set_prop("caption", value)
-
-    @property
-    def ui_header(self):
-        """Renders a header label"""
-        return self._props.get("header")
-
-    @ui_header.setter
-    def ui_header(self, value):
-        self._set_prop("header", value)
-
-    @property
-    def ui_lines(self):
-        """Apply ellipsis when there's not enough space to render on the specified number of lines;"""
-        return self._props.get("lines")
-
-    @ui_lines.setter
-    def ui_lines(self, value):
-        self._set_prop("lines", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QItemSection(Component):
-    """
-    Quasar Component: `QItemSection <https://v2.quasar.dev/vue-components/list-and-list-items>`__
-
-    :param ui_avatar: Render an avatar item side (does not needs 'side' prop to be set)
-    :param ui_thumbnail: Render a thumbnail item side (does not needs 'side' prop to be set)
-    :param ui_side: Renders as a side of the item
-    :param ui_top: Align content to top (useful for multi-line items)
-    :param ui_no_wrap: Do not wrap text (useful for item's main content)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_avatar: bool | None = None,
-        ui_thumbnail: bool | None = None,
-        ui_side: bool | None = None,
-        ui_top: bool | None = None,
-        ui_no_wrap: bool | None = None,
-        **kwargs,
-    ):
-        super().__init__("QItemSection", *children, **kwargs)
-        if ui_avatar is not None:
-            self._init_prop("avatar", ui_avatar)
-        if ui_thumbnail is not None:
-            self._init_prop("thumbnail", ui_thumbnail)
-        if ui_side is not None:
-            self._init_prop("side", ui_side)
-        if ui_top is not None:
-            self._init_prop("top", ui_top)
-        if ui_no_wrap is not None:
-            self._init_prop("no-wrap", ui_no_wrap)
-
-    @property
-    def ui_avatar(self):
-        """Render an avatar item side (does not needs 'side' prop to be set)"""
-        return self._props.get("avatar")
-
-    @ui_avatar.setter
-    def ui_avatar(self, value):
-        self._set_prop("avatar", value)
-
-    @property
-    def ui_thumbnail(self):
-        """Render a thumbnail item side (does not needs 'side' prop to be set)"""
-        return self._props.get("thumbnail")
-
-    @ui_thumbnail.setter
-    def ui_thumbnail(self, value):
-        self._set_prop("thumbnail", value)
-
-    @property
-    def ui_side(self):
-        """Renders as a side of the item"""
-        return self._props.get("side")
-
-    @ui_side.setter
-    def ui_side(self, value):
-        self._set_prop("side", value)
-
-    @property
-    def ui_top(self):
-        """Align content to top (useful for multi-line items)"""
-        return self._props.get("top")
-
-    @ui_top.setter
-    def ui_top(self, value):
-        self._set_prop("top", value)
-
-    @property
-    def ui_no_wrap(self):
-        """Do not wrap text (useful for item's main content)"""
-        return self._props.get("no-wrap")
-
-    @ui_no_wrap.setter
-    def ui_no_wrap(self, value):
-        self._set_prop("no-wrap", value)
 
     def _get_js_methods(self):
         return []
@@ -11814,6 +11592,248 @@ class QItem(Component):
         return []
 
 
+class QItemLabel(Component):
+    """
+    Quasar Component: `QItemLabel <https://v2.quasar.dev/vue-components/list-and-list-items>`__
+
+    :param ui_overline: Renders an overline label
+    :param ui_caption: Renders a caption label
+    :param ui_header: Renders a header label
+    :param ui_lines: Apply ellipsis when there's not enough space to render on the specified number of lines;
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_overline: bool | None = None,
+        ui_caption: bool | None = None,
+        ui_header: bool | None = None,
+        ui_lines: float | str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QItemLabel", *children, **kwargs)
+        if ui_overline is not None:
+            self._init_prop("overline", ui_overline)
+        if ui_caption is not None:
+            self._init_prop("caption", ui_caption)
+        if ui_header is not None:
+            self._init_prop("header", ui_header)
+        if ui_lines is not None:
+            self._init_prop("lines", ui_lines)
+
+    @property
+    def ui_overline(self):
+        """Renders an overline label"""
+        return self._props.get("overline")
+
+    @ui_overline.setter
+    def ui_overline(self, value):
+        self._set_prop("overline", value)
+
+    @property
+    def ui_caption(self):
+        """Renders a caption label"""
+        return self._props.get("caption")
+
+    @ui_caption.setter
+    def ui_caption(self, value):
+        self._set_prop("caption", value)
+
+    @property
+    def ui_header(self):
+        """Renders a header label"""
+        return self._props.get("header")
+
+    @ui_header.setter
+    def ui_header(self, value):
+        self._set_prop("header", value)
+
+    @property
+    def ui_lines(self):
+        """Apply ellipsis when there's not enough space to render on the specified number of lines;"""
+        return self._props.get("lines")
+
+    @ui_lines.setter
+    def ui_lines(self, value):
+        self._set_prop("lines", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QItemSection(Component):
+    """
+    Quasar Component: `QItemSection <https://v2.quasar.dev/vue-components/list-and-list-items>`__
+
+    :param ui_avatar: Render an avatar item side (does not needs 'side' prop to be set)
+    :param ui_thumbnail: Render a thumbnail item side (does not needs 'side' prop to be set)
+    :param ui_side: Renders as a side of the item
+    :param ui_top: Align content to top (useful for multi-line items)
+    :param ui_no_wrap: Do not wrap text (useful for item's main content)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_avatar: bool | None = None,
+        ui_thumbnail: bool | None = None,
+        ui_side: bool | None = None,
+        ui_top: bool | None = None,
+        ui_no_wrap: bool | None = None,
+        **kwargs,
+    ):
+        super().__init__("QItemSection", *children, **kwargs)
+        if ui_avatar is not None:
+            self._init_prop("avatar", ui_avatar)
+        if ui_thumbnail is not None:
+            self._init_prop("thumbnail", ui_thumbnail)
+        if ui_side is not None:
+            self._init_prop("side", ui_side)
+        if ui_top is not None:
+            self._init_prop("top", ui_top)
+        if ui_no_wrap is not None:
+            self._init_prop("no-wrap", ui_no_wrap)
+
+    @property
+    def ui_avatar(self):
+        """Render an avatar item side (does not needs 'side' prop to be set)"""
+        return self._props.get("avatar")
+
+    @ui_avatar.setter
+    def ui_avatar(self, value):
+        self._set_prop("avatar", value)
+
+    @property
+    def ui_thumbnail(self):
+        """Render a thumbnail item side (does not needs 'side' prop to be set)"""
+        return self._props.get("thumbnail")
+
+    @ui_thumbnail.setter
+    def ui_thumbnail(self, value):
+        self._set_prop("thumbnail", value)
+
+    @property
+    def ui_side(self):
+        """Renders as a side of the item"""
+        return self._props.get("side")
+
+    @ui_side.setter
+    def ui_side(self, value):
+        self._set_prop("side", value)
+
+    @property
+    def ui_top(self):
+        """Align content to top (useful for multi-line items)"""
+        return self._props.get("top")
+
+    @ui_top.setter
+    def ui_top(self, value):
+        self._set_prop("top", value)
+
+    @property
+    def ui_no_wrap(self):
+        """Do not wrap text (useful for item's main content)"""
+        return self._props.get("no-wrap")
+
+    @ui_no_wrap.setter
+    def ui_no_wrap(self, value):
+        self._set_prop("no-wrap", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QList(Component):
+    """
+    Quasar Component: `QList <https://v2.quasar.dev/vue-components/list-and-list-items>`__
+
+    :param ui_bordered:
+    :param ui_dense:
+    :param ui_separator: Applies a separator between contained items
+    :param ui_dark:
+    :param ui_padding: Applies a material design-like padding on top and bottom
+    :param ui_tag:
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_bordered: Any | None = None,
+        ui_dense: Any | None = None,
+        ui_separator: bool | None = None,
+        ui_dark: Any | None = None,
+        ui_padding: bool | None = None,
+        ui_tag: Any | None = None,
+        **kwargs,
+    ):
+        super().__init__("QList", *children, **kwargs)
+        if ui_bordered is not None:
+            self._init_prop("bordered", ui_bordered)
+        if ui_dense is not None:
+            self._init_prop("dense", ui_dense)
+        if ui_separator is not None:
+            self._init_prop("separator", ui_separator)
+        if ui_dark is not None:
+            self._init_prop("dark", ui_dark)
+        if ui_padding is not None:
+            self._init_prop("padding", ui_padding)
+        if ui_tag is not None:
+            self._init_prop("tag", ui_tag)
+
+    @property
+    def ui_bordered(self):
+        return self._props.get("bordered")
+
+    @ui_bordered.setter
+    def ui_bordered(self, value):
+        self._set_prop("bordered", value)
+
+    @property
+    def ui_dense(self):
+        return self._props.get("dense")
+
+    @ui_dense.setter
+    def ui_dense(self, value):
+        self._set_prop("dense", value)
+
+    @property
+    def ui_separator(self):
+        """Applies a separator between contained items"""
+        return self._props.get("separator")
+
+    @ui_separator.setter
+    def ui_separator(self, value):
+        self._set_prop("separator", value)
+
+    @property
+    def ui_dark(self):
+        return self._props.get("dark")
+
+    @ui_dark.setter
+    def ui_dark(self, value):
+        self._set_prop("dark", value)
+
+    @property
+    def ui_padding(self):
+        """Applies a material design-like padding on top and bottom"""
+        return self._props.get("padding")
+
+    @ui_padding.setter
+    def ui_padding(self, value):
+        self._set_prop("padding", value)
+
+    @property
+    def ui_tag(self):
+        return self._props.get("tag")
+
+    @ui_tag.setter
+    def ui_tag(self, value):
+        self._set_prop("tag", value)
+
+    def _get_js_methods(self):
+        return []
+
+
 class QKnob(Component):
     """
     Quasar Component: `QKnob <https://v2.quasar.dev/vue-components/knob>`__
@@ -11840,6 +11860,8 @@ class QKnob(Component):
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
+
+    _two_way_props = ("model-value",)
 
     def __init__(
         self,
@@ -11914,9 +11936,7 @@ class QKnob(Component):
             self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -12207,7 +12227,7 @@ class QLinearProgress(Component):
     :param ui_color:
     :param ui_track_color: Color name for component's track from the Quasar Color Palette
     :param ui_dark:
-    :param ui_reverse: Reverse direction of progress
+    :param ui_reverse: Reverse direction of progress (has no effect for query behaviour)
     :param ui_stripe: Draw stripes; For determinate state only (for performance reasons)
     :param ui_indeterminate: Put component into indeterminate mode
     :param ui_query: Put component into query mode
@@ -12308,7 +12328,7 @@ class QLinearProgress(Component):
 
     @property
     def ui_reverse(self):
-        """Reverse direction of progress"""
+        """Reverse direction of progress (has no effect for query behaviour)"""
         return self._props.get("reverse")
 
     @ui_reverse.setter
@@ -12514,6 +12534,8 @@ class QMenu(Component):
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -12599,9 +12621,7 @@ class QMenu(Component):
             self._init_prop("transition-duration", ui_transition_duration)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_dark(self):
@@ -12973,6 +12993,8 @@ class QOptionGroup(Component):
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -13028,9 +13050,7 @@ class QOptionGroup(Component):
             self._init_prop("size", ui_size)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -13187,19 +13207,6 @@ class QOptionGroup(Component):
         return []
 
 
-class QPageContainer(Component):
-    """
-    Quasar Component: `QPageContainer <https://v2.quasar.dev/layout/page>`__
-
-    """
-
-    def __init__(self, *children, **kwargs):
-        super().__init__("QPageContainer", *children, **kwargs)
-
-    def _get_js_methods(self):
-        return []
-
-
 class QPage(Component):
     """
     Quasar Component: `QPage <https://v2.quasar.dev/layout/page>`__
@@ -13238,6 +13245,19 @@ class QPage(Component):
     @ui_style_fn.setter
     def ui_style_fn(self, value):
         self._set_prop("style-fn", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QPageContainer(Component):
+    """
+    Quasar Component: `QPageContainer <https://v2.quasar.dev/layout/page>`__
+
+    """
+
+    def __init__(self, *children, **kwargs):
+        super().__init__("QPageContainer", *children, **kwargs)
 
     def _get_js_methods(self):
         return []
@@ -13442,6 +13462,8 @@ class QPagination(Component):
     :param ui_ripple: Configure buttons material ripple (disable it by setting it to 'false' or supply a config object); Does not applies to boundary and ellipsis buttons
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -13554,9 +13576,7 @@ class QPagination(Component):
             self._init_prop("ripple", ui_ripple)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -14005,6 +14025,8 @@ class QPopupEdit(Component):
     :param ui_max_width: The maximum width of the menu; Size in CSS units, including unit name
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -14075,9 +14097,7 @@ class QPopupEdit(Component):
             self._init_prop("max-width", ui_max_width)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -14345,6 +14365,8 @@ class QPopupProxy(Component):
     :param ui_no_parent_event: Skips attaching events to the target DOM element (that trigger the element to get shown)
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -14370,9 +14392,7 @@ class QPopupProxy(Component):
             self._init_prop("no-parent-event", ui_no_parent_event)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -14601,6 +14621,8 @@ class QRadio(Component):
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -14653,9 +14675,7 @@ class QRadio(Component):
             self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -14844,6 +14864,8 @@ class QRange(Component):
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -14991,9 +15013,7 @@ class QRange(Component):
             self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -15458,6 +15478,8 @@ class QRating(Component):
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -15513,9 +15535,7 @@ class QRating(Component):
             self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -16149,6 +16169,8 @@ class QSelect(Component):
     :param ui_table_colspan: The number of columns in the table (you need this if you use table-layout: fixed)
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -16437,9 +16459,7 @@ class QSelect(Component):
             self._init_prop("table-colspan", ui_table_colspan)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -18151,6 +18171,8 @@ class QSlider(Component):
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -18271,9 +18293,7 @@ class QSlider(Component):
             self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -18649,384 +18669,6 @@ class QSpace(Component):
         return []
 
 
-class QSpinnerClock(Component):
-    """
-    Quasar Component: `QSpinnerClock <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerClock", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerIos(Component):
-    """
-    Quasar Component: `QSpinnerIos <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerIos", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerBox(Component):
-    """
-    Quasar Component: `QSpinnerBox <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerBox", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerRings(Component):
-    """
-    Quasar Component: `QSpinnerRings <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerRings", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerHearts(Component):
-    """
-    Quasar Component: `QSpinnerHearts <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerHearts", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerFacebook(Component):
-    """
-    Quasar Component: `QSpinnerFacebook <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerFacebook", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerGrid(Component):
-    """
-    Quasar Component: `QSpinnerGrid <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerGrid", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerRadio(Component):
-    """
-    Quasar Component: `QSpinnerRadio <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerRadio", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerComment(Component):
-    """
-    Quasar Component: `QSpinnerComment <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerComment", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
 class QSpinner(Component):
     """
     Quasar Component: `QSpinner <https://v2.quasar.dev/vue-components/spinners>`__
@@ -19082,90 +18724,6 @@ class QSpinner(Component):
         return []
 
 
-class QSpinnerInfinity(Component):
-    """
-    Quasar Component: `QSpinnerInfinity <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerInfinity", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerBars(Component):
-    """
-    Quasar Component: `QSpinnerBars <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerBars", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
 class QSpinnerAudio(Component):
     """
     Quasar Component: `QSpinnerAudio <https://v2.quasar.dev/vue-components/spinners>`__
@@ -19182,300 +18740,6 @@ class QSpinnerAudio(Component):
         **kwargs,
     ):
         super().__init__("QSpinnerAudio", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerOval(Component):
-    """
-    Quasar Component: `QSpinnerOval <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerOval", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerGears(Component):
-    """
-    Quasar Component: `QSpinnerGears <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerGears", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerPie(Component):
-    """
-    Quasar Component: `QSpinnerPie <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerPie", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerHourglass(Component):
-    """
-    Quasar Component: `QSpinnerHourglass <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerHourglass", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerDots(Component):
-    """
-    Quasar Component: `QSpinnerDots <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerDots", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerCube(Component):
-    """
-    Quasar Component: `QSpinnerCube <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerCube", *children, **kwargs)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_size is not None:
-            self._init_prop("size", ui_size)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_size(self):
-        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
-        return self._props.get("size")
-
-    @ui_size.setter
-    def ui_size(self, value):
-        self._set_prop("size", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QSpinnerOrbit(Component):
-    """
-    Quasar Component: `QSpinnerOrbit <https://v2.quasar.dev/vue-components/spinners>`__
-
-    :param ui_color:
-    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_color: Any | None = None,
-        ui_size: str | None = None,
-        **kwargs,
-    ):
-        super().__init__("QSpinnerOrbit", *children, **kwargs)
         if ui_color is not None:
             self._init_prop("color", ui_color)
         if ui_size is not None:
@@ -19544,9 +18808,9 @@ class QSpinnerBall(Component):
         return []
 
 
-class QSpinnerTail(Component):
+class QSpinnerBars(Component):
     """
-    Quasar Component: `QSpinnerTail <https://v2.quasar.dev/vue-components/spinners>`__
+    Quasar Component: `QSpinnerBars <https://v2.quasar.dev/vue-components/spinners>`__
 
     :param ui_color:
     :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
@@ -19559,7 +18823,637 @@ class QSpinnerTail(Component):
         ui_size: str | None = None,
         **kwargs,
     ):
-        super().__init__("QSpinnerTail", *children, **kwargs)
+        super().__init__("QSpinnerBars", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerBox(Component):
+    """
+    Quasar Component: `QSpinnerBox <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerBox", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerClock(Component):
+    """
+    Quasar Component: `QSpinnerClock <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerClock", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerComment(Component):
+    """
+    Quasar Component: `QSpinnerComment <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerComment", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerCube(Component):
+    """
+    Quasar Component: `QSpinnerCube <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerCube", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerDots(Component):
+    """
+    Quasar Component: `QSpinnerDots <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerDots", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerFacebook(Component):
+    """
+    Quasar Component: `QSpinnerFacebook <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerFacebook", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerGears(Component):
+    """
+    Quasar Component: `QSpinnerGears <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerGears", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerGrid(Component):
+    """
+    Quasar Component: `QSpinnerGrid <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerGrid", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerHearts(Component):
+    """
+    Quasar Component: `QSpinnerHearts <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerHearts", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerHourglass(Component):
+    """
+    Quasar Component: `QSpinnerHourglass <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerHourglass", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerInfinity(Component):
+    """
+    Quasar Component: `QSpinnerInfinity <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerInfinity", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerIos(Component):
+    """
+    Quasar Component: `QSpinnerIos <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerIos", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerOrbit(Component):
+    """
+    Quasar Component: `QSpinnerOrbit <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerOrbit", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerOval(Component):
+    """
+    Quasar Component: `QSpinnerOval <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerOval", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerPie(Component):
+    """
+    Quasar Component: `QSpinnerPie <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerPie", *children, **kwargs)
         if ui_color is not None:
             self._init_prop("color", ui_color)
         if ui_size is not None:
@@ -19628,6 +19522,132 @@ class QSpinnerPuff(Component):
         return []
 
 
+class QSpinnerRadio(Component):
+    """
+    Quasar Component: `QSpinnerRadio <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerRadio", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerRings(Component):
+    """
+    Quasar Component: `QSpinnerRings <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerRings", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QSpinnerTail(Component):
+    """
+    Quasar Component: `QSpinnerTail <https://v2.quasar.dev/vue-components/spinners>`__
+
+    :param ui_color:
+    :param ui_size: Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_color: Any | None = None,
+        ui_size: str | None = None,
+        **kwargs,
+    ):
+        super().__init__("QSpinnerTail", *children, **kwargs)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_size is not None:
+            self._init_prop("size", ui_size)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_size(self):
+        """Size in CSS units, including unit name or standard size name (xs|sm|md|lg|xl)"""
+        return self._props.get("size")
+
+    @ui_size.setter
+    def ui_size(self, value):
+        self._set_prop("size", value)
+
+    def _get_js_methods(self):
+        return []
+
+
 class QSplitter(Component):
     """
     Quasar Component: `QSplitter <https://v2.quasar.dev/vue-components/splitter>`__
@@ -19645,6 +19665,8 @@ class QSplitter(Component):
     :param ui_separator_style: Style definitions to be attributed to the splitter separator
     :param ui_dark: Applies a default lighter color on the separator; To be used when background is darker; Avoid using when you are overriding through separator-class or separator-style props
     """
+
+    _two_way_props = ("model-value",)
 
     def __init__(
         self,
@@ -19692,9 +19714,7 @@ class QSplitter(Component):
             self._init_prop("dark", ui_dark)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -19842,17 +19862,239 @@ class QSplitter(Component):
         return []
 
 
-class QStepperNavigation(Component):
+class QStep(Component):
     """
-    Quasar Component: `QStepperNavigation <https://v2.quasar.dev/vue-components/stepper>`__
+    Quasar Component: `QStep <https://v2.quasar.dev/vue-components/stepper>`__
 
+    :param ui_icon:
+    :param ui_color:
+    :param ui_title: Step title
+    :param ui_caption: Step’s additional information that appears beneath the title
+    :param ui_prefix: Step's prefix (max 2 characters) which replaces the icon if step does not has error, is being edited or is marked as done
+    :param ui_done_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
+    :param ui_done_color:
+    :param ui_active_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
+    :param ui_active_color:
+    :param ui_error_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
+    :param ui_error_color:
+    :param ui_header_nav: Allow navigation through the header
+    :param ui_done: Mark the step as 'done'
+    :param ui_error: Mark the step as having an error
+    :param ui_name: Panel name
+    :param ui_disable:
     """
 
-    def __init__(self, *children, **kwargs):
-        super().__init__("QStepperNavigation", *children, **kwargs)
+    def __init__(
+        self,
+        *children,
+        ui_icon: Any | None = None,
+        ui_color: Any | None = None,
+        ui_title: str | None = None,
+        ui_caption: str | None = None,
+        ui_prefix: str | float | None = None,
+        ui_done_icon: Any | None = None,
+        ui_done_color: Any | None = None,
+        ui_active_icon: Any | None = None,
+        ui_active_color: Any | None = None,
+        ui_error_icon: Any | None = None,
+        ui_error_color: Any | None = None,
+        ui_header_nav: bool | None = None,
+        ui_done: bool | None = None,
+        ui_error: bool | None = None,
+        ui_name: Any | None = None,
+        ui_disable: Any | None = None,
+        **kwargs,
+    ):
+        super().__init__("QStep", *children, **kwargs)
+        if ui_icon is not None:
+            self._init_prop("icon", ui_icon)
+        if ui_color is not None:
+            self._init_prop("color", ui_color)
+        if ui_title is not None:
+            self._init_prop("title", ui_title)
+        if ui_caption is not None:
+            self._init_prop("caption", ui_caption)
+        if ui_prefix is not None:
+            self._init_prop("prefix", ui_prefix)
+        if ui_done_icon is not None:
+            self._init_prop("done-icon", ui_done_icon)
+        if ui_done_color is not None:
+            self._init_prop("done-color", ui_done_color)
+        if ui_active_icon is not None:
+            self._init_prop("active-icon", ui_active_icon)
+        if ui_active_color is not None:
+            self._init_prop("active-color", ui_active_color)
+        if ui_error_icon is not None:
+            self._init_prop("error-icon", ui_error_icon)
+        if ui_error_color is not None:
+            self._init_prop("error-color", ui_error_color)
+        if ui_header_nav is not None:
+            self._init_prop("header-nav", ui_header_nav)
+        if ui_done is not None:
+            self._init_prop("done", ui_done)
+        if ui_error is not None:
+            self._init_prop("error", ui_error)
+        if ui_name is not None:
+            self._init_prop("name", ui_name)
+        if ui_disable is not None:
+            self._init_prop("disable", ui_disable)
+
+    @property
+    def ui_icon(self):
+        return self._props.get("icon")
+
+    @ui_icon.setter
+    def ui_icon(self, value):
+        self._set_prop("icon", value)
+
+    @property
+    def ui_color(self):
+        return self._props.get("color")
+
+    @ui_color.setter
+    def ui_color(self, value):
+        self._set_prop("color", value)
+
+    @property
+    def ui_title(self):
+        """Step title"""
+        return self._props.get("title")
+
+    @ui_title.setter
+    def ui_title(self, value):
+        self._set_prop("title", value)
+
+    @property
+    def ui_caption(self):
+        """Step’s additional information that appears beneath the title"""
+        return self._props.get("caption")
+
+    @ui_caption.setter
+    def ui_caption(self, value):
+        self._set_prop("caption", value)
+
+    @property
+    def ui_prefix(self):
+        """Step's prefix (max 2 characters) which replaces the icon if step does not has error, is being edited or is marked as done"""
+        return self._props.get("prefix")
+
+    @ui_prefix.setter
+    def ui_prefix(self, value):
+        self._set_prop("prefix", value)
+
+    @property
+    def ui_done_icon(self):
+        """Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix"""
+        return self._props.get("done-icon")
+
+    @ui_done_icon.setter
+    def ui_done_icon(self, value):
+        self._set_prop("done-icon", value)
+
+    @property
+    def ui_done_color(self):
+        return self._props.get("done-color")
+
+    @ui_done_color.setter
+    def ui_done_color(self, value):
+        self._set_prop("done-color", value)
+
+    @property
+    def ui_active_icon(self):
+        """Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix"""
+        return self._props.get("active-icon")
+
+    @ui_active_icon.setter
+    def ui_active_icon(self, value):
+        self._set_prop("active-icon", value)
+
+    @property
+    def ui_active_color(self):
+        return self._props.get("active-color")
+
+    @ui_active_color.setter
+    def ui_active_color(self, value):
+        self._set_prop("active-color", value)
+
+    @property
+    def ui_error_icon(self):
+        """Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix"""
+        return self._props.get("error-icon")
+
+    @ui_error_icon.setter
+    def ui_error_icon(self, value):
+        self._set_prop("error-icon", value)
+
+    @property
+    def ui_error_color(self):
+        return self._props.get("error-color")
+
+    @ui_error_color.setter
+    def ui_error_color(self, value):
+        self._set_prop("error-color", value)
+
+    @property
+    def ui_header_nav(self):
+        """Allow navigation through the header"""
+        return self._props.get("header-nav")
+
+    @ui_header_nav.setter
+    def ui_header_nav(self, value):
+        self._set_prop("header-nav", value)
+
+    @property
+    def ui_done(self):
+        """Mark the step as 'done'"""
+        return self._props.get("done")
+
+    @ui_done.setter
+    def ui_done(self, value):
+        self._set_prop("done", value)
+
+    @property
+    def ui_error(self):
+        """Mark the step as having an error"""
+        return self._props.get("error")
+
+    @ui_error.setter
+    def ui_error(self, value):
+        self._set_prop("error", value)
+
+    @property
+    def ui_name(self):
+        """Panel name"""
+        return self._props.get("name")
+
+    @ui_name.setter
+    def ui_name(self, value):
+        self._set_prop("name", value)
+
+    @property
+    def ui_disable(self):
+        return self._props.get("disable")
+
+    @ui_disable.setter
+    def ui_disable(self, value):
+        self._set_prop("disable", value)
+
+    def on_scroll(self, handler: Callable, arg: object = None):
+        """
+
+        :param handler: Function to be called on emit event
+        :param arg: Additional argument to be passed to the handler
+        """
+        return self.on("scroll", handler, arg)
 
     def _get_js_methods(self):
         return []
+
+    def _get_my_wrapper_props(self):
+        return super()._get_my_wrapper_props() | {
+            "name": self.ui_name,
+            "title": self.ui_title,
+            "error": self.ui_error,
+            "done": self.ui_done,
+        }
 
 
 class QStepper(Component):
@@ -19887,6 +20129,8 @@ class QStepper(Component):
     :param ui_transition_next: One of Quasar's embedded transitions (has effect only if 'animated' prop is set)
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
+
+    _two_way_props = ("model-value",)
 
     def __init__(
         self,
@@ -19979,9 +20223,7 @@ class QStepper(Component):
             self._init_prop("transition-duration", ui_transition_duration)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_dark(self):
@@ -20279,24 +20521,23 @@ class QStepper(Component):
         return ["goTo", "next", "previous"]
 
 
-class QStep(Component):
+class QStepperNavigation(Component):
     """
-    Quasar Component: `QStep <https://v2.quasar.dev/vue-components/stepper>`__
+    Quasar Component: `QStepperNavigation <https://v2.quasar.dev/vue-components/stepper>`__
 
-    :param ui_icon:
-    :param ui_color:
-    :param ui_title: Step title
-    :param ui_caption: Step’s additional information that appears beneath the title
-    :param ui_prefix: Step's prefix (max 2 characters) which replaces the icon if step does not has error, is being edited or is marked as done
-    :param ui_done_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
-    :param ui_done_color:
-    :param ui_active_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
-    :param ui_active_color:
-    :param ui_error_icon: Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix
-    :param ui_error_color:
-    :param ui_header_nav: Allow navigation through the header
-    :param ui_done: Mark the step as 'done'
-    :param ui_error: Mark the step as having an error
+    """
+
+    def __init__(self, *children, **kwargs):
+        super().__init__("QStepperNavigation", *children, **kwargs)
+
+    def _get_js_methods(self):
+        return []
+
+
+class QTabPanel(Component):
+    """
+    Quasar Component: `QTabPanel <https://v2.quasar.dev/vue-components/tab-panels>`__
+
     :param ui_name: Panel name
     :param ui_disable:
     """
@@ -20304,178 +20545,15 @@ class QStep(Component):
     def __init__(
         self,
         *children,
-        ui_icon: Any | None = None,
-        ui_color: Any | None = None,
-        ui_title: str | None = None,
-        ui_caption: str | None = None,
-        ui_prefix: str | float | None = None,
-        ui_done_icon: Any | None = None,
-        ui_done_color: Any | None = None,
-        ui_active_icon: Any | None = None,
-        ui_active_color: Any | None = None,
-        ui_error_icon: Any | None = None,
-        ui_error_color: Any | None = None,
-        ui_header_nav: bool | None = None,
-        ui_done: bool | None = None,
-        ui_error: bool | None = None,
         ui_name: Any | None = None,
         ui_disable: Any | None = None,
         **kwargs,
     ):
-        super().__init__("QStep", *children, **kwargs)
-        if ui_icon is not None:
-            self._init_prop("icon", ui_icon)
-        if ui_color is not None:
-            self._init_prop("color", ui_color)
-        if ui_title is not None:
-            self._init_prop("title", ui_title)
-        if ui_caption is not None:
-            self._init_prop("caption", ui_caption)
-        if ui_prefix is not None:
-            self._init_prop("prefix", ui_prefix)
-        if ui_done_icon is not None:
-            self._init_prop("done-icon", ui_done_icon)
-        if ui_done_color is not None:
-            self._init_prop("done-color", ui_done_color)
-        if ui_active_icon is not None:
-            self._init_prop("active-icon", ui_active_icon)
-        if ui_active_color is not None:
-            self._init_prop("active-color", ui_active_color)
-        if ui_error_icon is not None:
-            self._init_prop("error-icon", ui_error_icon)
-        if ui_error_color is not None:
-            self._init_prop("error-color", ui_error_color)
-        if ui_header_nav is not None:
-            self._init_prop("header-nav", ui_header_nav)
-        if ui_done is not None:
-            self._init_prop("done", ui_done)
-        if ui_error is not None:
-            self._init_prop("error", ui_error)
+        super().__init__("QTabPanel", *children, **kwargs)
         if ui_name is not None:
             self._init_prop("name", ui_name)
         if ui_disable is not None:
             self._init_prop("disable", ui_disable)
-
-    @property
-    def ui_icon(self):
-        return self._props.get("icon")
-
-    @ui_icon.setter
-    def ui_icon(self, value):
-        self._set_prop("icon", value)
-
-    @property
-    def ui_color(self):
-        return self._props.get("color")
-
-    @ui_color.setter
-    def ui_color(self, value):
-        self._set_prop("color", value)
-
-    @property
-    def ui_title(self):
-        """Step title"""
-        return self._props.get("title")
-
-    @ui_title.setter
-    def ui_title(self, value):
-        self._set_prop("title", value)
-
-    @property
-    def ui_caption(self):
-        """Step’s additional information that appears beneath the title"""
-        return self._props.get("caption")
-
-    @ui_caption.setter
-    def ui_caption(self, value):
-        self._set_prop("caption", value)
-
-    @property
-    def ui_prefix(self):
-        """Step's prefix (max 2 characters) which replaces the icon if step does not has error, is being edited or is marked as done"""
-        return self._props.get("prefix")
-
-    @ui_prefix.setter
-    def ui_prefix(self, value):
-        self._set_prop("prefix", value)
-
-    @property
-    def ui_done_icon(self):
-        """Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix"""
-        return self._props.get("done-icon")
-
-    @ui_done_icon.setter
-    def ui_done_icon(self, value):
-        self._set_prop("done-icon", value)
-
-    @property
-    def ui_done_color(self):
-        return self._props.get("done-color")
-
-    @ui_done_color.setter
-    def ui_done_color(self, value):
-        self._set_prop("done-color", value)
-
-    @property
-    def ui_active_icon(self):
-        """Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix"""
-        return self._props.get("active-icon")
-
-    @ui_active_icon.setter
-    def ui_active_icon(self, value):
-        self._set_prop("active-icon", value)
-
-    @property
-    def ui_active_color(self):
-        return self._props.get("active-color")
-
-    @ui_active_color.setter
-    def ui_active_color(self, value):
-        self._set_prop("active-color", value)
-
-    @property
-    def ui_error_icon(self):
-        """Icon name following Quasar convention; If 'none' (String) is used as value, then it will defer to prefix or the regular icon for this state; Make sure you have the icon library installed unless you are using 'img:' prefix"""
-        return self._props.get("error-icon")
-
-    @ui_error_icon.setter
-    def ui_error_icon(self, value):
-        self._set_prop("error-icon", value)
-
-    @property
-    def ui_error_color(self):
-        return self._props.get("error-color")
-
-    @ui_error_color.setter
-    def ui_error_color(self, value):
-        self._set_prop("error-color", value)
-
-    @property
-    def ui_header_nav(self):
-        """Allow navigation through the header"""
-        return self._props.get("header-nav")
-
-    @ui_header_nav.setter
-    def ui_header_nav(self, value):
-        self._set_prop("header-nav", value)
-
-    @property
-    def ui_done(self):
-        """Mark the step as 'done'"""
-        return self._props.get("done")
-
-    @ui_done.setter
-    def ui_done(self, value):
-        self._set_prop("done", value)
-
-    @property
-    def ui_error(self):
-        """Mark the step as having an error"""
-        return self._props.get("error")
-
-    @ui_error.setter
-    def ui_error(self, value):
-        self._set_prop("error", value)
 
     @property
     def ui_name(self):
@@ -20494,24 +20572,11 @@ class QStep(Component):
     def ui_disable(self, value):
         self._set_prop("disable", value)
 
-    def on_scroll(self, handler: Callable, arg: object = None):
-        """
-
-        :param handler: Function to be called on emit event
-        :param arg: Additional argument to be passed to the handler
-        """
-        return self.on("scroll", handler, arg)
-
     def _get_js_methods(self):
         return []
 
     def _get_my_wrapper_props(self):
-        return super()._get_my_wrapper_props() | {
-            "name": self.ui_name,
-            "title": self.ui_title,
-            "error": self.ui_error,
-            "done": self.ui_done,
-        }
+        return super()._get_my_wrapper_props() | {"name": self.ui_name}
 
 
 class QTabPanels(Component):
@@ -20532,6 +20597,8 @@ class QTabPanels(Component):
     :param ui_transition_next: One of Quasar's embedded transitions (has effect only if 'animated' prop is set)
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
+
+    _two_way_props = ("model-value",)
 
     def __init__(
         self,
@@ -20582,9 +20649,7 @@ class QTabPanels(Component):
             self._init_prop("transition-duration", ui_transition_duration)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_dark(self):
@@ -20745,102 +20810,6 @@ class QTabPanels(Component):
         return ["goTo", "next", "previous"]
 
 
-class QTabPanel(Component):
-    """
-    Quasar Component: `QTabPanel <https://v2.quasar.dev/vue-components/tab-panels>`__
-
-    :param ui_name: Panel name
-    :param ui_disable:
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_name: Any | None = None,
-        ui_disable: Any | None = None,
-        **kwargs,
-    ):
-        super().__init__("QTabPanel", *children, **kwargs)
-        if ui_name is not None:
-            self._init_prop("name", ui_name)
-        if ui_disable is not None:
-            self._init_prop("disable", ui_disable)
-
-    @property
-    def ui_name(self):
-        """Panel name"""
-        return self._props.get("name")
-
-    @ui_name.setter
-    def ui_name(self, value):
-        self._set_prop("name", value)
-
-    @property
-    def ui_disable(self):
-        return self._props.get("disable")
-
-    @ui_disable.setter
-    def ui_disable(self, value):
-        self._set_prop("disable", value)
-
-    def _get_js_methods(self):
-        return []
-
-    def _get_my_wrapper_props(self):
-        return super()._get_my_wrapper_props() | {"name": self.ui_name}
-
-
-class QTh(Component):
-    """
-    Quasar Component: `QTh <https://v2.quasar.dev/vue-components/table>`__
-
-    :param ui_props: QTable's header column scoped slot property
-    :param ui_auto_width: Tries to shrink header column width size; Useful for columns with a checkbox/radio/toggle
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_props: dict | None = None,
-        ui_auto_width: bool | None = None,
-        **kwargs,
-    ):
-        super().__init__("QTh", *children, **kwargs)
-        if ui_props is not None:
-            self._init_prop("props", ui_props)
-        if ui_auto_width is not None:
-            self._init_prop("auto-width", ui_auto_width)
-
-    @property
-    def ui_props(self):
-        """QTable's header column scoped slot property"""
-        return self._props.get("props")
-
-    @ui_props.setter
-    def ui_props(self, value):
-        self._set_prop("props", value)
-
-    @property
-    def ui_auto_width(self):
-        """Tries to shrink header column width size; Useful for columns with a checkbox/radio/toggle"""
-        return self._props.get("auto-width")
-
-    @ui_auto_width.setter
-    def ui_auto_width(self, value):
-        self._set_prop("auto-width", value)
-
-    def on_click(self, handler: Callable, arg: object = None):
-        """
-
-        :param handler: Function to be called on emit event
-        :param arg: Additional argument to be passed to the handler
-        """
-        return self.on("click.stop", handler, arg)
-
-    def _get_js_methods(self):
-        return []
-
-
 class QTable(Component):
     """
     Quasar Component: `QTable <https://v2.quasar.dev/vue-components/table>`__
@@ -20911,6 +20880,13 @@ class QTable(Component):
     :param ui_fullscreen: Fullscreen mode
     :param ui_no_route_fullscreen_exit: Changing route app won't exit fullscreen
     """
+
+    _two_way_props = (
+        "expanded",
+        "fullscreen",
+        "pagination",
+        "selected",
+    )
 
     def __init__(
         self,
@@ -20983,6 +20959,11 @@ class QTable(Component):
         **kwargs,
     ):
         super().__init__("QTable", *children, **kwargs)
+        self.on("update:expanded", self.__update_expanded)
+        self.on("update:fullscreen", self.__update_fullscreen)
+        self.on("update:pagination", self.__update_pagination)
+        self.on("update:selected", self.__update_selected)
+
         if ui_rows is not None:
             self._init_prop("rows", ui_rows)
         if ui_row_key is not None:
@@ -21131,6 +21112,18 @@ class QTable(Component):
             self._init_prop(
                 "no-route-fullscreen-exit", ui_no_route_fullscreen_exit
             )
+
+    def __update_expanded(self, event: Event):
+        self._update_two_way_prop("expanded", event.value)
+
+    def __update_fullscreen(self, event: Event):
+        self._update_two_way_prop("fullscreen", event.value)
+
+    def __update_pagination(self, event: Event):
+        self._update_two_way_prop("pagination", event.value)
+
+    def __update_selected(self, event: Event):
+        self._update_two_way_prop("selected", event.value)
 
     @property
     def ui_rows(self):
@@ -21972,6 +21965,15 @@ class QTable(Component):
         """Navigates to first page"""
         self._js_call_method("firstPage")
 
+    def ui_getCellValue(self, ui_colName, ui_row):
+        """Method to get a cell value"""
+        kwargs = {}
+        if ui_colName is not None:
+            kwargs["colName"] = ui_colName
+        if ui_row is not None:
+            kwargs["row"] = ui_row
+        self._js_call_method("getCellValue", [kwargs])
+
     def ui_isRowExpanded(self, ui_key):
         """Determine if a row is expanded or not"""
         kwargs = {}
@@ -22054,6 +22056,7 @@ class QTable(Component):
             "clearSelection",
             "exitFullscreen",
             "firstPage",
+            "getCellValue",
             "isRowExpanded",
             "isRowSelected",
             "lastPage",
@@ -22126,6 +22129,57 @@ class QTd(Component):
         return []
 
 
+class QTh(Component):
+    """
+    Quasar Component: `QTh <https://v2.quasar.dev/vue-components/table>`__
+
+    :param ui_props: QTable's header column scoped slot property
+    :param ui_auto_width: Tries to shrink header column width size; Useful for columns with a checkbox/radio/toggle
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_props: dict | None = None,
+        ui_auto_width: bool | None = None,
+        **kwargs,
+    ):
+        super().__init__("QTh", *children, **kwargs)
+        if ui_props is not None:
+            self._init_prop("props", ui_props)
+        if ui_auto_width is not None:
+            self._init_prop("auto-width", ui_auto_width)
+
+    @property
+    def ui_props(self):
+        """QTable's header column scoped slot property"""
+        return self._props.get("props")
+
+    @ui_props.setter
+    def ui_props(self, value):
+        self._set_prop("props", value)
+
+    @property
+    def ui_auto_width(self):
+        """Tries to shrink header column width size; Useful for columns with a checkbox/radio/toggle"""
+        return self._props.get("auto-width")
+
+    @ui_auto_width.setter
+    def ui_auto_width(self, value):
+        self._set_prop("auto-width", value)
+
+    def on_click(self, handler: Callable, arg: object = None):
+        """
+
+        :param handler: Function to be called on emit event
+        :param arg: Additional argument to be passed to the handler
+        """
+        return self.on("click.stop", handler, arg)
+
+    def _get_js_methods(self):
+        return []
+
+
 class QTr(Component):
     """
     Quasar Component: `QTr <https://v2.quasar.dev/vue-components/table>`__
@@ -22164,165 +22218,6 @@ class QTr(Component):
     @ui_no_hover.setter
     def ui_no_hover(self, value):
         self._set_prop("no-hover", value)
-
-    def _get_js_methods(self):
-        return []
-
-
-class QTab(Component):
-    """
-    Quasar Component: `QTab <https://v2.quasar.dev/vue-components/tabs>`__
-
-    :param ui_icon:
-    :param ui_label: A number or string to label the tab
-    :param ui_alert: Adds an alert symbol to the tab, notifying the user there are some updates; If its value is not a Boolean, then you can specify a color
-    :param ui_alert_icon: Adds a floating icon to the tab, notifying the user there are some updates; It's displayed only if 'alert' is set; Can use the color specified by 'alert' prop
-    :param ui_name: Panel name
-    :param ui_no_caps: Turns off capitalizing all letters within the tab (which is the default)
-    :param ui_content_class: Class definitions to be attributed to the content wrapper
-    :param ui_ripple:
-    :param ui_tabindex:
-    :param ui_disable:
-    """
-
-    def __init__(
-        self,
-        *children,
-        ui_icon: Any | None = None,
-        ui_label: float | str | None = None,
-        ui_alert: bool | str | None = None,
-        ui_alert_icon: str | None = None,
-        ui_name: float | str | None = None,
-        ui_no_caps: bool | None = None,
-        ui_content_class: str | None = None,
-        ui_ripple: Any | None = None,
-        ui_tabindex: Any | None = None,
-        ui_disable: Any | None = None,
-        **kwargs,
-    ):
-        super().__init__("QTab", *children, **kwargs)
-        if ui_icon is not None:
-            self._init_prop("icon", ui_icon)
-        if ui_label is not None:
-            self._init_prop("label", ui_label)
-        if ui_alert is not None:
-            self._init_prop("alert", ui_alert)
-        if ui_alert_icon is not None:
-            self._init_prop("alert-icon", ui_alert_icon)
-        if ui_name is not None:
-            self._init_prop("name", ui_name)
-        if ui_no_caps is not None:
-            self._init_prop("no-caps", ui_no_caps)
-        if ui_content_class is not None:
-            self._init_prop("content-class", ui_content_class)
-        if ui_ripple is not None:
-            self._init_prop("ripple", ui_ripple)
-        if ui_tabindex is not None:
-            self._init_prop("tabindex", ui_tabindex)
-        if ui_disable is not None:
-            self._init_prop("disable", ui_disable)
-
-    @property
-    def ui_icon(self):
-        return self._props.get("icon")
-
-    @ui_icon.setter
-    def ui_icon(self, value):
-        self._set_prop("icon", value)
-
-    @property
-    def ui_label(self):
-        """A number or string to label the tab"""
-        return self._props.get("label")
-
-    @ui_label.setter
-    def ui_label(self, value):
-        self._set_prop("label", value)
-
-    @property
-    def ui_alert(self):
-        """Adds an alert symbol to the tab, notifying the user there are some updates; If its value is not a Boolean, then you can specify a color"""
-        return self._props.get("alert")
-
-    @ui_alert.setter
-    def ui_alert(self, value):
-        self._set_prop("alert", value)
-
-    @property
-    def ui_alert_icon(self):
-        """Adds a floating icon to the tab, notifying the user there are some updates; It's displayed only if 'alert' is set; Can use the color specified by 'alert' prop"""
-        return self._props.get("alert-icon")
-
-    @ui_alert_icon.setter
-    def ui_alert_icon(self, value):
-        self._set_prop("alert-icon", value)
-
-    @property
-    def ui_name(self):
-        """Panel name"""
-        return self._props.get("name")
-
-    @ui_name.setter
-    def ui_name(self, value):
-        self._set_prop("name", value)
-
-    @property
-    def ui_no_caps(self):
-        """Turns off capitalizing all letters within the tab (which is the default)"""
-        return self._props.get("no-caps")
-
-    @ui_no_caps.setter
-    def ui_no_caps(self, value):
-        self._set_prop("no-caps", value)
-
-    @property
-    def ui_content_class(self):
-        """Class definitions to be attributed to the content wrapper"""
-        return self._props.get("content-class")
-
-    @ui_content_class.setter
-    def ui_content_class(self, value):
-        self._set_prop("content-class", value)
-
-    @property
-    def ui_ripple(self):
-        return self._props.get("ripple")
-
-    @ui_ripple.setter
-    def ui_ripple(self, value):
-        self._set_prop("ripple", value)
-
-    @property
-    def ui_tabindex(self):
-        return self._props.get("tabindex")
-
-    @ui_tabindex.setter
-    def ui_tabindex(self, value):
-        self._set_prop("tabindex", value)
-
-    @property
-    def ui_disable(self):
-        return self._props.get("disable")
-
-    @ui_disable.setter
-    def ui_disable(self, value):
-        self._set_prop("disable", value)
-
-    def on_click(self, handler: Callable, arg: object = None):
-        """
-
-        :param handler: Function to be called on emit event
-        :param arg: Additional argument to be passed to the handler
-        """
-        return self.on("click.stop", handler, arg)
-
-    def on_keydown(self, handler: Callable, arg: object = None):
-        """
-
-        :param handler: Function to be called on emit event
-        :param arg: Additional argument to be passed to the handler
-        """
-        return self.on("keydown", handler, arg)
 
     def _get_js_methods(self):
         return []
@@ -22578,6 +22473,165 @@ class QRouteTab(Component):
         return []
 
 
+class QTab(Component):
+    """
+    Quasar Component: `QTab <https://v2.quasar.dev/vue-components/tabs>`__
+
+    :param ui_icon:
+    :param ui_label: A number or string to label the tab
+    :param ui_alert: Adds an alert symbol to the tab, notifying the user there are some updates; If its value is not a Boolean, then you can specify a color
+    :param ui_alert_icon: Adds a floating icon to the tab, notifying the user there are some updates; It's displayed only if 'alert' is set; Can use the color specified by 'alert' prop
+    :param ui_name: Panel name
+    :param ui_no_caps: Turns off capitalizing all letters within the tab (which is the default)
+    :param ui_content_class: Class definitions to be attributed to the content wrapper
+    :param ui_ripple:
+    :param ui_tabindex:
+    :param ui_disable:
+    """
+
+    def __init__(
+        self,
+        *children,
+        ui_icon: Any | None = None,
+        ui_label: float | str | None = None,
+        ui_alert: bool | str | None = None,
+        ui_alert_icon: str | None = None,
+        ui_name: float | str | None = None,
+        ui_no_caps: bool | None = None,
+        ui_content_class: str | None = None,
+        ui_ripple: Any | None = None,
+        ui_tabindex: Any | None = None,
+        ui_disable: Any | None = None,
+        **kwargs,
+    ):
+        super().__init__("QTab", *children, **kwargs)
+        if ui_icon is not None:
+            self._init_prop("icon", ui_icon)
+        if ui_label is not None:
+            self._init_prop("label", ui_label)
+        if ui_alert is not None:
+            self._init_prop("alert", ui_alert)
+        if ui_alert_icon is not None:
+            self._init_prop("alert-icon", ui_alert_icon)
+        if ui_name is not None:
+            self._init_prop("name", ui_name)
+        if ui_no_caps is not None:
+            self._init_prop("no-caps", ui_no_caps)
+        if ui_content_class is not None:
+            self._init_prop("content-class", ui_content_class)
+        if ui_ripple is not None:
+            self._init_prop("ripple", ui_ripple)
+        if ui_tabindex is not None:
+            self._init_prop("tabindex", ui_tabindex)
+        if ui_disable is not None:
+            self._init_prop("disable", ui_disable)
+
+    @property
+    def ui_icon(self):
+        return self._props.get("icon")
+
+    @ui_icon.setter
+    def ui_icon(self, value):
+        self._set_prop("icon", value)
+
+    @property
+    def ui_label(self):
+        """A number or string to label the tab"""
+        return self._props.get("label")
+
+    @ui_label.setter
+    def ui_label(self, value):
+        self._set_prop("label", value)
+
+    @property
+    def ui_alert(self):
+        """Adds an alert symbol to the tab, notifying the user there are some updates; If its value is not a Boolean, then you can specify a color"""
+        return self._props.get("alert")
+
+    @ui_alert.setter
+    def ui_alert(self, value):
+        self._set_prop("alert", value)
+
+    @property
+    def ui_alert_icon(self):
+        """Adds a floating icon to the tab, notifying the user there are some updates; It's displayed only if 'alert' is set; Can use the color specified by 'alert' prop"""
+        return self._props.get("alert-icon")
+
+    @ui_alert_icon.setter
+    def ui_alert_icon(self, value):
+        self._set_prop("alert-icon", value)
+
+    @property
+    def ui_name(self):
+        """Panel name"""
+        return self._props.get("name")
+
+    @ui_name.setter
+    def ui_name(self, value):
+        self._set_prop("name", value)
+
+    @property
+    def ui_no_caps(self):
+        """Turns off capitalizing all letters within the tab (which is the default)"""
+        return self._props.get("no-caps")
+
+    @ui_no_caps.setter
+    def ui_no_caps(self, value):
+        self._set_prop("no-caps", value)
+
+    @property
+    def ui_content_class(self):
+        """Class definitions to be attributed to the content wrapper"""
+        return self._props.get("content-class")
+
+    @ui_content_class.setter
+    def ui_content_class(self, value):
+        self._set_prop("content-class", value)
+
+    @property
+    def ui_ripple(self):
+        return self._props.get("ripple")
+
+    @ui_ripple.setter
+    def ui_ripple(self, value):
+        self._set_prop("ripple", value)
+
+    @property
+    def ui_tabindex(self):
+        return self._props.get("tabindex")
+
+    @ui_tabindex.setter
+    def ui_tabindex(self, value):
+        self._set_prop("tabindex", value)
+
+    @property
+    def ui_disable(self):
+        return self._props.get("disable")
+
+    @ui_disable.setter
+    def ui_disable(self, value):
+        self._set_prop("disable", value)
+
+    def on_click(self, handler: Callable, arg: object = None):
+        """
+
+        :param handler: Function to be called on emit event
+        :param arg: Additional argument to be passed to the handler
+        """
+        return self.on("click.stop", handler, arg)
+
+    def on_keydown(self, handler: Callable, arg: object = None):
+        """
+
+        :param handler: Function to be called on emit event
+        :param arg: Additional argument to be passed to the handler
+        """
+        return self.on("keydown", handler, arg)
+
+    def _get_js_methods(self):
+        return []
+
+
 class QTabs(Component):
     """
     Quasar Component: `QTabs <https://v2.quasar.dev/vue-components/tabs>`__
@@ -22603,6 +22657,8 @@ class QTabs(Component):
     :param ui_no_caps: Turns off capitalizing all letters within the tab (which is the default)
     :param ui_dense:
     """
+
+    _two_way_props = ("model-value",)
 
     def __init__(
         self,
@@ -22674,9 +22730,7 @@ class QTabs(Component):
             self._init_prop("dense", ui_dense)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -22897,6 +22951,8 @@ class QTime(Component):
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -22973,9 +23029,7 @@ class QTime(Component):
             self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_model_value(self):
@@ -23428,6 +23482,8 @@ class QToggle(Component):
     :param ui_name: Used to specify the name of the control; Useful if dealing with forms submitted directly to a URL
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -23504,9 +23560,7 @@ class QToggle(Component):
             self._init_prop("name", ui_name)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_icon(self):
@@ -23786,6 +23840,8 @@ class QTooltip(Component):
     :param ui_transition_duration: Transition duration (in milliseconds, without unit)
     """
 
+    _two_way_props = ("model-value",)
+
     def __init__(
         self,
         *children,
@@ -23841,9 +23897,7 @@ class QTooltip(Component):
             self._init_prop("transition-duration", ui_transition_duration)
 
     def __update_model_value(self, event: Event):
-        self._set_prop("model-value", event.value)
-        if "model-value" in self._observable_bindings:
-            self._observable_bindings["model-value"][0].value = event.value
+        self._update_two_way_prop("model-value", event.value)
 
     @property
     def ui_max_height(self):
@@ -24065,6 +24119,12 @@ class QTree(Component):
     :param ui_no_results_label: Override default such label for when no nodes are available due to filtering
     """
 
+    _two_way_props = (
+        "expanded",
+        "selected",
+        "ticked",
+    )
+
     def __init__(
         self,
         *children,
@@ -24096,6 +24156,10 @@ class QTree(Component):
         **kwargs,
     ):
         super().__init__("QTree", *children, **kwargs)
+        self.on("update:expanded", self.__update_expanded)
+        self.on("update:selected", self.__update_selected)
+        self.on("update:ticked", self.__update_ticked)
+
         if ui_nodes is not None:
             self._init_prop("nodes", ui_nodes)
         if ui_node_key is not None:
@@ -24146,6 +24210,15 @@ class QTree(Component):
             self._init_prop("no-nodes-label", ui_no_nodes_label)
         if ui_no_results_label is not None:
             self._init_prop("no-results-label", ui_no_results_label)
+
+    def __update_expanded(self, event: Event):
+        self._update_two_way_prop("expanded", event.value)
+
+    def __update_selected(self, event: Event):
+        self._update_two_way_prop("selected", event.value)
+
+    def __update_ticked(self, event: Event):
+        self._update_two_way_prop("ticked", event.value)
 
     @property
     def ui_nodes(self):
@@ -24920,7 +24993,7 @@ class QUploader(Component):
 
     def on_factory_failed(self, handler: Callable, arg: object = None):
         """
-        Emitted when factory function is supplied with a Promise which is rejected
+        Emitted when the factory function throws, returns an invalid value, or supplies a Promise which is rejected or aborted
         :param handler: Function to be called on emit event
         :param arg: Additional argument to be passed to the handler
         """

@@ -257,6 +257,9 @@ class Environment:
 
     type: EnvironmentType
     have_backend: bool = False
+    # Storage maps onto component state and props are persisted through a
+    # case store (ngapp.state.CaseSession)
+    data_layer: bool = False
 
     frontend: BaseFrontend
     backend_api_url: str = ""
@@ -1010,7 +1013,24 @@ def compute_node(
     job_timeout: int | None = None,
     background: bool = False,
 ):
-    """Run the decorated method on a compute node.
+    """Compatibility alias of ngapp.jobs.compute"""
+    from .jobs import compute
+
+    legacy = _legacy_compute_node(
+        compute_env=compute_env, job_timeout=job_timeout, background=background
+    )
+    decorator = compute(compute_env, timeout=job_timeout, _legacy=legacy)
+    return decorator if _func is None else decorator(_func)
+
+
+def _legacy_compute_node(
+    _func=None,
+    *,
+    compute_env: str | ComputeEnvironment = "default",
+    job_timeout: int | None = None,
+    background: bool = False,
+):
+    """Run the decorated method on a compute node (without a case store).
 
     :param compute_env: name of the compute environment to run in
     :param job_timeout: how long the job may run (seconds) before the backend
