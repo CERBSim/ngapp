@@ -8,6 +8,7 @@ changes of other writers.
 """
 
 import collections
+import copy as copy_module
 import io
 import logging
 import math
@@ -16,7 +17,7 @@ import threading
 import time
 import uuid
 import weakref
-from collections.abc import Sequence
+from collections.abc import Mapping, MutableMapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
@@ -240,11 +241,16 @@ def session_of(component) -> "CaseSession | None":
     return getattr(ctx.app, "case_session", None)
 
 
-class State:
+class State(MutableMapping):
     """Values of a component that are stored in the case but not sent to the
     browser. Keys are strings; reading a blob value loads it on first access.
-    Keys starting with ``_`` or named like a method are accessed with
-    ``get`` and ``set``."""
+
+    A State is used like a dict (``state[key]``, ``in``, iteration,
+    ``update``, ``pop``, ``dict(state)``); ``comp.state = {...}`` replaces its
+    values and a copy or pickle of it is a dict. Keys that do not start with
+    ``_`` and are not named like a method are also attributes. A value
+    changed in place (``state["a"]["b"] = 1``) is stored by the next save or
+    commit, assigning the key again stores it with the next autosave."""
 
     def __init__(self, component, prefix: str = ""):
         object.__setattr__(self, "_component", component)
@@ -285,8 +291,52 @@ class State:
             raise AttributeError(f"state has no key {key!r}")
         self.delete(key)
 
-    def __contains__(self, key: str) -> bool:
-        return self._entry(self._full(key)) is not None
+    def __contains__(self, key) -> bool:
+        try:
+            return self._entry(self._full(key)) is not None
+        except KeyError:
+            return False
+
+    def __getitem__(self, key: str) -> Any:
+        value = self.get(key, _MISSING)
+        if value is _MISSING:
+            raise KeyError(key)
+        return value
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self.set(key, value)
+
+    def __delitem__(self, key: str) -> None:
+        self.delete(key)
+
+    def __iter__(self):
+        return iter(self.keys())
+
+    def __len__(self) -> int:
+        return len(self.keys())
+
+    def copy(self) -> dict:
+        """The values as dict, sequences as lists"""
+        return {
+            k: v.copy() if isinstance(v, StateList) else v
+            for k, v in self.items()
+        }
+
+    __copy__ = copy
+
+    def __deepcopy__(self, memo):
+        return copy_module.deepcopy(self.copy(), memo)
+
+    def __reduce__(self):
+        return dict, (self.copy(),)
+
+    def _assign(self, values: Mapping) -> None:
+        """Replace the values by the ones of a mapping (comp.state = {...})"""
+        values = values.copy() if isinstance(values, State) else dict(values)
+        for key in self.keys():
+            if key not in values:
+                self.delete(key)
+        self.update(values)
 
     def __repr__(self):
         return f"State({self._component._id!r}, {self.keys()})"
@@ -530,6 +580,22 @@ class StateList(Sequence):
             return [self._state._value(e, True) for e in items[index]]
         return self._state._value(items[index], True)
 
+    def __eq__(self, other):
+        if isinstance(other, (list, StateList)):
+            return self[:] == other[:]
+        return NotImplemented
+
+    def copy(self) -> list:
+        return self[:]
+
+    __copy__ = copy
+
+    def __deepcopy__(self, memo):
+        return copy_module.deepcopy(self[:], memo)
+
+    def __reduce__(self):
+        return list, (self[:],)
+
     def append(self, value: Any, *, pickle=False) -> None:
         state = self._state
         state._check_identity()
@@ -586,6 +652,14 @@ def snapshot_defaults(component):
 # -- compatibility of Storage --
 
 _list_item = re.compile(r"^(.*)#(\d+)$")
+
+# namespace of the Storage values in the state: they do not show up as
+# keys of comp.state
+STORAGE_NS = "storage"
+
+
+def storage_state(component) -> State:
+    return component._get_state().ns(STORAGE_NS)
 
 
 def storage_set(state: State, key, value, use_pickle=False):

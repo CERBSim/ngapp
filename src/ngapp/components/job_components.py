@@ -541,9 +541,10 @@ class JobControl(Component):
     The control follows the newest job of the function in the open case, also
     one submitted by another tab, and finds an unfinished job again when the
     case is opened; ``job`` is its JobHandle. Submitting commits the pending
-    edits first; an identical submission returns the same job or
-    reuses a succeeded run. Events: ``submit`` (value: job id),
-    ``status`` (value: status) and ``finish`` (value: final status).
+    edits first; an identical submission returns the same unfinished job
+    (and a succeeded run with ``compute(reuse=True)``). Events: ``submit``
+    (value: job id), ``status`` (value: status) and ``finish`` (value: final
+    status).
     """
 
     def __init__(

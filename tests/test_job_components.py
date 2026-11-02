@@ -47,7 +47,7 @@ class Solver(Component):
         self.maxh = QInput(id="maxh", ui_model_value=0.5)
         self.ui_children = [self.maxh]
 
-    @compute
+    @compute(reuse=True)
     def solve(self, steps=3, fail_at=None):
         for i in range(steps):
             hook("step", self, i)

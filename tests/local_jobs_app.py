@@ -19,7 +19,7 @@ class Solver(Component):
         self.result = QInput(id="result", ui_label="no result")
         self.ui_children = [self.maxh, self.result]
 
-    @compute(timeout=120)
+    @compute(timeout=120, reuse=True)
     def mesh(self, order=1):
         geometry = self.app.state.geometry
         n = int(round(1 / self.maxh.ui_model_value)) * 5000

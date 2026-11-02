@@ -1,9 +1,11 @@
 """State API, UI prop persistence and the commit flow of ngapp on the
 SQLite store; two app instances on one store act as two browser tabs"""
 
+import copy
 import datetime
 import itertools
 import logging
+import pickle
 
 import numpy as np
 import pytest
@@ -182,6 +184,67 @@ def test_state_api(sched, server):
     assert base[("__app__", "state", "materials/steel")] == {"E": 210e9}
     assert base[("__app__", "state", "steel")] == "other"
     assert base[("mesher", "state", "mesh")] is None
+
+
+def test_state_as_dict():
+    """A State is used like a dict; assigning a dict replaces its values"""
+    app = DemoApp()
+    st = app.state
+    app.state = {"U": 110.0, "curves": {"core": [1, 2]}, "items": "a key"}
+    assert app.state is st and len(st) == 3
+    assert st["U"] == 110.0 and st.get("V") is None
+    assert "V" not in st and 5 not in st and "a/b" not in st
+    assert sorted(st) == ["U", "curves", "items"]
+    assert st == {"U": 110.0, "curves": {"core": [1, 2]}, "items": "a key"}
+    assert "{U:g} kV".format(**st) == "110 kV"
+    with pytest.raises(KeyError):
+        st["V"]
+    st.update(V=1, W=2)
+    assert st.pop("W") == 2 and st.setdefault("V", 5) == 1
+    del st["V"]
+    st.list("log").append("x")
+    assert st["log"] == ["x"]
+    copied = st.copy()
+    assert type(copied) is dict and type(copied["log"]) is list
+    for c in (copy.copy(st), copy.deepcopy(st), pickle.loads(pickle.dumps(st))):
+        assert type(c) is dict and c == copied
+    assert copy.deepcopy(st)["curves"] is not st["curves"]
+    # assigning replaces the values, also those of another State
+    app.state = {"U": 220.0}
+    assert dict(app.state) == {"U": 220.0} and app.state is st
+    other = DemoApp()
+    other.state = st
+    assert dict(other.state) == {"U": 220.0}
+    # without an id or for other values the attribute is the app's own
+    div = Div()
+    div.state = {"a": 1}
+    assert type(div.state) is dict
+    app.mesher.state = "own value"
+    assert app.mesher.state == "own value"
+    app.mesher.state = {"mesh": None}
+    assert isinstance(app.mesher.state, State)
+
+
+def test_state_dict_is_stored_per_key(server, sched):
+    """Every key of a state used like a dict is a value of the case: changes
+    of other writers are merged per key, a value changed in place is stored by
+    the next commit"""
+    a, sa = create(server, sched)
+    a.state = {"U": 110.0, "curves": {"core": [1, 2]}}
+    a.commit()
+    b, sb = open_case(server, sched, sa.case_id)
+    assert b.state == {"U": 110.0, "curves": {"core": [1, 2]}}
+    seen = []
+    a.state.on_change(seen.append)
+    b.state["U"] = 220.0
+    sb.commit()
+    a.state["curves"]["core"].append(3)
+    a.commit()
+    sched.advance(30)
+    assert a.state["U"] == 220.0 and {"U"} in seen
+    base = stored(sa)
+    assert base[("__app__", "state", "U")] == 220.0
+    assert base[("__app__", "state", "curves")] == {"core": [1, 2, 3]}
 
 
 def test_pickle_only_on_request(server, sched):
@@ -398,17 +461,17 @@ def test_save_hook_exception_keeps_edits_pending(server, sched):
 
 def test_encoding_error_aborts_commit(server, sched):
     a, sa = create(server, sched)
-    a.mesher.state.items = [1]
+    a.mesher.state["items"] = [1]
     a.commit()
     revs = n_revisions(server, sa)
     a.mesher.maxh.ui_model_value = 0.9
-    a.mesher.state.items.append(Custom(1))
+    a.mesher.state["items"].append(Custom(1))
     with pytest.raises(TypeError):
         a.commit()
     sched.advance(30)
     assert n_revisions(server, sa) == revs
-    a.mesher.state.items.pop()
-    a.mesher.state.items.append(2)
+    a.mesher.state["items"].pop()
+    a.mesher.state["items"].append(2)
     sched.advance(120)
     base = stored(sa)
     assert base[("mesher", "state", "items")] == [1, 2]
@@ -472,7 +535,9 @@ def test_storage_compatibility(server, sched):
     assert storage.list_len("results") == 2
     assert storage.get_list("results", 1) == [{"step": 1}]
     assert storage.get("results#0") == {"step": 0}
-    assert a.mesher.state.meta == {"x": 1}
+    # the storage values are in a namespace of the state, not its keys
+    assert "meta" not in a.mesher.state and a.mesher.state.keys() == ["mesh"]
+    assert a.mesher.state.ns("storage").meta == {"x": 1}
     storage.save()
     storage.publish()
     changed = []

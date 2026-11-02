@@ -259,6 +259,20 @@ def test_failure_keeps_checkpoints(server, sched, job_sched):
     assert list(steps.items) == [0, 1]
 
 
+def test_runs_are_not_reused_by_default(server, sched, job_sched):
+    """Without reuse=True an identical submission after success runs again,
+    also through the compute_node alias"""
+    app, session = create(server, sched)
+    for function in (app.mesher.generate, app.mesher.legacy):
+        first = function()
+        run_jobs(server, sched, job_sched)
+        second = function()
+        assert not second.reused and second.id != first.id
+        run_jobs(server, sched, job_sched)
+        assert second.status == "succeeded"
+        assert len(app.runs(function)) == 2
+
+
 def test_compute_node_alias_and_list_conversion(server, sched, job_sched):
     app, session = create(server, sched)
     app.state.log = ["user"]  # a plain list value

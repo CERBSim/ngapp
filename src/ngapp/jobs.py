@@ -88,7 +88,7 @@ class ComputeSpec:
     max_attempts: int = 1
     restart: str = "none"
     cancel_previous: bool = False
-    reuse: bool = True
+    reuse: bool = False
     priority: int = 0
     merge: bool = True
 
@@ -132,7 +132,7 @@ def compute(
     cancel_previous=False,
     parallel=False,
     lock_inputs=False,
-    reuse=True,
+    reuse=False,
     priority=0,
     merge=True,
     _legacy=None,
@@ -145,8 +145,10 @@ def compute(
     memory: MB, or a string like "8G"; timeout: seconds per attempt;
     restart: "none" or "checkpoint" (a further attempt continues from the last
     checkpoint of its run); cancel_previous: cancel unfinished jobs of the same
-    function; reuse: an identical submission reuses a succeeded run; merge:
-    the job's commits change the case (True) or only its run (False). Without
+    function; reuse: an identical submission reuses a succeeded run instead
+    of running (identical: same two-way props of components with id,
+    arguments, release and image; state is not compared); merge: the job's
+    commits change the case (True) or only its run (False). Without
     a case store (local app, legacy backend) the previous compute_node
     behaviour applies.
     """

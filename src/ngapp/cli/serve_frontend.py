@@ -36,7 +36,7 @@ class _HTTPServer(http.server.SimpleHTTPRequestHandler):
             return super().do_GET()
 
     def serve_zip(self, name: str):
-        data = utils.zip_modules([name])
+        data = utils.zip_modules([name], dist_info=True)
         filename = f"{name}.zip"
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")

@@ -727,8 +727,31 @@ def zip_directory(path: str, ignore: str = "*backend*") -> bytes:
         return data
 
 
-def zip_modules(modules: list[str]) -> bytes:
-    """Zip a list of python modules and return the zip file as a bytes object"""
+def _write_dist_info(root: str, module_name: str):
+    """Minimal dist-info of the installed distribution of a module (name and
+    version, no dependencies), so that micropip takes it as installed and
+    does not fetch it again from PyPI as dependency of another package"""
+    import importlib.metadata
+
+    try:
+        dist = importlib.metadata.distribution(module_name)
+    except importlib.metadata.PackageNotFoundError:
+        names = importlib.metadata.packages_distributions().get(module_name)
+        if not names:
+            return
+        dist = importlib.metadata.distribution(names[0])
+    name = dist.metadata["Name"]
+    folder = Path(root, f"{name.replace('-', '_')}-{dist.version}.dist-info")
+    folder.mkdir()
+    (folder / "METADATA").write_text(
+        f"Metadata-Version: 2.1\nName: {name}\nVersion: {dist.version}\n"
+    )
+    (folder / "INSTALLER").write_text("webapp\n")
+
+
+def zip_modules(modules: list[str], dist_info: bool = False) -> bytes:
+    """Zip a list of python modules and return the zip file as a bytes object;
+    with dist_info the zip carries the metadata of their distributions"""
     with tempfile.TemporaryDirectory() as root:
         for module_name in modules:
             spec = importlib.util.find_spec(module_name)
@@ -740,6 +763,8 @@ def zip_modules(modules: list[str]) -> bytes:
                     os.path.join(root, os.path.basename(path)),
                     ignore=shutil.ignore_patterns("*backend*", "*__pycache__*"),
                 )
+            if dist_info:
+                _write_dist_info(root, module_name)
         with tempfile.NamedTemporaryFile(suffix=".zip") as temp:
             pass
         with ZipFile(temp.name, mode="w") as zipfile:

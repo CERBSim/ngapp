@@ -22,7 +22,7 @@ import threading
 import zipfile
 from pathlib import Path
 
-from .state import CaseSession, storage_set
+from .state import CaseSession, storage_set, storage_state
 from .store.sqlite import SQLiteServer
 from .store.tree import CASE_NAME
 from .store.types import CaseDeletedError, NotFoundError, Op
@@ -392,8 +392,8 @@ class LocalCases:
 
 
 def _storage_to_state(app) -> list[str]:
-    """Move the values of the old Storage of all components into their state;
-    returns the entries whose value is missing"""
+    """Move the values of the old Storage of all components into the storage
+    namespace of their state; returns the entries whose value is missing"""
     from .components import basecomponent
 
     lost = []
@@ -411,10 +411,11 @@ def _storage_to_state(app) -> list[str]:
                     lost.append(f"{comp._fullid}/{key}")
                     continue
                 value = storage._decode(path.read_bytes(), entry.type_)
+            state = storage_state(comp)
             if entry.type_ == "pickle":
-                comp.state.set(key, pickle.loads(value), pickle=True)
+                state.set(key, pickle.loads(value), pickle=True)
             else:
-                storage_set(comp.state, key, value)
+                storage_set(state, key, value)
 
     app._recurse(visit, True, set())
     return lost

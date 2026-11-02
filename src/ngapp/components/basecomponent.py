@@ -7,6 +7,7 @@ import itertools
 import logging
 import pickle
 import sys
+from collections.abc import Mapping
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Callable, List, Optional, Tuple, TypeVar
@@ -177,10 +178,11 @@ class Storage:
         self._on_change = []
 
     def _state(self):
-        """The component state when the data layer is active, else None"""
+        """The storage namespace of the component state when the data layer
+        is active, else None"""
         if not state_module.data_layer_enabled():
             return None
-        return self._component._get_state()
+        return state_module.storage_state(self._component)
 
     def _encode(self, value: str | dict | list | bytes) -> bytes:
         if isinstance(value, bytes):
@@ -640,12 +642,19 @@ class Component(metaclass=BlockFrontendUpdate):
     @property
     def state(self) -> "state_module.State":
         """Values of the component that are stored in the case but not sent
-        to the browser (requires a component id)"""
+        to the browser (requires a component id); used like a dict, assigning
+        a dict replaces its values"""
         override = self.__dict__.get("_state_override", None)
         return self._get_state() if override is None else override
 
     @state.setter
     def state(self, value):
+        if isinstance(value, Mapping) and getattr(self, "_id", None):
+            self.__dict__.pop("_state_override", None)
+            state = self._get_state()
+            if value is not state:
+                state._assign(value)
+            return
         # apps that use an own attribute named state keep working
         self._state_override = value
 

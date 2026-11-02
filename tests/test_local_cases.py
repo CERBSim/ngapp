@@ -138,8 +138,9 @@ def test_import_of_the_previous_local_mode(tmp_path, monkeypatch):
         app = cases.app
         assert cases.case_id == case_id and app.name == "old model"
         assert app.solver.maxh.ui_model_value == 0.75
-        assert app.state.table == {"rows": [1, 2]}
-        assert app.solver.state.obj == {1, 2}
+        assert app.state.ns("storage").table == {"rows": [1, 2]}
+        assert app.solver.state.ns("storage").obj == {1, 2}
+        assert "table" not in app.state
         assert app.storage.get("table") == {"rows": [1, 2]}
     cases.close()
 
