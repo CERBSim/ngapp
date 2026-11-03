@@ -1877,6 +1877,7 @@ class CaseSession:
         with self._lock:
             edits = list(self.replaced) if edits is None else edits
             found = self._walk()
+            changes = _Changes()
             for edit in edits:
                 if edit in self.replaced:
                     self.replaced.remove(edit)
@@ -1894,7 +1895,9 @@ class CaseSession:
                         unescape_key(edit.path[-1]),
                         value,
                         edit.blobs,
+                        changes,
                     )
+            self._notify(changes)
         self.schedule_autosave()
 
     def keep_held(self):
@@ -2014,7 +2017,9 @@ class CaseSession:
                 and self._op_keys(self._collect()[0]) == self._initial
                 and self._rebase(base)
             )
-            self._apply_local(ops)
+            changes = _Changes()
+            self._apply_local(ops, changes=changes)
+            self._notify(changes)
         if rebased:
             self.pull()
         self.schedule_autosave()
@@ -2037,7 +2042,7 @@ class CaseSession:
         self._notify(changes)
         return True
 
-    def _apply_local(self, ops, found=None):
+    def _apply_local(self, ops, found=None, changes=None):
         """Operations as local edits; those of components that do not exist
         are applied when they appear, or committed as they are"""
         found = self._walk() if found is None else found
@@ -2065,7 +2070,7 @@ class CaseSession:
                     self._append_local(comp, key, op.value, path in self.base)
                 continue
             value = op.value if op.op == "set" else ABSENT
-            self._set_local(comp, section, key, value)
+            self._set_local(comp, section, key, value, changes=changes)
 
     def _append_local(self, comp, key, value, stored: bool):
         data = _state_data(comp)
