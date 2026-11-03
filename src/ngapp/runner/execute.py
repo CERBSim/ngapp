@@ -151,6 +151,7 @@ class LogPump(threading.Thread):
         self.buffer = []
         self.size = 0
         self.lock = threading.Lock()
+        self.send_lock = threading.Lock()
         self.last_flush = time.time()
         self.lost = False
 
@@ -171,23 +172,30 @@ class LogPump(threading.Thread):
         self.flush()
 
     def flush(self):
-        with self.lock:
-            data = "".join(self.buffer)
-            self.buffer = []
-            self.size = 0
-            self.last_flush = time.time()
-        if not data or self.lost:
-            return
-        try:
-            self.send(data)
-        except JobLost:
-            self.lost = True
-        except (BackendUnavailable, Unauthorized):
+        with self.send_lock:
             with self.lock:
-                self.buffer.insert(0, data)
-                self.size += len(data)
-        except Exception as e:
-            print(f"log upload failed: {e}", file=sys.stderr)
+                data = "".join(self.buffer)
+                self.buffer = []
+                self.size = 0
+                self.last_flush = time.time()
+            if not data or self.lost:
+                return
+            try:
+                self.send(data)
+            except JobLost:
+                self.lost = True
+            except (BackendUnavailable, Unauthorized):
+                with self.lock:
+                    self.buffer.insert(0, data)
+                    self.size += len(data)
+            except Exception as e:
+                print(f"log upload failed: {e}", file=sys.stderr)
+
+    def flush_due(self):
+        """Send buffered output once it is LOG_FLUSH_INTERVAL old, also when the job prints
+        nothing more (run only flushes when the next line arrives)"""
+        if self.buffer and time.time() - self.last_flush > LOG_FLUSH_INTERVAL:
+            self.flush()
 
 
 def maxrss_mb(maxrss: int, platform: str = sys.platform) -> int:
@@ -410,6 +418,8 @@ class JobExecution(threading.Thread):
         while not self.exited.wait(0.2):
             if any(p.lost for p in pumps):
                 raise JobLost("log rejected")
+            for p in pumps:
+                p.flush_due()
             if self.shutting_down and not stopped:
                 stopped = True
                 self._kill()
