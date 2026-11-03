@@ -35,6 +35,7 @@ from .components.basecomponent import (
 from .components.qcomponents import QPage
 from .components.helper_components import Div
 from .utils import (
+    BackendUserSettings,
     ComputeEnvironment,
     EnvironmentType,
     UserSettings,
@@ -359,7 +360,11 @@ class App(QPage):
             app_id = self._config.name or (
                 self.__class__.__module__ + "." + self.__class__.__name__
             )
-            self._usersettings = UserSettings(app_id=app_id)
+            env = get_environment()
+            if env.type == EnvironmentType.PYODIDE and env.have_backend:
+                self._usersettings = BackendUserSettings(app_id)
+            else:
+                self._usersettings = UserSettings(app_id=app_id)
         return self._usersettings
 
     @property

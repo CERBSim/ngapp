@@ -620,6 +620,56 @@ class SettingsFile:
         return _handler
 
 
+class BackendSettingsFile(SettingsFile):
+    """SettingsFile kept as user data of the backend (one record per name):
+    the settings of an app in the browser, whose file system is not persistent"""
+
+    DATA_TYPE = "ngapp_settings"
+
+    def __init__(self, name: str):
+        super().__init__(Path(name))
+        self._name = name
+        self._id = None
+
+    def _load(self) -> None:
+        if self._loaded:
+            return
+        self._loaded = True
+        from . import api
+
+        try:
+            rows = api.get(f"/user_data/{self.DATA_TYPE}")
+            row = next((r for r in rows if r.get("name") == self._name), None)
+            if row is not None:
+                self._id = row["id"]
+                self._data = dict(row.get("data") or {})
+        except Exception as e:
+            print(f"loading user settings failed: {e}", file=sys.stderr)
+
+    def _save(self) -> None:
+        from . import api
+
+        body = {"data": self._data, "name": self._name}
+        try:
+            if self._id is None:
+                self._id = api.put(f"/user_data/{self.DATA_TYPE}", body)
+            else:
+                api.post(f"/user_data/{self._id}?data_type={self.DATA_TYPE}", body)
+        except Exception as e:
+            print(f"saving user settings failed: {e}", file=sys.stderr)
+
+
+class BackendUserSettings(BackendSettingsFile):
+    """UserSettings of an app in the browser with a backend"""
+
+    def __init__(self, app_id: str):
+        super().__init__(app_id)
+        self.app_id = app_id
+
+    def json_file(self, name: str) -> "SettingsFile":
+        return BackendSettingsFile(f"{self.app_id}/{name.removesuffix('.json')}")
+
+
 class UserSettings(SettingsFile):
     """Simple persistent storage for user-wide, per-app settings.
 
