@@ -1096,7 +1096,9 @@ class CaseSession:
             return "error"
         if self._dirty and self._large_pending and not self._held:
             return "saving"
-        if self._dirty:
+        if self._dirty and (
+            getattr(self.app, "autosave", True) or self._user_dirty or self._held
+        ):
             return "pending"
         return "new" if self.case_id is None else "saved"
 
@@ -2170,8 +2172,6 @@ class CaseSession:
             self._echo_dirty = True
         elif edit:
             self._user_dirty = True
-        if not getattr(self.app, "autosave", True):
-            return
         if isinstance(self.last_error, UnauthorizedError):
             return
         now = self.scheduler.now()
@@ -2202,6 +2202,17 @@ class CaseSession:
             self._arm(due)
             return
         self._last_change = None
+        if not getattr(self.app, "autosave", True) and self.last_error is None:
+            unsaved = (
+                self._unsaved_ops() if self.base_revision is not None else self._edited()
+            )
+            if not unsaved:
+                with self._lock:
+                    self._dirty = False
+                    self._dirty_since = None
+                    self._echo_dirty = self._user_dirty = False
+                    self._pending_changed()
+            return
         try:
             self.commit(_auto=True)
         except RateLimitedError as e:
