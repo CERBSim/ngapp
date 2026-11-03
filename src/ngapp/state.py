@@ -2268,8 +2268,18 @@ class CaseSession:
             self._pending_changed()
 
     def save(self) -> int:
-        """Explicit save of app code (App.save): a commit"""
-        return self.commit()
+        """Explicit save of app code (App.save): a commit. A failure is
+        reported (status); a transient one is retried with backoff, also
+        for apps without autosave."""
+        try:
+            return self.commit()
+        except Exception as e:
+            self._report_error(e)
+            if isinstance(e, TransientStoreError):
+                with self._lock:
+                    if self._timer is None and not self.closed:
+                        self._arm(self.scheduler.now() + self._error_delay)
+            raise
 
     # -- jobs --
 
