@@ -544,7 +544,7 @@ class App(QPage):
             store = HTTPStore.from_environment(
                 release_id=getattr(self, "_release_id", None)
             )
-            CaseSession.create(self, store, name=self.name or "untitled")
+            CaseSession.create(self, store, name=self.name or "")
             if env.type == EnvironmentType.PYODIDE:
                 env.frontend.set_query_parameter(
                     "fileId", self.case_session.case_id

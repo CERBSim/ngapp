@@ -1612,10 +1612,9 @@ class CaseSession:
         """First commit of a new case: create it (with the app's name)"""
         app = self.app
         if self.case_id is None:
-            name = app.file_data.name or "untitled"
             app_id = self.app_id if self.app_id is not None else app._config.id
-            self.case_id = self.store.create_case(app_id, name, []).id
-            app.file_data.name = name
+            # without a name the backend gives one (Case N)
+            self.case_id = self.store.create_case(app_id, app.file_data.name or "", []).id
             app.file_data.id = self.case_id
         # its first revision holds the name only
         state = self.store.state(self.case_id)
@@ -1626,6 +1625,9 @@ class CaseSession:
         self.release_id = state.get("release")
         for path, value in flatten(state).items():
             self._base_set(path, value)
+        name = self.base.get(CASE_NAME, ABSENT)
+        if isinstance(name, str):
+            app.file_data.name = name
         self.job_events = self._job_events()
         self._call_all(self._created_callbacks, self.case_id)
 
