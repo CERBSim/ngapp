@@ -7,6 +7,8 @@ slots and state, commits them (autosave or ``App.commit``) and applies
 changes of other writers.
 """
 
+from __future__ import annotations
+
 import collections
 import copy as copy_module
 import io
