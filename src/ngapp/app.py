@@ -949,9 +949,11 @@ def _create_app(
     app._default_data = copy.deepcopy(app._dump_app()["component"])
     if isinstance(data, dict) and "case_id" in data:
         release_id = data.get("release_id", release_id)
-        app._open_case(
-            data["case_id"], release_id, pending=data.get("pending") or ()
-        )
+        case_id = data["case_id"]
+        # a new case comes from JS as null (pyodide JsNull, not None)
+        if case_id is not None and not isinstance(case_id, int):
+            case_id = int(case_id) if str(case_id).isdigit() else None
+        app._open_case(case_id, release_id, pending=data.get("pending") or ())
     else:
         if app.env.type == EnvironmentType.PYODIDE:
             app.env.data_layer = False  # a model of the old API
