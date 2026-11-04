@@ -879,6 +879,10 @@ class CaseSession:
         self._event_callbacks = []
         self._pending_callbacks = []
         self._status_callbacks = []
+        self._info_callbacks = []
+        self._info = None
+        self._ui_callbacks = []
+        self.client = {"unconfirmed": False, "connected": True, "skipped": 0}
         self._created_callbacks = []
         self._read_error_callbacks = []
         # large values being encoded (shown as saving)
@@ -1032,6 +1036,28 @@ class CaseSession:
         self._status_callbacks.append(callback)
         return lambda: self._status_callbacks.remove(callback)
 
+    def on_info(self, callback) -> Callable[[], None]:
+        """callback() when status, name or client state may have changed
+        (case status components of the app)"""
+        self._info_callbacks.append(callback)
+        return lambda: self._info_callbacks.remove(callback)
+
+    def set_client(self, **state):
+        """State of the browser's main thread (see client)"""
+        if any(self.client.get(k) != v for k, v in state.items()):
+            self.client.update(state)
+            self._call_all(self._info_callbacks)
+
+    def on_ui_request(self, callback) -> Callable[[], None]:
+        """callback(what) when app code asks the platform for a dialog"""
+        self._ui_callbacks.append(callback)
+        return lambda: self._ui_callbacks.remove(callback)
+
+    def request_ui(self, what: str):
+        """Open a dialog of the platform: "cases" (case list) or "version"
+        (save as named version)"""
+        self._call_all(self._ui_callbacks, what)
+
     def on_created(self, callback) -> Callable[[], None]:
         """callback(case_id) when the first commit of a new case created it"""
         self._created_callbacks.append(callback)
@@ -1121,6 +1147,10 @@ class CaseSession:
         if status != self._status:
             self._status = status
             self._call_all(self._status_callbacks, status)
+        info = (status, self.app.file_data.name, self.held_edits, repr(self.last_error))
+        if info != self._info:
+            self._info = info
+            self._call_all(self._info_callbacks)
 
     def _pending_changed(self):
         self._call_all(self._pending_callbacks)
