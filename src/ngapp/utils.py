@@ -125,6 +125,11 @@ class BrowserFrontend(BaseFrontend):
         )
         self.app = app
 
+    def open_case(self, case_id: int | None):
+        """Open another case of the app in this tab (None: a new case); the
+        platform saves the open case first (FULL mode)"""
+        self.link.call_method_ignore_return(id="openCase", args=[case_id])
+
     def get_query_parameter(self, name: str, default=None):
         return self.link.get("router").currentRoute.value.query.get(
             name, default
@@ -144,14 +149,6 @@ class BrowserFrontend(BaseFrontend):
     @url_hash.setter
     def url_hash(self, value):
         return self.link.get("router").replace({"hash": "#" + value})
-
-    @property
-    def file_id(self):
-        return self.get_query_parameter("fileId", None)
-
-    @file_id.setter
-    def file_id(self, value):
-        self.set_query_parameter("fileId", value)
 
     @property
     def app_id(self):
@@ -1288,15 +1285,11 @@ def replace_app(new_app):
     """Replace the current app instance with a new one"""
     env = get_environment().frontend
     env.reset_app(new_app)
-    env.set_query_parameter("fileId", new_app.metadata.get("id", None))
-    # new_app.context.file_id = None
     return new_app
 
 
 def new_file(app, data=None):
     """Create a new file"""
-    env = get_environment().frontend
-    env.set_query_parameter("fileId", None)
     new_app = app.__class__()
     data = data or {}
     new_app._load_app(data)

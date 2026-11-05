@@ -932,7 +932,7 @@ class RunsView(Component):
 
     def open_case(self, case_id: int):
         """Open another case of the app in this tab (FULL mode)"""
-        self.app.env.frontend.set_query_parameter("fileId", str(case_id))
+        self.app.env.frontend.open_case(case_id)
 
     def _item(self, run: Run) -> QItem:
         label, color, icon = _status(run.status)

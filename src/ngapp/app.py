@@ -493,8 +493,6 @@ class App(QPage):
         app = cls()
         app._load_app(data)
         env.reset_app(app)
-        if env.type == EnvironmentType.PYODIDE:
-            env.frontend.set_query_parameter("fileId", None)
 
     @final
     def commit(self, name: str | None = None) -> int:
@@ -546,10 +544,6 @@ class App(QPage):
                 release_id=getattr(self, "_release_id", None)
             )
             CaseSession.create(self, store, name=self.name or "")
-            if env.type == EnvironmentType.PYODIDE:
-                env.frontend.set_query_parameter(
-                    "fileId", self.case_session.case_id
-                )
         return self.case_session
 
     def runs(self, function) -> "RunList":
@@ -605,9 +599,6 @@ class App(QPage):
         self.storage.save()
         self._emit_recursive("save")
         api.put(f"/model/{status.file_id}", self._dump_app())
-
-        if env.type == EnvironmentType.PYODIDE:
-            env.frontend.set_query_parameter("fileId", status.file_id)
 
     @final
     @classmethod
