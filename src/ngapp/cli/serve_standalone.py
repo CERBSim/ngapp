@@ -169,11 +169,13 @@ def host_local_app(
     url_callback: Callable[[str], None] | None = None,
     store: str | os.PathLike | None = None,
     import_files: list | None = None,
+    cases: bool = True,
 ):
     """Serve the app locally; its cases live in a local SQLite store (store,
     default ngapp.local_cases.store_path), the last opened one is shown and
     import_files (case files or .sav files of the previous local mode) are
-    imported first"""
+    imported first. With cases=False there is no case store, every page
+    shows a new app instance"""
     from webgpu import platform
 
     from ..local_cases import LocalCases
@@ -182,6 +184,7 @@ def host_local_app(
     platform.WebsocketLinkServer = _PageLinkServer
 
     global app
+    use_cases = cases
     cases: LocalCases | None = None
     shown = Event()
 
@@ -234,14 +237,14 @@ def host_local_app(
         server.expose("unmount_component", unmount_component)
 
         env = utils.set_environment(utils.Environment.LOCAL_APP, False, server)
-        env.data_layer = True
-
-        app_config = importlib.import_module(app_module).config
-        cases = LocalCases(
-            app_config, store, app_args=app_args, on_app=show_app
-        )
-        env.local_cases = cases
-        server.expose("ngapp_cases", cases)
+        if use_cases:
+            env.data_layer = True
+            app_config = importlib.import_module(app_module).config
+            cases = LocalCases(
+                app_config, store, app_args=app_args, on_app=show_app
+            )
+            env.local_cases = cases
+            server.expose("ngapp_cases", cases)
         server.on_page = on_page
         last_checkpoint = time.perf_counter()
 
@@ -415,7 +418,8 @@ def host_local_app(
         os._exit(0)
 
     def stop_app(event):
-        cases.save()
+        if cases is not None:
+            cases.save()
         # In normal CLI usage we exit the whole process, unless a page
         # connects again soon (a reload). For tests or embedded usage,
         # ``exit_on_unload`` can be set to ``False`` so that the caller
@@ -437,6 +441,18 @@ def host_local_app(
             "unload",
             platform.create_event_handler(stop_app, prevent_default=False),
         )
+        if cases is None:
+            show_app(
+                create_app(
+                    importlib.import_module(app_module).config,
+                    {},
+                    app_args=app_args,
+                )
+            )
+            if not shown.is_set():
+                shown.set()
+                env.frontend.reset_app(app)
+            return
         if not shown.is_set():
             imported = None
             for path in import_files or []:
@@ -497,8 +513,9 @@ def host_local_app(
         except subprocess.TimeoutExpired:
             http_process.kill()
 
-    cases.close()
-    env.local_cases = None
+    if cases is not None:
+        cases.close()
+        env.local_cases = None
     try:
         platform.js.close()
     except Exception:
