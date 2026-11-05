@@ -670,6 +670,8 @@ class Component(metaclass=BlockFrontendUpdate):
         self._app_override = value
 
     def _mark_dirty(self):
+        if not self._id:
+            return  # not stored in the case
         ctx = self.context
         if ctx is not None and ctx.app is not None:
             session = getattr(ctx.app, "case_session", None)

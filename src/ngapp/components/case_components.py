@@ -10,7 +10,7 @@ Outside of a case session (local mode without store, jobs) they are hidden.
 
 from ..state import session_of
 from .basecomponent import Component
-from .qcomponents import QBtn, QChip, QTooltip
+from .qcomponents import QBtn, QChip, QInput, QTooltip
 
 __all__ = [
     "CaseName",
@@ -83,17 +83,39 @@ class _CaseView(Component):
 
 
 class CaseName(_CaseView):
-    """The name of the open case"""
+    """The name of the open case; editable=True shows it in an input that
+    renames the case (saved like any edit)"""
 
-    def __init__(self, **kwargs):
-        super().__init__("span", **kwargs)
+    def __init__(self, editable: bool = False, **kwargs):
+        self.input = None
+        children = []
+        if editable:
+            self.input = QInput(ui_dense=True, ui_borderless=True, ui_class="case-name-input")
+            self.input._init_prop("placeholder", "untitled")  # html attribute of the input
+            self.input.on_update_model_value(self._rename)
+            children.append(self.input)
+        super().__init__("span", *children, **kwargs)
+
+    def _rename(self, event):
+        s = self.session
+        name = (event.value or "").strip()
+        if s is None or name == (s.app.file_data.name or ""):
+            return
+        s.app.file_data.name = name
+        s.schedule_autosave()
 
     def _render(self):
         s = self.session
         _set(self, ui_hidden=s is None)
-        if s is not None:
-            name = s.app.file_data.name or ("" if s.case_id is None else "untitled")
-            _set_text(self, name)
+        if s is None:
+            return
+        name = s.app.file_data.name or ""
+        if self.input is None:
+            _set_text(self, name or ("" if s.case_id is None else "untitled"))
+            return
+        if (self.input.ui_model_value or "").strip() != name:
+            _set(self.input, ui_model_value=name)
+        _set(self.input, ui_readonly=s.status in ("read_only", "release_too_old"))
 
 
 def save_badge(session) -> dict:
@@ -113,7 +135,7 @@ def save_badge(session) -> dict:
         return dict(label="Not saved", color="warning", icon="mdi-content-save-alert-outline",
                     tooltip="Edits made while the case was read only: save or discard them "
                             "(notice).")
-    if status == "new":
+    if status == "new" or (status == "pending" and session.case_id is None):
         return dict(label="New case", color="grey-6", icon="mdi-file-outline",
                     tooltip="The case is created with the first edit.")
     if status == "saving":
