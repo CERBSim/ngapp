@@ -10,7 +10,8 @@ Outside of a case session (local mode without store, jobs) they are hidden.
 
 from ..state import session_of
 from .basecomponent import Component
-from .qcomponents import QBtn, QChip, QInput, QTooltip
+from ..case_directory import available
+from .qcomponents import QBtn, QCard, QCardSection, QChip, QDialog, QInput, QTooltip
 
 __all__ = [
     "CaseName",
@@ -229,23 +230,33 @@ class CaseNotice(_CaseView):
 
 
 class CaseListButton(_CaseView):
-    """Opens the platform's case list (open, new, copy, rename, delete,
-    import and export of cases)"""
+    """Opens the case list of the app (CaseList) in a dialog; files=False
+    leaves out download and upload of case files"""
 
-    def __init__(self, label: str = "", icon: str = "mdi-folder-open", **kwargs):
+    def __init__(self, label: str = "", icon: str = "mdi-folder-open",
+                 files: bool = True, **kwargs):
+        from .case_list import CaseList
+
         self.button = QBtn(QTooltip("Cases"), ui_icon=icon, ui_label=label or None,
                            ui_flat=True, ui_dense=True, ui_round=not label,
                            ui_no_caps=True, ui_class="case-list-button")
         self.button.on_click(self._open)
-        super().__init__("span", self.button, **kwargs)
+        self.list = CaseList(on_open=self._close, files=files)
+        self.dialog = QDialog(QCard(QCardSection(self.list),
+                                    ui_style="width: 900px; max-width: 95vw;"),
+                              ui_model_value=False)
+        super().__init__("span", self.button, self.dialog, **kwargs)
 
     def _open(self, *_a):
         self._sync()
-        if self.session is not None:
-            self.session.request_ui("cases")
+        if available(self.session):
+            self.dialog.ui_model_value = True
+
+    def _close(self, _case_id=None):
+        self.dialog.ui_model_value = False
 
     def _render(self):
-        _set(self, ui_hidden=self.session is None)
+        _set(self, ui_hidden=not available(self.session))
 
 
 class NamedVersionButton(_CaseView):
