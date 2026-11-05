@@ -6,6 +6,8 @@ from ngapp.components import Col, Label, QInput
 
 
 class PagesApp(App):
+    autosave = True
+
     def __init__(self):
         super().__init__()
         self.text = QInput(id="text", ui_label="Text", ui_model_value="")

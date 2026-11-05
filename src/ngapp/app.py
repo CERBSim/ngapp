@@ -276,8 +276,9 @@ class App(QPage):
     _config: AppConfigWithAccess
     file_data: FileData
 
-    autosave: bool = True
-    """Commit changes automatically (debounced) when a case store is attached"""
+    autosave: bool = False
+    """Commit changes automatically (debounced) when a case store is attached;
+    without it changes are committed by App.commit"""
     case_session = None
 
     def __init__(

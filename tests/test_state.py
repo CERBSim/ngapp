@@ -43,6 +43,7 @@ class Mesher(Component):
 
 class DemoApp(App):
     mesher_class = Mesher
+    autosave = True
 
     def __init__(self):
         super().__init__()

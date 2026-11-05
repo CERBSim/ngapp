@@ -3,8 +3,8 @@
 The local app keeps its cases in a SQLite store per app, by default
 ~/.local/share/ngapp/<app>/cases.sqlite (NGAPP_DATA_DIR or XDG_DATA_HOME
 replace ~/.local/share/ngapp, or an explicit path). LocalCases opens the last
-opened case (or a new one) in the app, which autosaves through its
-CaseSession, and offers a case list (new, open, copy, rename, delete) for the
+opened case (or a new one) in the app, which saves through its CaseSession
+(App.autosave or App.commit), and offers a case list (new, open, copy, rename, delete) for the
 standalone frontend, export and import of a case as one file (state, results
 of runs and blobs) and the import of files of the previous local mode (pickled
 App._dump_app data, storage values from ~/.cache/webapp_local_storage).
