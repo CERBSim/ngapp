@@ -669,8 +669,16 @@ class App(QPage):
         self._notify("Project saved.", type="positive",
                      icon="mdi-content-save-check", timeout=2500)
 
+    def _run_exit_handlers(self):
+        for handler in self._on_exit_handlers:
+            try:
+                handler()
+            except Exception as e:
+                print("Error in on_exit handler:", e)
+
     @final
     def quit(self):
+        self._run_exit_handlers()
         self.js.close()
         os._exit(0)
 

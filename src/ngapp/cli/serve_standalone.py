@@ -73,15 +73,17 @@ app = None
 
 # seconds the local app waits for a page to connect again after the last
 # one was closed (a reload) before it exits
-_EXIT_GRACE = float(os.environ.get("NGAPP_EXIT_GRACE", "10"))
+_EXIT_GRACE = float(os.environ.get("NGAPP_EXIT_GRACE", "2"))
 
 
 class _PageLinkServer(WebsocketLinkServer):
     """Link of the local app: a new page (a reload, another window) takes
     over the connection of the previous one; on_page() runs for each page
-    after the first"""
+    after the first, on_disconnect() when the page is gone without a
+    successor (a closed window does not always deliver its unload event)"""
 
     on_page = None
+    on_disconnect = None
 
     async def _websocket_handler(self, websocket, path=""):
         old = self._connection
@@ -106,6 +108,8 @@ class _PageLinkServer(WebsocketLinkServer):
             if self._connection is websocket:
                 self._connection = None
                 self._chunk_buffers.clear()
+                if self.on_disconnect is not None:
+                    Thread(target=self.on_disconnect, daemon=True).start()
 
 
 def _reset_page_state(platform):
@@ -246,6 +250,7 @@ def host_local_app(
             env.local_cases = cases
             server.expose("ngapp_cases", cases)
         server.on_page = on_page
+        server.on_disconnect = lambda: stop_app(None)
         last_checkpoint = time.perf_counter()
 
         ws_port = server.port
@@ -410,11 +415,7 @@ def host_local_app(
     pages = [0]
 
     def exit_app():
-        for on_exit_handler in app._on_exit_handlers:
-            try:
-                on_exit_handler()
-            except Exception as e:
-                print("Error in on_exit handler:", e)
+        app._run_exit_handlers()
         os._exit(0)
 
     def stop_app(event):
