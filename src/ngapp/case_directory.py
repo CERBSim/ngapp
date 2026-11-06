@@ -45,11 +45,11 @@ class CaseDirectory:
         raise NotImplementedError
 
     def shares(self, case_id: int) -> list[dict]:
-        """user_id, write"""
+        """user_id, name, write"""
         return []
 
-    def lookup_user(self, query: str) -> dict:
-        """id, name or error"""
+    def share_targets(self, case_id: int, query: str):
+        """Users the case may be shared with, [{id, name, access}], or {error}"""
         raise NotImplementedError
 
     def share(self, case_id: int, user_id: str, write: bool):
@@ -130,9 +130,9 @@ class PlatformCases(CaseDirectory):
     def shares(self, case_id):
         return self._call("shares", case_id) or []
 
-    def lookup_user(self, query):
-        # an unknown user is a result, not a failure
-        return self.js.lookupUser(query)
+    def share_targets(self, case_id, query):
+        # no match is a result, not a failure
+        return self.js.shareTargets(case_id, query)
 
     def share(self, case_id, user_id, write):
         self._call("share", case_id, user_id, write)

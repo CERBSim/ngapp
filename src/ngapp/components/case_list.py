@@ -267,8 +267,11 @@ class CaseList(Div):
         d = self.directory()
         shares = self._try("Loading the shares", d.shares, row["id"])
         shares = [] if shares is _FAILED else shares
-        text = ", ".join(f"{s['user_id']} ({'write' if s['write'] else 'read'})" for s in shares)
-        user = QInput(ui_model_value="", ui_label="User name or e-mail address",
+        text = ", ".join(
+            f"{s.get('name') or s['user_id']} ({'write' if s['write'] else 'read'})"
+            for s in shares
+        )
+        user = QInput(ui_model_value="", ui_label="Name or e-mail address (at least 4 characters)",
                       ui_dense=True, ui_autofocus=True)
         error = Label("", ui_class="text-negative text-caption")
         body = ([Label(f"Shared with {text}.")] if text else []) + [user, error]
@@ -277,17 +280,39 @@ class CaseList(Div):
             query = (user.ui_model_value or "").strip()
             if not query:
                 return False
-            who = self._try("Looking up the user", d.lookup_user, query)
-            if who is _FAILED:
+            users = self._try("Searching", d.share_targets, row["id"], query)
+            if users is _FAILED:
                 return False
-            if who.get("error"):
-                error.ui_children = [who["error"]]
+            if isinstance(users, dict) or not users:
+                error.ui_children = [users.get("error") if users else f'Nobody found for "{query}".']
                 return False
-            current = next((s for s in shares if s["user_id"] == who["id"]), None)
-            self._access(row, who, current)
+            self._pick(row, users, shares)
             return False  # the dialog shows the next step
 
-        self._ask(f'Share "{_label(row)}"', body, found, ok_label="Next")
+        self._ask(f'Share "{_label(row)}"', body, found, ok_label="Search")
+
+    def _pick(self, row, users, shares):
+        usable = [u for u in users if u["access"]]
+        if len(users) == 1 and usable:
+            who = usable[0]
+            self._access(row, who, next((s for s in shares if s["user_id"] == who["id"]), None))
+            return
+        options = [
+            {"label": u["name"] if u["access"] else f"{u['name']} (no access to the app)",
+             "value": u["id"], "disable": not u["access"]}
+            for u in users
+        ]
+        pick = QOptionGroup(ui_type="radio", ui_options=options,
+                            ui_model_value=usable[0]["id"] if usable else None)
+
+        def ok():
+            who = next((u for u in usable if u["id"] == pick.ui_model_value), None)
+            if who is None:
+                return False
+            self._access(row, who, next((s for s in shares if s["user_id"] == who["id"]), None))
+            return False
+
+        self._ask(f'Share "{_label(row)}" with', [pick], ok, ok_label="Next")
 
     def _access(self, row, who, current):
         d = self.directory()
