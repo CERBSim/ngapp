@@ -3,7 +3,6 @@ from . import keybindings
 from ._version import __version__
 from .app import (
     AccessLevel,
-    AccessLevelConfig,
     App,
     AppAccessConfig,
     AppConfig,
@@ -31,7 +30,6 @@ from .utils import (
 
 __all__ = [
     "AccessLevel",
-    "AccessLevelConfig",
     "BaseModel",
     "Job",
     "JobHandle",

@@ -99,20 +99,8 @@ class AccessLevel(IntEnum):
     ADMIN = 9000
 
 
-class AccessLevelConfig(pydantic.BaseModel):
-    """Defines the restrictions of access to an Application for a certain access level"""
-
-    model_config = pydantic.ConfigDict(extra="forbid")
-
-    name: str
-    access_level: AccessLevel = AccessLevel.HIDDEN
-    max_cpus: int = 0
-    max_memory: str = "0G"
-    max_saved_results: int = 0
-
-
 class AppAccessConfig(pydantic.BaseModel):
-    """Defines the restrictions of access to an Application for a certain access level"""
+    """Level of public apps and trial settings"""
 
     model_config = pydantic.ConfigDict(extra="forbid")
 
@@ -120,37 +108,6 @@ class AppAccessConfig(pydantic.BaseModel):
     enable_trial: bool = False
     auto_grant_trial: bool = False
     trial_days: int = 21
-    levels: dict[AccessLevel, AccessLevelConfig] = {
-        AccessLevel.HIDDEN: AccessLevelConfig(
-            access_level=AccessLevel.HIDDEN,
-            name="hidden",
-        ),
-        AccessLevel.VISIBLE: AccessLevelConfig(
-            access_level=AccessLevel.VISIBLE,
-            name="visible",
-        ),
-        AccessLevel.TRIAL: AccessLevelConfig(
-            access_level=AccessLevel.TRIAL,
-            name="trial",
-            max_memory="14G",
-            max_cpus=4,
-            max_saved_results=20,
-        ),
-        AccessLevel.STANDARD: AccessLevelConfig(
-            access_level=AccessLevel.STANDARD,
-            name="standard",
-            max_memory="14G",
-            max_cpus=4,
-            max_saved_results=20,
-        ),
-        AccessLevel.ADMIN: AccessLevelConfig(
-            access_level=AccessLevel.ADMIN,
-            name="admin",
-            max_memory="60G",
-            max_cpus=20,
-            max_saved_results=999,
-        ),
-    }
 
 
 class PythonPackage(pydantic.BaseModel):
