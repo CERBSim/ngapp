@@ -45,17 +45,25 @@ class CaseDirectory:
         raise NotImplementedError
 
     def shares(self, case_id: int) -> list[dict]:
-        """user_id, name, write"""
+        """user_id or group_id, name, write, active, reason (why an inactive one does not
+        work)"""
         return []
 
     def share_targets(self, case_id: int, query: str):
-        """Users the case may be shared with, [{id, name, access}], or {error}"""
+        """Users and groups the case may be shared with, [{kind, id, name, access}], or
+        {error}"""
         raise NotImplementedError
 
     def share(self, case_id: int, user_id: str, write: bool):
         raise NotImplementedError
 
     def unshare(self, case_id: int, user_id: str):
+        raise NotImplementedError
+
+    def share_group(self, case_id: int, group_id: int, write: bool):
+        raise NotImplementedError
+
+    def unshare_group(self, case_id: int, group_id: int):
         raise NotImplementedError
 
 
@@ -139,6 +147,12 @@ class PlatformCases(CaseDirectory):
 
     def unshare(self, case_id, user_id):
         self._call("unshare", case_id, user_id)
+
+    def share_group(self, case_id, group_id, write):
+        self._call("shareGroup", case_id, group_id, write)
+
+    def unshare_group(self, case_id, group_id):
+        self._call("unshareGroup", case_id, group_id)
 
 
 class LocalDirectory(CaseDirectory):

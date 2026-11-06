@@ -112,16 +112,25 @@ class CaseList(Div):
         if rows is _FAILED:
             return
         rows = sorted(rows, key=lambda r: r["id"], reverse=True)
+        own = [r for r in rows if not r.get("owner_group_id")]
+        group = [r for r in rows if r.get("owner_group_id")]
+        self._table.ui_children = [self._rows_table(d, own)] + (
+            [Label("Group results", ui_class="text-subtitle1 q-mt-md"), self._rows_table(d, group)]
+            if group else [])
+
+    def _rows_table(self, d, rows):
         head = QTr(*[QTh(t, ui_class="text-left") for t in
                      ("Name", "Created", "Modified", "")])
-        self._table.ui_children = [
-            QMarkupTable(head, *[self._row(d, r) for r in rows], ui_flat=True,
-                         ui_dense=True, ui_separator="horizontal",
-                         ui_style="max-height: 60vh; overflow: auto;")
-        ]
+        return QMarkupTable(head, *[self._row(d, r) for r in rows], ui_flat=True,
+                            ui_dense=True, ui_separator="horizontal",
+                            ui_style="max-height: 60vh; overflow: auto;")
 
     def _row(self, d, row):
         name = [Label(_label(row), ui_class="text-weight-bold" if row.get("current") else "")]
+        if row.get("transferred_at"):
+            left = _when(row["transferred_at"])
+            name.append(QBadge(ui_label=f"from {row.get('owner_name', '')}, left {left}",
+                               ui_color="orange-8", ui_class="q-ml-sm"))
         if row.get("access", "owner") != "owner":
             name.append(QBadge(ui_label="shared" if row["access"] == "write" else "read only",
                                ui_color="grey-6", ui_class="q-ml-sm"))
@@ -267,10 +276,13 @@ class CaseList(Div):
         d = self.directory()
         shares = self._try("Loading the shares", d.shares, row["id"])
         shares = [] if shares is _FAILED else shares
-        text = ", ".join(
-            f"{s.get('name') or s['user_id']} ({'write' if s['write'] else 'read'})"
-            for s in shares
-        )
+        def describe(s):
+            who = ("group " if s.get("group_id") else "") + (
+                s.get("name") or s.get("user_id") or "")
+            state = "" if s.get("active", True) else f", not working: {s.get('reason')}"
+            return f"{who} ({'write' if s['write'] else 'read'}{state})"
+
+        text = ", ".join(describe(s) for s in shares)
         user = QInput(ui_model_value="", ui_label="Name or e-mail address (at least 4 characters)",
                       ui_dense=True, ui_autofocus=True)
         error = Label("", ui_class="text-negative text-caption")
@@ -291,32 +303,44 @@ class CaseList(Div):
 
         self._ask(f'Share "{_label(row)}"', body, found, ok_label="Search")
 
+    @staticmethod
+    def _current(shares, who):
+        key = "group_id" if who.get("kind") == "group" else "user_id"
+        return next((s for s in shares if s.get(key) == who["id"]), None)
+
     def _pick(self, row, users, shares):
         usable = [u for u in users if u["access"]]
         if len(users) == 1 and usable:
-            who = usable[0]
-            self._access(row, who, next((s for s in shares if s["user_id"] == who["id"]), None))
+            self._access(row, usable[0], self._current(shares, usable[0]))
             return
-        options = [
-            {"label": u["name"] if u["access"] else f"{u['name']} (no access to the app)",
-             "value": u["id"], "disable": not u["access"]}
-            for u in users
-        ]
-        pick = QOptionGroup(ui_type="radio", ui_options=options,
-                            ui_model_value=usable[0]["id"] if usable else None)
+
+        def label(u):
+            if u.get("kind") == "group":
+                return f"Group {u['name']}"
+            return u["name"] if u["access"] else f"{u['name']} (no access to the app)"
+
+        options = [{"label": label(u), "value": f"{u.get('kind', 'user')}:{u['id']}",
+                    "disable": not u["access"]} for u in users]
+        first = f"{usable[0].get('kind', 'user')}:{usable[0]['id']}" if usable else None
+        pick = QOptionGroup(ui_type="radio", ui_options=options, ui_model_value=first)
 
         def ok():
-            who = next((u for u in usable if u["id"] == pick.ui_model_value), None)
+            who = next((u for u in usable
+                        if f"{u.get('kind', 'user')}:{u['id']}" == pick.ui_model_value), None)
             if who is None:
                 return False
-            self._access(row, who, next((s for s in shares if s["user_id"] == who["id"]), None))
+            self._access(row, who, self._current(shares, who))
             return False
 
         self._ask(f'Share "{_label(row)}" with', [pick], ok, ok_label="Next")
 
     def _access(self, row, who, current):
         d = self.directory()
-        name = who["name"] if who["name"] == who["id"] else f"{who['name']} ({who['id']})"
+        group = who.get("kind") == "group"
+        if group:
+            name = f"the members of {who['name']}"
+        else:
+            name = who["name"] if who["name"] == who["id"] else f"{who['name']} ({who['id']})"
         options = [{"label": "Can edit", "value": "write"},
                    {"label": "Can view", "value": "read"}]
         if current is not None:
@@ -326,9 +350,9 @@ class CaseList(Div):
 
         def ok():
             if access.ui_model_value == "none":
-                self._try("Sharing", d.unshare, row["id"], who["id"])
+                self._try("Sharing", d.unshare_group if group else d.unshare, row["id"], who["id"])
             else:
-                self._try("Sharing", d.share, row["id"], who["id"],
+                self._try("Sharing", d.share_group if group else d.share, row["id"], who["id"],
                           access.ui_model_value == "write")
 
         self._ask("Share", [Label(f'Access of {name} to "{_label(row)}"'), access], ok)
