@@ -72,14 +72,14 @@ def test_open_edit_restart_reopen():
     second = cases.case_id
     copy = cases.copy(first)
     cases.rename(copy, "copy of first")
-    listed = {c["id"]: c for c in cases.list()}
+    listed = {c["id"]: c for c in cases.list_cases()}
     assert set(listed) == {first, second, copy}
     assert listed[second]["current"] and listed[copy]["name"] == "copy of first"
     app = cases.open(copy)
     assert app.solver.maxh.ui_model_value == 0.125
     np.testing.assert_array_equal(app.state.geometry, np.arange(10000.0))
     cases.delete(copy)
-    assert cases.case_id != copy and copy not in {c["id"] for c in cases.list()}
+    assert cases.case_id != copy and copy not in {c["id"] for c in cases.list_cases()}
     cases.close()
 
     cases = local()

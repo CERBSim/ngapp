@@ -1,6 +1,6 @@
 """The cases of the app as the case list component sees them
 
-CaseDirectory is what CaseList calls: list, open, rename, copy, delete,
+CaseDirectory is what CaseList calls: list_cases, open, rename, copy, delete,
 export and import of a case file and (on the platform) sharing. In the
 browser of the platform the operations go through the JS interface
 "platformCases" of the main thread, in the local app mode through
@@ -18,7 +18,7 @@ class CaseDirectory:
 
     can_share = False
 
-    def list(self) -> list[dict]:
+    def list_cases(self) -> list[dict]:
         raise NotImplementedError
 
     def open(self, case_id: Optional[int]):
@@ -76,7 +76,7 @@ class PlatformCases(CaseDirectory):
             raise RuntimeError(result["error"])
         return result
 
-    def list(self):
+    def list_cases(self):
         rows = self._call("list") or []
         for row in rows:
             row["current"] = row["id"] == self.session.case_id
@@ -147,7 +147,7 @@ class LocalDirectory(CaseDirectory):
     def __init__(self, cases):
         self.cases = cases
 
-    def list(self):
+    def list_cases(self):
         return [
             {
                 "id": c["id"],
@@ -157,7 +157,7 @@ class LocalDirectory(CaseDirectory):
                 "access": "owner",
                 "current": c["current"],
             }
-            for c in self.cases.list()
+            for c in self.cases.list_cases()
         ]
 
     def open(self, case_id):

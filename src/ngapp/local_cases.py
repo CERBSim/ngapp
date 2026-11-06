@@ -211,7 +211,7 @@ class LocalCases:
 
     # -- case list --
 
-    def list(self) -> list[dict]:
+    def list_cases(self) -> list[dict]:
         current = self.case_id
         out = []
         for info in self.store.cases(self.app_id):

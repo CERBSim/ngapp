@@ -108,7 +108,7 @@ class CaseList(Div):
         if d is None:
             self._table.ui_children = [Label("No cases here.", ui_class="text-grey-7")]
             return
-        rows = self._try("Loading the cases", d.list)
+        rows = self._try("Loading the cases", d.list_cases)
         if rows is _FAILED:
             return
         rows = sorted(rows, key=lambda r: r["id"], reverse=True)
