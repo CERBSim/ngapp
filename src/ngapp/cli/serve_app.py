@@ -31,6 +31,8 @@ async def run_serve_process(command, args_object):
         args.append("--build_backend_packages")
     if args_object.deploy:
         args.append("--deploy")
+    if args_object.wheels:
+        args += ["--wheels", args_object.wheels]
     return await run_process(args)
 
 

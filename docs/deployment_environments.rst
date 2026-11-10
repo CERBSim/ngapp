@@ -35,6 +35,46 @@ For a step-by-step guide, see the :doc:`tutorials/host_on_github`
 - configure secrets if needed, and
 - trigger deployments from pushes or tags.
 
+Dependencies of compute environments
+------------------------------------
+
+``python -m ngapp.cli.deploy`` uploads the app wheel and a layer of
+packages that the runner puts on the ``PYTHONPATH`` of every job. The
+image of a compute environment comes from its ``dockerfile`` (or
+``FROM python:<python>`` for ``env_type="venv"``) plus
+``pip_dependencies`` from PyPI.
+
+- ``frontend_dependencies``: local packages zipped from the current
+  installation, for the browser and for the compute environments.
+- ``compute_dependencies``: packages only the compute environments need.
+  A plain name is zipped from the local installation if it is pure python.
+  ``"name @ git+ssh://host/repo.git@<commit>"`` or
+  ``"name @ /path/to/checkout"`` is built from source in a venv with the
+  ``python`` and ``pip_dependencies`` of the compute environments (use
+  this for compiled packages). The backend keeps the built wheel; it is
+  only rebuilt when the commit, the local changes, ``python`` or
+  ``pip_dependencies`` change.
+- ``--wheels DIR``: uploads prebuilt wheels as they are.
+
+.. code-block:: python
+
+   config = AppConfig(
+       ...,
+       frontend_dependencies=["mymodel"],
+       compute_dependencies=["mysolver @ git+ssh://git@host/mysolver.git@v1.2"],
+       compute_environments=[
+           ComputeEnvironment(
+               env_type="docker",
+               dockerfile=DOCKERFILE,
+               python="3.14",
+               pip_dependencies=["ngsolve==6.2.2608", "scipy"],
+           )
+       ],
+   )
+
+``python`` is checked when the image is built. Wheels must put their
+package at the root of the archive, the runner extracts them without pip.
+
 Where to go next
 ----------------
 

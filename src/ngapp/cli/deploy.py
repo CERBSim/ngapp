@@ -4,8 +4,9 @@
 
 The command including a token is copied from "Add new app" on the App Dev page. The app
 is created on the backend if the user does not own one with the same python class yet.
-Frontend package and backend wheels are built and uploaded; compute environment images
-are rebuilt by the backend when their definition changed.
+Frontend package and compute packages are built and uploaded (see
+ngapp.compute_packages); compute environment images are rebuilt by the backend when
+their definition changed.
 """
 
 import argparse
@@ -23,11 +24,13 @@ def upload_app(
     app_id: int,
     build_backend_packages: bool = True,
     reload_dependencies: list[str] | None = None,
+    wheels_dir: str | None = None,
 ):
     """Build packages and post the app config to /app_admin/update_app"""
     t = str(datetime.datetime.now()).split(".")[0].split(" ")[1]
     print(f"{t} Update app '{config.name}', id = {app_id}")
     config_dump = config.model_dump(exclude_defaults=True)
+    config_dump.pop("compute_dependencies", None)  # resolved here, not used by the backend
     config.create_frontend_package()
     config_dump["frontend_package"] = base64.b64encode(config.frontend_package).decode("utf-8")
 
@@ -36,11 +39,11 @@ def upload_app(
         md = api.post("/get_app_python_packages_metadata", data={"app_id": app_id})
         old_packages = {p["name"]: p for p in md}
 
-        config.create_backend_packages()
+        config.create_backend_packages(old_packages, wheels_dir)
         packages = []
         for pkg in config.python_packages:
-            pkg_dump = {"file_name": pkg.file_name, "package": ""}
-            if (
+            pkg_dump = {"file_name": pkg.file_name, "package": "", "build_key": pkg.build_key}
+            if pkg.package is not None and (
                 pkg.file_name not in old_packages
                 or old_packages[pkg.file_name]["hash"] != calc_hash(pkg.package)
             ):
@@ -98,6 +101,11 @@ def main():
         action="store_true",
         help="set all compute environments to 'local' (run on your own runner, no image)",
     )
+    parser.add_argument(
+        "--wheels",
+        metavar="DIR",
+        help="also upload the wheels in DIR (prebuilt compute dependencies)",
+    )
     args = parser.parse_args()
 
     config = load_config(args.config_module)
@@ -107,7 +115,12 @@ def main():
 
     set_environment(EnvironmentType.LOCAL_APP).set_backend(args.backend_url, args.token)
     app_id = find_or_create_app(config)
-    upload_app(config, app_id, reload_dependencies=config.frontend_dependencies)
+    upload_app(
+        config,
+        app_id,
+        reload_dependencies=config.frontend_dependencies,
+        wheels_dir=args.wheels,
+    )
     print(f"Deployed '{config.name}' (id {app_id}) to {args.backend_url}")
 
 

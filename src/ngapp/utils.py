@@ -796,9 +796,13 @@ def _write_dist_info(root: str, module_name: str):
     (folder / "INSTALLER").write_text("webapp\n")
 
 
-def zip_modules(modules: list[str], dist_info: bool = False) -> bytes:
+def zip_modules(
+    modules: list[str], dist_info: bool = False, exclude_backend: bool = True
+) -> bytes:
     """Zip a list of python modules and return the zip file as a bytes object;
-    with dist_info the zip carries the metadata of their distributions"""
+    with dist_info the zip carries the metadata of their distributions,
+    exclude_backend drops all paths containing "backend" (browser packages)"""
+    ignore = ["*__pycache__*"] + (["*backend*"] if exclude_backend else [])
     with tempfile.TemporaryDirectory() as root:
         for module_name in modules:
             spec = importlib.util.find_spec(module_name)
@@ -808,7 +812,7 @@ def zip_modules(modules: list[str], dist_info: bool = False) -> bytes:
                 shutil.copytree(
                     path,
                     os.path.join(root, os.path.basename(path)),
-                    ignore=shutil.ignore_patterns("*backend*", "*__pycache__*"),
+                    ignore=shutil.ignore_patterns(*ignore),
                 )
             if dist_info:
                 _write_dist_info(root, module_name)
@@ -1064,6 +1068,9 @@ class ComputeEnvironment(pydantic.BaseModel):
     env_type: typing.Literal["venv", "docker", "local"] = "venv"
     dockerfile: str = DEFAULT_DOCKERFILE
     pip_dependencies: list[str] = []
+    # python version of the image ("3.14"), checked by the image build; compiled
+    # compute_dependencies of the app are built for it, venv envs use it as base image
+    python: str = pydantic.Field("", pattern=r"^(\d+\.\d+)?$")
     # api = True: a persistent service answers compute_node calls synchronously
     # (frontend -> backend -> service), for frequent short computations
     api: bool = False

@@ -3,14 +3,11 @@
 
 import base64
 import copy
-import hashlib
 import importlib.util
 import json
 import os
 import os.path
-import subprocess
 import sys
-import tempfile
 import time
 import types
 import weakref
@@ -115,6 +112,9 @@ class PythonPackage(pydantic.BaseModel):
 
     file_name: str
     package: bytes | None
+    # identifies the source and build environment of a wheel built from source,
+    # a package with the same key on the backend is kept instead of rebuilt
+    build_key: str = ""
 
     model_config = pydantic.ConfigDict(ser_json_bytes="base64")
 
@@ -130,7 +130,11 @@ class AppConfig(pydantic.BaseModel):
 
     python_class: str
     frontend_pip_dependencies: list[str] = []
+    # local packages zipped for the browser, also shipped to the compute environments
     frontend_dependencies: list[str] = []
+    # packages for the compute environments only: "name" (pure python, zipped from the
+    # local installation) or "name @ source" (built from a git url or a local path)
+    compute_dependencies: list[str] = []
 
     description: str = "No description."
     image: str | None = None
@@ -158,61 +162,17 @@ class AppConfig(pydantic.BaseModel):
             [self.python_package_name] + self.frontend_dependencies
         )
 
-    def create_backend_packages(self, include_dependencies=True):
-        if len(self.compute_environments) == 0:
-            return
+    def create_backend_packages(
+        self, existing: dict | None = None, wheels_dir: str | Path | None = None
+    ):
+        """Packages of the compute layer: app wheel, zips of pure python dependencies,
+        wheels built from source (kept when ``existing`` has one with the same build key)
+        and the wheels in ``wheels_dir``"""
+        from .compute_packages import build_compute_packages
 
-        origin = Path(importlib.util.find_spec(self.python_package_name).origin)
-        src_dir = None
-        for _ in range(3):
-            origin = origin.parent
-            for filename in ["pyproject.toml", "setup.py"]:
-                if (origin / filename).exists():
-                    src_dir = origin
-                    break
-        if src_dir is None:
-            raise RuntimeError(
-                f"Could not find source directory for package {self.python_package_name}"
-            )
-
-        with tempfile.TemporaryDirectory() as temp_dir_:
-            temp_dir = Path(temp_dir_)
-            subprocess.run(
-                [
-                    sys.executable,
-                    "-m",
-                    "build",
-                    "-n",
-                    "-w",
-                    "-o",
-                    temp_dir,
-                    src_dir,
-                ],
-                check=True,
-            )
-
-            package_hash = hashlib.sha256()
-            packages = []
-
-            dirs = [temp_dir]
-            if include_dependencies:
-                dirs.append(src_dir / "dependencies")
-
-            for d in dirs:
-                if not d.exists():
-                    continue
-                for filename in sorted(os.listdir(d)):
-                    if filename.endswith(".whl"):
-                        data = (d / filename).read_bytes()
-                        package_hash.update(data)
-                        packages.append(
-                            PythonPackage(
-                                file_name=filename,
-                                package=data,
-                            )
-                        )
-            self.python_packages = packages
-            self.python_packages_hash = package_hash.hexdigest()
+        self.python_packages, self.python_packages_hash = build_compute_packages(
+            self, existing or {}, wheels_dir
+        )
 
 
 class AppConfigWithAccess(AppConfig):

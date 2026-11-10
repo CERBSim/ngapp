@@ -21,6 +21,7 @@ class WatchSpec(pydantic.BaseModel):
     config_module: str
     build_backend_packages: bool
     local_compute_env: bool
+    wheels_dir: str | None = None
     reload_config: bool = True
     python_module: str
     config: AppConfig | None = None
@@ -55,6 +56,12 @@ def get_args_parser(description):
         "--local_compute_env",
         help="Change configured compute envs to run on this local machine",
         action="store_true",
+        required=False,
+    )
+    parser.add_argument(
+        "--wheels",
+        metavar="DIR",
+        help="Also upload the wheels in DIR (prebuilt compute dependencies)",
         required=False,
     )
     parser.add_argument(
@@ -121,6 +128,7 @@ class UpdateAppHandler(EventHandler):
             config,
             self.spec.app_id,
             build_backend_packages=self.spec.build_backend_packages,
+            wheels_dir=self.spec.wheels_dir,
             reload_dependencies=config.frontend_dependencies if self.spec.reload_config else [],
         )
 
@@ -177,6 +185,7 @@ def main():
         config_module=args.python_package,
         build_backend_packages=args.build_backend_packages,
         local_compute_env=args.local_compute_env,
+        wheels_dir=args.wheels,
         reload_config=True,
         python_module=args.python_package,
     )
