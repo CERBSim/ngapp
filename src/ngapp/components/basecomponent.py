@@ -1324,16 +1324,20 @@ class Component(metaclass=BlockFrontendUpdate):
 
     @utils._count_calls
     def _set_parent(self, parent):
-        changed = (
-            self._parent != parent
-            and self._namespace_id != parent._namespace_id
-        )
         self._parent = parent
         self.context = parent.context
-        if changed and self.context and not self._block_frontend_update:
-            utils._trace_call("_calc_namespace_id._set_parent")
+        if self._namespace_id is None:
+            return
+        # the namespace follows the new parent, now or when it is known
+        if parent._namespace_id is None:
             self._namespace_id = None
-            self._calc_namespace_id()
+            return
+        expected = parent._fullid if parent._namespace else parent._namespace_id
+        if expected != self._namespace_id:
+            self._namespace_id = None
+            if self.context and not self._block_frontend_update:
+                utils._trace_call("_calc_namespace_id._set_parent")
+                self._calc_namespace_id()
 
     @utils._count_calls
     def _set_parent_recursive(self, parent):
@@ -1346,7 +1350,7 @@ class Component(metaclass=BlockFrontendUpdate):
                     continue
                 for child in slot:
                     if not isinstance(child, str):
-                        child._set_parent(parent)
+                        child._set_parent(comp)
 
         self._recurse(func, True, set())
 
