@@ -3,6 +3,7 @@ from .helper_components import *
 from .job_components import *
 from .case_components import *
 from .case_list import *
+from .platform_components import *
 from .material import *
 from .qcomponents import *
 from .visualization import *

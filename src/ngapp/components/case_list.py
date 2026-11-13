@@ -15,7 +15,12 @@ from .qcomponents import (
     QCardActions,
     QCardSection,
     QDialog,
+    QIcon,
     QInput,
+    QItem,
+    QItemLabel,
+    QItemSection,
+    QList,
     QMarkupTable,
     QOptionGroup,
     QSpace,
@@ -283,10 +288,26 @@ class CaseList(Div):
             return f"{who} ({'write' if s['write'] else 'read'}{state})"
 
         text = ", ".join(describe(s) for s in shares)
-        user = QInput(ui_model_value="", ui_label="Name or e-mail address (at least 4 characters)",
-                      ui_dense=True, ui_autofocus=True)
+        # the members of the own groups, filtered here; others by their exact name (Search)
+        targets = self._try("Loading the members of your groups", d.share_targets, row["id"], "")
+        targets = [] if targets is _FAILED or isinstance(targets, dict) else targets
+        user = QInput(ui_model_value="", ui_dense=True, ui_autofocus=True,
+                      ui_label="Filter, or the exact name or e-mail address of someone else")
         error = Label("", ui_class="text-negative text-caption")
-        body = ([Label(f"Shared with {text}.")] if text else []) + [user, error]
+        listing = QList(ui_dense=True, ui_style="max-height: 50vh; overflow: auto;")
+
+        def filtered(ev=None):
+            query = ((ev.value if ev is not None else "") or "").strip().lower()
+            error.ui_children = []
+            shown = [t for t in targets
+                     if query in t["name"].lower() or query in str(t["id"]).lower()]
+            listing.ui_children = [self._target_item(row, t, shares) for t in shown] or [
+                QItem(QItemSection(Label("Nobody of your groups matches, search for the "
+                                         "exact name", ui_class="text-grey")))]
+
+        user.on_update_model_value(filtered)
+        filtered()
+        body = ([Label(f"Shared with {text}.")] if text else []) + [user, error, listing]
 
         def found():
             query = (user.ui_model_value or "").strip()
@@ -302,6 +323,20 @@ class CaseList(Div):
             return False  # the dialog shows the next step
 
         self._ask(f'Share "{_label(row)}"', body, found, ok_label="Search")
+
+    def _target_item(self, row, who, shares):
+        group = who.get("kind") == "group"
+        caption = "no access to the app" if not who["access"] else (
+            who["id"] if not group and who["name"] != who["id"] else "")
+        item = QItem(
+            QItemSection(QIcon(ui_name="mdi-account-group" if group else "mdi-account"),
+                         ui_avatar=True),
+            QItemSection(QItemLabel(f"Group {who['name']}" if group else who["name"]),
+                         *([QItemLabel(caption, ui_caption=True)] if caption else [])),
+            ui_clickable=who["access"], ui_disable=not who["access"])
+        if who["access"]:
+            item.on("click", lambda: self._access(row, who, self._current(shares, who)))
+        return item
 
     @staticmethod
     def _current(shares, who):
