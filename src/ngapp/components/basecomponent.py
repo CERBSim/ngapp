@@ -739,6 +739,7 @@ def _report_slow_init(comp, own, total, created):
             created,
             _SLOW_INIT_HINT,
         )
+        return
     if own > _slow_init > 0:
         site = _creation_site()
         if (type(comp), site) not in _slow_init_reported:

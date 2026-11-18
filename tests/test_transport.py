@@ -273,8 +273,9 @@ class Slow(Div):
 
 
 class SlowApp(App):
-    def __init__(self):
+    def __init__(self, delay=0.0):
         super().__init__()
+        time.sleep(delay)
         self.component = Div(Slow(0.08), Div("x"))
         self.ids = [
             c._index for c in (self.component, *self.component.ui_children)
@@ -318,6 +319,15 @@ def test_slow_constructor_warning(monkeypatch, caplog):
         assert messages[0].startswith("Slow app constructor: SlowApp took 0.")
         assert "(limit 0.05 s), 4 components." in messages[0]
         assert mount(app).mounted == {app._index, *app.ids}
+
+        # the own time of the app only counts against the app limit
+        caplog.clear()
+        monkeypatch.setenv("NGAPP_SLOW_INIT", "0.05")
+        monkeypatch.setenv("NGAPP_SLOW_APP_INIT", "1")
+        bc._read_slow_init_limits()
+        with caplog.at_level(logging.WARNING, logger="ngapp.components"):
+            SlowApp(0.08)
+        assert all("SlowApp" not in r.getMessage() for r in caplog.records)
     finally:
         monkeypatch.undo()
         bc._read_slow_init_limits()
