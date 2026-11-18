@@ -6,6 +6,12 @@ ngapp applications.  An :class:`~ngapp.observable.Observable` holds a single
 value and notifies registered listeners whenever the value changes.
 Pass an ``Observable`` directly as a component prop (e.g.
 ``ui_model_value=my_observable``) for automatic two-way binding.
+:func:`~ngapp.observable.computed` derives read-only values from other
+observables and from the case state.
+
+This page describes the module itself. How observables, computed values,
+``Show``, ``For``, ``Dynamic`` and effects make up a user interface that
+updates in place is described in :doc:`reactivity`.
 
 .. contents:: On this page
    :local:
@@ -136,8 +142,13 @@ property:
    scale.value = 2.5     # listeners are called
    scale.value = 2.5     # no notification (value unchanged)
 
-The setter compares the new value to the current one with ``==``.  If they
-are equal, no listeners are invoked.
+The setter compares the new value to the current one, first by identity,
+then with ``==``.  If they are equal, no listeners are invoked.  A
+comparison that raises or gives no single truth value (numpy arrays) counts
+as a change.
+
+``peek()`` reads the value without making it a dependency of a running
+computed value or effect (see `Derived values`_).
 
 Listening to changes
 ~~~~~~~~~~~~~~~~~~~~
@@ -231,26 +242,83 @@ and event pair:
    # later…
    dispose()
 
+Derived values
+--------------
+
+:func:`~ngapp.observable.computed` creates a read-only observable from a
+function.  Every observable, computed value and state key the function
+reads becomes a dependency:
+
+.. code-block:: python
+
+   from ngapp.observable import Observable, computed
+
+   width = Observable(2.0, "width", converter=float)
+   height = Observable(3.0, "height", converter=float)
+   area = computed(lambda: width.value * height.value, "area")
+   text = computed(lambda: f"Area: {area.value:g} m²")
+
+   area.value          # 6.0, evaluated now
+   width.value = 4.0   # area is only marked as outdated
+   area.value          # 12.0, evaluated again
+
+   label = Label(text)                  # bound text
+   QBtn(ui_disable=computed(lambda: area.value > 100))
+
+* Evaluation is lazy: on the first read and on the next read after a
+  dependency changed.  Dependencies are recorded on each evaluation.
+* Dependents are notified only when the result changed (identity or
+  ``==``; ``equal=`` replaces the comparison).
+* Assigning ``.value`` raises :class:`AttributeError`.
+* ``on_change(cb)`` calls ``cb(new, old)`` after the result changed.
+* A computed value is never part of :func:`~ngapp.observable.snapshot`,
+  :func:`~ngapp.observable.restore` or
+  :func:`~ngapp.observable.collect_observables`.
+
+:func:`~ngapp.observable.effect` runs a function now and again after one of
+its dependencies changed, until the returned dispose function is called.
+For work that updates a component in the browser use
+:meth:`component.effect <ngapp.components.basecomponent.Component.effect>`
+instead, which runs only while the component is mounted.
+
+:func:`~ngapp.observable.untracked` reads values inside a computed value or
+effect without making them dependencies:
+
+.. code-block:: python
+
+   from ngapp.observable import untracked
+
+   summary = computed(
+       lambda: f"{area.value:g} m² ({untracked(lambda: unit.value)})"
+   )
+
 Batching changes
 ----------------
 
 When multiple observables must be updated together,
-:func:`~ngapp.observable.observable_batch` defers all listener calls until
-the block exits.  This avoids redundant intermediate work (for example,
-multiple render calls):
+:func:`~ngapp.observable.batch` defers all listener calls until the block
+exits.  Computed values, bound props and effects are updated once at the
+end, and the browser receives the changes in one message:
 
 .. code-block:: python
 
-   from ngapp.observable import observable_batch
+   from ngapp.observable import batch
 
-   with observable_batch():
+   with batch():
        position.value = (1.0, 2.0, 3.0)
        scale.value = 0.5
        enabled.value = True
    # All listeners are called here, once per changed observable.
 
 Batches can be nested.  Listeners fire only when the outermost batch
-completes.
+completes.  :func:`~ngapp.observable.observable_batch` is the same function
+under its former name.
+
+Event handlers need no explicit batch: ngapp runs every handler in a scope
+that defers computed values, bindings, effects and browser updates to its
+end, while plain ``on_change`` listeners stay synchronous there.
+:func:`ngapp.flush_updates` applies and sends what is pending immediately,
+for example to show progress inside a long handler.
 
 Serialisation helpers
 ---------------------
@@ -306,8 +374,8 @@ Typical usage patterns
 Reactive side-effects
 ~~~~~~~~~~~~~~~~~~~~~
 
-Wire domain logic to observables so that any change — from the UI, a
-keyboard shortcut, or code — triggers the correct response:
+Wire domain logic to observables so that any change (from the UI, a
+keyboard shortcut, or code) triggers the correct response:
 
 .. code-block:: python
 
@@ -321,7 +389,12 @@ keyboard shortcut, or code — triggers the correct response:
            self.scene.render()
 
        def toggle_wireframe(self):
-           self.wireframe.toggle()   # one line — side-effects handled
+           self.wireframe.toggle()   # side-effects are handled by the listener
+
+Updates of what the browser shows (a figure, a viewer) belong in
+:meth:`component.effect <ngapp.components.basecomponent.Component.effect>`,
+which also runs when the component is mounted again and never in a compute
+job.
 
 Component with bound UI
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -372,5 +445,5 @@ API reference
 -------------
 
 .. automodule:: ngapp.observable
-   :members: Observable, bind, observable_batch, collect_observables, snapshot, restore
+   :members: Observable, Computed, computed, effect, untracked, batch, observable_batch, bind, collect_observables, snapshot, restore
    :undoc-members:

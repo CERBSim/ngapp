@@ -8,6 +8,8 @@ import functools
 import hashlib
 import importlib.util
 import io
+import json
+import math
 import os
 import shutil
 import sys
@@ -28,6 +30,7 @@ from platformdirs import user_config_dir
 from webgpu.link.base import LinkBase
 
 from . import api
+from . import observable as _observable
 
 _TRACING = False
 
@@ -72,17 +75,75 @@ def _trace_call(name):
     _counts[name] = _counts.get(name, 0) + 1
 
 
+# components that may carry their init data in one message (protocol >= 1)
+_INLINE_MAX_COMPONENTS = 2000
+# seconds an update is held back while a handler runs
+_BATCH_MAX_HOLD = 0.05
+_BATCH_UPDATES = os.environ.get("NGAPP_BATCH_UPDATES", "1") != "0"
+_MERGE_KEYS = frozenset(("props", "slots", "type", "text", "events", "source"))
+
+
+def _json_safe(value):
+    """value with float NaN/Inf replaced by None (they break JSON.parse of
+    the whole message), containers are copied only if needed"""
+    if value is None or isinstance(value, (str, int)):
+        return value
+    if isinstance(value, float):
+        return value if math.isfinite(value) else None
+    if isinstance(value, dict):
+        if len(value) > 64 and _json_checked(value):
+            return value
+        out = None
+        for k, v in value.items():
+            w = _json_safe(v)
+            if w is not v:
+                if out is None:
+                    out = dict(value)
+                out[k] = w
+        return value if out is None else out
+    if isinstance(value, (list, tuple)):
+        if len(value) > 64 and _json_checked(value):
+            return value
+        out = None
+        for i, v in enumerate(value):
+            w = _json_safe(v)
+            if w is not v:
+                if out is None:
+                    out = list(value)
+                out[i] = w
+        return value if out is None else out
+    return value
+
+
+def _json_checked(value):
+    """True if the fast encoder shows that value holds no NaN/Inf"""
+    try:
+        text = json.dumps(value, default=_json_other)
+    except Exception:
+        return False
+    return "NaN" not in text and "Infinity" not in text
+
+
+def _json_other(_):
+    return None
+
+
 class BaseFrontend:
     """Base class for the frontend"""
 
     link: LinkBase = None
     app = None
+    # wire protocol of the connected frontend (0: no handshake)
+    protocol = 0
 
     def __init__(self, link: LinkBase):
         self.link = link
 
     def update_component(self, comp, data, method, blocking=True):
         raise NotImplementedError()
+
+    def flush(self, wait=True):
+        """Send buffered component updates"""
 
     def reset_app(self, app):
         raise NotImplementedError("Calling reset from invalid environment!")
@@ -93,8 +154,40 @@ class BaseFrontend:
 
 
 class BrowserFrontend(BaseFrontend):
+    def __init__(self, link: LinkBase):
+        super().__init__(link)
+        # compId -> [component, merged data, full resend, failed attempts]
+        self._pending = {}
+        # time of the oldest buffered update
+        self._pending_since = None
+        self._buffer_lock = threading.Lock()
+        self._send_lock = threading.RLock()
+        self._sending = False
+        _wrap_link(link)
+
     @_count_calls
     def update_component(self, comp, data, method, blocking=True):
+        if self.protocol < 1:
+            return self._send_direct(comp, data, method, blocking)
+        if (
+            method != "update_frontend"
+            or blocking
+            or not (data is None or _MERGE_KEYS.issuperset(data))
+        ):
+            self.flush()
+            return self._send_direct(comp, data, method, blocking)
+        if not comp._frontend_known:
+            return
+        since = self._enqueue(comp, data)
+        if _observable.current_batch() is None or not _BATCH_UPDATES:
+            self.flush(wait=False)
+        elif time.monotonic() - since > _BATCH_MAX_HOLD:
+            # a long handler must not hide its progress
+            self.flush(wait=False)
+        else:
+            _watch()
+
+    def _send_direct(self, comp, data, method, blocking):
         if method not in comp._js_callbacks:
             return
 
@@ -111,7 +204,12 @@ class BrowserFrontend(BaseFrontend):
         if "source" not in data:
             data["source"] = "frontend"
 
-        if data["source"] == "frontend" and comp.context.capture_events:
+        ctx = comp.context
+        if (
+            data["source"] == "frontend"
+            and ctx is not None
+            and ctx.capture_events
+        ):
             data["debug"] = comp._get_debug_data(
                 method=method,
                 **data,
@@ -119,9 +217,130 @@ class BrowserFrontend(BaseFrontend):
 
         comp._js_callbacks[method](data, _ignore_result=not blocking)
 
+    def _enqueue(self, comp, data):
+        text = data is not None and "text" in data
+        key = f"t{comp._index}" if text else comp._index
+        debug = None
+        ctx = comp.context
+        if ctx is not None and ctx.capture_events:
+            debug = comp._get_debug_data(
+                method="update_frontend", **(data or {})
+            )
+        with self._buffer_lock:
+            item = self._pending.get(key)
+            if item is None:
+                item = self._pending[key] = [comp, {}, False, 0]
+                if self._pending_since is None:
+                    self._pending_since = time.monotonic()
+            else:
+                item[0] = comp
+            merged = item[1]
+            if data is None:
+                item[2] = True
+            else:
+                for name, value in data.items():
+                    if name == "props" or name == "slots":
+                        if name in merged:
+                            merged[name].update(value)
+                        else:
+                            merged[name] = dict(value)
+                    elif name != "source":
+                        merged[name] = value
+            if debug is not None:
+                merged["debug"] = debug
+            return self._pending_since
+
+    def flush(self, wait=True):
+        """Send the buffered updates as one message. With wait=False a
+        flush running in another thread is not waited for, it sends the
+        updates of this thread too"""
+        while self._pending:
+            if not self._send_lock.acquire(wait):
+                return
+            try:
+                if self._sending:
+                    # called while this thread builds a message
+                    return
+                self._sending = True
+                try:
+                    self._send_pending()
+                finally:
+                    self._sending = False
+            finally:
+                self._send_lock.release()
+
+    def _send_pending(self):
+        with self._buffer_lock:
+            pending, self._pending = self._pending, {}
+            self._pending_since = None
+        budget = [_INLINE_MAX_COMPONENTS]
+        entries = []
+        for key, item in pending.items():
+            try:
+                data = self._entry_data(*item[:3], budget)
+            except Exception as e:
+                # the component may be changing in another thread right now
+                item[3] += 1
+                if item[3] > 2:
+                    print_exception(e)
+                else:
+                    self._requeue(key, item)
+                continue
+            if data:
+                entries.append({"compId": key, "data": data})
+        if entries and self.link is not None:
+            self.link.call_method_ignore_return(
+                id="updateComponents", args=[entries]
+            )
+
+    def _requeue(self, key, item):
+        with self._buffer_lock:
+            newer = self._pending.get(key)
+            if newer is not None:
+                for name, value in newer[1].items():
+                    if name == "props" or name == "slots":
+                        item[1].setdefault(name, {}).update(value)
+                    else:
+                        item[1][name] = value
+                item[0] = newer[0]
+                item[2] = item[2] or newer[2]
+            self._pending[key] = item
+            if self._pending_since is None:
+                self._pending_since = time.monotonic()
+
+    @staticmethod
+    def _entry_data(comp, merged, full, budget):
+        """Data of one entry, slots are serialised from the current state
+        of the component (new children carry their init data)"""
+        data = {}
+        if full:
+            data["slots"] = comp._get_js_slots(budget)
+            data["props"] = _json_safe(dict(comp._get_js_props()))
+            data["type"] = comp._component_name
+        else:
+            if "props" in merged:
+                data["props"] = _json_safe(merged["props"])
+            if "slots" in merged:
+                data["slots"] = {
+                    key: comp._serialize_slot(key, budget)
+                    for key in merged["slots"]
+                    if key in comp.ui_slots
+                }
+            if "type" in merged:
+                data["type"] = merged["type"]
+        if "text" in merged:
+            data["text"] = merged["text"]
+        if "events" in merged:
+            data["events"] = comp._get_frontend_events()
+        if "debug" in merged:
+            data["source"] = "frontend"
+            data["debug"] = merged["debug"]
+        return data
+
     def reset_app(self, app):
+        budget = [_INLINE_MAX_COMPONENTS] if self.protocol >= 1 else None
         self.link.call_method_ignore_return(
-            id="resetApp", args=[app._get_my_wrapper_props()]
+            id="resetApp", args=[app._get_wrapper_props(budget)]
         )
         self.app = app
 
@@ -155,6 +374,92 @@ class BrowserFrontend(BaseFrontend):
         return self.get_query_parameter("appId", None)
 
 
+def _wrap_link(link):
+    """Buffered updates leave before any other message of the link"""
+    send = getattr(link, "_split_and_send", None)
+    if send is None or getattr(send, "_ngapp_flush", False):
+        return
+
+    def _split_and_send(data, key=None):
+        frontend = _environment.frontend if _environment else None
+        if (
+            isinstance(frontend, BrowserFrontend)
+            and frontend.protocol >= 1
+            and frontend.link is link
+        ):
+            # also waits for a message another thread is sending
+            with frontend._send_lock:
+                frontend.flush()
+        return send(data, key)
+
+    _split_and_send._ngapp_flush = True
+    link._split_and_send = _split_and_send
+
+
+_watchdog = None
+_watchdog_wake = threading.Event()
+
+
+def _watch():
+    """Sends updates that a running handler holds back for too long"""
+    global _watchdog
+    if _watchdog is None:
+        if is_pyodide():
+            return
+        _watchdog = threading.Thread(
+            target=_watchdog_run, name="ngapp-updates", daemon=True
+        )
+        _watchdog.start()
+    if not _watchdog_wake.is_set():
+        _watchdog_wake.set()
+
+
+def _watchdog_run():
+    while True:
+        _watchdog_wake.wait()
+        _watchdog_wake.clear()
+        try:
+            while True:
+                frontend = _environment.frontend if _environment else None
+                since = getattr(frontend, "_pending_since", None)
+                if since is None:
+                    break
+                delay = since + _BATCH_MAX_HOLD - time.monotonic()
+                if delay > 0:
+                    time.sleep(delay)
+                else:
+                    frontend.flush()
+        except Exception as e:
+            print_exception(e)
+
+
+def _flush_frontend():
+    if _environment is not None:
+        frontend = _environment.frontend
+        if getattr(frontend, "_pending", None):
+            frontend.flush()
+
+
+# after the effects: one message per event
+_observable.add_flush_hook(_flush_frontend, "effect")
+
+
+def flush_updates():
+    """Run pending reactions and send the component updates collected so
+    far to the browser now (they are sent when the running event handler
+    returns otherwise). Use it before raw JavaScript calls that rely on the
+    updated page and for progress inside a long handler."""
+    _observable.flush()
+    if _environment is not None:
+        _environment.frontend.flush()
+
+
+def _has_component_ids(slot):
+    return isinstance(slot, list) and any(
+        isinstance(c, dict) and isinstance(c.get("compId"), int) for c in slot
+    )
+
+
 class ComputeFrontend(BaseFrontend):
     def update_component(self, comp, data, method, blocking=True):
         try:
@@ -172,6 +477,18 @@ class ComputeFrontend(BaseFrontend):
                     "data": comp._dump(),
                     "storage": comp.storage._dump_metadata(),
                 }
+            elif "slots" in data:
+                # component ids of this process mean nothing to a browser
+                slots = {
+                    key: slot
+                    for key, slot in data["slots"].items()
+                    if not _has_component_ids(slot)
+                }
+                data = {k: v for k, v in data.items() if k != "slots"}
+                if slots:
+                    data["slots"] = slots
+                elif not data:
+                    return
 
             data["source"] = "backend"
 
@@ -320,29 +637,30 @@ class Environment:
         if app is None or app.context.file_id != file_id:
             return
 
-        if component_id is None:
-            app._load_app(data)
-            return
+        with _observable.batch(defer_listeners=False):
+            if component_id is None:
+                app._load_app(data)
+                return
 
-        comp = app[component_id]
+            comp = app[component_id]
 
-        if not data:
-            return
+            if not data:
+                return
 
-        changed = None
-        if method == "update_frontend":
-            if "data" in data:
-                comp._load(data["data"])
-            if "props" in data:
-                comp._props.update(data["props"])
-            if "storage" in data:
-                changed = comp.storage._load_metadata(data["storage"])
+            changed = None
+            if method == "update_frontend":
+                if "data" in data:
+                    comp._load(data["data"])
+                if "props" in data:
+                    comp._props.update(data["props"])
+                if "storage" in data:
+                    changed = comp.storage._load_metadata(data["storage"])
 
-        if method in comp._js_callbacks:
-            comp._js_callbacks[method](data)
+            if method in comp._js_callbacks:
+                comp._js_callbacks[method](data)
 
-        if changed:
-            comp.storage._notify(changed)
+            if changed:
+                comp.storage._notify(changed)
 
     def load_file_local(self, options: dict | None = None):
         """(name, bytes) of a file chosen in the browser, None if cancelled"""

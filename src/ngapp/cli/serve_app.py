@@ -2,8 +2,10 @@
 
 import asyncio
 import importlib
+import importlib.util
 import platform
 import sys
+from pathlib import Path
 
 from .. import __version__, api
 from ..utils import EnvironmentType, set_environment
@@ -94,13 +96,19 @@ async def main():
             f"/app_admin/dev_runner_token/{args.app_id}", {"name": platform.node()}
         )
         print(f"Starting local runner '{runner['name']}' for compute jobs of this app")
+        # jobs run the local code (as the served app), not the deployed layer
+        sources = []
+        for name in (args.python_package.split(".")[0], "ngapp"):
+            root = str(Path(importlib.util.find_spec(name).origin).parent.parent)
+            if root not in sources:
+                sources += ["--source", root]
         tasks.append(
             run_process(
                 [
                     sys.executable, "-m", "ngapp.runner",
                     "--host", args.backend_url, "--token", runner["token"],
                     "--name", runner["name"], "--sandbox", "none",
-                    "--no-self-update", "--poll", "5",
+                    "--no-self-update", "--poll", "5", *sources,
                 ]
             )
         )

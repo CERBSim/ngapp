@@ -18,9 +18,11 @@ from ..utils import (
 )
 from ..jobs import JobHandle
 from ..state import data_layer_enabled
+from ..observable import Observable
 from .basecomponent import (
     Component,
     Event,
+    _prefix_class,
     get_component,
 )  # needed from frontend:
 from .job_components import JobFollower
@@ -74,8 +76,7 @@ class Col(Component):
         weights: list[int] | list[str] | None = None,
         **kwargs,
     ):
-        ui_class = kwargs.pop("ui_class", "")
-        ui_class = f"column {ui_class}"
+        ui_class = _prefix_class("column", kwargs.pop("ui_class", ""))
         if weights:
             if len(weights) != len(children):
                 raise ValueError(
@@ -117,8 +118,7 @@ class Row(Component):
         weights: list[int] | list[str] | None = None,
         **kwargs,
     ):
-        ui_class = kwargs.pop("ui_class", "")
-        ui_class = f"row {ui_class}"
+        ui_class = _prefix_class("row", kwargs.pop("ui_class", ""))
         if weights:
             if len(weights) != len(children):
                 raise ValueError(
@@ -151,37 +151,52 @@ class Br(Component):
 
 
 class Label(Component):
-    def __init__(self, text="", **kwargs):
+    """A text. An observable (or computed value) as text is followed: the
+    browser updates the text in place"""
+
+    def __init__(self, text: str | Observable = "", **kwargs):
         super().__init__("span", **kwargs)
         self.ui_children = [text]
-        self._props["text"] = text
+        if not isinstance(text, Observable):
+            self._props["text"] = text
         self.on_load(self._on_load)
 
     def _on_load(self):
-        self.ui_children = [self.text]
+        if "text" in self._props:
+            self.ui_children = [self._props["text"]]
 
     @property
     def text(self):
-        return self._props["text"]
+        if "text" in self._props:
+            return self._props["text"]
+        # bound
+        return self.ui_children[0].text
 
     @text.setter
     def text(self, value):
         self.ui_children = [value]
-        self._set_prop("text", value)
+        if isinstance(value, Observable):
+            if self._props.pop("text", None) is not None:
+                self._update_frontend({"props": {"text": None}})
+        else:
+            self._set_prop("text", value)
 
 
 class Centered(Component):
     """Create a div with centered content"""
 
     def __init__(self, *children: Component | str, **kwargs):
-        ui_class = kwargs.pop("ui_class", "")
-        ui_class = f"column items-center transparent {ui_class}"
+        ui_class = _prefix_class(
+            "column items-center transparent", kwargs.pop("ui_class", "")
+        )
         super().__init__("div", *children, ui_class=ui_class, **kwargs)
 
 
 class Heading(Component):
     def __init__(self, text, level=2, **kwargs):
-        ui_class = "text-h" + str(level) + " " + kwargs.pop("ui_class", "")
+        ui_class = _prefix_class(
+            "text-h" + str(level), kwargs.pop("ui_class", "")
+        )
         super().__init__("div", text, ui_class=ui_class, **kwargs)
 
 

@@ -12,11 +12,14 @@ from .app import (
     create_app,
     register_application,
 )
+from .components.reactive import Dynamic, For, Fragment, Show
 from .jobs import JobHandle, Run, compute, progress
+from .observable import Observable, batch, computed, effect, untracked
 from .utils import (
     Job,
     LocalJob,
     compute_node,
+    flush_updates,
     get_current_job,
     is_cancelled,
     load_image,
@@ -31,6 +34,15 @@ from .utils import (
 __all__ = [
     "AccessLevel",
     "BaseModel",
+    "Dynamic",
+    "For",
+    "Fragment",
+    "Observable",
+    "Show",
+    "batch",
+    "computed",
+    "effect",
+    "untracked",
     "Job",
     "JobHandle",
     "Run",
@@ -43,6 +55,7 @@ __all__ = [
     "file",
     "keybindings",
     "create_app",
+    "flush_updates",
     "load_image",
     "read_file",
     "read_file_binary",

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import collections
 import copy as copy_module
+import functools
 import io
 import logging
 import math
@@ -26,7 +27,17 @@ from typing import Any, Callable
 import numpy as np
 import orjson
 
-from .observable import Observable
+from .observable import (
+    SYNC,
+    Observable,
+    Reaction,
+    Signal,
+    batch,
+    current_batch,
+    flush,
+    is_tracking,
+    untracked,
+)
 from .store.encoding import (
     INLINE_LIMIT,
     EncodedValue,
@@ -225,8 +236,43 @@ class _StateData:
         self.values: dict[str, _Entry | _SeqEntry] = {}
         self.deleted: set[str] = set()
         self.callbacks: list[tuple[str, Callable, bool]] = []
-        self.observables: dict[str, Observable] = {}
-        self.syncing = False
+        self.observables: dict[str, StateRef] = {}
+        # dependency sources per key and per prefix (set of keys), created
+        # when a computed or a reaction reads
+        self.signals: dict[str, Signal] = {}
+        self.key_signals: dict[str, Signal] = {}
+
+    def track(self, full: str):
+        signal = self.signals.get(full)
+        if signal is None:
+            signal = self.signals.setdefault(full, Signal())
+        signal.track()
+
+    def track_keys(self, prefix: str):
+        signal = self.key_signals.get(prefix)
+        if signal is None:
+            signal = self.key_signals.setdefault(prefix, Signal())
+        signal.track()
+
+    def bump(self, full: str, keys_changed: bool = False):
+        """The value of a key changed: invalidate what has read it"""
+        signal = self.signals.get(full)
+        if signal is not None:
+            signal.changed()
+        if keys_changed and self.key_signals:
+            signal = self.key_signals.get(full[: full.rfind("/") + 1])
+            if signal is not None:
+                signal.changed()
+
+
+def _recheck(entry: _Entry) -> bool:
+    """Re-encode a mutable value to detect in-place changes"""
+    if entry.mutable:
+        ev = encode_value(entry.obj, pickle=entry.pickle, lazy=entry.lazy)
+        if ev.key != entry.mut_key:
+            entry.update(ev)
+            return True
+    return False
 
 
 def _state_data(component) -> _StateData:
@@ -252,7 +298,13 @@ class State(MutableMapping):
     values and a copy or pickle of it is a dict. Keys that do not start with
     ``_`` and are not named like a method are also attributes. A value
     changed in place (``state["a"]["b"] = 1``) is stored by the next save or
-    commit, assigning the key again stores it with the next autosave."""
+    commit, assigning the key again or ``notify(key)`` stores it with the
+    next autosave.
+
+    Reads inside a ``computed`` or a reaction depend on the keys they read:
+    they are updated after a change of the key from any source (set, loaded
+    case, changes of other writers, job results). A value changed in place
+    is not noticed: assign the key again or call ``notify(key)``."""
 
     def __init__(self, component, prefix: str = ""):
         object.__setattr__(self, "_component", component)
@@ -344,9 +396,14 @@ class State(MutableMapping):
         return f"State({self._component._id!r}, {self.keys()})"
 
     def _entry(self, full: str):
-        return self._data.values.get(full)
+        data = self._data
+        if is_tracking():
+            data.track(full)
+        return data.values.get(full)
 
     def keys(self) -> list[str]:
+        if is_tracking():
+            self._data.track_keys(self._prefix)
         n = len(self._prefix)
         return [
             k[n:]
@@ -390,7 +447,7 @@ class State(MutableMapping):
         data.values[full] = _Entry(
             ev.stored, ev.key, value, ev.blobs, ev.large, pickle, lazy
         )
-        self._changed(full, value)
+        self._changed(full, old is None)
 
     def delete(self, key: str) -> None:
         full = self._full(key)
@@ -399,7 +456,7 @@ class State(MutableMapping):
             raise KeyError(key)
         del data.values[full]
         data.deleted.add(full)
-        self._changed(full, None)
+        self._changed(full, True)
 
     def list(self, key: str) -> "StateList":
         entry = self._entry(self._full(key))
@@ -409,26 +466,46 @@ class State(MutableMapping):
             raise TypeError(f"state key {key!r} holds a value, not a list")
         return StateList(self, key)
 
-    def observe(self, key: str) -> Observable:
-        """Observable bound to a key: assigning its value sets the key, and
-        local and remote changes of the key update it"""
+    def ref(self, key: str, default=None, converter=None) -> "StateRef":
+        """Observable view of a key (the same object per key): its value is
+        the value of the key (default while the key is not set), assigning
+        it sets the key to converter(value), and its on_change listeners
+        are called after a change of the key from any source. As value of
+        a two-way prop (``ui_model_value=state.ref("x", 1.0)``) it binds an
+        input to the key."""
         full = self._full(key)
         data = self._data
-        obs = data.observables.get(full)
-        if obs is None:
-            try:
-                value = self.get(key)
-            except ValueReadError:
-                value = None
-            obs = Observable(value, key)
+        ref = data.observables.get(full)
+        if ref is None:
+            ref = data.observables.setdefault(
+                full, StateRef(self, key, default, converter)
+            )
+        else:
+            if default is not None and ref._default is None:
+                ref._default = default
+            if converter is not None and ref._converter is None:
+                ref._converter = converter
+        return ref
 
-            def to_state(new, _old):
-                if not data.syncing:
-                    self.set(key, new)
+    def observe(self, key: str) -> "StateRef":
+        """ref(key) without default and converter"""
+        return self.ref(key)
 
-            obs.on_change(to_state)
-            data.observables[full] = obs
-        return obs
+    def notify(self, key: str) -> None:
+        """Report that the value of a key was changed in place: what
+        depends on the key is updated and the value is stored by the next
+        autosave"""
+        full = self._full(key)
+        data = self._data
+        entry = data.values.get(full)
+        if entry is None:
+            raise KeyError(key)
+        if isinstance(entry, _Entry):
+            _recheck(entry)
+        ref = data.observables.get(full)
+        if ref is not None:
+            ref._force = True
+        self._changed(full, False)
 
     def on_change(
         self, callback: Callable[[set[str]], None]
@@ -527,18 +604,80 @@ class State(MutableMapping):
 
         return read
 
-    def _changed(self, full: str, value):
-        data = self._data
-        obs = data.observables.get(full)
-        if obs is not None and not data.syncing:
-            data.syncing = True
-            try:
-                obs.value = value
-            finally:
-                data.syncing = False
+    def _changed(self, full: str, keys_changed: bool):
+        self._data.bump(full, keys_changed)
         session = session_of(self._component)
         if session is not None:
             session.schedule_autosave()
+
+
+class StateRef(Observable):
+    """Observable view of one state key, see State.ref"""
+
+    def __init__(self, state: State, key: str, default=None, converter=None):
+        super().__init__(default, key)
+        self._converter = converter
+        self._state = state
+        self._key = key
+        self._default = default
+        self._reaction = None
+        self._seen = _MISSING
+        self._last = None
+        self._force = False
+
+    @property
+    def value(self):
+        try:
+            return self._state.get(self._key, self._default)
+        except ValueReadError:
+            return self._default
+
+    @value.setter
+    def value(self, new):
+        if self._converter is not None:
+            try:
+                new = self._converter(new)
+            except (ValueError, TypeError):
+                return
+        self._state.set(self._key, new)
+
+    def on_change(self, cb):
+        dispose = super().on_change(cb)
+        if self._reaction is None:
+            # the listeners are called by a reaction to the key: after the
+            # change was applied, outside the lock of the session
+            self._reaction = Reaction(
+                self._check, SYNC, f"state.ref({self._key!r})"
+            )
+        return dispose
+
+    def _check(self):
+        state = self._state
+        entry = state._entry(state._full(self._key))
+        if entry is None:
+            seen = None
+        elif isinstance(entry, _SeqEntry):
+            seen = (id(entry), len(entry.items) + len(entry.pending))
+        else:
+            seen = entry.key
+        first = self._seen is _MISSING
+        if seen == self._seen and not self._force:
+            return
+        self._seen = seen
+        self._force = False
+        with untracked():
+            new = self.value
+            old, self._last = self._last, new
+            if first:
+                return
+            for cb in list(self._listeners):
+                try:
+                    cb(new, old)
+                except Exception as e:
+                    print_exception(e)
+
+    def __repr__(self):
+        return f"StateRef({self._state._component._id!r}, {self._key!r})"
 
 
 class StateList(Sequence):
@@ -603,7 +742,9 @@ class StateList(Sequence):
         state._check_identity()
         ev = encode_value(value, pickle=pickle)
         data = state._data
-        entry = self._entry()
+        entry = data.values.get(self._fullkey)
+        entry = entry if isinstance(entry, _SeqEntry) else None
+        created = False
         if entry is None:
             old = data.values.get(self._fullkey)
             if isinstance(old, _Entry):
@@ -615,7 +756,9 @@ class StateList(Sequence):
                 entry = _SeqEntry(fresh=True)
                 entry.pending = self._list_items()
                 data.values[self._fullkey] = entry
+                created = False
             else:
+                created = True
                 entry = data.values[self._fullkey] = _SeqEntry(
                     fresh=self._fullkey in data.deleted
                 )
@@ -624,9 +767,7 @@ class StateList(Sequence):
         entry.pending.append(
             _Entry(ev.stored, ev.key, value, ev.blobs, ev.large, pickle)
         )
-        session = session_of(state._component)
-        if session is not None:
-            session.schedule_autosave()
+        state._changed(self._fullkey, created)
 
     def __repr__(self):
         return f"StateList({self._key!r}, len={len(self)})"
@@ -635,8 +776,9 @@ class StateList(Sequence):
 def snapshot_defaults(component):
     """Remember the constructor's props and text slots of a component"""
     props = {}
+    derived = getattr(component, "_derived_props", ())
     for key, value in dict(component._dump() or {}).items():
-        if callable(value):
+        if callable(value) or key in derived:
             continue
         try:
             props[key] = encode_value(value)
@@ -744,7 +886,8 @@ class ThreadingScheduler:
 
         def run():
             if not handle.cancelled:
-                fn()
+                with batch(defer_listeners=False):
+                    fn()
 
         handle.timer = threading.Timer(max(delay, 0.0), run)
         handle.timer.daemon = True
@@ -772,8 +915,12 @@ class JsScheduler:
         import js
         from pyodide.ffi import create_once_callable
 
+        def run():
+            with batch(defer_listeners=False):
+                fn()
+
         return _JsHandle(
-            js.setTimeout(create_once_callable(fn), int(delay * 1000))
+            js.setTimeout(create_once_callable(run), int(delay * 1000))
         )
 
 
@@ -782,6 +929,58 @@ def default_scheduler():
 
 
 # -- case session --
+
+
+def _scoped(method):
+    """Entry point of a session that applies changes under its lock: what
+    depends on the changed state runs when the lock is released"""
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        with batch(defer_listeners=False):
+            try:
+                return method(self, *args, **kwargs)
+            finally:
+                self._react()
+
+    return wrapper
+
+
+class _Muted:
+    __slots__ = ("threads", "ident")
+
+    def __init__(self, threads: set):
+        self.threads = threads
+        self.ident = None
+
+    def __enter__(self):
+        ident = threading.get_ident()
+        if ident not in self.threads:
+            self.threads.add(ident)
+            self.ident = ident
+
+    def __exit__(self, *exc):
+        if self.ident is not None:
+            self.threads.discard(self.ident)
+        return False
+
+
+def bind_new_components(app) -> bool:
+    """Apply the stored case data to components that appeared in the tree
+    of an app since its case session looked last; returns whether there
+    were any"""
+    session = getattr(app, "case_session", None)
+    if session is None or session.closed:
+        return False
+    with session._lock:
+        return session._bind_new()
+
+
+def _has_bound_text(items) -> bool:
+    return isinstance(items, (list, tuple)) and any(
+        isinstance(i, Observable) or getattr(i, "_is_text", False)
+        for i in items
+    )
 
 
 @dataclass
@@ -907,6 +1106,12 @@ class CaseSession:
         # imported operations of components that do not exist yet
         self._detached: list[Op] = []
         self.job_events = None
+        # components bound to the case so far (counter)
+        self._bound = 0
+        # threads running reactions to applied changes: what they change
+        # is no edit of the user
+        self._reacting: set[int] = set()
+        self._skipped = False
 
     # -- opening --
 
@@ -930,6 +1135,7 @@ class CaseSession:
         session.commit()
         return session
 
+    @_scoped
     def _attach(self):
         app = self.app
         if getattr(app, "case_session", None) is not None:
@@ -941,6 +1147,7 @@ class CaseSession:
             except BaseException:
                 self.close()
                 raise
+        self._settle()
         if self.case_id is None:
             # values set by load handlers of a new case are no edits
             self._applying = True
@@ -948,10 +1155,12 @@ class CaseSession:
                 app._emit_recursive("load")
             finally:
                 self._applying = False
-            self._initial = self._op_keys(self._collect()[0])
+            self._settle()
+            self._initial = self._op_keys(self._collect_locked()[0])
             return
         app._emit_recursive("load")
-        self._initial = self._op_keys(self._collect()[0])
+        self._settle(applying=False)
+        self._initial = self._op_keys(self._collect_locked()[0])
         self._opening = True
         try:
             self.schedule_autosave()
@@ -992,6 +1201,59 @@ class CaseSession:
             app.file_data.id = self.case_id
         finally:
             self._applying = False
+
+    def _owned(self) -> bool:
+        return self._lock._is_owned()
+
+    def _react(self):
+        """Run what depends on the state changed by the session (computed
+        values, structures, bound props), unless the lock is still held; the
+        updates are no edits of the user"""
+        scope = current_batch()
+        if (
+            scope is None
+            or not scope.root.has_pending(SYNC)
+            or self._owned()
+        ):
+            return
+        self._skipped = False
+        with self._muted():
+            flush()
+        if self._skipped and not self.closed:
+            self._schedule_echo()
+
+    def _muted(self):
+        """Changes made by this thread inside the block are no edits"""
+        return _Muted(self._reacting)
+
+    def _schedule_echo(self):
+        """Reactions to applied changes changed stored values: committed
+        by the next autosave, counted like edits of change callbacks"""
+        in_callbacks, self._in_callbacks = self._in_callbacks, True
+        try:
+            self._schedule(edit=False)
+        finally:
+            self._in_callbacks = in_callbacks
+
+    def _settle(self, applying=True):
+        """Let the structure of the app follow the loaded state: run the
+        pending reactions and bind the components they created, until no
+        new one appears"""
+        with self._muted() if applying else batch(defer_listeners=False):
+            for _ in range(100):
+                flush()
+                with self._lock:
+                    if not self._bind_new():
+                        break
+
+    def _bind_new(self) -> bool:
+        bound = self._bound
+        self._walk()
+        return self._bound != bound
+
+    def _collect_locked(self):
+        with self._lock:
+            return self._collect()
 
     def _job_events(self):
         """Status and progress of the case's jobs for their handles"""
@@ -1244,6 +1506,7 @@ class CaseSession:
                         if "_prop_defaults" not in comp.__dict__:
                             snapshot_defaults(comp)
                         self._bind(path, comp)
+                        self._bound += 1
                     finally:
                         self._applying = applying
             if self._detached:
@@ -1255,28 +1518,42 @@ class CaseSession:
         """Apply the stored values of the base to a component"""
         props, slots = {}, {}
         data = None
+        derived = getattr(comp, "_derived_props", ())
         for p in sorted(self._index.get(path, ())):
             section, key, value = p[-2], unescape_key(p[-1]), self.base[p]
             if section in ("ui", "input"):
-                props[key] = self._decode(value)
+                if key not in derived:
+                    props[key] = self._decode(value)
             elif section == "slots":
-                slots[key] = self._decode(value)
+                if not _has_bound_text(comp.ui_slots.get(key)):
+                    slots[key] = self._decode(value)
             elif section == "state":
                 data = data or _state_data(comp)
+                new = key not in data.values
                 data.values[key] = (
                     _SeqEntry.from_seq(value)
                     if isinstance(value, Seq)
                     else _Entry.from_stored(value, self.base_keys[p])
                 )
+                data.bump(key, new)
         if props:
             full = dict(comp._dump() or {})
             full.update(props)
             comp._load(full)
+            for key, value in props.items():
+                self._sync_binding(comp, key, value)
         for name, items in slots.items():
             comp._set_slot(name, list(items))
         if props or slots:
             comp._update_frontend()
         self._components[path] = weakref.ref(comp)
+
+    @staticmethod
+    def _sync_binding(comp, key, value):
+        """A prop was loaded: the observable bound to it follows"""
+        binding = comp._observable_bindings.get(key)
+        if binding is not None and not getattr(binding[0], "read_only", False):
+            binding[0].value = value
 
     def delete_component(self, comp):
         """Remove the stored data of a component (and its children)"""
@@ -1305,7 +1582,7 @@ class CaseSession:
         """Encoded current local value of a path, None if not stored"""
         if section in ("ui", "input"):
             dump = comp._dump() or {}
-            if key not in dump:
+            if key not in dump or key in getattr(comp, "_derived_props", ()):
                 return None
             ev = self._encode_prop(comp, key, dump[key])
             if ev is None:
@@ -1329,7 +1606,8 @@ class CaseSession:
         if section == "state":
             entry = _state_data(comp).values.get(key)
             if isinstance(entry, _Entry):
-                self._recheck(entry)
+                if _recheck(entry):
+                    _state_data(comp).bump(key)
                 return EncodedValue(
                     entry.stored, entry.key, entry.blobs, entry.large
                 )
@@ -1337,17 +1615,13 @@ class CaseSession:
                 return EncodedValue(None, "seq", {}, False)
         return None
 
-    @staticmethod
-    def _recheck(entry: _Entry):
-        """Re-encode a mutable value to detect in-place changes"""
-        if entry.mutable:
-            ev = encode_value(entry.obj, pickle=entry.pickle, lazy=entry.lazy)
-            if ev.key != entry.mut_key:
-                entry.update(ev)
+    _recheck = staticmethod(_recheck)
 
     def _set_local(self, comp, section, key, value, blobs=None, changes=None):
         """Set the local value of a path (stored form or ABSENT)"""
         if section in ("ui", "input"):
+            if key in getattr(comp, "_derived_props", ()):
+                return
             if value is ABSENT:
                 default = comp.__dict__.get("_prop_defaults", {}).get(key)
                 new = (
@@ -1363,11 +1637,12 @@ class CaseSession:
             else:
                 full[key] = new
             comp._load(full)
-            binding = comp._observable_bindings.get(key)
-            if binding is not None and new is not ABSENT:
-                binding[0].value = new
+            if new is not ABSENT:
+                self._sync_binding(comp, key, new)
             comp._update_frontend()
         elif section == "slots":
+            if _has_bound_text(comp.ui_slots.get(key)):
+                return
             if value is ABSENT:
                 default = comp.__dict__.get("_slot_defaults", {}).get(key)
                 if default is None:
@@ -1376,23 +1651,14 @@ class CaseSession:
             comp._set_slot(key, list(self._decode(value, blobs)))
         elif section == "state":
             data = _state_data(comp)
+            old = data.values.get(key)
             if value is ABSENT:
                 data.values.pop(key, None)
             elif isinstance(value, Seq):
                 data.values[key] = _SeqEntry.from_seq(value)
             else:
                 data.values[key] = _Entry.from_stored(value, blobs=blobs)
-            obs = data.observables.get(key)
-            if obs is not None:
-                data.syncing = True
-                try:
-                    obs.value = (
-                        State(comp).get(key) if key in data.values else None
-                    )
-                except ValueReadError:
-                    obs.value = None
-                finally:
-                    data.syncing = False
+            data.bump(key, (old is None) != (value is ABSENT))
             if changes is not None:
                 changes.add(comp, key)
 
@@ -1443,7 +1709,10 @@ class CaseSession:
         if dump:
             defaults = comp.__dict__.get("_prop_defaults", {})
             two_way = comp._two_way_props
+            derived = getattr(comp, "_derived_props", ())
             for key, value in dict(dump).items():
+                if key in derived:
+                    continue
                 ev = self._encode_prop(comp, key, value)
                 if ev is None:
                     continue
@@ -1468,7 +1737,8 @@ class CaseSession:
         for key, entry in list(data.values.items()):
             p = path + ("state", escape_key(key))
             if isinstance(entry, _Entry):
-                self._recheck(entry)
+                if _recheck(entry):
+                    data.bump(key)
                 current[p] = EncodedValue(
                     entry.stored, entry.key, entry.blobs, entry.large
                 )
@@ -1539,6 +1809,7 @@ class CaseSession:
                 if attempt == self.retries:
                     raise
 
+    @_scoped
     def commit(
         self,
         kind: str = "autosave",
@@ -1726,6 +1997,7 @@ class CaseSession:
 
     # -- applying changes of other writers --
 
+    @_scoped
     def pull(self, to_revision: int | None = None) -> bool:
         """Apply the changes up to to_revision (default: head)"""
         with self._lock:
@@ -1861,14 +2133,17 @@ class CaseSession:
             if entry.key == stored_key(before):
                 # a plain list became a sequence
                 data.values[key] = _SeqEntry.from_seq(self.base[path])
+                data.bump(key)
                 changes.add(comp, key, len(seq))
             return
-        if entry is None:
+        created = entry is None
+        if created:
             if before is not ABSENT:
                 return  # deleted locally, the delete is still pending
             entry = data.values[key] = _SeqEntry()
         if isinstance(entry, _SeqEntry) and not entry.fresh:
             entry.items.append(_Entry.from_stored(op.value))
+            data.bump(key, created)
             changes.add(comp, key, len(entry.items) - 1)
             # local appends not committed yet move back by one
             for i in range(len(entry.pending)):
@@ -1908,6 +2183,7 @@ class CaseSession:
         finally:
             self._in_callbacks = False
 
+    @_scoped
     def restore(self, edits: list[ReplacedEdit] | None = None):
         """Re-apply replaced local edits; they are committed by the next save"""
         with self._lock:
@@ -1933,7 +2209,7 @@ class CaseSession:
                         edit.blobs,
                         changes,
                     )
-            self._notify(changes)
+        self._notify(changes)
         self.schedule_autosave()
 
     def keep_held(self):
@@ -1947,6 +2223,7 @@ class CaseSession:
         if self._dirty:
             self._schedule(edit=False)
 
+    @_scoped
     def discard(self):
         """Drop the local edits not committed yet: the values of the base
         are shown again"""
@@ -1997,6 +2274,7 @@ class CaseSession:
 
     # -- durable pending edits --
 
+    @_scoped
     def export_pending(self) -> dict | None:
         """The local edits not committed yet as JSON, to be stored by the
         client (e.g. in IndexedDB) and re-applied with import_pending after a
@@ -2027,6 +2305,7 @@ class CaseSession:
             "skipped": skipped,
         }
 
+    @_scoped
     def import_pending(self, data) -> bool:
         """Re-apply edits of export_pending (data or its JSON) on a freshly
         opened session of the same case: they become local edits on the
@@ -2055,7 +2334,7 @@ class CaseSession:
             )
             changes = _Changes()
             self._apply_local(ops, changes=changes)
-            self._notify(changes)
+        self._notify(changes)
         if rebased:
             self.pull()
         self.schedule_autosave()
@@ -2121,6 +2400,7 @@ class CaseSession:
             entry = data.values[key] = _SeqEntry(fresh=stored)
             entry.pending = items
         entry.pending.append(_Entry.from_stored(value))
+        data.bump(key, True)
 
     # -- events --
 
@@ -2130,6 +2410,7 @@ class CaseSession:
             self._inbox_scheduled = True
             self.scheduler.call_later(0, self._process_inbox)
 
+    @_scoped
     def _process_inbox(self):
         self._inbox_scheduled = False
         events, self._inbox = self._inbox, []
@@ -2194,6 +2475,9 @@ class CaseSession:
     def _schedule(self, edit: bool):
         if self._applying or self.closed:
             return
+        if self._reacting and threading.get_ident() in self._reacting:
+            self._skipped = True
+            return
         if edit:
             self._dirty = True
             self._edits += 1
@@ -2221,6 +2505,7 @@ class CaseSession:
             due - self.scheduler.now(), self._autosave_fire
         )
 
+    @_scoped
     def _autosave_fire(self):
         self._timer = None
         if self.closed or self.blocked:
@@ -2279,6 +2564,7 @@ class CaseSession:
             self._error_delay = self.min_interval
             self._arm(self.scheduler.now())
 
+    @_scoped
     def _check_access(self):
         """After a change of the shares: a read-only share upgraded to write
         takes effect at once, a downgrade makes the session read only"""
@@ -2328,6 +2614,7 @@ class CaseSession:
 
     # -- jobs --
 
+    @_scoped
     def submit(self, request: JobRequest) -> JobInfo:
         """Commit pending edits, then submit the job on the new revision; if
         the commit fails, no job is submitted"""

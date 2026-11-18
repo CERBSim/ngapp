@@ -8,6 +8,8 @@ detail.
 
 The API is organised into the following parts:
 
+* :doc:`../reactivity` – computed values, bindings, ``Show``, ``For``,
+  ``Dynamic`` and effects, with their API reference.
 * :doc:`../observable` – reactive state management with
   :class:`~ngapp.observable.Observable`, two-way widget binding, and
   serialisation helpers.

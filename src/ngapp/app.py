@@ -821,10 +821,11 @@ def create_app(
     case of the backend (FULL mode), None as id creates one at the first
     save; data["pending"] (optional) holds exports of pending edits to
     re-apply"""
+    from .observable import batch
     from .store.http import held_events
 
     # events of the backend wait until the app is complete
-    with held_events():
+    with held_events(), batch(defer_listeners=False):
         return _create_app(
             app_config,
             data,

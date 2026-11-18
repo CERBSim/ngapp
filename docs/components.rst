@@ -2,6 +2,21 @@
 Components
 ==========
 
+.. important::
+
+   **Authoring rule.** Build components once. Show changing values by
+   binding observables or :func:`~ngapp.observable.computed` values. Change
+   structure only with :class:`~ngapp.components.reactive.Show`,
+   :class:`~ngapp.components.reactive.For` or
+   :class:`~ngapp.components.reactive.Dynamic`. Put imperative updates
+   (figures, viewers) in
+   :meth:`~ngapp.components.basecomponent.Component.effect`. Expensive
+   content is built in ``on_mounted`` or ``effect``, never in a constructor.
+
+   Constructors run in compute jobs too and must be cheap; values in the
+   case state are reassigned, or announced with ``state.notify(key)`` after
+   an in-place change. See :doc:`reactivity`.
+
 ngapp lets you build interactive web apps entirely in Python, using a rich set of UI components—no JavaScript or HTML required. Components are the building blocks of your app’s interface, from buttons and sliders to tables, dialogs, and custom visualizations.
 
 ngapp synchronizes state and events between Python and the browser, so you can focus on your logic and data.

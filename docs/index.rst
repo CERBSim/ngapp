@@ -55,6 +55,8 @@ Then explore:
 
 * :doc:`concepts_architecture` – core ideas: apps, components, state, compute
 * :doc:`components` – building interfaces from ngapp and Quasar components
+* :doc:`reactivity` – interfaces that update in place: computed values,
+  bindings, ``Show`` / ``For`` / ``Dynamic`` and effects
 * :doc:`observable` – reactive state with :class:`~ngapp.observable.Observable`
   and two-way widget binding
 * :doc:`styling` – composable styles, design tokens, and CSS class injection

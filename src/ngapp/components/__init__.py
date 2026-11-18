@@ -1,5 +1,6 @@
-from .basecomponent import Component
+from .basecomponent import Component, Text
 from .helper_components import *
+from .reactive import *
 from .job_components import *
 from .case_components import *
 from .case_list import *
@@ -14,4 +15,9 @@ from ngapp.observable import (
     collect_observables,
     snapshot,
     restore,
+    computed,
+    effect,
+    untracked,
+    batch,
 )
+from ngapp.utils import flush_updates

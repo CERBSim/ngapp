@@ -72,6 +72,11 @@ class NoSandbox(Sandbox):
 
     name = "none"
 
+    def __init__(self, sources: list[Path] = ()):
+        # imported before the app layer: the dev runner of serve_app runs the
+        # local code the app is served with, not the deployed layer
+        self.sources = [str(p) for p in sources]
+
     def command(self, image, work, layer, cpus, memory, job_env, gpus):
         return [sys.executable, "-m", "ngapp.cli.run_job", str(work / "job.json")]
 
@@ -83,7 +88,8 @@ class NoSandbox(Sandbox):
 
     def environment(self, layer, job_env=None):
         env = {**os.environ, **(job_env or {})}
-        env["PYTHONPATH"] = str(layer) + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
+        paths = [*self.sources, str(layer)] + ([env["PYTHONPATH"]] if env.get("PYTHONPATH") else [])
+        env["PYTHONPATH"] = os.pathsep.join(paths)
         return env
 
 

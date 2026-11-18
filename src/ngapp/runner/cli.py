@@ -61,7 +61,11 @@ def get_parser():
     parser.add_argument("--gpu-type", default="", help="gpu type name jobs can ask for, e.g. h100")
     parser.add_argument("--scratch", type=int, default=0, help="scratch space offered to jobs in GB")
     parser.add_argument("--sandbox", choices=["apptainer", "none"], default="apptainer")
-    parser.add_argument("--no-limits", action="store_true", help="do not apply cgroup cpu/memory limits (apptainer)")
+    parser.add_argument(
+        "--source", type=Path, action="append", default=[],
+        help="with --sandbox none: import from this directory before the app layer (local code of a served app)",
+    )
+    parser.add_argument("--no-limits",action="store_true", help="do not apply cgroup cpu/memory limits (apptainer)")
     parser.add_argument("--cache", type=Path, default=default_cache_dir(), help="cache directory for images and app packages")
     parser.add_argument("--cache-size", default="0", help="prune images and app layers above this size, e.g. 20GB (0 = never)")
     parser.add_argument(
@@ -132,7 +136,10 @@ def main(argv=None):
         install_service(args, argv)
         return
 
-    sandbox = NoSandbox() if args.sandbox == "none" else ApptainerSandbox(limits=not args.no_limits)
+    if args.source and args.sandbox != "none":
+        print("--source needs --sandbox none", file=sys.stderr)
+        sys.exit(2)
+    sandbox = NoSandbox(args.source) if args.sandbox == "none" else ApptainerSandbox(limits=not args.no_limits)
     cache = Cache(args.cache, job_cache_size=parse_memory(args.job_cache_size) * 1024 * 1024)
     work = args.work or args.cache / "work"
     work.mkdir(parents=True, exist_ok=True)

@@ -15,15 +15,11 @@ from .qcomponents import (
     QCardActions,
     QCardSection,
     QDialog,
-    QIcon,
     QInput,
-    QItem,
-    QItemLabel,
-    QItemSection,
-    QList,
     QMarkupTable,
     QOptionGroup,
     QSpace,
+    QTable,
     QTd,
     QTh,
     QTooltip,
@@ -164,7 +160,7 @@ class CaseList(Div):
 
     # -- dialog --
 
-    def _ask(self, title, body, on_ok, ok_label="OK", ok_color="primary"):
+    def _ask(self, title, body, on_ok, ok_label="OK", ok_color="primary", width=None):
         """Show a dialog; on_ok() returns False to keep it open"""
         cancel = QBtn(ui_label="Cancel", ui_flat=True, ui_no_caps=True)
         ok = QBtn(ui_label=ok_label, ui_flat=True, ui_no_caps=True, ui_color=ok_color)
@@ -182,7 +178,7 @@ class CaseList(Div):
             QCardSection(Label(title, ui_class="text-h6")),
             QCardSection(*body, ui_class="q-pt-none column", ui_style="gap: 8px;"),
             QCardActions(cancel, ok, ui_align="right"),
-            ui_style="min-width: 380px; max-width: 90vw;",
+            ui_style=f"min-width: 380px; max-width: 90vw; {f'width: {width};' if width else ''}",
         )]
         self._dialog.ui_model_value = True
 
@@ -278,116 +274,127 @@ class CaseList(Div):
             self._open(case_id)
 
     def _share(self, row):
+        """One table of the existing shares and the members of the own groups (and the groups)
+        to pick from (search, sort, multiple selection); somebody else by the exact name"""
         d = self.directory()
         shares = self._try("Loading the shares", d.shares, row["id"])
         shares = [] if shares is _FAILED else shares
-        def describe(s):
-            who = ("group " if s.get("group_id") else "") + (
-                s.get("name") or s.get("user_id") or "")
-            state = "" if s.get("active", True) else f", not working: {s.get('reason')}"
-            return f"{who} ({'write' if s['write'] else 'read'}{state})"
-
-        text = ", ".join(describe(s) for s in shares)
-        # the members of the own groups, filtered here; others by their exact name (Search)
         targets = self._try("Loading the members of your groups", d.share_targets, row["id"], "")
         targets = [] if targets is _FAILED or isinstance(targets, dict) else targets
-        user = QInput(ui_model_value="", ui_dense=True, ui_autofocus=True,
-                      ui_label="Filter, or the exact name or e-mail address of someone else")
+        rows = {}
+
+        def add(who):
+            kind = who.get("kind", "user")
+            current = self._current(shares, who)
+            state = ""
+            if current is not None:
+                state = "Can edit" if current["write"] else "Can view"
+                if not current.get("active", True):
+                    state += f" (not working: {current.get('reason')})"
+            if not who.get("access", True):
+                state = (state + ", " if state else "") + "no access to the app"
+            name = who["name"]
+            rows[f"{kind}:{who['id']}"] = {
+                "key": f"{kind}:{who['id']}", "kind": kind, "id": who["id"],
+                "access": who.get("access", True), "shared": current is not None,
+                "name": f"Group {name}" if kind == "group" else (
+                    name if name == who["id"] else f"{name} ({who['id']})"),
+                "groups": "" if kind == "group" else ", ".join(who.get("groups") or []),
+                "now": state}
+
+        for t in targets:
+            add(t)
+        for s in shares:
+            if s.get("group_id"):
+                who = {"kind": "group", "id": s["group_id"], "name": s.get("name", "")}
+            else:
+                who = {"kind": "user", "id": s["user_id"], "name": s.get("name") or s["user_id"]}
+            if f"{who['kind']}:{who['id']}" not in rows:
+                add(who)
+
+        columns = [
+            {"name": "name", "label": "Name", "field": "name", "align": "left",
+             "sortable": True},
+            {"name": "groups", "label": "Groups", "field": "groups", "align": "left",
+             "sortable": True},
+            {"name": "now", "label": "Access now", "field": "now", "align": "left",
+             "sortable": True},
+        ]
+        table = QTable(ui_rows=list(rows.values()), ui_columns=columns, ui_row_key="key",
+                       ui_selection="multiple", ui_selected=[], ui_flat=True, ui_dense=True,
+                       ui_bordered=True, ui_hide_bottom=True, ui_virtual_scroll=True,
+                       ui_pagination={"rowsPerPage": 0, "sortBy": "name"},
+                       ui_style="max-height: 50vh;",
+                       ui_no_data_label="Nobody of your groups; find somebody else below")
+        count = Label("0 selected", ui_class="text-caption text-grey-7")
+
+        def selected(ev):
+            picked = ev.value or []
+            table.ui_selected = picked
+            count.ui_children = [f"{len(picked)} of {len(rows)} selected"]
+
+        table.on_update_selected(selected)
+        search = QInput(ui_model_value="", ui_dense=True, ui_outlined=True, ui_clearable=True,
+                        ui_autofocus=True, ui_label="Search the members of your groups")
+        search.on_update_model_value(lambda ev: setattr(table, "ui_filter", ev.value or ""))
+        exact = QInput(ui_model_value="", ui_dense=True, ui_outlined=True,
+                       ui_label="Somebody else: exact name or e-mail address",
+                       ui_class="col")
         error = Label("", ui_class="text-negative text-caption")
-        listing = QList(ui_dense=True, ui_style="max-height: 50vh; overflow: auto;")
 
-        def filtered(ev=None):
-            query = ((ev.value if ev is not None else "") or "").strip().lower()
+        def find(_ev=None):
+            query = (exact.ui_model_value or "").strip()
             error.ui_children = []
-            shown = [t for t in targets
-                     if query in t["name"].lower() or query in str(t["id"]).lower()]
-            listing.ui_children = [self._target_item(row, t, shares) for t in shown] or [
-                QItem(QItemSection(Label("Nobody of your groups matches, search for the "
-                                         "exact name", ui_class="text-grey")))]
-
-        user.on_update_model_value(filtered)
-        filtered()
-        body = ([Label(f"Shared with {text}.")] if text else []) + [user, error, listing]
-
-        def found():
-            query = (user.ui_model_value or "").strip()
-            if not query:
-                return False
+            if len(query) < 4:
+                return
             users = self._try("Searching", d.share_targets, row["id"], query)
             if users is _FAILED:
-                return False
+                return
             if isinstance(users, dict) or not users:
-                error.ui_children = [users.get("error") if users else f'Nobody found for "{query}".']
+                text = users.get("error") if users else f'Nobody found for "{query}".'
+                error.ui_children = [text]
+                return
+            for u in users:
+                add(u)
+            table.ui_rows = list(rows.values())
+            keys = {r["key"] for r in table.ui_selected or []}
+            table.ui_selected = list(table.ui_selected or []) + [
+                rows[f"{u.get('kind', 'user')}:{u['id']}"] for u in users
+                if u.get("access", True) and f"{u.get('kind', 'user')}:{u['id']}" not in keys]
+            count.ui_children = [f"{len(table.ui_selected)} of {len(rows)} selected"]
+            exact.ui_model_value = ""
+
+        find_btn = QBtn(ui_label="Find", ui_flat=True, ui_no_caps=True, ui_color="primary")
+        find_btn.on_click(find)
+        access = QOptionGroup(ui_type="radio", ui_inline=True, ui_model_value="write",
+                              ui_options=[{"label": "Can edit", "value": "write"},
+                                          {"label": "Can view", "value": "read"},
+                                          {"label": "No access", "value": "none"}])
+
+        def ok():
+            picked = [rows[r["key"]] for r in table.ui_selected or [] if r["key"] in rows]
+            if not picked:
+                error.ui_children = ["Select somebody in the table."]
                 return False
-            self._pick(row, users, shares)
-            return False  # the dialog shows the next step
+            level = access.ui_model_value
+            skipped = [r["name"] for r in picked if not r["access"] and level != "none"]
+            for r in picked:
+                group = r["kind"] == "group"
+                if level == "none":
+                    if r["shared"]:
+                        self._try("Sharing", d.unshare_group if group else d.unshare,
+                                  row["id"], r["id"])
+                elif r["access"]:
+                    self._try("Sharing", d.share_group if group else d.share, row["id"], r["id"],
+                              level == "write")
+            if skipped:
+                self._notify(f"Not shared with {', '.join(skipped)}: no access to the app")
 
-        self._ask(f'Share "{_label(row)}"', body, found, ok_label="Search")
-
-    def _target_item(self, row, who, shares):
-        group = who.get("kind") == "group"
-        caption = "no access to the app" if not who["access"] else (
-            who["id"] if not group and who["name"] != who["id"] else "")
-        item = QItem(
-            QItemSection(QIcon(ui_name="mdi-account-group" if group else "mdi-account"),
-                         ui_avatar=True),
-            QItemSection(QItemLabel(f"Group {who['name']}" if group else who["name"]),
-                         *([QItemLabel(caption, ui_caption=True)] if caption else [])),
-            ui_clickable=who["access"], ui_disable=not who["access"])
-        if who["access"]:
-            item.on("click", lambda: self._access(row, who, self._current(shares, who)))
-        return item
+        body = [search, table, count, Row(exact, find_btn, ui_class="items-center no-wrap"),
+                error, Label("Access of the selected:", ui_class="text-weight-medium"), access]
+        self._ask(f'Share "{_label(row)}"', body, ok, ok_label="Apply", width="760px")
 
     @staticmethod
     def _current(shares, who):
         key = "group_id" if who.get("kind") == "group" else "user_id"
         return next((s for s in shares if s.get(key) == who["id"]), None)
-
-    def _pick(self, row, users, shares):
-        usable = [u for u in users if u["access"]]
-        if len(users) == 1 and usable:
-            self._access(row, usable[0], self._current(shares, usable[0]))
-            return
-
-        def label(u):
-            if u.get("kind") == "group":
-                return f"Group {u['name']}"
-            return u["name"] if u["access"] else f"{u['name']} (no access to the app)"
-
-        options = [{"label": label(u), "value": f"{u.get('kind', 'user')}:{u['id']}",
-                    "disable": not u["access"]} for u in users]
-        first = f"{usable[0].get('kind', 'user')}:{usable[0]['id']}" if usable else None
-        pick = QOptionGroup(ui_type="radio", ui_options=options, ui_model_value=first)
-
-        def ok():
-            who = next((u for u in usable
-                        if f"{u.get('kind', 'user')}:{u['id']}" == pick.ui_model_value), None)
-            if who is None:
-                return False
-            self._access(row, who, self._current(shares, who))
-            return False
-
-        self._ask(f'Share "{_label(row)}" with', [pick], ok, ok_label="Next")
-
-    def _access(self, row, who, current):
-        d = self.directory()
-        group = who.get("kind") == "group"
-        if group:
-            name = f"the members of {who['name']}"
-        else:
-            name = who["name"] if who["name"] == who["id"] else f"{who['name']} ({who['id']})"
-        options = [{"label": "Can edit", "value": "write"},
-                   {"label": "Can view", "value": "read"}]
-        if current is not None:
-            options.append({"label": "No access", "value": "none"})
-        access = QOptionGroup(ui_type="radio", ui_options=options, ui_model_value=(
-            "write" if current is None or current["write"] else "read"))
-
-        def ok():
-            if access.ui_model_value == "none":
-                self._try("Sharing", d.unshare_group if group else d.unshare, row["id"], who["id"])
-            else:
-                self._try("Sharing", d.share_group if group else d.share, row["id"], who["id"],
-                          access.ui_model_value == "write")
-
-        self._ask("Share", [Label(f'Access of {name} to "{_label(row)}"'), access], ok)

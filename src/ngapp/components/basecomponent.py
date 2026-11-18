@@ -2,11 +2,15 @@
 import copy
 import dataclasses
 import functools
+import gc
 import inspect
 import itertools
 import logging
+import os
 import pickle
 import sys
+import threading
+import time
 from collections.abc import Mapping
 from pathlib import Path
 from types import SimpleNamespace
@@ -27,6 +31,8 @@ from ..utils import (
     time_now,
 )
 
+from .. import observable as _observable
+from ..observable import Observable, Reaction, safe_equal
 from .. import utils
 from .. import state as state_module
 from ..store.types import CaseDeletedError, ForbiddenError
@@ -36,6 +42,21 @@ logger = logging.getLogger("ngapp.components")
 _component_counter = itertools.count(1)
 _components = {}
 _components_with_id = {}
+# what the browser has, by component index (survives a takeover of the index
+# by another component object): token of the mounted instance (None: mounted
+# by a protocol 0 frontend) and the components whose init data was sent
+_mount_tokens = {}
+_frontend_known = set()
+
+# events that are raised in Python only
+_PYTHON_EVENTS = frozenset(
+    ("mounted", "unmount", "save", "before_save", "load", "before_load")
+)
+# not sent to the browser; save and load are also events of Quasar
+# components (QPopupEdit, QImg, ...)
+_NOT_BROWSER_EVENTS = frozenset(
+    ("mounted", "unmount", "before_save", "before_load")
+)
 
 _local_storage_path = Path.home() / ".cache" / "webapp_local_storage"
 
@@ -52,13 +73,18 @@ def get_component(index: int):
     return _components.get(index, None)
 
 
-def unmount_component(index: int):
-    if index in _components:
-        _components[index]._handle("unmount")
+def unmount_component(index: int, token=None):
+    """The browser removed the instance with this mount token (None: sent
+    by a protocol 0 frontend)"""
+    comp = _components.get(index)
+    if comp is not None:
+        comp._unmount(token)
 
 
 def reset_components():
     _components.clear()
+    _mount_tokens.clear()
+    _frontend_known.clear()
 
 
 @dataclasses.dataclass
@@ -126,6 +152,74 @@ class AppContext:
 
 
 C = TypeVar("T", bound="Component")
+
+_NO_KEYS = frozenset()
+_SCALARS = (str, int, float, bool, type(None))
+
+
+class _Mapped:
+    """An observable with a function applied to its value, as prop value"""
+
+    __slots__ = ("obs", "fn")
+
+    def __init__(self, obs, fn):
+        if isinstance(obs, _Mapped):
+            inner, obs = obs.fn, obs.obs
+            self.fn = lambda value: fn(inner(value))
+        else:
+            self.fn = fn
+        self.obs = obs
+
+
+def _display(obs):
+    """display_value without registering a dependency"""
+    if _observable.is_tracking():
+        with _observable.untracked():
+            return obs.display_value
+    return obs.display_value
+
+
+def _style_str(value):
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        return ";".join(f"{k}:{v}" for k, v in value.items())
+    return "" if value is None else str(value)
+
+
+def _class_str(value):
+    if isinstance(value, str):
+        return value
+    if isinstance(value, (list, tuple)):
+        return " ".join(str(v) for v in value)
+    return "" if value is None else str(value)
+
+
+def _prefix_class(prefix: str, ui_class):
+    """ui_class (text, list or observable) with the classes of prefix"""
+    if isinstance(ui_class, (Observable, _Mapped)):
+        return _Mapped(ui_class, lambda value: f"{prefix} {_class_str(value)}")
+    return f"{prefix} {_class_str(ui_class)}"
+
+
+def _to_text(value):
+    return "" if value is None else str(value)
+
+
+def _browser_shows(raw, value):
+    """The input of the browser (raw) already shows value"""
+    if safe_equal(raw, value):
+        return True
+    if (
+        isinstance(raw, str)
+        and isinstance(value, (int, float))
+        and not isinstance(value, bool)
+    ):
+        try:
+            return float(raw) == value
+        except ValueError:
+            return False
+    return False
 
 
 class _StorageMetadataEntry(pydantic.BaseModel):
@@ -514,6 +608,148 @@ class Storage:
             self._notify(changed)
 
 
+class _InitTiming(threading.local):
+    # time spent in the constructors of components created by the running one
+    nested = 0.0
+
+
+_init_timing = _InitTiming()
+# [time spent in garbage collections, start of the running one]
+_gc_time = [0.0, 0.0]
+
+
+def _gc_callback(phase, info):
+    if phase == "start":
+        _gc_time[1] = time.perf_counter()
+    else:
+        _gc_time[0] += time.perf_counter() - _gc_time[1]
+
+
+gc.callbacks.append(_gc_callback)
+_slow_init = 0.1
+_slow_app_init = 1.0
+_slow_init_reported = set()
+_SLOW_INIT_HINT = (
+    "Constructors also run in compute jobs: build expensive content in "
+    "on_mounted or in an effect."
+)
+
+
+def _read_slow_init_limits():
+    """Limits of the slow constructor warning in seconds (0: off), from
+    NGAPP_SLOW_INIT (own time of a component) and NGAPP_SLOW_APP_INIT
+    (total time of the app)"""
+    global _slow_init, _slow_app_init
+
+    def read(name, default):
+        try:
+            return float(os.environ.get(name, default))
+        except ValueError:
+            return default
+
+    _slow_init = read("NGAPP_SLOW_INIT", 0.1)
+    _slow_app_init = read("NGAPP_SLOW_APP_INIT", 1.0)
+
+
+_read_slow_init_limits()
+_package_dir = str(Path(__file__).resolve().parent.parent) + os.sep
+
+
+def _creation_site():
+    """file:line of the code outside ngapp that creates a component"""
+    frame = first = sys._getframe(3)
+    while frame is not None and frame.f_code.co_filename.startswith(
+        _package_dir
+    ):
+        frame = frame.f_back
+    frame = frame or first
+    return f"{frame.f_code.co_filename}:{frame.f_lineno}"
+
+
+def _caller_site():
+    """file:line of the innermost caller outside ngapp"""
+    frame = sys._getframe(1)
+    while frame is not None and frame.f_code.co_filename.startswith(
+        _package_dir
+    ):
+        frame = frame.f_back
+    if frame is None:
+        return "<unknown>"
+    return f"{frame.f_code.co_filename}:{frame.f_lineno}"
+
+
+def _code_site(func):
+    """file:line of a handler, looks through the wrappers of on()"""
+    code = getattr(func, "__code__", None)
+    if code is None:
+        return "<unknown>"
+    if code.co_filename.startswith(_package_dir):
+        for cell in getattr(func, "__closure__", None) or ():
+            try:
+                inner = cell.cell_contents
+            except ValueError:
+                continue
+            if callable(inner) and hasattr(inner, "__code__"):
+                return _code_site(inner)
+    return f"{code.co_filename}:{code.co_firstlineno}"
+
+
+# number of components created so far, for the handler warning
+_created = 0
+_dev_reported = set()
+_REBUILD_COUNT = 4
+_REBUILD_WINDOW = 2.0
+_HANDLER_MAX_CREATED = 100
+# called with (component, slot key, old, new) by every slot assignment while
+# test_utils.assert_stable is active
+_slot_recorder = None
+
+
+def _dev_warning(ident, msg, *args):
+    """Hint for app authors, once per ident; off with NGAPP_DEV_WARNINGS=0
+    and in compute jobs"""
+    if ident in _dev_reported:
+        return
+    if os.environ.get("NGAPP_DEV_WARNINGS", "1") == "0":
+        return
+    env = get_environment()
+    if env is not None and env.type == utils.EnvironmentType.COMPUTE:
+        return
+    _dev_reported.add(ident)
+    logger.warning(msg, *args)
+
+
+def _report_slow_init(comp, own, total, created):
+    app_module = sys.modules.get("ngapp.app")
+    if (
+        total > _slow_app_init > 0
+        and app_module is not None
+        and isinstance(comp, getattr(app_module, "App", ()))
+    ):
+        logger.warning(
+            "Slow app constructor: %s took %.2f s in total (limit %g s), "
+            "%d components. %s",
+            type(comp).__name__,
+            total,
+            _slow_app_init,
+            created,
+            _SLOW_INIT_HINT,
+        )
+    if own > _slow_init > 0:
+        site = _creation_site()
+        if (type(comp), site) not in _slow_init_reported:
+            _slow_init_reported.add((type(comp), site))
+            logger.warning(
+                "Slow constructor: %s took %.0f ms (own time, limit %.0f ms), "
+                "created at %s. %s",
+                type(comp).__name__,
+                1000 * own,
+                1000 * _slow_init,
+                site,
+                _SLOW_INIT_HINT,
+            )
+
+
 class BlockFrontendUpdate(type):
     def __new__(cls, name, bases, dct):
         init_method = dct.get("__init__")
@@ -524,11 +760,35 @@ class BlockFrontendUpdate(type):
                 depth = self.__dict__.get("_init_depth", 0)
                 self._init_depth = depth + 1
                 self._block_frontend_update = True
-                init_method(self, *args, **kwargs)
-                self._block_frontend_update = False
-                self._init_depth = depth
-                if depth == 0:
+                if depth:
+                    init_method(self, *args, **kwargs)
+                    self._block_frontend_update = False
+                    self._init_depth = depth
+                    return
+                timing = _init_timing
+                outer = timing.nested
+                timing.nested = 0.0
+                created = len(_components)
+                collecting = _gc_time[0]
+                start = time.perf_counter()
+                try:
+                    init_method(self, *args, **kwargs)
+                    total = time.perf_counter() - start
+                    own = total - timing.nested
+                    self._block_frontend_update = False
+                    self._init_depth = depth
                     self._after_init()
+                finally:
+                    timing.nested = outer + time.perf_counter() - start
+                if own > _slow_init > 0 or total > _slow_app_init > 0:
+                    # a garbage collection is not the constructor's fault
+                    collecting = _gc_time[0] - collecting
+                    _report_slow_init(
+                        self,
+                        own - collecting,
+                        total - collecting,
+                        len(_components) - created,
+                    )
 
             dct["__init__"] = wrapped_init
         return super().__new__(cls, name, bases, dct)
@@ -568,6 +828,19 @@ class Component(metaclass=BlockFrontendUpdate):
     _keybindings: List[Tuple[str, Callable, dict]]
     storage: Storage
     _two_way_props: tuple[str, ...] = ()
+    _is_text = False
+    # no DOM element: the children appear in the slot of the parent
+    _transparent = False
+    # prop keys that are computed from observables: not stored in the case
+    _derived_props = _NO_KEYS
+    # prop key -> Reaction of a binding that is evaluated for a browser only
+    _lazy_bindings = None
+    # values the browser sent for two-way props bound to an observable
+    _browser_values = None
+    _effects = None
+    # bound texts sent with the slots: slot name -> list of Text
+    _live_texts = None
+    _resolving = False
 
     @utils._count_calls
     def __init__(
@@ -580,7 +853,10 @@ class Component(metaclass=BlockFrontendUpdate):
         ui_class: str | list[str] | None = None,
         ui_hidden: bool | None = None,
         id: str = "",
+        ui_invisible: bool | None = None,
     ):
+        global _created
+        _created += 1
         self._index = next(_component_counter)
         _components[self._index] = self
         self._keybindings = []
@@ -594,44 +870,76 @@ class Component(metaclass=BlockFrontendUpdate):
         self._component_name = component
         self._props = {}
         self._observable_bindings = {}
-        self.ui_slots = ui_slots or {}
+        self.ui_slots = ui_slots = ui_slots or {}
         self._namespace = namespace
         self._id = id
 
         self.storage = Storage(self)
         self.on_save(self.storage.save)
 
-        self.ui_slots["default"] = list(ui_children)
+        for key, slot in ui_slots.items():
+            if key != "default" and isinstance(slot, list):
+                ui_slots[key] = self._wrap_children(slot)
 
-        for c in self.ui_slots["default"]:
+        children = list(ui_children)
+        for i, c in enumerate(children):
             if isinstance(c, Component):
                 c._parent = self
+            elif isinstance(c, Observable):
+                children[i] = c = Text(c)
+                c._parent = self
+        ui_slots["default"] = children
 
-        if isinstance(ui_style, dict):
-            self._props["style"] = ";".join(
-                f"{k}:{v}" for k, v in ui_style.items()
-            )
-        elif isinstance(ui_style, str):
-            self._props["style"] = ui_style
-        elif ui_style is not None:
-            self._props["style"] = str(ui_style)
-        else:
+        if ui_style is None:
             self._props["style"] = ""
+        elif isinstance(ui_style, (Observable, _Mapped)):
+            self._props["style"] = ""
+            self._bind_prop("style", ui_style, init=True)
+        else:
+            self._props["style"] = _style_str(ui_style)
 
-        if ui_class:
-            if isinstance(ui_class, str):
-                self._props["class"] = ui_class
-            elif isinstance(ui_class, list):
-                self._props["class"] = " ".join(str(v) for v in ui_class)
-            else:
-                self._props["class"] = str(ui_class)
+        if isinstance(ui_class, (Observable, _Mapped)):
+            self._bind_prop("class", ui_class, init=True)
+        elif ui_class:
+            self._props["class"] = _class_str(ui_class)
 
         if ui_hidden is not None:
             self.ui_hidden = ui_hidden
+        if ui_invisible is not None:
+            self.ui_invisible = ui_invisible
 
     def _after_init(self):
         if self._id and state_module.data_layer_enabled():
             state_module.snapshot_defaults(self)
+
+    @property
+    def _mounted(self) -> bool:
+        """An instance of the component exists in the browser"""
+        return self._index in _mount_tokens
+
+    @_mounted.setter
+    def _mounted(self, value):
+        if value:
+            _mount_tokens.setdefault(self._index, None)
+        else:
+            _mount_tokens.pop(self._index, None)
+
+    @property
+    def _mount_token(self):
+        return _mount_tokens.get(self._index)
+
+    @property
+    def _frontend_known(self) -> bool:
+        """The browser has the data of the component (protocol >= 1, sent
+        with its parent or mounted): updates are sent"""
+        return self._index in _frontend_known
+
+    @_frontend_known.setter
+    def _frontend_known(self, value):
+        if value:
+            _frontend_known.add(self._index)
+        else:
+            _frontend_known.discard(self._index)
 
     def _get_state(self) -> "state_module.State":
         state = self.__dict__.get("_state")
@@ -679,10 +987,30 @@ class Component(metaclass=BlockFrontendUpdate):
                 session.schedule_autosave()
 
     def _update_two_way_prop(self, prop: str, value):
-        """Back-sync of a two-way prop (update:<prop> event of the browser)"""
-        self._set_prop(prop, value)
-        if prop in self._observable_bindings:
-            self._observable_bindings[prop][0].value = value
+        """Back-sync of a two-way prop (update:<prop> event of the browser).
+        The browser shows the value already: it is not sent back, unless a
+        bound observable ends up with another value"""
+        binding = self._observable_bindings.get(prop)
+        if binding is not None and binding[0].read_only:
+            # derived: the browser gets the value of the computed again
+            if prop in self._props:
+                self._update_frontend({"props": {prop: self._props[prop]}})
+            return
+        if get_environment().frontend.protocol < 1:
+            # the old frontend shows what it gets back
+            self._set_prop(prop, value)
+            if binding is not None:
+                binding[0].value = value
+            return
+        self._props[prop] = value
+        self._mark_dirty()
+        if binding is None:
+            return
+        if self._browser_values is None:
+            self._browser_values = {}
+        # read by _bound_changed when the observable reports the change
+        self._browser_values[prop] = value
+        binding[0].value = value
 
     def create_event_handler(
         self,
@@ -765,9 +1093,12 @@ class Component(metaclass=BlockFrontendUpdate):
             def on_key(ev):
                 if hasattr(ev, "to_py"):
                     ev = ev.to_py()
-                callback(SimpleNamespace(**ev))
+                with _observable.batch(defer_listeners=False):
+                    callback(SimpleNamespace(**ev))
 
-            f(key, pl.create_proxy(on_key, True), options, _ignore_result=True)
+            # no link: a frontend of tests
+            proxy = pl.create_proxy(on_key, True) if pl.create_proxy else on_key
+            f(key, proxy, options, _ignore_result=True)
             return
         # store keybindings until component is mounted
         if not self._keybindings:
@@ -868,8 +1199,8 @@ class Component(metaclass=BlockFrontendUpdate):
 
     @ui_style.setter
     def ui_style(self, value):
-        if not isinstance(value, str):
-            value = str(value)
+        if not isinstance(value, (Observable, _Mapped)):
+            value = _style_str(value)
         self._set_prop("style", value)
 
     @property
@@ -878,55 +1209,71 @@ class Component(metaclass=BlockFrontendUpdate):
 
     @ui_class.setter
     def ui_class(self, value):
-        if not isinstance(value, (str, list)):
-            value = str(value)
-        elif isinstance(value, list):
-            value = " ".join(str(v) for v in value)
+        if not isinstance(value, (Observable, _Mapped)):
+            value = _class_str(value)
         self._set_prop("class", value)
 
     @property
     def ui_hidden(self):
         """Set display to none. Compare with below - the class hidden means the element will not show and will not take up space in the layout."""
-        return (
-            False
-            if "class" not in self._props
-            else ("hidden" in self._props["class"].split(" "))
-        )
+        if self.__dict__.get("_hidden_by"):
+            return self.__dict__.get("_user_hidden", False)
+        return "hidden" in self._props.get("class", "").split()
 
     @ui_hidden.setter
     def ui_hidden(self, value):
-        if value:
-            if "class" not in self._props:
-                self._set_prop("class", "hidden")
-            elif "hidden" not in self._props["class"].split(" "):
-                self._set_prop("class", self._props["class"] + " hidden")
-        else:
-            if "class" in self._props:
-                self._set_prop(
-                    "class", self._props["class"].replace("hidden", "").strip()
-                )
+        self._set_flag("hidden", value)
 
     @property
     def ui_invisible(self):
         """Set visibility to hidden. Compare with above - the class invisible means the element will not show, but it will still take up space in the layout."""
-        return (
-            False
-            if "class" not in self._props
-            else ("invisible" in self._props["class"].split(" "))
-        )
+        return "invisible" in self._props.get("class", "").split()
 
     @ui_invisible.setter
     def ui_invisible(self, value):
-        if value:
-            if "class" not in self._props:
-                self._set_prop("class", "invisible")
-            elif "invisible" not in self._props["class"].split(" "):
-                self._set_prop("class", self._props["class"] + " invisible")
+        self._set_flag("invisible", value)
+
+    def _set_flag(self, token: str, value):
+        """ui_hidden / ui_invisible: a class of the component"""
+        key = "@" + token
+        if isinstance(value, (Observable, _Mapped)):
+            self._bind_prop(key, value)
+            return
+        self._unbind_prop(key)
+        self._apply_bound(key, value)
+
+    def _set_class_token(self, token: str, on: bool, dirty=True):
+        cls = self._props.get("class", "")
+        tokens = cls.split()
+        if on == (token in tokens):
+            return
+        if on:
+            cls = f"{cls} {token}" if cls else token
         else:
-            if "class" in self._props:
-                self._set_prop(
-                    "class",
-                    self._props["class"].replace("invisible", "").strip(),
+            cls = " ".join(t for t in tokens if t != token)
+        self._apply_prop(
+            "class", cls, dirty and "class" not in self._derived_props
+        )
+
+    def _hide_by(self, owner, hide: bool):
+        """Hidden by a structural component (Show), whatever ui_hidden says"""
+        owners = self.__dict__.get("_hidden_by")
+        if owners is None:
+            if not hide:
+                return
+            owners = self._hidden_by = set()
+        if hide:
+            if not owners:
+                self._user_hidden = self.ui_hidden
+            owners.add(owner)
+            self._set_class_token("hidden", True, dirty=False)
+        elif owner in owners:
+            owners.discard(owner)
+            if not owners:
+                self._set_class_token(
+                    "hidden",
+                    self.__dict__.pop("_user_hidden", False),
+                    dirty=False,
                 )
 
     def _calc_namespace_id(self):
@@ -969,59 +1316,361 @@ class Component(metaclass=BlockFrontendUpdate):
 
     def _init_prop(self, key, value):
         """Set a prop during __init__, with Observable support."""
-        from ..observable import Observable
-
-        if isinstance(value, Observable):
-            self._props[key] = value.display_value
-            dispose = value.on_change(lambda new, _, obs=value: self._set_prop(key, obs.display_value))
-            self._observable_bindings[key] = (value, dispose)
+        if isinstance(value, (Observable, _Mapped)):
+            self._bind_prop(key, value, init=True)
         else:
             self._props[key] = value
 
     @utils._count_calls
     def _set_prop(self, key: str, value):
-        from ..observable import Observable
+        if isinstance(value, (Observable, _Mapped)):
+            self._bind_prop(key, value)
+            return
+        if self._lazy_bindings and key in self._lazy_bindings:
+            # the last write wins
+            self._unbind_prop(key)
+            _dev_warning(
+                ("overwrite", type(self), key),
+                "%s.%s bound to a computed was overwritten with a plain "
+                "value: the binding is removed.",
+                type(self).__name__,
+                key,
+            )
+        if self._browser_values:
+            self._browser_values.pop(key, None)
+        self._apply_prop(key, value)
 
-        if isinstance(value, Observable):
-            if key in self._observable_bindings:
-                self._observable_bindings[key][1]()
-            dispose = value.on_change(lambda new, _, obs=value: self._set_prop(key, obs.display_value))
-            self._observable_bindings[key] = (value, dispose)
-            value = value.display_value
+    def _apply_prop(self, key: str, value, dirty=True, send=True):
         old_value = self._props.get(key, None)
+        new_key = key not in self._props
+        changed = not safe_equal(value, old_value)
         self._props[key] = value
-        if value != old_value:
+        if send and changed:
             self._update_frontend({"props": {key: value}})
-        self._mark_dirty()
+        # an equal container may have been changed in place
+        if dirty and (changed or new_key or not isinstance(value, _SCALARS)):
+            self._mark_dirty()
+
+    def _bind_prop(self, key: str, source, init=False):
+        """Bind a prop (or @hidden, @invisible) to an observable. A plain
+        observable is read now and followed, a read-only one (computed) is
+        evaluated when the props are needed for a browser"""
+        self._unbind_prop(key)
+        transform = None
+        if isinstance(source, _Mapped):
+            source, transform = source.obs, source.fn
+        if key == "style":
+            transform = (
+                (lambda v, f=transform: _style_str(f(v)))
+                if transform
+                else _style_str
+            )
+        prop = "class" if key[0] == "@" else key
+        if source.read_only:
+
+            def update():
+                value = source.display_value
+                if transform is not None:
+                    value = transform(value)
+                self._apply_bound(key, value, False, not self._resolving)
+
+            reaction = Reaction(
+                update, _observable.SYNC, type(self).__name__ + "." + key, False
+            )
+            reaction.owner = self
+            if self._lazy_bindings is None:
+                self._lazy_bindings = {}
+            self._lazy_bindings[key] = reaction
+            self._observable_bindings[key] = (source, reaction.dispose)
+            self._mark_derived(prop)
+            if not init and (
+                self._index in _frontend_known
+                or self._js_component is not None
+            ):
+                self._resolve_bindings()
+            return
+        value = _display(source)
+        if transform is not None:
+            value = transform(value)
+        dispose = source.on_change(
+            lambda new, old: self._bound_changed(key, source, transform)
+        )
+        self._observable_bindings[key] = (source, dispose)
+        if prop == "class":
+            # partly computed: not stored
+            self._mark_derived(prop)
+        if init and key[0] != "@" and key != "class":
+            self._props[key] = value
+        else:
+            self._apply_bound(key, value)
+
+    def _mark_derived(self, prop: str):
+        if self._derived_props is _NO_KEYS:
+            self._derived_props = set()
+        self._derived_props.add(prop)
+
+    def _unbind_prop(self, key: str):
+        binding = self._observable_bindings.pop(key, None)
+        if binding is None:
+            return
+        binding[1]()
+        if self._lazy_bindings:
+            self._lazy_bindings.pop(key, None)
+        prop = "class" if key[0] == "@" else key
+        if self._derived_props and (
+            prop != "class"
+            or not any(
+                k in self._observable_bindings
+                for k in ("class", "@hidden", "@invisible")
+            )
+        ):
+            self._derived_props.discard(prop)
+
+    def _bound_changed(self, key: str, obs, transform):
+        """The plain observable bound to a prop changed"""
+        value = _display(obs)
+        sent = self._browser_values
+        if sent and key in sent:
+            raw = sent[key]
+            if _browser_shows(raw, obs.peek()) or safe_equal(raw, value):
+                # the value came from the browser: no echo
+                return
+            del sent[key]
+        if transform is not None:
+            value = transform(value)
+        self._apply_bound(key, value)
+
+    def _apply_bound(self, key: str, value, dirty=True, send=True):
+        if key[0] == "@":
+            if key == "@hidden" and self.__dict__.get("_hidden_by"):
+                self._user_hidden = bool(value)
+            else:
+                self._set_class_token(key[1:], bool(value), dirty)
+            return
+        if key == "class":
+            # hidden and invisible are set through their own properties
+            value = _class_str(value)
+            old = self._props.get("class", "").split()
+            for token in ("hidden", "invisible"):
+                if token in old and token not in value.split():
+                    value = f"{value} {token}" if value else token
+            dirty = False
+        self._apply_prop(key, value, dirty, send)
+
+    def _resolve_bindings(self, send=True):
+        """Evaluate the props bound to computed values and follow them; done
+        when the props are needed for a browser. send: changed values are
+        sent to the browser"""
+        for reaction in tuple((self._lazy_bindings or {}).values()):
+            if reaction.active or reaction.disposed:
+                continue
+            self._resolving = not send
+            try:
+                reaction.resume()
+            except Exception as e:
+                print_exception(e, file=sys.stdout)
+            finally:
+                self._resolving = False
+
+    def _suspend_bindings(self):
+        """No browser shows the component: bound values are not evaluated"""
+        if self._lazy_bindings:
+            for reaction in self._lazy_bindings.values():
+                reaction.suspend()
+        if self._live_texts:
+            for texts in self._live_texts.values():
+                for text in texts:
+                    text._suspend()
+
+    def _wrap_children(self, children: list) -> list:
+        """children with observables replaced by bound texts"""
+        for i, child in enumerate(children):
+            if isinstance(child, Observable):
+                children = list(children)
+                for j in range(i, len(children)):
+                    if isinstance(children[j], Observable):
+                        children[j] = Text(children[j])
+                break
+        return children
 
     @utils._count_calls
     def _set_slot(self, key: str, value):
+        old = self.ui_slots.get(key)
+        if isinstance(value, list):
+            value = self._wrap_children(value)
         self.ui_slots[key] = value
+        if _slot_recorder is not None:
+            _slot_recorder(self, key, old, value)
         if isinstance(value, list):
             for comp in value:
                 if isinstance(comp, Component):
                     comp._set_parent_recursive(self)
+            if old and isinstance(old, list) and len(old) == len(value):
+                self._check_rebuild(key, old, value)
         elif isinstance(value, Component):
             value._set_parent_recursive(self)
-        self._update_frontend(
-            {
-                "slots": {
-                    key: (
-                        [
-                            (
-                                {"compId": v}
-                                if isinstance(v, str)
-                                else v._get_my_wrapper_props()
-                            )
-                            for v in value
-                        ]
-                        if isinstance(value, list)
-                        else value
-                    )
-                }
-            }
-        )
+        if get_environment().frontend.protocol >= 1:
+            # serialised when the update is sent
+            if self._index in _frontend_known:
+                self._update_frontend({"slots": {key: None}})
+        elif self._js_component is not None or not (
+            isinstance(value, list)
+            and any(
+                isinstance(c, Component) and (c._is_text or c._transparent)
+                for c in value
+            )
+        ):
+            # bound texts are evaluated for a browser only
+            self._update_frontend({"slots": {key: self._serialize_slot(key)}})
         self._mark_dirty()
+
+    def _check_rebuild(self, key: str, old: list, new: list):
+        """Dev warning: the slot is built again and again with new
+        components of the same types"""
+        if any(type(a) is not type(b) for a, b in zip(old, new)):
+            return
+        kept = {id(c) for c in old if isinstance(c, Component)}
+        if not kept or any(id(c) in kept for c in new):
+            return
+        now = time.monotonic()
+        times = self.__dict__.get("_rebuild_times")
+        if times is None:
+            times = self._rebuild_times = []
+        times[:] = [t for t in times if now - t < _REBUILD_WINDOW]
+        times.append(now)
+        if len(times) >= _REBUILD_COUNT:
+            site = _caller_site()
+            slot = "ui_children" if key == "default" else f"ui_slots[{key!r}]"
+            _dev_warning(
+                ("rebuild", type(self), site),
+                "%s.%s replaced %d times within %g s with the same component "
+                "types: bind the changing values (computed) or use Show / "
+                "For / Dynamic. Assigned at %s",
+                type(self).__name__,
+                slot,
+                len(times),
+                _REBUILD_WINDOW,
+                site,
+            )
+
+    def _serialize_slot(self, key: str, budget: list | None = None):
+        """The slot as sent to the browser: a list of wrapper props, the slot
+        name for a slot built by a function. budget: see _get_wrapper_props"""
+        slot = self.ui_slots[key]
+        if isinstance(slot, (list, tuple)):
+            texts = []
+            result = self._serialize_children(slot, budget, texts)
+            live = self._live_texts
+            if texts or (live and key in live):
+                if live is None:
+                    live = self._live_texts = {}
+                for text in live.get(key, ()):
+                    if text not in texts:
+                        text._suspend()
+                live[key] = texts
+            return result
+        if callable(slot):
+            self.on(
+                "create_slot_" + key,
+                self._handle_create_slot,
+                slot,
+                clear_existing=True,
+            )
+            return key
+        return slot
+
+    def _serialize_children(
+        self, children, budget: list | None = None, texts: list | None = None
+    ):
+        """Wrapper props of a list of children (components and strings),
+        the children of transparent components are spliced in. texts
+        collects the bound texts"""
+        result = []
+        for i, child in enumerate(children):
+            if isinstance(child, str):
+                result.append({"compId": child})
+                continue
+            if isinstance(child, Observable):
+                # put into the list directly
+                child = Text(child)
+                child._parent = self
+                if isinstance(children, list):
+                    children[i] = child
+            if child._transparent:
+                result.extend(
+                    self._serialize_children(
+                        child.ui_slots["default"], budget, texts
+                    )
+                )
+                continue
+            if child._is_text:
+                if texts is None:
+                    if self._live_texts is None:
+                        self._live_texts = {}
+                    texts = self._live_texts.setdefault(None, [])
+                if child not in texts:
+                    texts.append(child)
+            result.append(child._get_wrapper_props(budget))
+        return result
+
+    def _resend_slot_of(self, child):
+        """The children of a transparent child changed, or a bound text
+        with a protocol 0 frontend: send the slot that holds it"""
+        if self._transparent:
+            parent = self._parent
+            if parent is not None:
+                parent._resend_slot_of(self)
+            return
+        for key, slot in self.ui_slots.items():
+            if isinstance(slot, list) and any(c is child for c in slot):
+                break
+        else:
+            return
+        if get_environment().frontend.protocol >= 1:
+            if self._index in _frontend_known:
+                self._update_frontend({"slots": {key: None}})
+        elif self._js_component is not None:
+            self._update_frontend({"slots": {key: self._serialize_slot(key)}})
+
+    def _get_wrapper_props(self, budget: list | None = None):
+        """Wrapper props with the init data of the component (and of its
+        children) if the browser has no instance of it. budget: [number of
+        components that may still be sent along], None for a protocol 0
+        frontend"""
+        props = self._get_my_wrapper_props()
+        if (
+            budget is not None
+            and budget[0] > 0
+            and self._index not in _mount_tokens
+        ):
+            budget[0] -= 1
+            props["init"] = self._get_init_data(budget)
+        return props
+
+    def _get_init_data(self, budget: list | None = None):
+        """All the browser needs to create the component (protocol >= 1)"""
+        # first: updates from now on are sent
+        _frontend_known.add(self._index)
+        return {
+            "type": self._component_name,
+            "props": utils._json_safe(dict(self._get_js_props())),
+            "slots": self._get_js_slots(budget),
+            "methods": self._get_js_methods(),
+            "events": self._get_frontend_events(),
+            "protocol": 1,
+            "comp": self,
+        }
+
+    def _handle_create_slot(self, ev: "Event"):
+        comps = self._wrap_children(list(ev.arg(ev.value)))
+        for comp in comps:
+            if isinstance(comp, Component):
+                comp._set_parent_recursive(self)
+        if get_environment().frontend.protocol >= 1:
+            return self._serialize_children(
+                comps, [utils._INLINE_MAX_COMPONENTS]
+            )
+        return self._serialize_children(comps)
 
     def _get_debug_data(self, **kwargs):
         stack_trace = ""
@@ -1046,6 +1695,8 @@ class Component(metaclass=BlockFrontendUpdate):
             raise RuntimeError(
                 f"JS component method call not supported in environment {env.type}"
             )
+        if self._js_component is None:
+            return  # not shown
         self._js_component._call_method(method, args, ignore_result=True)
 
     def _js_callback(self, name, arg=None):
@@ -1055,7 +1706,8 @@ class Component(metaclass=BlockFrontendUpdate):
 
     # @result_to_js
     def _js_init(self):
-        # self._js_callbacks = {}
+        if get_environment().frontend.protocol >= 1:
+            return self._get_init_data([utils._INLINE_MAX_COMPONENTS])
         return {
             "slots": self._get_js_slots(),
             "props": self._get_js_props(),
@@ -1112,13 +1764,20 @@ class Component(metaclass=BlockFrontendUpdate):
         else:
             wrapper = func
 
+        added = False
         for event in events:
             if clear_existing:
                 self._callbacks[event] = []
 
             if event not in self._callbacks:
                 self._callbacks[event] = []
+                added = added or (
+                    event not in _NOT_BROWSER_EVENTS
+                    and not event.startswith("create_slot_")
+                )
             self._callbacks[event].append(wrapper)
+        if added and self._index in _frontend_known:
+            self._update_frontend({"events": None})
         return self
 
     @utils._count_calls
@@ -1170,11 +1829,22 @@ class Component(metaclass=BlockFrontendUpdate):
 
     def _dump(self):
         if self._id:
+            derived = self._derived_props
+            if derived:
+                return {
+                    k: v for k, v in self._props.items() if k not in derived
+                }
             return self._props
         return None
 
     def _load(self, data):
         if data is not None:
+            for key in self._derived_props:
+                # computed, not loaded
+                if key in self._props:
+                    data[key] = self._props[key]
+                else:
+                    data.pop(key, None)
             self._props = data
 
     def _dump_recursive(self, exclude_default):
@@ -1315,6 +1985,10 @@ class Component(metaclass=BlockFrontendUpdate):
     @utils._count_calls
     def _emit_recursive(self, event, value: Optional[dict] = None) -> None:
         """Emit event to all components"""
+        if _observable.current_batch() is None:
+            # one scope for all handlers
+            with _observable.batch(defer_listeners=False):
+                return self._emit_recursive(event, value)
         self._recurse(
             lambda comp: comp._handle(event, value),
             parent_first=False,
@@ -1359,54 +2033,147 @@ class Component(metaclass=BlockFrontendUpdate):
 
     @utils._count_calls
     def _set_js_component(self, js_comp):
+        """Mount signal of a protocol 0 frontend"""
         self._js_component = js_comp
+        if self._index not in _mount_tokens:
+            _mount_tokens[self._index] = None
+            self._run_mount_hook()
 
     @utils._count_calls
     def _set_js_callback(self, name, func):
+        if name == "__protocol__":
+            # handshake of the frontend, sent before the first _js_init
+            get_environment().frontend.protocol = func
+            return
         self._js_callbacks[name] = func
+
+    def _mount(self, js_comp, token, callbacks):
+        """The browser mounted an instance of the component (protocol >= 1):
+        js_comp is its JS component, callbacks are pairs (name, function)"""
+        current = _components.get(self._index)
+        if current is not None and current is not self:
+            # another component object took over the index
+            return current._mount(js_comp, token, callbacks)
+        if hasattr(callbacks, "to_py"):
+            callbacks = callbacks.to_py()
+        self._js_callbacks = {name: func for name, func in callbacks}
+        self._js_component = js_comp
+        _mount_tokens[self._index] = token
+        _frontend_known.add(self._index)
+        with _observable.batch(defer_listeners=False):
+            # bindings suspended by an unmount (the instance was moved)
+            if self._lazy_bindings:
+                self._resolve_bindings()
+            if self._live_texts:
+                for texts in self._live_texts.values():
+                    for text in texts:
+                        text._resume()
+            self._handle("mounted")
+            self._run_mount_hook()
+
+    def _unmount(self, token=None):
+        """The browser removed the instance mounted with token, None: any
+        (protocol 0)"""
+        index = self._index
+        if token is not None and token != _mount_tokens.get(index):
+            return  # of an earlier instance, the component is mounted again
+        with _observable.batch(defer_listeners=False):
+            self._handle("unmount")
+            try:
+                self._unmount_hook()
+            except Exception as e:
+                print_exception(e, file=sys.stdout)
+        _mount_tokens.pop(index, None)
+        _frontend_known.discard(index)
+        self._js_component = None
+        self._js_callbacks = {}
+        if self._lazy_bindings or self._live_texts:
+            self._suspend_bindings()
+
+    def _run_mount_hook(self):
+        try:
+            self._mount_hook()
+        except Exception as e:
+            print_exception(e, file=sys.stdout)
+
+    def _mount_hook(self):
+        """Called after the mounted handlers of every mount"""
+        if self._effects:
+            for reaction in self._effects:
+                # runs when the handler that mounted is done
+                reaction.resume(run=False)
+
+    def _unmount_hook(self):
+        """Called after the unmount handlers, the component still counts as
+        mounted"""
+        if self._effects:
+            for reaction in self._effects:
+                reaction.suspend()
+
+    def effect(self, fn: Callable[[], None], name: str = ""):
+        """Run fn when the component is mounted and again, while it stays
+        mounted, after an observable, computed value or state key it read
+        has changed (once per event, after the bound props were updated).
+
+        For imperative updates of the browser: drawing a figure, updating a
+        viewer. Never runs where nothing is shown (compute jobs). Returns a
+        function that removes the effect.
+
+        >>> plot.effect(lambda: plot.draw(figure(self.state["radius"])))
+        """
+
+        deferred = [False]
+
+        def run_deferred():
+            if reaction.active:
+                deferred[0] = True
+                try:
+                    reaction.run()
+                finally:
+                    deferred[0] = False
+
+        def run():
+            if not deferred[0] and not _can_block():
+                # e.g. a timer callback in pyodide: fn may need blocking
+                # calls of the browser
+                _defer(run_deferred)
+                return
+            fn()
+
+        reaction = Reaction(
+            run,
+            _observable.EFFECT,
+            name or type(self).__name__ + ".effect",
+            start=False,
+        )
+        reaction.owner = self
+        if self._effects is None:
+            self._effects = []
+        self._effects.append(reaction)
+        if self._index in _mount_tokens:
+            reaction.resume(run=False)
+
+        def dispose():
+            reaction.dispose()
+            try:
+                self._effects.remove(reaction)
+            except ValueError:
+                pass
+
+        return dispose
 
     @utils._count_calls
     def _get_my_wrapper_props(self, *args, **kwargs):
         return {"compId": self._index}
 
-    def _get_js_slots(self):
-        ret = {}
-        for key, slot in self.ui_slots.items():
-            if isinstance(slot, Callable):
-
-                def handle_create(ev: Event):
-                    create_function = ev.arg
-                    comps = create_function(ev.value)
-                    for comp in comps:
-                        comp._set_parent_recursive(self)
-                    return [
-                        (
-                            {"compId": comp}
-                            if isinstance(comp, str)
-                            else comp._get_my_wrapper_props()
-                        )
-                        for comp in comps
-                    ]
-
-                ret[key] = key
-                self.on(
-                    "create_slot_" + key,
-                    handle_create,
-                    slot,
-                    clear_existing=True,
-                )
-            else:
-                ret[key] = [
-                    (
-                        {"compId": comp}
-                        if isinstance(comp, str)
-                        else comp._get_my_wrapper_props()
-                    )
-                    for comp in slot
-                ]
-        return ret
+    def _get_js_slots(self, budget: list | None = None):
+        return {key: self._serialize_slot(key, budget) for key in self.ui_slots}
 
     def _get_js_props(self):
+        """The props as needed by a browser: called when the init data or a
+        full update of the component is sent"""
+        if self._lazy_bindings:
+            self._resolve_bindings(send=False)
         return self._props
 
     def _get_js_methods(self):
@@ -1414,6 +2181,9 @@ class Component(metaclass=BlockFrontendUpdate):
 
     def _handle(self, event, value: Optional[dict] = None) -> None:
         """Handle event"""
+        callbacks = self._callbacks.get(event)
+        if not callbacks:
+            return None
         ret = None
         try:
             if is_pyodide():
@@ -1422,9 +2192,21 @@ class Component(metaclass=BlockFrontendUpdate):
                 if isinstance(value, pyodide.ffi.JsProxy):
                     value = value.to_py()
 
-            if event in self._callbacks:
-                ev = Event(component=self, name=event, value=value)
-                for func in self._callbacks[event]:
+            ev = Event(component=self, name=event, value=value)
+            if _observable.current_batch() is None:
+                created = _created
+                # updates of the handlers leave as one message
+                with _observable.batch(defer_listeners=False):
+                    for func in callbacks:
+                        ret = func(ev)
+                if (
+                    _created - created > _HANDLER_MAX_CREATED
+                    and event not in _PYTHON_EVENTS
+                    and not event.startswith("create_slot_")
+                ):
+                    self._report_handler(event, callbacks, _created - created)
+            else:
+                for func in callbacks:
                     ret = func(ev)
 
         except (ForbiddenError, CaseDeletedError) as e:
@@ -1435,8 +2217,124 @@ class Component(metaclass=BlockFrontendUpdate):
             print_exception(e, file=sys.stdout)
         return ret
 
+    def _report_handler(self, event, callbacks, created):
+        sites = ", ".join(_code_site(func) for func in callbacks)
+        _dev_warning(
+            ("handler", type(self), event, sites),
+            "Handler of %s '%s' created %d components: a parameter change "
+            "should update values, not rebuild the UI. Handler at %s",
+            type(self).__name__,
+            event,
+            created,
+            sites,
+        )
+
     def _get_registered_events(self):
         return list(self._callbacks.keys())
+
+    def _get_frontend_events(self):
+        """Events the browser has to send (protocol >= 1)"""
+        return [
+            event
+            for event in self._callbacks
+            if event not in _NOT_BROWSER_EVENTS
+            and not event.startswith("create_slot_")
+        ]
+
+
+class Text(Component):
+    """A text child bound to an observable: created for an observable in a
+    list of children. It has no element of its own, the browser updates the
+    text in place."""
+
+    _is_text = True
+
+    def __init__(self, source: Observable):
+        super().__init__("text")
+        self._source = source
+        self._text = None
+        self._quiet = False
+        self._reaction = None
+
+    @property
+    def text(self) -> str:
+        """The current text"""
+        return _to_text(_display(self._source))
+
+    def _update(self):
+        text = _to_text(self._source.display_value)
+        if text == self._text:
+            return
+        self._text = text
+        if self._quiet:
+            return
+        if get_environment().frontend.protocol >= 1:
+            self._update_frontend({"text": text})
+        elif self._parent is not None:
+            self._parent._resend_slot_of(self)
+
+    def _resume(self, quiet=False):
+        reaction = self._reaction
+        if reaction is None:
+            reaction = self._reaction = Reaction(
+                self._update, _observable.SYNC, "Text", False
+            )
+            reaction.owner = self
+        if get_environment().frontend.protocol >= 1:
+            _frontend_known.add(self._index)
+        if reaction.active:
+            return
+        self._quiet = quiet
+        try:
+            reaction.resume()
+        except Exception as e:
+            print_exception(e, file=sys.stdout)
+        finally:
+            self._quiet = False
+
+    def _suspend(self):
+        _frontend_known.discard(self._index)
+        if self._reaction is not None:
+            self._reaction.suspend()
+
+    def _get_wrapper_props(self, budget: list | None = None):
+        self._resume(quiet=True)
+        text = self._text or ""
+        if get_environment().frontend.protocol >= 1:
+            return {"compId": f"t{self._index}", "text": text}
+        return {"compId": text}
+
+    def _get_my_wrapper_props(self, *args, **kwargs):
+        return self._get_wrapper_props()
+
+    def _hide_by(self, owner, hide: bool):
+        pass
+
+    def on_mounted(self, func, arg=None):
+        raise TypeError("A bound text is never mounted")
+
+    def effect(self, fn, name=""):
+        raise TypeError("A bound text is never mounted: no effect")
+
+
+def _can_block() -> bool:
+    if not is_pyodide():
+        return True
+    try:
+        from pyodide.ffi import can_run_sync
+    except ImportError:
+        return True
+    return can_run_sync()
+
+
+def _defer(fn) -> None:
+    """fn from an asyncio task: a promising entry point in pyodide"""
+    import asyncio
+
+    async def run():
+        fn()
+
+    asyncio.get_event_loop().create_task(run())
 
 
 del C

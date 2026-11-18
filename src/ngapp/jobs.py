@@ -26,7 +26,7 @@ import weakref
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from .state import CaseSession, session_of
+from .state import CaseSession, _scoped, session_of
 from .store.encoding import canonical_json
 from .store.types import (
     CaseDeletedError,
@@ -685,8 +685,13 @@ class JobSession(CaseSession):
             due - self.scheduler.now(), self._autosave_fire
         )
 
+    def _schedule_echo(self):
+        pass  # found by the next checkpoint
+
     def schedule_autosave(self):
         if self._applying or self.closed or self.final is not None:
+            return
+        if self._reacting and threading.get_ident() in self._reacting:
             return
         if self.ended is not None:
             raise self.ended
@@ -695,6 +700,7 @@ class JobSession(CaseSession):
         if self._timer is None or self._due > due + 1e-9:
             self._arm_at(due)
 
+    @_scoped
     def _autosave_fire(self):
         self._timer = None
         if self.closed or self.final is not None or self.ended is not None:
@@ -716,6 +722,7 @@ class JobSession(CaseSession):
         if self.on_ended is not None:
             self.on_ended(error)
 
+    @_scoped
     def checkpoint(self, raise_ended: bool = False) -> bool:
         """Commit the pending changes as checkpoint; False if there were none"""
         with self._lock:
@@ -756,6 +763,7 @@ class JobSession(CaseSession):
         self.store.progress(fraction, text)
         self._soon()
 
+    @_scoped
     def finish(self) -> int:
         """The final commit: pending changes and the end of the run branch"""
         with self._lock:
@@ -767,9 +775,12 @@ class JobSession(CaseSession):
             self.final = self.commit(kind="final")
         return self.final
 
+    @_scoped
     def resolve(self, function: str):
         """Component and compute method of a qualified function name"""
         *path, method = function.split(".")
+        # structures built from the state are complete
+        self._settle()
         comp = self._walk().get(tuple(path))
         if comp is None and path == ["__app__"]:
             comp = self.app

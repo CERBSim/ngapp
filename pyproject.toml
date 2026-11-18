@@ -17,6 +17,9 @@ events = ['websockets']
 zstd = ['zstandard']
 e2e = ['pytest', 'pytest-playwright', 'pytest-check', 'playwright', 'pytest-base-url', 'Pillow']
 
+[tool.setuptools.package-data]
+ngapp = ["AGENTS.md"]
+
 [tool.setuptools_scm]
 version_file = "src/ngapp/_version.py"
 local_scheme = "no-local-version"

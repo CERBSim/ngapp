@@ -1,10 +1,13 @@
 Testing ngapp applications
 ==========================
 
-ngapp supports two complementary testing patterns:
+ngapp supports three complementary testing patterns:
 
 * **Calculation tests** that work purely on Python state and saved
   ``.sav`` files (no browser).
+* **UI tests without a browser** that show the app in a browser stand-in
+  and check what the browser would receive (see `UI tests without a
+  browser`_).
 * **End-to-end (E2E) tests** that drive the full UI in a real browser.
 
 Calculation tests (state/snapshot based)
@@ -57,6 +60,106 @@ shows the same pattern applied to the small demo app in
 Under the hood, :mod:`ngapp.test_utils` uses ``deepdiff`` to compare
 component data and JSON files to compare local storage. See that module for
 more advanced options.
+
+UI tests without a browser
+--------------------------
+
+:func:`ngapp.test_utils.mount` shows an app in a
+:class:`~ngapp.test_utils.FakeFrontend`: a stand-in for the browser that
+speaks the same protocol, mounts components the way the browser does, runs
+``on_mounted`` handlers and effects, and records every update message. It
+needs no browser and no running server, so these tests are fast.
+
+.. code-block:: python
+
+   from ngapp.test_utils import assert_stable, mount, standalone_app_test
+   from my_app.app import MyApp
+
+
+   @standalone_app_test
+   def test_radius_updates_volume():
+       app = MyApp()
+       fe = mount(app)
+       fe.messages.clear()
+
+       fe.event(app.radius_input, "update:model-value", "2")
+
+       assert app.state["radius"] == 2.0
+       assert fe.children(app.volume_label) == ["Volume: 25.1"]
+       assert len(fe.messages) == 1   # one update message per event
+
+The fake frontend offers:
+
+* ``fe.event(comp, name, value=None)``: send an event as the browser does
+  and return the result of its handlers. Event names are the ones the
+  browser emits: ``"update:model-value"`` for inputs, ``"click.stop"`` for
+  buttons with ``on_click``. ``fe.events(comp)`` lists the names a
+  component listens to.
+* ``fe.props(comp)``, ``fe.children(comp, slot="default")``: props and
+  children (components and texts) as the browser shows them after all
+  messages were applied.
+* ``fe.mounted``: indices of the mounted components; ``fe.unmount(comp)``
+  and ``fe.mount(comp)`` close and reopen a part of the page (a dialog, a
+  tab).
+* ``fe.messages``: the update messages, one list of entries per message;
+  ``fe.calls``: calls of JavaScript methods.
+* ``fe.slot(comp, name, slot_props)``: render a slot that is built by a
+  function (for example a table cell).
+
+Changes made directly in the test (``app.state["radius"] = 2.0``,
+``obs.value = 3``) outside an event are applied at once, one message per
+change. Group several with :func:`ngapp.observable.batch`.
+
+Checking that nothing is rebuilt
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:func:`ngapp.test_utils.assert_stable` is a context manager that fails with
+an :class:`AssertionError` when the code in the block replaced components
+of the app by new ones instead of updating them (see :doc:`reactivity`):
+
+.. code-block:: python
+
+   @standalone_app_test
+   def test_frequency_change_is_local():
+       app = MyApp()
+       fe = mount(app)
+       with assert_stable(app, allow=[app.results_panel]):
+           fe.event(app.frequency_input, "update:model-value", "60")
+
+* Components inside the subtrees given in ``allow`` (components or ids) may
+  be replaced.
+* The content managed by ``Show``, ``For`` and ``Dynamic`` is not checked,
+  and adding or removing components alone is not a failure.
+* The message lists every recreated component with its class, id and
+  position in the tree, and the line of code that assigned it:
+
+  .. code-block:: text
+
+     Components were recreated instead of updated (bind the changing values or use Show / For / Dynamic):
+       Col (id '') in MyApp#__app__ > Centered > Row > Div, assigned at my_app/app.py:161
+         replacing: Col
+
+Warnings in tests
+~~~~~~~~~~~~~~~~~
+
+The development warnings and the slow-constructor warning
+(:doc:`reactivity`) are logged on logger ``ngapp.components``. A test can
+require that none occurs:
+
+.. code-block:: python
+
+   @standalone_app_test
+   def test_no_warnings(caplog):
+       app = MyApp()
+       mount(app)
+       assert not [
+           r for r in caplog.records if r.name == "ngapp.components"
+       ]
+
+The limits of the slow-constructor warning are read from
+``NGAPP_SLOW_INIT`` and ``NGAPP_SLOW_APP_INIT`` (seconds, ``0`` disables)
+when ngapp is imported; ``NGAPP_DEV_WARNINGS=0`` disables the development
+warnings.
 
 End-to-end (browser) tests with Playwright
 ------------------------------------------
@@ -304,3 +407,15 @@ And ``tests/conftest.py``::
        output_dir=TESTS_DIR / "output",
        baseline_dir=TESTS_DIR / "baselines",
    )
+
+API reference
+-------------
+
+.. autofunction:: ngapp.test_utils.mount
+
+.. autofunction:: ngapp.test_utils.assert_stable
+
+.. autoclass:: ngapp.test_utils.FakeFrontend
+   :members: event, props, children, events, mounted, mount, unmount, slot, render
+
+.. autofunction:: ngapp.test_utils.standalone_app_test
