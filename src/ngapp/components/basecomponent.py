@@ -723,11 +723,13 @@ def _dev_warning(ident, msg, *args):
 
 def _report_slow_init(comp, own, total, created):
     app_module = sys.modules.get("ngapp.app")
-    if (
-        total > _slow_app_init > 0
-        and app_module is not None
-        and isinstance(comp, getattr(app_module, "App", ()))
-    ):
+    is_app = app_module is not None and isinstance(
+        comp, getattr(app_module, "App", ())
+    )
+    if is_app:
+        # builds the page layout itself: only the app limit applies
+        if not total > _slow_app_init > 0:
+            return
         logger.warning(
             "Slow app constructor: %s took %.2f s in total (limit %g s), "
             "%d components. %s",
