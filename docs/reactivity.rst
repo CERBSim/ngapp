@@ -596,6 +596,6 @@ API reference
 .. automethod:: ngapp.state.State.notify
 
 .. autoclass:: ngapp.state_model.StateModel
-   :members: defaults, field_info, dump
+   :members: defaults, field_info, nested, dump
 
 .. autofunction:: ngapp.state_model.ref

@@ -170,6 +170,11 @@ class StateModel(StateBase):
         in declaration order"""
         return {name: f.info for name, f in cls._fields.items()}
 
+    @classmethod
+    def nested(cls) -> dict[str, type["StateModel"]]:
+        """{name: StateModel} of the nested states, in declaration order"""
+        return {name: n.model for name, n in cls._nested_fields.items()}
+
     def dump(self) -> dict:
         """{name: value} of all fields, nested states as dicts"""
         out = {name: getattr(self, name) for name in self._fields}
