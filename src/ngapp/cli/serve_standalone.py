@@ -70,6 +70,8 @@ def watch_python_modules(modules, callback, stop_event: Event | None = None):
 
 
 app = None
+# set once the shown app was sent to the page (its load handlers have run)
+app_ready = Event()
 
 # seconds the local app waits for a page to connect again after the last
 # one was closed (a reload) before it exits
@@ -158,7 +160,9 @@ def reload_app(app_module, reload_modules):
     print("Reloading app")
     app_config = importlib.import_module(app_module).config
     app = create_app(app_config, data, reload_python_modules=reload_modules)
+    app_ready.clear()
     utils.get_environment().frontend.reset_app(app)
+    app_ready.set()
 
 
 def host_local_app(
@@ -194,9 +198,11 @@ def host_local_app(
 
     def show_app(new_app):
         global app
+        app_ready.clear()
         app = new_app
         if shown.is_set():
             utils.get_environment().frontend.reset_app(new_app)
+            app_ready.set()
 
     timing_enabled = os.environ.get("NGAPP_STARTUP_TIMING", "0") in (
         "1",
@@ -453,6 +459,7 @@ def host_local_app(
             if not shown.is_set():
                 shown.set()
                 env.frontend.reset_app(app)
+                app_ready.set()
             return
         if not shown.is_set():
             imported = None
@@ -465,6 +472,7 @@ def host_local_app(
                 cases.start()
             shown.set()
             env.frontend.reset_app(app)
+            app_ready.set()
         elif cases.case_id is not None:
             # a fresh app instance for the new page
             cases.open(cases.case_id)

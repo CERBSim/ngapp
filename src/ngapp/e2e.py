@@ -168,6 +168,7 @@ class LocalAppRunner:
 
             # the app is created once the page connected (wait_for_app)
             serve_standalone.app = None
+            serve_standalone.app_ready.clear()
             url_ready = threading.Event()
             url_holder: list[str] = []
 
@@ -264,7 +265,7 @@ class LocalAppRunner:
         from ngapp.cli import serve_standalone
 
         end = time.time() + (self.timeout if timeout is None else timeout)
-        while serve_standalone.app is None:
+        while serve_standalone.app is None or not serve_standalone.app_ready.is_set():
             if time.time() > end:
                 raise TimeoutError("Timed out waiting for the app")
             time.sleep(0.05)
