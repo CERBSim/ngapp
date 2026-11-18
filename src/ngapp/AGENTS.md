@@ -104,6 +104,12 @@ class Tank(App[TankState]):
 - Model functions take the state (`def params(c: Case)`); jobs get the same
   typed state. `state.dump()` gives all fields (for fingerprints of inputs:
   undeclared keys never end up in them).
+- A field typed with another `StateModel` (`wall: Wall`, no default) is a
+  nested state stored in the namespace `wall/`; every nested field is
+  followed on its own. Use it for groups of inputs; lists of records stay
+  plain values (`list[MyTypedDict]`) or rows of components with their own
+  `Component[RowState]`. Turning an existing field into a nested state
+  changes where it is stored (old cases read the defaults).
 - Field names must not be names of state methods (`get`, `keys`, `ns`,
   `ref`, `dump`, ...); the class raises `TypeError` otherwise.
 

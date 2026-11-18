@@ -74,6 +74,28 @@ class _Field:
         state.set(self.name, value)
 
 
+class _Nested:
+    """A field whose type is a StateModel: its fields are keys of the
+    namespace ``name/`` of the state"""
+
+    def __init__(self, name: str, model):
+        self.name = name
+        self.model = model
+
+    def __get__(self, state, owner=None):
+        if state is None:
+            return self
+        sub = state._nested.get(self.name)
+        if sub is None:
+            sub = state._nested[self.name] = self.model(
+                state._component, state._prefix + self.name + "/"
+            )
+        return sub
+
+    def __set__(self, state, value):
+        state.set(self.name, value)
+
+
 class StateModel(StateBase):
     """State with declared keys: use it as ``App[MyState]`` or
     ``Component[MyState]``, ``self.state`` is then a MyState. Every field
@@ -87,25 +109,35 @@ class StateModel(StateBase):
     types the case store saves (numbers, strings, lists, dicts, TypedDict,
     Literal).
 
+    A field whose type is a StateModel (no default needed) is a nested
+    state: its fields are keys of the namespace ``name/``, each followed on
+    its own (``s.core.mur``); assigning a dict to it replaces its values.
+
     Everything else of the state works as before: keys that are not fields
     (``state[key]``), ``ns``, ``notify``, ``on_change``. Reads of fields are
     followed like reads of keys; values are replaced, not changed in
     place."""
 
     _fields: dict[str, _Field] = {}
+    _nested_fields: dict[str, _Nested] = {}
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         fields = dict(cls._fields)
+        nested = dict(cls._nested_fields)
         for name, annotation in typing.get_type_hints(cls, include_extras=True).items():
             if name.startswith("_") or typing.get_origin(annotation) is typing.ClassVar:
                 continue
-            if name in fields and name not in cls.__dict__:
+            if (name in fields or name in nested) and name not in cls.__dict__:
                 continue
             if hasattr(StateModel, name):
                 raise TypeError(
                     f"{cls.__name__}.{name}: the name is a method of the state"
                 )
+            if isinstance(annotation, type) and issubclass(annotation, StateModel):
+                nested[name] = _Nested(name, annotation)
+                setattr(cls, name, nested[name])
+                continue
             default = cls.__dict__.get(name, PydanticUndefined)
             info = default if isinstance(default, FieldInfo) else pydantic.Field(default)
             if info.is_required():
@@ -113,36 +145,47 @@ class StateModel(StateBase):
             fields[name] = _Field(name, annotation, info)
             setattr(cls, name, fields[name])
         cls._fields = fields
+        cls._nested_fields = nested
 
     def __init__(self, component, prefix: str = ""):
         super().__init__(component, prefix)
         object.__setattr__(self, "_cache", {})
+        object.__setattr__(self, "_nested", {})
 
     def __setattr__(self, name: str, value: Any) -> None:
-        if name not in self._fields:
+        if name not in self._fields and name not in self._nested_fields:
             raise AttributeError(f"{type(self).__name__} has no field {name!r}")
         object.__setattr__(self, name, value)
 
     @classmethod
     def defaults(cls) -> dict:
-        """{name: default} of all fields"""
-        return {name: f.default() for name, f in cls._fields.items()}
+        """{name: default} of all fields, nested states as dicts"""
+        out = {name: f.default() for name, f in cls._fields.items()}
+        out.update({name: n.model.defaults() for name, n in cls._nested_fields.items()})
+        return out
 
     @classmethod
     def field_info(cls) -> dict[str, FieldInfo]:
-        """{name: pydantic FieldInfo} of all fields, in declaration order"""
+        """{name: pydantic FieldInfo} of the fields (not the nested states),
+        in declaration order"""
         return {name: f.info for name, f in cls._fields.items()}
 
     def dump(self) -> dict:
-        """{name: value} of all fields"""
-        return {name: getattr(self, name) for name in self._fields}
+        """{name: value} of all fields, nested states as dicts"""
+        out = {name: getattr(self, name) for name in self._fields}
+        out.update({name: getattr(self, name).dump() for name in self._nested_fields})
+        return out
 
     def get(self, key: str, default=None, *, cache=True) -> Any:
-        if key in self._fields:
+        if key in self._fields or key in self._nested_fields:
             return getattr(self, key)
         return super().get(key, default, cache=cache)
 
     def set(self, key: str, value: Any, **kwargs) -> None:
+        if key in self._nested_fields:
+            # replaces the values of the nested state
+            getattr(self, key)._assign(value)
+            return
         f = self._fields.get(key)
         if f is not None:
             value = f.validate(value)

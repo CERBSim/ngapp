@@ -14,10 +14,16 @@ from ngapp.state_model import StateModel, ref
 from ngapp.test_utils import mount, standalone_app_test
 
 
+class Wall(StateModel):
+    thickness: float = 0.01
+    material: str = "steel"
+
+
 class TankState(StateModel):
     radius: Annotated[float, Gt(0)] = 1.0
     layers: int = 3
     names: list[str] = []
+    wall: Wall
 
 
 class Tank(App[TankState]):
@@ -43,7 +49,10 @@ def test_validated_fields():
         s.radius = 0
     with pytest.raises(AttributeError):
         s.radiu = 1
-    assert TankState.defaults() == {"radius": 1.0, "layers": 3, "names": []}
+    assert TankState.defaults() == {
+        "radius": 1.0, "layers": 3, "names": [],
+        "wall": {"thickness": 0.01, "material": "steel"},
+    }
 
 
 @standalone_app_test
@@ -58,3 +67,24 @@ def test_input_bound_to_field():
     # another writer stores a value: the error is gone
     app.state.radius = 3
     assert error.value == "" and app.area.value == 3.14 * 9
+
+
+@standalone_app_test
+def test_nested_state():
+    app = Tank()
+    s = app.state
+    runs = []
+    mass = computed(lambda: runs.append(1) or s.wall.thickness * s.radius)
+    thickness = QInput(ui_model_value=ref(lambda: s.wall.thickness))
+    app.component.ui_children = [app.radius, thickness]
+    fe = mount(app)
+    assert mass.value == 0.01 and len(runs) == 1
+    fe.event(thickness, "update:model-value", "0.02")
+    assert s.wall.thickness == 0.02 and app.state.ns("wall")["thickness"] == 0.02
+    assert mass.value == 0.02 and len(runs) == 2
+    s.wall.material = "copper"  # not read by mass
+    assert mass.value == 0.02 and len(runs) == 2
+    s.wall = {"thickness": "0.03"}
+    assert s.wall.dump() == {"thickness": 0.03, "material": "steel"}
+    assert mass.value == 0.03
+    assert "wall" not in dict(s) and s.dump()["wall"]["thickness"] == 0.03

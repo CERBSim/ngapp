@@ -319,6 +319,22 @@ stored value as the default). A key that is not set reads as its default.
                       ui_error_message=radius.error),
                Label(computed(lambda: f"A = {area.value:.3g}")))
 
+A field whose type is another ``StateModel`` is a nested state: its fields
+are keys in the namespace ``wall/`` of the state, each followed on its own,
+so a computed that reads ``s.wall.thickness`` is not updated by a change of
+``s.wall.material``. ``ref(lambda: s.wall.thickness)`` binds an input to it,
+``s.wall.update({...})`` sets several fields.
+
+.. code-block:: python
+
+   class Wall(StateModel):
+       thickness: float = 0.01
+       material: str = "steel"
+
+   class TankState(StateModel):
+       radius: float = 1.0
+       wall: Wall          # no default: the defaults of Wall apply
+
 Reads of fields are followed like reads of keys. :func:`~ngapp.state_model.ref`
 returns the ``state.ref`` of the field its function reads, with the field's
 validation as converter: a value from the input that does not validate is
