@@ -15,6 +15,7 @@ from .app import (
 from .components.reactive import Dynamic, For, Fragment, Show
 from .jobs import JobHandle, Run, compute, progress
 from .observable import Observable, batch, computed, effect, untracked
+from .state_model import StateModel
 from .utils import (
     Job,
     LocalJob,
@@ -39,6 +40,7 @@ __all__ = [
     "Fragment",
     "Observable",
     "Show",
+    "StateModel",
     "batch",
     "computed",
     "effect",

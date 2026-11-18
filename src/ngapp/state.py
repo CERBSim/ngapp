@@ -33,6 +33,7 @@ from .observable import (
     Reaction,
     Signal,
     batch,
+    computed,
     current_batch,
     flush,
     is_tracking,
@@ -289,14 +290,13 @@ def session_of(component) -> "CaseSession | None":
     return getattr(ctx.app, "case_session", None)
 
 
-class State(MutableMapping):
+class StateBase(MutableMapping):
     """Values of a component that are stored in the case but not sent to the
     browser. Keys are strings; reading a blob value loads it on first access.
 
-    A State is used like a dict (``state[key]``, ``in``, iteration,
+    A state is used like a dict (``state[key]``, ``in``, iteration,
     ``update``, ``pop``, ``dict(state)``); ``comp.state = {...}`` replaces its
-    values and a copy or pickle of it is a dict. Keys that do not start with
-    ``_`` and are not named like a method are also attributes. A value
+    values and a copy or pickle of it is a dict. A value
     changed in place (``state["a"]["b"] = 1``) is stored by the next save or
     commit, assigning the key again or ``notify(key)`` stores it with the
     next autosave.
@@ -326,24 +326,6 @@ class State(MutableMapping):
             raise RuntimeError(
                 f"{type(self._component).__name__} needs an id to use state"
             )
-
-    def __getattr__(self, key: str) -> Any:
-        if key.startswith("_"):
-            raise AttributeError(key)
-        value = self.get(key, _MISSING)
-        if value is _MISSING:
-            raise AttributeError(f"state has no key {key!r}")
-        return value
-
-    def __setattr__(self, key: str, value: Any) -> None:
-        if key.startswith("_") or hasattr(type(self), key):
-            raise AttributeError(f"Use state.set({key!r}, value) for this key")
-        self.set(key, value)
-
-    def __delattr__(self, key: str) -> None:
-        if key not in self:
-            raise AttributeError(f"state has no key {key!r}")
-        self.delete(key)
 
     def __contains__(self, key) -> bool:
         try:
@@ -386,7 +368,7 @@ class State(MutableMapping):
 
     def _assign(self, values: Mapping) -> None:
         """Replace the values by the ones of a mapping (comp.state = {...})"""
-        values = values.copy() if isinstance(values, State) else dict(values)
+        values = values.copy() if isinstance(values, StateBase) else dict(values)
         for key in self.keys():
             if key not in values:
                 self.delete(key)
@@ -611,10 +593,42 @@ class State(MutableMapping):
             session.schedule_autosave()
 
 
+class State(StateBase):
+    """State with free keys: keys that do not start with ``_`` and are not
+    named like a method are also attributes (see :class:`StateBase`; a
+    :class:`~ngapp.state_model.StateModel` declares typed keys instead)"""
+
+    def __getattr__(self, key: str) -> Any:
+        if key.startswith("_"):
+            raise AttributeError(key)
+        value = self.get(key, _MISSING)
+        if value is _MISSING:
+            raise AttributeError(f"state has no key {key!r}")
+        return value
+
+    def __setattr__(self, key: str, value: Any) -> None:
+        if key.startswith("_") or hasattr(type(self), key):
+            raise AttributeError(f"Use state.set({key!r}, value) for this key")
+        self.set(key, value)
+
+    def __delattr__(self, key: str) -> None:
+        if key not in self:
+            raise AttributeError(f"state has no key {key!r}")
+        self.delete(key)
+
+
+def _error_message(e: Exception) -> str:
+    errors = getattr(e, "errors", None)
+    if callable(errors):
+        # pydantic ValidationError
+        return errors()[0]["msg"]
+    return str(e) or type(e).__name__
+
+
 class StateRef(Observable):
     """Observable view of one state key, see State.ref"""
 
-    def __init__(self, state: State, key: str, default=None, converter=None):
+    def __init__(self, state: StateBase, key: str, default=None, converter=None):
         super().__init__(default, key)
         self._converter = converter
         self._state = state
@@ -624,6 +638,11 @@ class StateRef(Observable):
         self._seen = _MISSING
         self._last = None
         self._force = False
+        # (message, stored value then) of the last value that did not convert
+        self._invalid = Observable(None)
+        # why the last value from an input was not stored, "" once a value
+        # is stored (also by another writer)
+        self.error = computed(self._error, key + ".error")
 
     @property
     def value(self):
@@ -637,9 +656,22 @@ class StateRef(Observable):
         if self._converter is not None:
             try:
                 new = self._converter(new)
-            except (ValueError, TypeError):
+            except (ValueError, TypeError) as e:
+                with untracked():
+                    self._invalid.value = (_error_message(e), self._stored())
                 return
+        self._invalid.value = None
         self._state.set(self._key, new)
+
+    def _stored(self):
+        entry = self._state._entry(self._state._full(self._key))
+        return entry if entry is None or isinstance(entry, _SeqEntry) else entry.key
+
+    def _error(self):
+        invalid = self._invalid.value
+        if invalid is None or invalid[1] != self._stored():
+            return ""
+        return invalid[0]
 
     def on_change(self, cb):
         dispose = super().on_change(cb)
@@ -806,7 +838,7 @@ def storage_state(component) -> State:
     return component._get_state().ns(STORAGE_NS)
 
 
-def storage_set(state: State, key, value, use_pickle=False):
+def storage_set(state: StateBase, key, value, use_pickle=False):
     try:
         state.set(key, value, pickle=use_pickle)
     except TypeError:
@@ -818,7 +850,7 @@ def storage_set(state: State, key, value, use_pickle=False):
         state.set(key, value)
 
 
-def storage_get(state: State, key, default=None, cache=True):
+def storage_get(state: StateBase, key, default=None, cache=True):
     if key in state:
         value = state.get(key, default, cache=cache)
         return list(value) if isinstance(value, StateList) else value
@@ -831,21 +863,21 @@ def storage_get(state: State, key, default=None, cache=True):
     return default
 
 
-def storage_delete(state: State, key):
+def storage_delete(state: StateBase, key):
     if key in state:
         state.delete(key)
 
 
-def storage_list(state: State, key) -> list:
+def storage_list(state: StateBase, key) -> list:
     return list(state.get(key)) if key in state else []
 
 
-def storage_list_len(state: State, key) -> int:
+def storage_list_len(state: StateBase, key) -> int:
     value = state.get(key) if key in state else None
     return len(value) if isinstance(value, StateList) else 0
 
 
-def storage_on_change(state: State, callback):
+def storage_on_change(state: StateBase, callback):
     """Storage.on_change: list appends are reported as "key#i" as before"""
 
     def wrapper(changed, appended):

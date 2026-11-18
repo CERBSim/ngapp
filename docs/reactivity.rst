@@ -285,6 +285,49 @@ seen:
 stores the value with the next autosave. Append-only lists created with
 ``state.list(key)`` notify on ``append``.
 
+Typed state
+-----------
+
+A :class:`~ngapp.state_model.StateModel` declares the keys of a state with
+their types and defaults. With ``App[TankState]`` (or
+``Component[TankState]``) ``self.state`` is a ``TankState``: fields are read
+and set as attributes, with type checking and completion in the editor, and
+every value is validated by pydantic when it is set and when it is read from
+a case (a stored ``50`` is read as ``50.0`` for a ``float`` field, an invalid
+stored value as the default). A key that is not set reads as its default.
+
+.. code-block:: python
+
+   from typing import Annotated
+   from annotated_types import Gt
+   from pydantic import Field
+   from ngapp.state_model import StateModel, ref
+
+   class TankState(StateModel):
+       radius: Annotated[float, Gt(0)] = 1.0
+       layers: int = Field(3, ge=1, title="Layers")
+       names: list[str] = []
+
+   class Tank(App[TankState]):
+       def __init__(self):
+           super().__init__()
+           s = self.state
+           area = computed(lambda: 3.14 * s.radius**2)
+           radius = ref(lambda: s.radius)
+           self.component = Div(
+               QInput(ui_model_value=radius, ui_error=computed(lambda: bool(radius.error.value)),
+                      ui_error_message=radius.error),
+               Label(computed(lambda: f"A = {area.value:.3g}")))
+
+Reads of fields are followed like reads of keys. :func:`~ngapp.state_model.ref`
+returns the ``state.ref`` of the field its function reads, with the field's
+validation as converter: a value from the input that does not validate is
+not stored, and the ref's ``error`` holds the reason until a value of the
+key is stored. ``state.ref(name)`` does the same by name, for code that
+loops over fields. Everything else of the state works as before
+(``state[key]``, ``ns``, ``notify``); field names must not be names of
+these methods. Values are replaced, not changed in place.
+
 Structure: ``Show``, ``For``, ``Dynamic``
 -----------------------------------------
 
@@ -535,3 +578,8 @@ API reference
 .. automethod:: ngapp.state.State.ref
 
 .. automethod:: ngapp.state.State.notify
+
+.. autoclass:: ngapp.state_model.StateModel
+   :members: defaults, field_info, dump
+
+.. autofunction:: ngapp.state_model.ref

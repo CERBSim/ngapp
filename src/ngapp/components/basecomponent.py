@@ -11,14 +11,16 @@ import pickle
 import sys
 import threading
 import time
+import typing
 from collections.abc import Mapping
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Callable, List, Optional, Tuple, TypeVar
+from typing import Callable, Generic, List, Optional, Tuple, TypeVar
 import datetime
 
 import orjson
 import pydantic
+import typing_extensions
 
 from .. import api
 from ..utils import (
@@ -814,7 +816,22 @@ class Event:
         raise AttributeError(f"{item} not found in Event class")
 
 
-class Component(metaclass=BlockFrontendUpdate):
+# the state class of a component: Component[MyState] with a StateModel
+S = typing_extensions.TypeVar(
+    "S", bound="state_module.StateBase", default="state_module.State"
+)
+
+
+def _state_class_of(cls):
+    """The StateModel of Component[MyState] among the bases of cls"""
+    for base in cls.__dict__.get("__orig_bases__", ()):
+        for arg in typing.get_args(base):
+            if isinstance(arg, type) and issubclass(arg, state_module.StateBase):
+                return arg
+    return None
+
+
+class Component(Generic[S], metaclass=BlockFrontendUpdate):
     """Base component class, the component name is passed as argument"""
 
     _callbacks: dict[str, List[Callable]]
@@ -941,14 +958,22 @@ class Component(metaclass=BlockFrontendUpdate):
         else:
             _frontend_known.discard(self._index)
 
-    def _get_state(self) -> "state_module.State":
+    _state_class = None
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        state_class = _state_class_of(cls)
+        if state_class is not None:
+            cls._state_class = state_class
+
+    def _get_state(self) -> S:
         state = self.__dict__.get("_state")
         if state is None:
-            state = self._state = state_module.State(self)
+            state = self._state = (self._state_class or state_module.State)(self)
         return state
 
     @property
-    def state(self) -> "state_module.State":
+    def state(self) -> S:
         """Values of the component that are stored in the case but not sent
         to the browser (requires a component id); used like a dict, assigning
         a dict replaces its values"""

@@ -15,7 +15,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import IntEnum
 from pathlib import Path
-from typing import final
+from typing import Generic, final
 
 import pydantic
 import urllib3
@@ -25,6 +25,7 @@ from .components.basecomponent import (
     AppContext,
     Component,
     FileData,
+    S,
     Storage,
     _QProxy,
     reset_components,
@@ -183,8 +184,9 @@ class AppConfigWithAccess(AppConfig):
         return self.access_level == AccessLevel.ADMIN
 
 
-class App(QPage):
-    """Base class for all applications"""
+class App(QPage, Generic[S]):
+    """Base class for all applications; ``App[MyState]`` with a
+    :class:`~ngapp.state_model.StateModel` gives a typed ``self.state``"""
 
     _default_data: dict | None
     context: AppContext
@@ -197,6 +199,15 @@ class App(QPage):
     """Commit changes automatically (debounced) when a case store is attached;
     without it changes are committed by App.commit"""
     case_session = None
+
+    # typed as the state class of App[MyState] (QPage is a Component[State])
+    @property
+    def state(self) -> S:
+        return Component.state.fget(self)
+
+    @state.setter
+    def state(self, value):
+        Component.state.fset(self, value)
 
     def __init__(
         self, *ui_children: Component | str, name: str | None = None, **kwargs

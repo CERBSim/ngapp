@@ -46,6 +46,8 @@ from ngapp import flush_updates
 | `self.state.ref(key, default=None, converter=None)` | observable view of a state key; as `ui_model_value` it binds an input two-way to the key |
 | `self.state[key]`, `self.state.get(key, default)` | tracked reads inside computed, structures and effects |
 | `self.state.notify(key)` | report an in-place change of a value |
+| `class S(StateModel): x: float = 1.0`, `class MyApp(App[S])` | typed `self.state`: fields validated by pydantic, reads followed like keys |
+| `ref(lambda: s.x)` / `s.ref("x")` | `state.ref` of a field with its validation; `.error` holds why an input value was rejected |
 | `ui_<prop>=observable_or_computed` | bound prop; a plain `Observable` on `ui_model_value` is two-way |
 | `Label(computed(...))`, `Div("x = ", obs)` | bound text, updated in place |
 | `Show(when, build, otherwise=None, keep=True)` | conditional content; with `keep=True` it is hidden, not destroyed |
@@ -64,6 +66,46 @@ from ngapp import flush_updates
   `namespace=True` and `id=<key>`.
 - Assigning a plain value to a prop bound to a `computed` removes the
   binding and logs a warning.
+
+## Typed state
+
+Declare the case data in a `StateModel` (`from ngapp.state_model import
+StateModel, ref`) and use it as `App[MyState]` / `Component[MyState]`;
+`self.state` is then typed:
+
+```python
+class TankState(StateModel):
+    radius: Annotated[float, Gt(0)] = 1.0         # pydantic constraints
+    layers: int = Field(3, ge=1, title="Layers")  # or pydantic.Field
+    curves: dict[str, Curve] = {}                 # TypedDict values stay dicts
+
+class Tank(App[TankState]):
+    def __init__(self):
+        super().__init__()
+        s = self.state
+        radius = ref(lambda: s.radius)
+        QInput(ui_model_value=radius,
+               ui_error=computed(lambda: bool(radius.error.value)),
+               ui_error_message=radius.error)
+```
+
+- Every field needs a default; a key that is not set reads as its default,
+  so there is no need to write the defaults into the state.
+- Use types the case store saves (numbers, strings, lists, dicts,
+  `TypedDict`, `Literal`); values are stored as validated.
+- Setting an invalid value raises `ValueError`; setting an attribute that is
+  no field raises `AttributeError`. An invalid stored value (an old case) is
+  read as the default and logged.
+- Input text that does not validate is not stored, so the state never holds
+  half-typed text. Show `ref.error` at the input and treat it as an error of
+  the input (block runs on it).
+- Replace values, do not change them in place:
+  `s.curves = {**s.curves, key: curve}`.
+- Model functions take the state (`def params(c: Case)`); jobs get the same
+  typed state. `state.dump()` gives all fields (for fingerprints of inputs:
+  undeclared keys never end up in them).
+- Field names must not be names of state methods (`get`, `keys`, `ns`,
+  `ref`, `dump`, ...); the class raises `TypeError` otherwise.
 
 ## Before and after
 
