@@ -71,11 +71,12 @@ class NoSandbox(Sandbox):
     """Run with the runner's own python, no isolation and no limits (trusted dev machines)"""
 
     name = "none"
+    # imported before the app layer: the dev runner of serve_app runs the
+    # local code the app is served with, not the deployed layer
+    sources: tuple[str, ...] = ()
 
     def __init__(self, sources: list[Path] = ()):
-        # imported before the app layer: the dev runner of serve_app runs the
-        # local code the app is served with, not the deployed layer
-        self.sources = [str(p) for p in sources]
+        self.sources = tuple(str(p) for p in sources)
 
     def command(self, image, work, layer, cpus, memory, job_env, gpus):
         return [sys.executable, "-m", "ngapp.cli.run_job", str(work / "job.json")]
