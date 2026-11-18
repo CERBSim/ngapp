@@ -597,6 +597,20 @@ def _json_fallback(obj):
     raise TypeError(f"not JSON serializable: {type(obj)!r}")
 
 
+# Follows the size of the plot element (container resized, shown after being
+# hidden), not only window resizes; runs in the page, no round trip to Python.
+_PLOTLY_RESIZE_JS = """
+const ro = new ResizeObserver(() => {
+  if (!el.offsetWidth || !el.offsetHeight || !el._fullLayout || !window.Plotly) return;
+  const fl = el._fullLayout;
+  if (Math.abs(fl.width - el.clientWidth) < 1 && Math.abs(fl.height - el.clientHeight) < 1) return;
+  window.Plotly.Plots.resize(el).catch(() => {});
+});
+ro.observe(el);
+return ro;
+"""
+
+
 class PlotlyComponent(Div):
     """Plotly plot component.
 
@@ -643,6 +657,7 @@ class PlotlyComponent(Div):
         self._theme_mql = None
         self._theme_proxy = None
         self._onload_proxy = None
+        self._resize_observer = None
         self.on_mounted(lambda *a: self.call_js(self._setup))
         self.on("unmount", self._on_unmount)
 
@@ -689,6 +704,13 @@ class PlotlyComponent(Div):
         import webgpu.platform as pl
 
         self._dark = self._is_dark(js)
+        if self._resize_observer is None:
+            try:
+                self._resize_observer = js.Function("el", _PLOTLY_RESIZE_JS)(
+                    self._js_component
+                )
+            except Exception as e:
+                print(f"PlotlyComponent: resize observer setup failed: {e}")
         if self._theme_observer is None:
             try:
                 self._theme_proxy = pl.create_proxy(self._on_theme_change)
@@ -705,6 +727,9 @@ class PlotlyComponent(Div):
                 print(f"PlotlyComponent: theme observer setup failed: {e}")
 
         cls = PlotlyComponent
+        if cls._state == "ready" and not js.window.Plotly:
+            # a new page (reload, second tab of a local app): load it there
+            cls._state, cls._plotly = "none", None
         if cls._state == "ready":
             self.redraw()
             return
@@ -748,11 +773,14 @@ class PlotlyComponent(Div):
 
     def _on_unmount(self):
         obs, mql, proxy = self._theme_observer, self._theme_mql, self._theme_proxy
+        ro, self._resize_observer = self._resize_observer, None
         self._theme_observer = self._theme_mql = None
-        if obs is None and mql is None:
+        if obs is None and mql is None and ro is None:
             return
 
         def _cleanup(js):
+            if ro is not None:
+                ro.disconnect()
             if obs is not None:
                 obs.disconnect()
             if mql is not None and proxy is not None:
