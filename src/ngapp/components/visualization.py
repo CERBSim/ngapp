@@ -1018,7 +1018,11 @@ class WebgpuComponent(Component):
             pass
 
     def connect_webgpu(self):
-        from webgpu import canvas, utils
+        from webgpu import canvas, platform, utils
+
+        # no browser link (the FakeFrontend of ngapp.test_utils): no device to draw with
+        if platform.js is None:
+            return
 
         html_canvas = self._js_component
 
