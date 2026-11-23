@@ -177,13 +177,13 @@ def host_local_app(
     url_callback: Callable[[str], None] | None = None,
     store: str | os.PathLike | None = None,
     import_files: list | None = None,
-    cases: bool = True,
+    cases: bool | None = None,
 ):
     """Serve the app locally; its cases live in a local SQLite store (store,
     default ngapp.local_cases.store_path), the last opened one is shown and
     import_files (case files or .sav files of the previous local mode) are
     imported first. With cases=False there is no case store, every page
-    shows a new app instance"""
+    shows a new app instance; default is the config's local_cases"""
     from webgpu import platform
 
     from ..local_cases import LocalCases
@@ -239,7 +239,7 @@ def host_local_app(
     env: Environment = None
 
     def before_wait_for_connection(server):
-        nonlocal http_process, env, last_checkpoint, startup_t0, cases
+        nonlocal http_process, env, last_checkpoint, startup_t0, cases, use_cases
         global app
 
         server = platform.websocket_server
@@ -247,9 +247,11 @@ def host_local_app(
         server.expose("unmount_component", unmount_component)
 
         env = utils.set_environment(utils.Environment.LOCAL_APP, False, server)
+        app_config = importlib.import_module(app_module).config
+        if use_cases is None:
+            use_cases = app_config.local_cases
         if use_cases:
             env.data_layer = True
-            app_config = importlib.import_module(app_module).config
             cases = LocalCases(
                 app_config, store, app_args=app_args, on_app=show_app
             )

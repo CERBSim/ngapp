@@ -143,6 +143,7 @@ class AppConfig(pydantic.BaseModel):
 
     compute_environments: list[ComputeEnvironment] = []
     access: AppAccessConfig = AppAccessConfig()
+    local_cases: bool = True
 
     frontend_package: bytes = b""
     python_packages: list[PythonPackage] = []
