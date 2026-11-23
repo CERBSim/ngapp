@@ -17,6 +17,7 @@ Usage::
 """
 
 from .components import Div
+from .observable import Observable
 from .style import Style, StyleSheet, Theme
 
 __all__ = [
@@ -300,6 +301,8 @@ class KeybindingManager:
         self._registered_keys = set()
         self.last_event = None
         self._mode = None
+        # the active mode, for displays outside the manager
+        self.mode = Observable(None, "keybinding_mode")
         self._help_visible = False
         self.indicator = ModeIndicator(theme=theme)
         self.help_overlay = HelpOverlay(self)
@@ -461,10 +464,12 @@ class KeybindingManager:
             self._exit_mode()
             return
         self._mode = mode_name
+        self.mode.value = mode_name
         self.indicator.show(mode_name, self._mode_entries.get(mode_name, []))
 
     def _exit_mode(self):
         self._mode = None
+        self.mode.value = None
         self.indicator.hide()
 
     def toggle_help(self):

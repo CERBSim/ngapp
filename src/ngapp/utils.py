@@ -576,6 +576,9 @@ class Environment:
     data_layer: bool = False
     # cases of the local app mode (ngapp.local_cases.LocalCases)
     local_cases = None
+    # counts pages replaced by a reload or new window (local app mode), the
+    # objects of the previous page are dead once it changes
+    page: int = 0
 
     frontend: BaseFrontend
     backend_api_url: str = ""
@@ -875,6 +878,7 @@ class SettingsFile:
         self._path = path
         self._data: dict = {}
         self._loaded = False
+        self._refs: dict = {}
 
     @property
     def path(self) -> Path:
@@ -911,6 +915,30 @@ class SettingsFile:
         self._data[key] = value
         if autosave:
             self._save()
+        obs = self._refs.get(key)
+        if obs is not None:
+            obs.value = value
+
+    def ref(self, key: str, default=None, converter=None):
+        """Observable of a setting: writing it stores the setting, and
+        :meth:`set` updates it, so bound inputs and views follow.
+
+        >>> QToggle(ui_model_value=app.usersettings.ref("axes", True))
+        """
+
+        obs = self._refs.get(key)
+        if obs is None:
+            obs = _observable.Observable(
+                self.get(key, default), f"settings.{key}", converter=converter
+            )
+            self._refs[key] = obs
+
+            def store(value, _old):
+                if self._data.get(key, default) != value:
+                    self.set(key, value)
+
+            obs.on_change(store)
+        return obs
 
     def update(self, key: str):
         """Return a handler suitable for on_update_model_value.

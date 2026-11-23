@@ -69,6 +69,56 @@ def watch_python_modules(modules, callback, stop_event: Event | None = None):
             observer.join()
 
 
+_profile_lock = None
+
+
+def _try_lock(path: Path):
+    """Open file of an exclusive, non-blocking lock on path, or None. The
+    OS drops the lock when the process ends."""
+    f = open(path, "a+b")
+    try:
+        if sys.platform == "win32":
+            import msvcrt
+
+            msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        return f
+    except OSError:
+        f.close()
+        return None
+
+
+def _chrome_running(profile: Path) -> bool:
+    try:
+        pid = int(os.readlink(profile / "SingletonLock").rsplit("-", 1)[1])
+        os.kill(pid, 0)
+        return True
+    except (OSError, ValueError, IndexError):
+        return False
+
+
+def _claim_chrome_profile(base: Path) -> Path:
+    """Profile base, base-2, ... held by this app for its lifetime. Every app
+    gets its own Chrome process: apps in one Chrome share its GPU process,
+    where the WebGPU promises of one page starve while another renders"""
+    global _profile_lock
+    base.parent.mkdir(parents=True, exist_ok=True)
+    for i in range(1, 100):
+        path = base if i == 1 else base.with_name(f"{base.name}-{i}")
+        lock = _try_lock(path.with_name(path.name + ".lock"))
+        if lock is None:
+            continue
+        if _chrome_running(path):  # a Chrome that outlived its app
+            lock.close()
+            continue
+        _profile_lock = lock
+        return path
+    return base
+
+
 app = None
 # set once the shown app was sent to the page (its load handlers have run)
 app_ready = Event()
@@ -122,6 +172,7 @@ def _reset_page_state(platform):
 
     from webgpu.link.proxy import Proxy
 
+    utils.get_environment().page += 1
     server = platform.websocket_server
     for obj in gc.get_objects():
         if issubclass(type(obj), Proxy) and obj.__dict__.get("_link") is server:
@@ -381,10 +432,12 @@ def host_local_app(
                         break
             opened_as_app = False
             if browser_path and Path(browser_path).exists():
-                user_data_dir = Path(
-                    os.environ.get(
-                        "NGAPP_CHROME_PROFILE",
-                        Path.home() / ".config" / "ngapp-chrome",
+                user_data_dir = _claim_chrome_profile(
+                    Path(
+                        os.environ.get(
+                            "NGAPP_CHROME_PROFILE",
+                            Path.home() / ".config" / "ngapp-chrome",
+                        )
                     )
                 )
                 subprocess.Popen(
