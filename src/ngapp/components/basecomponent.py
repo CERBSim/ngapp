@@ -13,6 +13,7 @@ import threading
 import time
 import typing
 from collections.abc import Mapping
+from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Callable, Generic, List, Optional, Tuple, TypeVar
@@ -696,12 +697,28 @@ def _code_site(func):
     return f"{code.co_filename}:{code.co_firstlineno}"
 
 
-# number of components created so far, for the handler warning
+# number of components created so far outside creating_ui(), for the
+# handler warning
 _created = 0
+_creating_ui = 0
 _dev_reported = set()
 _REBUILD_COUNT = 4
 _REBUILD_WINDOW = 2.0
 _HANDLER_MAX_CREATED = 100
+
+
+@contextmanager
+def creating_ui():
+    """Components created inside are intended new UI (a handler that opens a
+    view or a dialog) and do not count for the handler warning. The content
+    of ``Show``, ``For`` and ``Dynamic`` is built inside it."""
+    global _creating_ui
+    _creating_ui += 1
+    try:
+        yield
+    finally:
+        _creating_ui -= 1
+
 # called with (component, slot key, old, new) by every slot assignment while
 # test_utils.assert_stable is active
 _slot_recorder = None
@@ -876,7 +893,8 @@ class Component(Generic[S], metaclass=BlockFrontendUpdate):
         ui_invisible: bool | None = None,
     ):
         global _created
-        _created += 1
+        if not _creating_ui:
+            _created += 1
         self._index = next(_component_counter)
         _components[self._index] = self
         self._keybindings = []

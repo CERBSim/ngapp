@@ -6,7 +6,7 @@ import pytest
 
 import ngapp.components.basecomponent as bc
 from ngapp import utils
-from ngapp.components import Div, For, Label, QBtn
+from ngapp.components import Div, For, Label, QBtn, Show, creating_ui
 from ngapp.observable import Observable, computed
 from ngapp.test_utils import assert_stable, mount
 from ngapp.utils import EnvironmentType, set_environment
@@ -79,6 +79,26 @@ def test_handler_warning(caplog):
     big = Div()
     big.on_mounted(lambda: big._set_slot("default", [Div() for _ in range(150)]))
     mount(big)
+    assert dev_warnings(caplog) == []
+
+
+def test_handler_warning_allows_intended_ui(caplog):
+    caplog.set_level(logging.WARNING, "ngapp.components")
+    shown = Observable(False, "shown")
+    lazy = QBtn(ui_label="open")
+    lazy.on("click", lambda: shown.toggle())
+    opened = Div()
+    tab = QBtn(ui_label="tab")
+
+    def open_tab():
+        with creating_ui():
+            opened.ui_children = [Label(str(i)) for i in range(150)]
+
+    tab.on("click", open_tab)
+    root = Div(lazy, Show(shown, lambda: [Label(str(i)) for i in range(150)]), tab, opened)
+    fe = mount(root)
+    fe.event(lazy, "click")
+    fe.event(tab, "click")
     assert dev_warnings(caplog) == []
 
 

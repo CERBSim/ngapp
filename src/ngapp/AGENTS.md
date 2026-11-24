@@ -194,7 +194,9 @@ Logged on logger `ngapp.components`, once per class and creation site:
 - `<Class>.ui_children replaced <n> times within 2 s with the same component
   types`: bind the changing values or use `Show` / `For` / `Dynamic`.
 - `Handler of <Class> '<event>' created <n> components`: a parameter change
-  should update values, not rebuild the UI.
+  should update values, not rebuild the UI. Content built by `Show`, `For`
+  and `Dynamic` does not count; a handler that opens new UI on purpose (a
+  view, a dialog) creates it inside `with creating_ui():`.
 - `<Class>.<prop> bound to a computed was overwritten with a plain value`.
 
 `NGAPP_DEV_WARNINGS=0` disables the last three. `NGAPP_BATCH_UPDATES=0`

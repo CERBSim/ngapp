@@ -10,7 +10,7 @@ from .. import utils
 from ..observable import Observable, Reaction, computed, safe_equal, untracked
 from ..utils import print_exception
 from . import basecomponent as _basecomponent
-from .basecomponent import Component
+from .basecomponent import Component, creating_ui
 from .helper_components import Span
 
 __all__ = ["Fragment", "Show", "For", "Dynamic"]
@@ -152,7 +152,8 @@ class _Structural(Fragment):
     def _start(self, update: Callable):
         def run():
             try:
-                update()
+                with creating_ui():
+                    update()
             except Exception as e:
                 # the content stays as it is
                 print_exception(e)
