@@ -16,6 +16,7 @@ from .qcomponents import QBtn, QCard, QCardSection, QChip, QDialog, QInput, QToo
 __all__ = [
     "CaseName",
     "CaseSaveStatus",
+    "CaseSaveButton",
     "CaseNotice",
     "CaseListButton",
     "NamedVersionButton",
@@ -199,6 +200,34 @@ class CaseSaveStatus(_CaseView):
         b = save_badge(s)
         _set(self.chip, ui_label=b["label"], ui_color=b["color"], ui_icon=b["icon"])
         _set_text(self.tooltip, b["tooltip"])
+
+
+class CaseSaveButton(_CaseView):
+    """Saves the edits of the case (apps without autosave); disabled while
+    nothing is to save"""
+
+    def __init__(self, label: str = "", icon: str = "mdi-content-save", **kwargs):
+        self.button = QBtn(QTooltip("Save"), ui_icon=icon, ui_label=label or None,
+                           ui_flat=True, ui_dense=True, ui_round=not label,
+                           ui_no_caps=True, ui_class="case-save-button")
+        self.button.on_click(self._save)
+        super().__init__("span", self.button, **kwargs)
+
+    def _save(self, *_a):
+        self._sync()
+        if self.session is not None:
+            try:
+                self.session.save()
+            except Exception:
+                pass  # shown by the save status
+            self._rerender()
+
+    def _render(self):
+        s = self.session
+        _set(self, ui_hidden=s is None or s.status in ("read_only", "release_too_old"))
+        if s is not None:
+            _set(self.button, ui_disable=s.status not in ("pending", "error", "offline")
+                 and not s.held_edits)
 
 
 class CaseNotice(_CaseView):
