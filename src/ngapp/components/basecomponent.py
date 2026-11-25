@@ -140,8 +140,9 @@ class AppContext:
     @property
     def app_id(self):
         if self._cached_app_id is None:
+            app_id = get_environment().frontend.get_query_parameter("appId")
             self._cached_app_id = (
-                get_environment().frontend.get_query_parameter("appId")
+                int(app_id) if isinstance(app_id, str) and app_id.isdigit() else app_id
             )
         return self._cached_app_id
 
