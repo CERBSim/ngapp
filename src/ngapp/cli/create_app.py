@@ -1,10 +1,10 @@
 """Create a new app on a webapp backend and upload it.
 
-    python -m ngapp.cli.create_app <backend_url> <token>
+    python -m ngapp.cli.create_app <backend_url> <token> <group_id>
 
-The command including a token is copied from "Add new app" on the App Dev page. It asks for
-the python package of the app (the AppConfig is read from <package>.appconfig). The app
-belongs to the group of the session the token was created in.
+The command including a token and the group of the app is copied from "Add new app" on the
+App Dev page. It asks for the python package of the app (the AppConfig is read from
+<package>.appconfig). The creator owns the app.
 """
 
 import argparse
@@ -25,6 +25,7 @@ def main():
     parser = argparse.ArgumentParser(description="Create a new app on a webapp backend")
     parser.add_argument("backend_url")
     parser.add_argument("token")
+    parser.add_argument("group_id", type=int, help="group of the app (Add new app shows it)")
     args = parser.parse_args()
 
     module = ""
@@ -48,12 +49,13 @@ def main():
 
     print(f"Creating app '{config.name}'")
     app = api.post(
-        "/app_admin/create_app",
+        "/v2/apps",
         {
             "name": config.name,
             "version": config.version,
             "description": config.description,
             "python_class": config.python_class,
+            "group_id": args.group_id,
         },
     )
     upload_app(config, app["id"], reload_dependencies=config.frontend_dependencies)
